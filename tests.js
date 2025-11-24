@@ -1,4 +1,6 @@
 
+import { registerComponentTests } from './tests/ComponentsController.test.js';
+
 export class TestRunner {
     constructor(app) {
         this.app = app;
@@ -7,6 +9,11 @@ export class TestRunner {
 
     register(name, testFn) {
         this.tests.push({ name, testFn });
+    }
+
+    // Alias for compatibility
+    addTest(name, testFn) {
+        this.register(name, testFn);
     }
 
     async run() {
@@ -43,6 +50,9 @@ const assert = (condition, message) => {
 
 // Define Tests (merged from historical versions)
 export const registerTests = (runner) => {
+
+    // Register component tests first
+    registerComponentTests(runner);
 
     // --- Variable Tests ---
 
