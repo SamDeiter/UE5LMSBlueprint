@@ -1,0 +1,24 @@
+{
+  "name": "ue5-blueprint-editor",
+  "version": "1.0.0",
+  "description": "UE5 Blueprint Editor Replica - Visual scripting interface",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "echo \"Tests run in browser - open index.html and run window.runTests()\"",
+    "serve": "python -m http.server 8000",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "blueprint",
+    "visual-scripting",
+    "unreal-engine"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "husky": "^9.1.7"
+  }
+}

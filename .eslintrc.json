@@ -1,0 +1,23 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-undef": "error",
+    "no-duplicate-imports": "error",
+    "no-console": "off",
+    "no-debugger": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    "*.min.js",
+    "scripts/*.py"
+  ]
+}

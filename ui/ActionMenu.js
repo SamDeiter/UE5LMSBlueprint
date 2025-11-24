@@ -48,6 +48,12 @@ export class ActionMenu {
         }
         this.populateList();
         this.searchInput.focus();
+
+        // Keep ghost wire visible when showing menu with a sourcePin
+        if (sourcePin) {
+            const fakeEvent = { clientX, clientY };
+            this.app.wiring.updateGhostWire(fakeEvent, sourcePin);
+        }
     }
     showVariableAccess(filter = '') {
         if (filter.length > 0) { return false; }
@@ -156,12 +162,21 @@ export class ActionMenu {
     }
     hide() {
         this.element.style.display = 'none';
-        if (this.app.graph.activePin) {
-            this.app.graph.activePin = null;
-            this.app.wiring.updateGhostWire(null, null);
-        }
+
+        // Clear sourcePin FIRST to avoid race condition in updateGhostWire
+        const hadSourcePin = this.sourcePin !== null;
         this.sourcePin = null;
         this.droppedVarName = null;
+
+        // Clear activePin and hide ghost wire
+        if (this.app.graph.activePin) {
+            this.app.graph.activePin = null;
+        }
+
+        // Explicitly hide ghost wire if we had a sourcePin (wiring mode)
+        if (hadSourcePin || this.app.wiring.ghostWire.style.display !== 'none') {
+            this.app.wiring.ghostWire.style.display = 'none';
+        }
     }
     filter() {
         this.populateList(this.searchInput.value.toLowerCase());

@@ -4,31 +4,22 @@
 
 ### HIGH PRIORITY
 
-#### 1. Ghost Wire Not Visible During Wiring
-**Status**: Under Investigation  
+#### 1. Ghost Wire Not Disappearing When Closing Action Menu
+**Status**: ✅ FIXED (2025-11-23)
 **Severity**: High (UX Impact)  
-**Description**: When dragging a wire from a pin, the "ghost wire" that should follow the cursor is not visible.
+**Description**: When dragging a wire from a pin and opening the action menu, clicking off the menu without selecting anything would leave the ghost wire visible.
 
-**What We Know**:
-- The `updateGhostWire()` method IS being called (confirmed via console logs)
-- The ghost wire element exists in the DOM (`#ghost-wire`)
-- The `fill="none"` attribute is now set in the WiringController constructor
-- However, the `stroke`, `stroke-width`, and `d` (path data) attributes remain `null`
-- This suggests the `setAttribute()` calls in `updateGhostWire()` are not working as expected
+**Root Cause**:
+- Race condition in `ActionMenu.hide()` method
+- `sourcePin` was being cleared AFTER calling `updateGhostWire()`
+- `WiringController.updateGhostWire()` checked `this.app.actionMenu.sourcePin` before hiding, preventing the ghost wire from being hidden
 
-**Investigation Steps Taken**:
-1. ✅ Verified ghost wire element exists in HTML (line 179 of index.html)
-2. ✅ Added `fill="none"` to ghost wire initialization
-3. ✅ Confirmed `updateGhostWire()` is being called during mouse drag
-4. ❌ Attributes are not being set despite method being called
+**Solution**:
+- Modified `ActionMenu.hide()` to clear `sourcePin` BEFORE attempting to hide ghost wire
+- Added explicit `ghostWire.style.display = 'none'` to ensure it's hidden regardless of state
+- Commit: [current session]
 
-**Next Steps**:
-- Check if there's a timing issue with SVG attribute setting
-- Verify `Utils.getWirePath()` is returning valid path data
-- Check if `Utils.getPinPosition()` is returning valid coordinates
-- Compare with a working version from git history
-
-**Workaround**: None currently. Wiring still works (connections can be made), but visual feedback is missing.
+**Verification**: Tested and confirmed working - ghost wire now properly disappears when clicking off the action menu.
 
 ---
 

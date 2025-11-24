@@ -659,14 +659,16 @@ class SimulationEngine {
             case 'EventBeginPlay':
                 return null; // Pass through
 
-            case 'PrintString':
+            case 'PrintString': {
                 const strVal = this.evaluateInput(node, 'str_in');
                 this.log(`Print: ${strVal}`);
                 return null;
+            }
 
-            case 'Branch':
+            case 'Branch': {
                 const condition = this.evaluateInput(node, 'cond_in');
                 return condition ? 'exec_true' : 'exec_false';
+            }
 
             default:
                 // Handle dynamic Set nodes
@@ -712,7 +714,7 @@ class SimulationEngine {
     }
 
     /** Evaluates the return value of a node (Pure nodes). */
-    evaluateNodeValue(node, outputPin) {
+    evaluateNodeValue(node) {
         // 1. Variable Getters
         if (node.nodeKey.startsWith('Get_')) {
             const varName = node.nodeKey.replace('Get_', '');

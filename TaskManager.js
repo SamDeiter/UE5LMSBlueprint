@@ -39,8 +39,7 @@ export class TaskManager {
         this.currentTask = task;
         this.validationResults = null;
 
-        console.log(`📋 Active Task: ${task.title}`);
-        console.log(`📝 ${task.description}`);
+
 
         return true;
     }
@@ -51,7 +50,6 @@ export class TaskManager {
     clearTask() {
         this.currentTask = null;
         this.validationResults = null;
-        console.log('✅ Task cleared');
     }
 
     /**

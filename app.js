@@ -5,7 +5,7 @@
  */
 
 // Import all controllers
-import { Pin, Node, WiringController, GraphController } from './graph.js';
+import { WiringController, GraphController } from './graph.js';
 import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
@@ -187,7 +187,6 @@ class BlueprintApp {
             if (e.key === 'Delete' || e.key === 'Backspace') {
                 e.preventDefault();
 
-                let wasDeleted = false;
                 let varToDelete = null;
 
                 // --- PRIORITY 1: CHECK FOR VARIABLE DELETION ---
@@ -206,12 +205,10 @@ class BlueprintApp {
 
                 if (varToDelete) {
                     BlueprintApp.variables.deleteVariable(varToDelete); // Triggers confirmation modal
-                    wasDeleted = true;
                 }
                 // 2. Check for selected nodes/links
                 else if (BlueprintApp.graph.selectedNodes.size > 0 || BlueprintApp.wiring.selectedLinks.size > 0) {
                     BlueprintApp.graph.deleteSelectedNodes();
-                    wasDeleted = true;
                 }
             }
 

@@ -5,82 +5,58 @@
 ✅ Created `graph/` directory  
 ✅ Extracted `Pin` class to `graph/Pin.js`  
 ✅ Extracted `Node` class to `graph/Node.js`  
-✅ Verified both files have no syntax errors
+✅ Extracted `WiringController` to `graph/WiringController.js` (with Ghost Wire Fix)  
+✅ Extracted `GraphController` to `graph/GraphController.js`  
+✅ Verified all files have no syntax errors
 
 ## What You Need to Do (Manual Steps)
 
-### Step 1: Update graph.js imports
+### Final Step: Update graph.js to be a re-export file
 
 **Open `graph.js` in your editor**
 
-**Find these lines (lines 1-10):**
+**Replace the ENTIRE file content with just this:**
+
 ```javascript
 /**
  * Core Graph Logic: Pin, Node, WiringController, GraphController.
  * This file manages the data model, rendering, and all user interactions 
  * (pan, zoom, drag, selection, wiring).
  */
-import { Utils } from './utils.js';
-import { nodeRegistry } from './registries/NodeRegistry.js';
-import { Pin } from './graph/Pin.js';
 
-// --- CORE DATA MODEL CLASSES ---
+// Re-export everything from the new modular files
+export { Pin } from './graph/Pin.js';
+export { Node } from './graph/Node.js';
+export { WiringController } from './graph/WiringController.js';
+export { GraphController } from './graph/GraphController.js';
 ```
 
-**Replace with:**
-```javascript
-/**
- * Core Graph Logic: Pin, Node, WiringController, GraphController.
- * This file manages the data model, rendering, and all user interactions 
- * (pan, zoom, drag, selection, wiring).
- */
-import { Utils } from './utils.js';
-import { nodeRegistry } from './registries/NodeRegistry.js';
-import { Pin } from './graph/Pin.js';
-import { Node } from './graph/Node.js';
-
-// --- CORE DATA MODEL CLASSES ---
-```
-
-### Step 2: Delete the Node class definition
-
-**Find and DELETE the entire Node class** (approx lines 16-500).
-It starts with:
-```javascript
-/**
- * Represents a single node in the graph canvas.
- */
-class Node {
-```
-
-And ends with:
-```javascript
-    getPinsData() {
-        // ...
-    }
-}
-```
-
-**Make sure you delete the closing brace `}` of the class!**
-
-### Step 3: Save and Test
+### Step 2: Save and Test
 
 1. Save `graph.js`
 2. Check syntax: `node --check graph.js`
 3. Reload the browser (Ctrl+Shift+R)
-4. Verify the application loads without errors
-5. Try adding a node to the graph
+4. Verify EVERYTHING works:
+   - Creating nodes
+   - Moving nodes
+   - Wiring nodes (Ghost wire should be visible!)
+   - Panning/Zooming
 
-### Step 4: Commit
+### Step 3: Commit
 
 ```bash
-git add graph/Node.js
+git add graph/GraphController.js
 git add graph.js
-git commit -m "refactor: Extract Node class to graph/Node.js"
+git commit -m "refactor: Complete graph.js modularization"
 ```
 
-## Next Steps
+## Congratulations! 🎉
 
-After this works, we will extract:
-- `WiringController` -> `graph/WiringController.js`
-- `GraphController` -> `graph/GraphController.js`
+You have successfully split the massive `graph.js` (1600+ lines) into 4 clean, manageable files!
+- `graph/Pin.js`
+- `graph/Node.js`
+- `graph/WiringController.js`
+- `graph/GraphController.js`
+- `graph.js` (just exports)
+
+This will prevent file corruption issues and make development much faster and safer.

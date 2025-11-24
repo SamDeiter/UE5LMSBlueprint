@@ -332,6 +332,79 @@ class GraphController {
         this.zoomReadout.textContent = `${Math.round(this.zoom * 100)}%`;
     }
 
+    handleContextMenu(e) {
+        e.preventDefault();
+        if (e.target.closest('.node')) { return; }
+        this.app.actionMenu.show(e.clientX, e.clientY, null);
+    }
+
+    handlePinContextMenu(e) {
+        const pinContainerEl = e.target.closest('.pin-container');
+        if (pinContainerEl) {
+            e.preventDefault();
+            e.stopPropagation();
+            const pinId = pinContainerEl.dataset.pinId;
+            const pin = this.findPinById(pinId);
+
+            if (!pin || pin.type === 'exec') return;
+
+            const items = [
+                { label: `Promote to Variable`, callback: () => this.promotePinToVariable(pin) }
+            ];
+
+            // Add custom event options if applicable
+            const node = pin.node;
+            if (node.nodeKey === 'CustomEvent' && pin.isCustom) {
+                items.push({ label: '---', callback: () => { } });
+                items.push({ label: `Remove Pin: ${pin.name}`, callback: () => this.removeCustomPin(node.id, pin.id) });
+            }
+
+            this.app.contextMenu.show(e.clientX, e.clientY, items);
+        }
+    }
+
+    addNode(nodeKey, x, y) {
+        const nodeData = nodeRegistry.get(nodeKey);
+        if (!nodeData) return null;
+
+        // Check for Singleton
+        if (nodeData.isSingleton) {
+            const existingNode = [...this.nodes.values()].find(n => n.nodeKey === nodeKey);
+            if (existingNode) {
+                this.selectNode(existingNode.id, false, 'new');
+                console.warn(`Cannot add ${nodeData.title}: Only one instance allowed.`);
+                return null;
+            }
+        }
+
+        const id = Utils.uniqueId('node');
+        const node = new Node(id, nodeData, x, y, nodeKey, this.app);
+        this.nodes.set(id, node);
+        const nodeEl = node.render();
+        this.nodesContainer.appendChild(nodeEl);
+        this.app.compiler.markDirty();
+        return node;
+    }
+
+    removeCustomPin(nodeId, pinId) {
+        const node = this.nodes.get(nodeId);
+        if (!node || node.nodeKey !== 'CustomEvent') return;
+
+        const pinToRemove = node.findPinById(pinId);
+        if (!pinToRemove || !pinToRemove.isCustom) return;
+
+        // 1. Break all links to the pin
+        this.app.wiring.breakPinLinks(pinId);
+
+        // 2. Remove pin from node's array and literals map
+        node.pins = node.pins.filter(p => p.id !== pinId);
+        node.pinLiterals.delete(pinId);
+
+        // 3. Refresh caches and visuals
+        node.refreshPinCache();
+        this.app.wiring.updateVisuals(node);
+    }
+
     updateTransform() {
         const transform = `translate(${this.pan.x}px, ${this.pan.y}px) scale(${this.zoom})`;
         this.nodesContainer.style.transform = transform;
@@ -459,7 +532,7 @@ class GraphController {
         // Find the node ID part, which could be 'node-XXXX' or similar
         // We try to reconstruct the Node ID by iterating from the end
         let nodeId = parts[0];
-        let pinName = parts.slice(1).join('-');
+        // let pinName = parts.slice(1).join('-');
 
         // Assuming node IDs are 'node-UUID' where UUID is 8 characters (or just UUID if the 'node-' prefix is removed)
         // More robust: search for a node ID that is a prefix of pinId
@@ -734,122 +807,85 @@ class GraphController {
         }
     }
 
-    updateTransform() {
-        const transform = `translate(${this.pan.x}px, ${this.pan.y}px) scale(${this.zoom})`;
-        this.nodesContainer.style.transform = transform;
-        const svgTransform = `translate(${this.pan.x}, ${this.pan.y}) scale(${this.zoom})`;
-        this.app.wiring.svgGroup.setAttribute('transform', svgTransform);
-        this.app.grid.draw();
-        // Redraw wires on transform update to ensure ghost wire is correctly positioned during pan/zoom
-        this.drawAllWires();
-    }
-
-    redrawNodeWires(nodeId) {
-        this.app.wiring.findLinksByNodeId(nodeId).forEach(link => this.app.wiring.drawWire(link));
-    }
-
-    drawAllWires() {
-        // Find all wires and ensure they are redrawn
-        for (const link of this.app.wiring.links.values()) {
-            this.app.wiring.drawWire(link);
+    duplicateSelectedNodes() {
+        if (this.selectedNodes.size === 0) {
+            this.app.wiring.deleteSelectedLinks();
+            return;
         }
-    }
 
-    renderAllNodes() {
-        this.nodesContainer.innerHTML = '';
-        for (const node of this.nodes.values()) {
-            this.nodesContainer.appendChild(node.render());
-        }
-    }
+        const oldToNewPinIds = new Map();
+        const newSelection = [];
+        const offset = 20;
+        const originalNodes = Array.from(this.selectedNodes).map(id => this.nodes.get(id)).filter(n => n);
 
-    getGraphCoords(clientX, clientY) {
-        const rect = this.editor.getBoundingClientRect();
-        const x = (clientX - rect.left - this.pan.x) / this.zoom;
-        const y = (clientY - rect.top - this.pan.y) / this.zoom;
-        return { x, y };
-    }
+        for (const oldNode of originalNodes) {
+            // Re-create nodeData structure to ensure all properties (like title/type) are included
+            const nodeData = nodeRegistry.get(oldNode.nodeKey);
+            if (!nodeData) continue;
 
-    loadState(state) {
-        // Ensure state is an object, or default to an empty object
-        const safeState = state || {};
-        const safeNodes = safeState.nodes || [];
-        const safeLinks = safeState.links || [];
+            // Handle custom pin data for dynamic nodes (like CustomEvent)
+            const pinsToUse = oldNode.nodeKey === 'CustomEvent' ? oldNode.getPinsData().map(p => ({
+                id: p.id, name: p.name, type: p.type, dir: p.dir, containerType: p.containerType, isCustom: p.isCustom
+            })) : nodeData.pins;
 
-        // Clear existing state
-        this.nodes.clear();
-        this.app.wiring.links.clear();
-        this.clearSelection();
-        this.app.wiring.clearLinkSelection();
+            const newNodeData = {
+                ...nodeData,
+                title: oldNode.title,
+                variableType: oldNode.variableType,
+                variableId: oldNode.variableId,
+                customData: { ...oldNode.customData },
+                pins: pinsToUse // Use the determined pin structure
+            };
 
-        // 1. Load Nodes
-        safeNodes.forEach((nodeData) => {
-            const template = nodeRegistry.get(nodeData.nodeKey);
-            if (!template) {
-                console.warn(`Skipping node during load: Key '${nodeData.nodeKey}' not found in NodeRegistry.`);
-                return;
-            }
+            const id = Utils.uniqueId('node');
+            const newNode = new Node(id, newNodeData, oldNode.x + offset, oldNode.y + offset, oldNode.nodeKey, this.app);
 
-            // Determine the final pin definition to use: saved pins (for dynamic nodes) or template pins (for static nodes)
-            let pinsToLoad = template.pins;
-
-            // If the node is a Custom Event (or other dynamic node) AND saved pins exist
-            if (nodeData.nodeKey === 'CustomEvent') {
-                // Check if saved pins contains custom pins (more than the base exec/delegate pins)
-                const hasCustomPins = nodeData.pins && nodeData.pins.some(p => p.isCustom);
-                if (hasCustomPins) {
-                    pinsToLoad = nodeData.pins;
+            // Transfer pin literal values
+            oldNode.pinLiterals.forEach((value, pinId) => {
+                const oldPinIdRelative = pinId.replace(`${oldNode.id}-`, '');
+                const newPin = newNode.pins.find(p => p.id.endsWith(oldPinIdRelative));
+                if (newPin) {
+                    newNode.pinLiterals.set(newPin.id, value);
                 }
-            } else if (nodeData.nodeKey.startsWith('Func_') && nodeData.pins) {
-                // Function call pins may change. We should handle merging the template and saved pins if needed, 
-                // but for simplicity here, we assume if we have saved pins, we use them to restore literal values/structure if dynamic.
-            }
+            });
 
-            const fullNodeData = { ...template, ...nodeData, pins: pinsToLoad };
-            const node = new Node(nodeData.id, fullNodeData, nodeData.x, nodeData.y, nodeData.nodeKey, this.app);
-            this.nodes.set(node.id, node);
+            this.nodes.set(id, newNode);
+            this.nodesContainer.appendChild(newNode.render());
+            newSelection.push(newNode.id);
 
-            // Restore literal values
-            if (nodeData.pins) {
-                nodeData.pins.forEach(savedPin => {
-                    // Normalize saved pin ID to match the runtime Pin ID format
-                    const fullPinId = savedPin.id.includes(node.id) ? savedPin.id : `${node.id}-${savedPin.id}`;
-                    const pin = node.findPinById(fullPinId);
+            oldNode.pins.forEach((oldPin) => {
+                const newPin = newNode.pins.find(p => p.name === oldPin.name && p.dir === oldPin.dir); // Find by name/dir in case pin order changed
+                if (newPin) {
+                    oldToNewPinIds.set(oldPin.id, newPin.id);
+                }
+            });
+        }
 
-                    if (pin && savedPin.literalValue !== undefined) {
-                        node.pinLiterals.set(pin.id, savedPin.literalValue);
-                    } else if (pin) {
-                        // Ensure a default is set if literalValue was missing or undefined
-                        node.pinLiterals.set(pin.id, pin.defaultValue);
+        // Duplicate internal connections
+        for (const link of this.app.wiring.links.values()) {
+            const startNodeIsSelected = this.selectedNodes.has(link.startPin.node.id);
+            const endNodeIsSelected = this.selectedNodes.has(link.endPin.node.id);
+
+            if (startNodeIsSelected && endNodeIsSelected) {
+                const newStartPinId = oldToNewPinIds.get(link.startPin.id);
+                const newEndPinId = oldToNewPinIds.get(link.endPin.id);
+
+                if (newStartPinId && newEndPinId) {
+                    const newStartPin = this.findPinById(newStartPinId);
+                    const newEndPin = this.findPinById(newEndPinId);
+
+                    if (newStartPin && newEndPin && this.canConnect(newStartPin, newEndPin)) {
+                        this.app.wiring.createConnection(newStartPin, newEndPin);
                     }
-                });
+                }
             }
-        });
+        }
 
-        // 2. Load Links
-        safeLinks.forEach(linkData => {
-            const startPin = this.findPinById(linkData.startPinId);
-            const endPin = this.findPinById(linkData.endPinId);
-
-            if (startPin && endPin) {
-                const link = { id: linkData.id, startPin, endPin };
-                this.app.wiring.links.set(link.id, link);
-                startPin.links.push(link.id);
-                endPin.links.push(link.id);
-            } else {
-                console.warn(`Skipping link during load due to missing pin: ${linkData.id}`);
-            }
-        });
-
-        // 3. Render and Redraw
-        // The second CRITICAL APP INITIALIZATION ERROR trace points to a failure related to 'renderAllNodes'.
-        // This is where the graph should be re-rendered after loading data.
-        this.renderAllNodes();
-        this.drawAllWires();
-
-        // 4. Restore Pan/Zoom
-        if (safeState.pan) this.pan = safeState.pan;
-        if (safeState.zoom) this.zoom = safeState.zoom;
-        this.updateTransform();
+        this.app.wiring.clearLinkSelection();
+        this.clearSelection();
+        newSelection.forEach(nodeId => this.selectNode(nodeId, true, 'add'));
+        this.app.persistence.autoSave();
+        this.app.compiler.markDirty();
     }
 }
 

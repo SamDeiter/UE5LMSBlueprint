@@ -393,7 +393,7 @@ export class VariableController {
             });
 
             // Click Logic
-            el.addEventListener('click', (e) => {
+            el.addEventListener('click', () => {
                 this.app.details.currentVariable = variable;
                 this.app.details.showVariableDetails(variable, true);
                 this.renderPanel();

@@ -285,9 +285,9 @@ window.addEventListener('unhandledrejection', (e) => {
 
 ### Week 1: Stabilization
 - [x] Commit current state
-- [ ] Set up pre-commit hooks
-- [ ] Add ESLint
-- [ ] Fix ghost wire issue
+- [x] Set up pre-commit hooks
+- [x] Add ESLint
+- [x] Fix ghost wire issue
 - [ ] Manual testing of all features
 
 ### Week 2: Testing
