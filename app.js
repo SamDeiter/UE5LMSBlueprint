@@ -6,11 +6,12 @@
 
 // Import all controllers
 import { Pin, Node, WiringController, GraphController } from './graph.js';
-import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController } from './ui.js';
+import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
 import { TestRunner, registerTests } from './tests.js?v=2';
 import { BlueprintValidator, SAMPLE_TASK } from './validator.js';
+import { TaskManager } from './TaskManager.js';
 import { nodeRegistry } from './registries/NodeRegistry.js';
 import { NodeDefinitions } from './data/NodeDefinitions.js';
 
@@ -26,7 +27,7 @@ class BlueprintApp {
         // Expose for inline events (onclick)
         window.app = BlueprintApp;
 
-        console.log("Initializing BlueprintApp...");
+
         // Register static node definitions into the runtime registry
         // Ensures `graph.addNode(nodeKey, ...)` can find node definitions
         try {
@@ -80,6 +81,15 @@ class BlueprintApp {
         BlueprintApp.contextMenu = new ContextMenu(BlueprintApp);
         BlueprintApp.compiler = new Compiler(BlueprintApp);
         BlueprintApp.sim = new SimulationEngine(BlueprintApp);
+
+        // 6. Task Manager
+        BlueprintApp.taskManager = new TaskManager(BlueprintApp);
+        window.setTask = (taskId) => BlueprintApp.taskManager.setCurrentTask(taskId);
+        window.validateTask = () => BlueprintApp.taskManager.validateCurrentTask();
+        window.clearTask = () => BlueprintApp.taskManager.clearTask();
+
+        // 7. Task UI Controller
+        BlueprintApp.taskUI = new TaskController(BlueprintApp);
 
         // 4. Test Runner
         BlueprintApp.testRunner = new TestRunner(BlueprintApp);
@@ -212,10 +222,7 @@ class BlueprintApp {
         });
 
         // --- Load & Render Sequence ---
-        console.log("Loading state...");
         BlueprintApp.persistence.load();
-
-        console.log("Rendering initial state...");
 
         // Use the local variable again to be safe
         if (graphController) {
@@ -230,8 +237,6 @@ class BlueprintApp {
         BlueprintApp.palette.populateList();
         BlueprintApp.compiler.validate();
         BlueprintApp.grid.draw();
-
-        console.log("App Initialization Complete.");
     }
 }
 
@@ -240,7 +245,6 @@ window.addEventListener('load', () => {
     try {
         BlueprintApp.init.bind(BlueprintApp)();
     } catch (e) {
-        // CRITICAL: Catch and log module/init errors that occur before the main body executes
-        console.error("CRITICAL APP INITIALIZATION ERROR:", e.message, e);
+        console.error("APP INITIALIZATION ERROR:", e.message, e);
     }
 });
