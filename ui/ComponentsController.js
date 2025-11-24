@@ -65,11 +65,28 @@ export class ComponentsController {
             this.app.details.currentVariable = null;
         }
 
-        this.render();
+        // Update selection in Components Panel (preserve focus)
+        if (this.listContainer) {
+            const items = this.listContainer.querySelectorAll('.tree-item');
+            items.forEach(item => {
+                if (item.dataset.componentId === id) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
 
-        // Update My Blueprint panel to reflect selection change
-        if (this.app.variables) {
-            this.app.variables.renderPanel();
+        // Update selection in My Blueprint Panel (preserve focus)
+        if (this.app.variables && this.app.variables.panel) {
+            const items = this.app.variables.panel.querySelectorAll('.tree-item[data-component-id]');
+            items.forEach(item => {
+                if (item.dataset.componentId === id) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
         }
 
         // Sync with My Blueprint selection if possible, or just update details
@@ -79,23 +96,71 @@ export class ComponentsController {
     }
 
     deleteComponent(id) {
+        console.log('[ComponentsController] Deleting component:', id);
         if (!id) return;
-        if (this.app.components.has(id)) {
-            const comp = this.app.components.get(id);
-            if (window.confirm(`Delete component '${comp.name}'?`)) {
-                this.app.components.delete(id);
-                if (this.selectedComponentId === id) {
-                    this.selectedComponentId = null;
-                }
-                this.render();
-                this.updateNodeLibrary();
-                if (this.app.variables) this.app.variables.renderPanel();
 
-                // Force immediate save to history and persistence
-                this.app.history.saveState('component delete');
-                this.app.persistence.save();
-            }
+        if (!this.app.components.has(id)) {
+            console.log('[ComponentsController] Component not found');
+            return;
         }
+
+        const comp = this.app.components.get(id);
+
+        // Use the same confirmation modal as variable deletion
+        const modal = document.getElementById('confirmation-modal');
+        const msg = document.getElementById('confirmation-msg');
+        const yesBtn = document.getElementById('confirm-yes-btn');
+        const noBtn = document.getElementById('confirm-no-btn');
+
+        if (!modal) {
+            console.error('[ComponentsController] Confirmation modal not found, using window.confirm as fallback');
+            if (window.confirm(`Delete component '${comp.name}'?`)) {
+                this.executeComponentDeletion(id);
+            }
+            return;
+        }
+
+        msg.textContent = `Are you sure you want to delete component '${comp.name}'?`;
+        modal.style.display = 'flex';
+
+        // Clone buttons to remove old listeners
+        const newYes = yesBtn.cloneNode(true);
+        yesBtn.parentNode.replaceChild(newYes, yesBtn);
+        const newNo = noBtn.cloneNode(true);
+        noBtn.parentNode.replaceChild(newNo, noBtn);
+
+        newYes.addEventListener('click', () => {
+            this.executeComponentDeletion(id);
+            modal.style.display = 'none';
+        });
+
+        newNo.addEventListener('click', () => {
+            console.log('[ComponentsController] Deletion cancelled by user');
+            modal.style.display = 'none';
+        });
+    }
+
+    executeComponentDeletion(id) {
+        console.log('[ComponentsController] Executing deletion for:', id);
+        this.app.components.delete(id);
+        console.log('[ComponentsController] Component deleted, refreshing UI...');
+
+        if (this.selectedComponentId === id) {
+            this.selectedComponentId = null;
+        }
+
+        this.render();
+        this.updateNodeLibrary();
+
+        if (this.app.variables) {
+            this.app.variables.renderPanel();
+        }
+
+        // Force immediate save to history and persistence
+        this.app.history.saveState('component delete');
+        this.app.persistence.save();
+
+        console.log('[ComponentsController] Component deletion complete');
     }
 
     updateNodeLibrary() {

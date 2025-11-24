@@ -191,6 +191,7 @@ class BlueprintApp {
 
             if (e.key === 'Delete' || e.key === 'Backspace') {
                 e.preventDefault();
+                console.log("Delete/Backspace pressed");
 
                 let varToDelete = null;
 
@@ -207,6 +208,8 @@ class BlueprintApp {
                         }
                     }
                 }
+
+                console.log("varToDelete:", varToDelete);
 
                 // --- PRIORITY 2: CHECK FOR COMPONENT DELETION ---
                 let componentToDelete = null;
@@ -227,14 +230,19 @@ class BlueprintApp {
                     }
                 }
 
+                console.log("componentToDelete:", componentToDelete);
+
                 if (varToDelete) {
+                    console.log("Deleting variable...");
                     BlueprintApp.variables.deleteVariable(varToDelete); // Triggers confirmation modal
                 }
                 else if (componentToDelete) {
+                    console.log("Deleting component...");
                     BlueprintApp.componentsController.deleteComponent(componentToDelete);
                 }
                 // 3. Check for selected nodes/links
                 else if (BlueprintApp.graph.selectedNodes.size > 0 || BlueprintApp.wiring.selectedLinks.size > 0) {
+                    console.log("Deleting graph selection...");
                     BlueprintApp.graph.deleteSelectedNodes();
                 }
             }
