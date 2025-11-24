@@ -137,9 +137,13 @@ class WiringController {
         // Remove link ID from pins' link lists
         if (startPin && startPin.links) {
             startPin.links = startPin.links.filter(id => id !== linkId);
+            // Immediately update pin visual state
+            this.updatePinVisualState(startPin);
         }
         if (endPin && endPin.links) {
             endPin.links = endPin.links.filter(id => id !== linkId);
+            // Immediately update pin visual state
+            this.updatePinVisualState(endPin);
         }
 
         this.links.delete(linkId);
@@ -160,6 +164,20 @@ class WiringController {
             this.app.compiler.markDirty();
         });
     }
+    /**
+     * Update the visual state of a pin (filled vs hollow) based on its connections
+     */
+    updatePinVisualState(pin) {
+        if (!pin || !pin.element) return;
+
+        const isConnected = pin.links && pin.links.length > 0;
+        if (isConnected) {
+            pin.element.classList.remove('hollow');
+        } else {
+            pin.element.classList.add('hollow');
+        }
+    }
+
     breakPinLinks(pinId) {
         const linksToBreak = this.findLinksByPinId(pinId);
         // Important: use link IDs to break, as breaking modifies the list
