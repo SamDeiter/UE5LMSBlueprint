@@ -1,14 +1,10 @@
 /**
- * Core Graph Logic: Pin, Node, WiringController, GraphController.
- * This file manages the data model, rendering, and all user interactions 
- * (pan, zoom, drag, selection, wiring).
+ * GraphController class - Manages the graph editor, nodes, and user interactions.
  */
-import { Utils } from './utils.js';
-import { nodeRegistry } from './registries/NodeRegistry.js';
-import { Pin } from './graph/Pin.js';
-import { Node } from './graph/Node.js';
-import { WiringController } from './graph/WiringController.js';
-// --- CORE DATA MODEL CLASSES ---
+import { Utils } from '../utils.js';
+import { nodeRegistry } from '../registries/NodeRegistry.js';
+import { Pin } from './Pin.js';
+import { Node } from './Node.js';
 
 class GraphController {
     constructor(editor, svg, nodesContainer, app) {
@@ -36,8 +32,6 @@ class GraphController {
         this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
         this.handleGlobalMouseUp = this.handleGlobalMouseUp.bind(this);
     }
-
-
 
     initEvents() {
         this.editor.addEventListener('mousedown', this.handleEditorMouseDown.bind(this));
@@ -207,11 +201,13 @@ class GraphController {
             const dy = e.clientY - this.dragStart.y;
             this.pan.x += dx;
             this.pan.y += dy;
-            this.updateTransform();
             this.dragStart.x = e.clientX;
             this.dragStart.y = e.clientY;
+            this.updateTransform();
+            return;
         }
-        else if (this.isDraggingNode) { // Node Dragging
+
+        if (this.isDraggingNode) {
             const mouseGraphCoords = this.getGraphCoords(e.clientX, e.clientY);
             for (const nodeId of this.selectedNodes) {
                 const node = this.nodes.get(nodeId);
@@ -224,22 +220,43 @@ class GraphController {
                     this.redrawNodeWires(node.id);
                 }
             }
+            return;
         }
-        else if (this.isWiring) { // Wiring
-            if (this.activePin) {
-                this.app.wiring.updateGhostWire(e, this.activePin);
-            }
+
+        if (this.isWiring && this.activePin) {
+            this.app.wiring.updateGhostWire(e, this.activePin);
+            return;
         }
-        else if (this.isMarqueeing) { // Marqueeing
+
+        if (this.isMarqueeing) {
             const rect = this.editor.getBoundingClientRect();
-            const left = Math.min(e.clientX, this.marqueeStart.x) - rect.left;
-            const top = Math.min(e.clientY, this.marqueeStart.y) - rect.top;
-            const width = Math.abs(e.clientX - this.marqueeStart.x);
-            const height = Math.abs(e.clientY - this.marqueeStart.y);
+            const currentX = e.clientX;
+            const currentY = e.clientY;
+            const startX = this.marqueeStart.x;
+            const startY = this.marqueeStart.y;
+
+            const left = Math.min(startX, currentX) - rect.left;
+            const top = Math.min(startY, currentY) - rect.top;
+            const width = Math.abs(currentX - startX);
+            const height = Math.abs(currentY - startY);
+
             this.marqueeEl.style.left = `${left}px`;
             this.marqueeEl.style.top = `${top}px`;
             this.marqueeEl.style.width = `${width}px`;
             this.marqueeEl.style.height = `${height}px`;
+
+            // Calculate selection rect in graph coordinates
+            const graphStart = this.getGraphCoords(Math.min(startX, currentX), Math.min(startY, currentY));
+            const graphEnd = this.getGraphCoords(Math.max(startX, currentX), Math.max(startY, currentY));
+            const selectionRect = {
+                left: graphStart.x,
+                top: graphStart.y,
+                right: graphEnd.x,
+                bottom: graphEnd.y
+            };
+
+            const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
+            this.selectNodesInRect(selectionRect, mode);
         }
     }
 
@@ -247,270 +264,190 @@ class GraphController {
         document.removeEventListener('mousemove', this.handleGlobalMouseMove);
         document.removeEventListener('mouseup', this.handleGlobalMouseUp);
 
-        if (this.isWiring) {
-            const targetPinEl = e.target.closest('.pin-container');
-            if (targetPinEl && this.activePin) {
-                const endPinId = targetPinEl.dataset.pinId;
-                const endPin = this.findPinById(endPinId);
-
-                if (endPin && this.canConnect(this.activePin, endPin)) {
-                    this.app.wiring.createConnection(this.activePin, endPin);
-                } else if (endPin && !this.canConnect(this.activePin, endPin)) {
-                    // Fail to connect, open action menu only if user dragged a lot
-                    if (this.hasDragged) {
-                        this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
-                    }
-                } else if (!endPin && this.hasDragged) {
-                    // Drop on canvas, open action menu
-                    this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
-                    this.isWiring = false;
-                    this.activePin = null;
-                    this.app.wiring.updateGhostWire(null, null);
-                    return;
-                }
-            } else if (this.activePin && this.hasDragged) {
-                // Drop on canvas, open action menu
-                this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
-                this.isWiring = false;
-                this.activePin = null;
-                this.app.wiring.updateGhostWire(null, null);
-                return;
-            } else if (this.activePin && !this.hasDragged) {
-                // Simple click on pin - just clear wiring mode
+        if (this.isRmbDown) {
+            this.isRmbDown = false;
+            this.editor.classList.remove('dragging');
+            // If we dragged significantly, don't trigger context menu
+            if (this.hasDragged) {
+                // Prevent context menu from showing immediately after drag
+                // This is handled by the contextmenu event listener checking for drag
             }
-
-            this.isWiring = false;
-            this.activePin = null;
-            this.app.wiring.updateGhostWire(null, null);
         }
 
         if (this.isDraggingNode) {
             this.isDraggingNode = false;
             this.snapSelectedNodesToGrid();
-            this.nodeDragOffsets.clear();
             this.app.persistence.autoSave();
-            this.app.compiler.markDirty();
+        }
+
+        if (this.isWiring) {
+            this.isWiring = false;
+            this.app.wiring.ghostWire.style.display = 'none';
+
+            const pinElement = e.target.closest('.pin-container');
+            if (pinElement) {
+                const pinId = pinElement.dataset.pinId;
+                const targetPin = this.findPinById(pinId);
+                if (targetPin && this.activePin) {
+                    this.app.wiring.createConnection(this.activePin, targetPin);
+                }
+            } else {
+                // Wiring ended on empty space - show action menu
+                if (this.hasDragged && this.activePin) {
+                    // Pass the pin type and direction to filter the action menu
+                    this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
+                }
+            }
+            this.activePin = null;
         }
 
         if (this.isMarqueeing) {
             this.isMarqueeing = false;
-            const marqueeRect = this.marqueeEl.getBoundingClientRect();
             this.marqueeEl.style.display = 'none';
-
-            // Only select if there was movement
-            if (this.hasDragged) {
-                let mode = 'new';
-                if (e.shiftKey) mode = 'add';
-                else if (e.ctrlKey) mode = 'toggle';
-                else if (e.altKey) mode = 'remove';
-                this.selectNodesInRect(marqueeRect, mode);
-            } else {
-                // Simple click on background clears selection unless modifier key is held
-                if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
-                    this.clearSelection();
-                }
-            }
         }
-
-        if (this.isRmbDown) { this.isRmbDown = false; }
-        this.isPanning = false;
-        this.editor.classList.remove('dragging');
-        this.hasDragged = false;
-        this.dragStart = { x: 0, y: 0 };
     }
 
     handleZoom(e) {
         e.preventDefault();
+        const zoomSensitivity = 0.001;
+        const delta = -e.deltaY * zoomSensitivity;
+        const oldZoom = this.zoom;
+        this.zoom += delta;
+        this.zoom = Math.min(Math.max(0.1, this.zoom), 5);
 
-        // Prevent zoom if user is trying to scroll a node literal input field
-        if (e.target.closest('.node-literal-input')) {
-            return;
-        }
-
-        const scaleAmount = 1.1;
+        // Zoom towards mouse pointer
         const rect = this.editor.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        const mouseGraphX_before = (mouseX - this.pan.x) / this.zoom;
-        const mouseGraphY_before = (mouseY - this.pan.y) / this.zoom;
+        // Calculate graph coordinates before zoom
+        const graphX = (mouseX - this.pan.x) / oldZoom;
+        const graphY = (mouseY - this.pan.y) / oldZoom;
 
-        if (e.deltaY < 0) this.zoom *= scaleAmount;
-        else this.zoom /= scaleAmount;
-
-        this.zoom = Math.max(0.2, Math.min(this.zoom, 1.5));
-
-        this.pan.x = mouseX - mouseGraphX_before * this.zoom;
-        this.pan.y = mouseY - mouseGraphY_before * this.zoom;
+        // Adjust pan to keep graph coordinates under mouse constant
+        this.pan.x = mouseX - graphX * this.zoom;
+        this.pan.y = mouseY - graphY * this.zoom;
 
         this.updateTransform();
-        this.app.grid.draw();
         this.zoomReadout.textContent = `${Math.round(this.zoom * 100)}%`;
+    }
 
-        // Redraw all wires after zoom/pan
+    updateTransform() {
+        const transform = `translate(${this.pan.x}px, ${this.pan.y}px) scale(${this.zoom})`;
+        this.nodesContainer.style.transform = transform;
+        const svgTransform = `translate(${this.pan.x}, ${this.pan.y}) scale(${this.zoom})`;
+        this.app.wiring.svgGroup.setAttribute('transform', svgTransform);
+        this.app.grid.draw();
+        // Redraw wires on transform update to ensure ghost wire is correctly positioned during pan/zoom
         this.drawAllWires();
     }
 
-    handleContextMenu(e) {
-        e.preventDefault();
-        if (e.target.closest('.node')) { return; }
-        this.app.actionMenu.show(e.clientX, e.clientY, null);
+    redrawNodeWires(nodeId) {
+        this.app.wiring.findLinksByNodeId(nodeId).forEach(link => this.app.wiring.drawWire(link));
     }
 
-    handlePinContextMenu(e) {
-        const pinContainerEl = e.target.closest('.pin-container');
-        if (pinContainerEl) {
-            e.preventDefault();
-            e.stopPropagation();
-            const pinId = pinContainerEl.dataset.pinId;
-            const pin = this.findPinById(pinId);
-
-            if (!pin || pin.type === 'exec') return;
-
-            const items = [
-                { label: `Promote to Variable`, callback: () => this.promotePinToVariable(pin) }
-            ];
-
-            // Add custom event options if applicable
-            const node = pin.node;
-            if (node.nodeKey === 'CustomEvent' && pin.isCustom) {
-                items.push({ label: '---', callback: () => { } });
-                items.push({ label: `Remove Pin: ${pin.name}`, callback: () => this.removeCustomPin(node.id, pin.id) });
-            }
-
-            this.app.contextMenu.show(e.clientX, e.clientY, items);
-        }
-    }
-
-    addNode(nodeKey, x, y) {
-        const nodeData = nodeRegistry.get(nodeKey);
-        if (!nodeData) return null;
-
-        // Check for Singleton
-        if (nodeData.isSingleton) {
-            const existingNode = [...this.nodes.values()].find(n => n.nodeKey === nodeKey);
-            if (existingNode) {
-                this.selectNode(existingNode.id, false, 'new');
-                console.warn(`Cannot add ${nodeData.title}: Only one instance allowed.`);
-                return null;
-            }
-        }
-
-        const id = Utils.uniqueId('node');
-        const node = new Node(id, nodeData, x, y, nodeKey, this.app);
-        this.nodes.set(id, node);
-        const nodeEl = node.render();
-        this.nodesContainer.appendChild(nodeEl);
-        this.app.compiler.markDirty();
-        return node;
-    }
-
-    removeCustomPin(nodeId, pinId) {
-        const node = this.nodes.get(nodeId);
-        if (!node || node.nodeKey !== 'CustomEvent') return;
-
-        const pinToRemove = node.findPinById(pinId);
-        if (!pinToRemove || !pinToRemove.isCustom) return;
-
-        // 1. Break all links to the pin
-        this.app.wiring.breakPinLinks(pinId);
-
-        // 2. Remove pin from node's array and literals map
-        node.pins = node.pins.filter(p => p.id !== pinId);
-        node.pinLiterals.delete(pinId);
-
-        // 3. Refresh caches and visuals
-        node.refreshPinCache();
-        this.app.wiring.updateVisuals(node);
-
-        // 4. Update details panel if this node is selected
-        if (this.selectedNodes.has(nodeId) && this.app.details) {
-            this.app.details.showNodeDetails(node);
-        }
-
-        this.app.persistence.autoSave();
-        this.app.compiler.markDirty();
-    }
-
-    duplicateSelectedNodes() {
-        if (this.selectedNodes.size === 0) {
-            this.app.wiring.deleteSelectedLinks();
-            return;
-        }
-
-        const oldToNewPinIds = new Map();
-        const newSelection = [];
-        const offset = 20;
-        const originalNodes = Array.from(this.selectedNodes).map(id => this.nodes.get(id)).filter(n => n);
-
-        for (const oldNode of originalNodes) {
-            // Re-create nodeData structure to ensure all properties (like title/type) are included
-            const nodeData = nodeRegistry.get(oldNode.nodeKey);
-            if (!nodeData) continue;
-
-            // Handle custom pin data for dynamic nodes (like CustomEvent)
-            const pinsToUse = oldNode.nodeKey === 'CustomEvent' ? oldNode.getPinsData().map(p => ({
-                id: p.id, name: p.name, type: p.type, dir: p.dir, containerType: p.containerType, isCustom: p.isCustom
-            })) : nodeData.pins;
-
-            const newNodeData = {
-                ...nodeData,
-                title: oldNode.title,
-                variableType: oldNode.variableType,
-                variableId: oldNode.variableId,
-                customData: { ...oldNode.customData },
-                pins: pinsToUse // Use the determined pin structure
-            };
-
-            const id = Utils.uniqueId('node');
-            const newNode = new Node(id, newNodeData, oldNode.x + offset, oldNode.y + offset, oldNode.nodeKey, this.app);
-
-            // Transfer pin literal values
-            oldNode.pinLiterals.forEach((value, pinId) => {
-                const oldPinIdRelative = pinId.replace(`${oldNode.id}-`, '');
-                const newPin = newNode.pins.find(p => p.id.endsWith(oldPinIdRelative));
-                if (newPin) {
-                    newNode.pinLiterals.set(newPin.id, value);
-                }
-            });
-
-            this.nodes.set(id, newNode);
-            this.nodesContainer.appendChild(newNode.render());
-            newSelection.push(newNode.id);
-
-            oldNode.pins.forEach((oldPin, index) => {
-                const newPin = newNode.pins.find(p => p.name === oldPin.name && p.dir === oldPin.dir); // Find by name/dir in case pin order changed
-                if (newPin) {
-                    oldToNewPinIds.set(oldPin.id, newPin.id);
-                }
-            });
-        }
-
-        // Duplicate internal connections
+    drawAllWires() {
+        // Find all wires and ensure they are redrawn
         for (const link of this.app.wiring.links.values()) {
-            const startNodeIsSelected = this.selectedNodes.has(link.startPin.node.id);
-            const endNodeIsSelected = this.selectedNodes.has(link.endPin.node.id);
-
-            if (startNodeIsSelected && endNodeIsSelected) {
-                const newStartPinId = oldToNewPinIds.get(link.startPin.id);
-                const newEndPinId = oldToNewPinIds.get(link.endPin.id);
-
-                if (newStartPinId && newEndPinId) {
-                    const newStartPin = this.findPinById(newStartPinId);
-                    const newEndPin = this.findPinById(newEndPinId);
-
-                    if (newStartPin && newEndPin && this.canConnect(newStartPin, newEndPin)) {
-                        this.app.wiring.createConnection(newStartPin, newEndPin);
-                    }
-                }
-            }
+            this.app.wiring.drawWire(link);
         }
+    }
 
-        this.app.wiring.clearLinkSelection();
+    renderAllNodes() {
+        this.nodesContainer.innerHTML = '';
+        for (const node of this.nodes.values()) {
+            this.nodesContainer.appendChild(node.render());
+        }
+    }
+
+    getGraphCoords(clientX, clientY) {
+        const rect = this.editor.getBoundingClientRect();
+        const x = (clientX - rect.left - this.pan.x) / this.zoom;
+        const y = (clientY - rect.top - this.pan.y) / this.zoom;
+        return { x, y };
+    }
+
+    loadState(state) {
+        // Ensure state is an object, or default to an empty object
+        const safeState = state || {};
+        const safeNodes = safeState.nodes || [];
+        const safeLinks = safeState.links || [];
+
+        // Clear existing state
+        this.nodes.clear();
+        this.app.wiring.links.clear();
         this.clearSelection();
-        newSelection.forEach(nodeId => this.selectNode(nodeId, true, 'add'));
-        this.app.persistence.autoSave();
-        this.app.compiler.markDirty();
+        this.app.wiring.clearLinkSelection();
+
+        // 1. Load Nodes
+        safeNodes.forEach((nodeData) => {
+            const template = nodeRegistry.get(nodeData.nodeKey);
+            if (!template) {
+                console.warn(`Skipping node during load: Key '${nodeData.nodeKey}' not found in NodeRegistry.`);
+                return;
+            }
+
+            // Determine the final pin definition to use: saved pins (for dynamic nodes) or template pins (for static nodes)
+            let pinsToLoad = template.pins;
+
+            // If the node is a Custom Event (or other dynamic node) AND saved pins exist
+            if (nodeData.nodeKey === 'CustomEvent') {
+                // Check if saved pins contains custom pins (more than the base exec/delegate pins)
+                const hasCustomPins = nodeData.pins && nodeData.pins.some(p => p.isCustom);
+                if (hasCustomPins) {
+                    pinsToLoad = nodeData.pins;
+                }
+            } else if (nodeData.nodeKey.startsWith('Func_') && nodeData.pins) {
+                // Function call pins may change. We should handle merging the template and saved pins if needed, 
+                // but for simplicity here, we assume if we have saved pins, we use them to restore literal values/structure if dynamic.
+            }
+
+            const fullNodeData = { ...template, ...nodeData, pins: pinsToLoad };
+            const node = new Node(nodeData.id, fullNodeData, nodeData.x, nodeData.y, nodeData.nodeKey, this.app);
+            this.nodes.set(node.id, node);
+
+            // Restore literal values
+            if (nodeData.pins) {
+                nodeData.pins.forEach(savedPin => {
+                    // Normalize saved pin ID to match the runtime Pin ID format
+                    const fullPinId = savedPin.id.includes(node.id) ? savedPin.id : `${node.id}-${savedPin.id}`;
+                    const pin = node.findPinById(fullPinId);
+
+                    if (pin && savedPin.literalValue !== undefined) {
+                        node.pinLiterals.set(pin.id, savedPin.literalValue);
+                    } else if (pin) {
+                        // Ensure a default is set if literalValue was missing or undefined
+                        node.pinLiterals.set(pin.id, pin.defaultValue);
+                    }
+                });
+            }
+        });
+
+        // 2. Load Links
+        safeLinks.forEach(linkData => {
+            const startPin = this.findPinById(linkData.startPinId);
+            const endPin = this.findPinById(linkData.endPinId);
+
+            if (startPin && endPin) {
+                const link = { id: linkData.id, startPin, endPin };
+                this.app.wiring.links.set(link.id, link);
+                startPin.links.push(link.id);
+                endPin.links.push(link.id);
+            } else {
+                console.warn(`Skipping link during load due to missing pin: ${linkData.id}`);
+            }
+        });
+
+        // 3. Render and Redraw
+        // The second CRITICAL APP INITIALIZATION ERROR trace points to a failure related to 'renderAllNodes'.
+        // This is where the graph should be re-rendered after loading data.
+        this.renderAllNodes();
+        this.drawAllWires();
+
+        // 4. Restore Pan/Zoom
+        if (safeState.pan) this.pan = safeState.pan;
+        if (safeState.zoom) this.zoom = safeState.zoom;
+        this.updateTransform();
     }
 
     findPinById(pinId) {
@@ -916,4 +853,4 @@ class GraphController {
     }
 }
 
-export { Pin, Node, WiringController, GraphController };
+export { GraphController };
