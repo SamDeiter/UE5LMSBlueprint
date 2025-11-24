@@ -538,6 +538,7 @@ class WiringController {
     constructor(svg, app) {
         this.svgGroup = svg.getElementById('wire-group');
         this.ghostWire = svg.getElementById('ghost-wire');
+        this.ghostWire.setAttribute('fill', 'none');
         this.links = new Map();
         this.selectedLinks = new Set();
         this.app = app;
@@ -735,6 +736,7 @@ class WiringController {
         if (this.ghostWire.parentNode !== this.svgGroup) {
             this.svgGroup.appendChild(this.ghostWire);
         }
+        console.log('[GHOST WIRE] Called with:', { startPin, ghostWire: this.ghostWire });
         this.ghostWire.style.strokeWidth = '3px';
         this.ghostWire.style.opacity = '1';
         const typeClass = Utils.getPinTypeClass(startPin.type);
