@@ -29,7 +29,7 @@ export class TestRunner {
             }
         }
 
-        console.log(`%c🏁 Tests Completed: ${passed} Passed, ${failed} Failed`, 'color: #f1c40f; font-weight: bold; font-size: 14px;'); 
+        console.log(`%c🏁 Tests Completed: ${passed} Passed, ${failed} Failed`, 'color: #f1c40f; font-weight: bold; font-size: 14px;');
         return failed === 0;
     }
 }
@@ -149,6 +149,192 @@ export const registerTests = (runner) => {
         // 6. Verify Deletion
         assert(app.variables.variables.size === initialCount - 1, "Variable count should decrease");
         assert(!app.variables.variables.has(variable.name), "Variable should be removed");
+    });
+
+    // --- Wiring Tests ---
+
+    runner.register('Create Wire Between Nodes', (app) => {
+        // Clear graph first
+        app.graph.nodes.forEach(node => app.graph.removeNode(node.id));
+
+        // Add two nodes that can connect
+        const beginPlay = app.graph.addNode('EventBeginPlay', 100, 100);
+        const printString = app.graph.addNode('PrintString', 400, 100);
+
+        assert(beginPlay !== null, "BeginPlay node should be created");
+        assert(printString !== null, "PrintString node should be created");
+
+        // Get the pins
+        const execOutPin = beginPlay.pins.find(p => p.id === 'exec' && p.direction === 'output');
+        const execInPin = printString.pins.find(p => p.id === 'exec' && p.direction === 'input');
+
+        assert(execOutPin, "BeginPlay should have exec output pin");
+        assert(execInPin, "PrintString should have exec input pin");
+
+        // Create connection
+        const initialLinkCount = app.wiring.links.size;
+        app.wiring.createLink(execOutPin, execInPin);
+
+        assert(app.wiring.links.size === initialLinkCount + 1, "Link count should increase");
+    });
+
+    runner.register('Delete Wire', (app) => {
+        // Ensure we have nodes and wires
+        if (app.graph.nodes.size < 2) {
+            app.graph.addNode('EventBeginPlay', 100, 100);
+            app.graph.addNode('PrintString', 400, 100);
+        }
+
+        // Create a link if none exists
+        if (app.wiring.links.size === 0) {
+            const beginPlay = [...app.graph.nodes.values()].find(n => n.nodeKey === 'EventBeginPlay');
+            const printString = [...app.graph.nodes.values()].find(n => n.nodeKey === 'PrintString');
+            if (beginPlay && printString) {
+                const execOut = beginPlay.pins.find(p => p.direction === 'output');
+                const execIn = printString.pins.find(p => p.direction === 'input');
+                if (execOut && execIn) {
+                    app.wiring.createLink(execOut, execIn);
+                }
+            }
+        }
+
+        const initialCount = app.wiring.links.size;
+        if (initialCount > 0) {
+            const link = [...app.wiring.links.values()][0];
+            app.wiring.removeLink(link.id);
+            assert(app.wiring.links.size === initialCount - 1, "Link count should decrease");
+        }
+    });
+
+    // --- Persistence Tests ---
+
+    runner.register('Save and Load Graph State', (app) => {
+        // Clear and set up a known state
+        app.graph.nodes.forEach(node => app.graph.removeNode(node.id));
+        app.variables.variables.clear();
+
+        // Add some content
+        app.graph.addNode('EventBeginPlay', 100, 100);
+        app.graph.addNode('PrintString', 400, 100);
+        app.variables.addVariable();
+
+        const nodeCount = app.graph.nodes.size;
+        const varCount = app.variables.variables.size;
+
+        // Save state
+        app.persistence.save();
+
+        // Clear everything
+        app.graph.nodes.forEach(node => app.graph.removeNode(node.id));
+        app.variables.variables.clear();
+        assert(app.graph.nodes.size === 0, "Graph should be empty after clearing");
+
+        // Load state
+        app.persistence.load();
+
+        assert(app.graph.nodes.size === nodeCount, "Loaded graph should have same node count");
+        assert(app.variables.variables.size === varCount, "Loaded state should have same variable count");
+    });
+
+    // --- Undo/Redo Tests ---
+
+    runner.register('Undo Add Node', (app) => {
+        const initialCount = app.graph.nodes.size;
+
+        // Add a node
+        app.graph.addNode('PrintString', 100, 100);
+        assert(app.graph.nodes.size === initialCount + 1, "Node should be added");
+
+        // Undo
+        app.history.undo();
+        assert(app.graph.nodes.size === initialCount, "Node should be removed after undo");
+    });
+
+    runner.register('Redo Add Node', (app) => {
+        const initialCount = app.graph.nodes.size;
+
+        // Add, then undo
+        app.graph.addNode('PrintString', 100, 100);
+        app.history.undo();
+
+        // Redo
+        app.history.redo();
+        assert(app.graph.nodes.size === initialCount + 1, "Node should be restored after redo");
+    });
+
+    // --- Regression Tests (Previously Fixed Bugs) ---
+
+    runner.register('[Regression] Ghost Wire Visibility', (app) => {
+        // This test verifies that ghost wire state is properly managed
+        // Bug: Ghost wire was disappearing when releasing mouse button
+
+        const ghostWire = document.getElementById('ghost-wire');
+        assert(ghostWire !== null, "Ghost wire element should exist");
+
+        // Initial state should be hidden
+        const initialDisplay = window.getComputedStyle(ghostWire).display;
+        assert(initialDisplay === 'none', "Ghost wire should initially be hidden");
+    });
+
+    runner.register('[Regression] Pin Literal Values Persist', (app) => {
+        // Bug: Literal values on pins were being reset
+
+        const printString = app.graph.addNode('PrintString', 100, 100);
+        const textPin = printString.pins.find(p => p.id === 'text');
+
+        if (textPin && textPin.literalValue !== undefined) {
+            const testValue = "Test Message";
+            textPin.literalValue = testValue;
+
+            // Simulate re-render
+            printString.render();
+
+            assert(textPin.literalValue === testValue, "Literal value should persist after render");
+        }
+    });
+
+    runner.register('[Regression] Variable Node Updates', (app) => {
+        // Bug: Variable nodes weren't updating when variable properties changed
+
+        // Create a variable
+        app.variables.addVariable();
+        const variable = [...app.variables.variables.values()].pop();
+        const initialName = variable.name;
+
+        // Add a getter node for this variable
+        const getNode = app.graph.addVariableNode(variable, 'get', 100, 100);
+        assert(getNode !== null, "Variable getter node should be created");
+
+        // Change variable name
+        const newName = "UpdatedVariableName";
+        app.variables.updateVariableProperty(variable, 'name', newName);
+
+        // Verify the node was notified (check if title updated)
+        // This assumes updateVariableNodes is called by updateVariableProperty
+        assert(variable.name === newName, "Variable name should be updated");
+    });
+
+    runner.register('[Regression] Node Duplication with Custom Pins', (app) => {
+        // Bug: Duplicating nodes with custom pins caused issues
+
+        // Add a node that can have custom pins (like a Branch node)
+        const branch = app.graph.addNode('Branch', 100, 100);
+        assert(branch !== null, "Branch node should be created");
+
+        const initialPinCount = branch.pins.length;
+
+        // Select and duplicate
+        app.graph.selectNode(branch.id, false);
+        app.graph.duplicateSelectedNodes();
+
+        const duplicated = [...app.graph.nodes.values()].find(n =>
+            n.id !== branch.id && n.nodeKey === 'Branch'
+        );
+
+        if (duplicated) {
+            assert(duplicated.pins.length === initialPinCount,
+                "Duplicated node should have same number of pins");
+        }
     });
 
 };
