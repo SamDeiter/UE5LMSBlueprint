@@ -2,7 +2,7 @@
  * PaletteController - Manages the node palette
  */
 import { nodeRegistry } from '../registries/NodeRegistry.js';
-import { buildCategoryTree, renderCategoryTree } from '../ui-helpers.js';
+import { buildCategoryTree, renderCategoryTree } from './ui-helpers.js';
 
 export class PaletteController {
     constructor(app) {

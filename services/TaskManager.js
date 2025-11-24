@@ -1,7 +1,7 @@
 /**
  * TaskManager - Manages task selection, validation, and progress tracking
  */
-import { BlueprintValidator, ALL_TASKS } from './validator.js';
+import { BlueprintValidator, ALL_TASKS } from '../utils/validator.js';
 
 export class TaskManager {
     constructor(app) {

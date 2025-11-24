@@ -3,8 +3,8 @@
  */
 import { Utils } from '../utils.js';
 import { nodeRegistry } from '../registries/NodeRegistry.js';
-import { Pin } from '../graph.js';
-import { buildCategoryTree, renderCategoryTree } from '../ui-helpers.js';
+import { Pin } from '../graph/index.js';
+import { buildCategoryTree, renderCategoryTree } from './ui-helpers.js';
 
 export class ActionMenu {
     constructor(app) {

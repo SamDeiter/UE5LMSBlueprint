@@ -5,13 +5,13 @@
  */
 
 // Import all controllers
-import { WiringController, GraphController } from './graph.js';
+import { WiringController, GraphController } from './graph/index.js';
 import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
 import { TestRunner, registerTests } from './tests.js?v=2';
-import { BlueprintValidator, SAMPLE_TASK } from './validator.js';
-import { TaskManager } from './TaskManager.js';
+import { BlueprintValidator, SAMPLE_TASK } from './utils/validator.js';
+import { TaskManager } from './services/TaskManager.js';
 import { nodeRegistry } from './registries/NodeRegistry.js';
 import { NodeDefinitions } from './data/NodeDefinitions.js';
 

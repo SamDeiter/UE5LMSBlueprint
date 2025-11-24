@@ -3,7 +3,7 @@
  */
 import { Utils } from '../utils.js';
 import { nodeRegistry } from '../registries/NodeRegistry.js';
-import { createCollapsibleHeader } from '../ui-helpers.js';
+import { createCollapsibleHeader } from './ui-helpers.js';
 
 export class VariableController {
     constructor(app) {

@@ -2,8 +2,8 @@
  * DetailsController - Manages the details panel for nodes and variables
  */
 import { Utils } from '../utils.js';
-import { Pin } from '../graph.js';
-import { setupToggle } from '../ui-helpers.js';
+import { Pin } from '../graph/index.js';
+import { setupToggle } from './ui-helpers.js';
 import { DetailsRenderer } from './DetailsRenderer.js';
 
 export class DetailsController {
