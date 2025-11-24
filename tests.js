@@ -264,7 +264,7 @@ export const registerTests = (runner) => {
 
     // --- Regression Tests (Previously Fixed Bugs) ---
 
-    runner.register('[Regression] Ghost Wire Visibility', (app) => {
+    runner.register('[Regression] Ghost Wire Visibility', () => {
         // This test verifies that ghost wire state is properly managed
         // Bug: Ghost wire was disappearing when releasing mouse button
 
@@ -299,7 +299,6 @@ export const registerTests = (runner) => {
         // Create a variable
         app.variables.addVariable();
         const variable = [...app.variables.variables.values()].pop();
-        const initialName = variable.name;
 
         // Add a getter node for this variable
         const getNode = app.graph.addVariableNode(variable, 'get', 100, 100);
