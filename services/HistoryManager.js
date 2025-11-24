@@ -22,6 +22,13 @@ export class HistoryManager {
 
         // 1. Capture current graph state into the graphs map
         // Use Persistence helper to ensure consistent serialization
+        if (!this.app.graphs) {
+            this.app.graphs = {};
+        }
+        if (!this.app.activeGraph) {
+            this.app.activeGraph = 'EventGraph';
+        }
+
         this.app.graphs[this.app.activeGraph] = {
             nodes: this.app.persistence.serializeNodes(),
             links: this.app.persistence.serializeLinks()

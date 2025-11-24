@@ -27,11 +27,12 @@ export class ActionMenu {
             }
         });
     }
-    show(clientX, clientY, sourcePin = null, droppedVarName = null) {
+    show(clientX, clientY, sourcePin = null, droppedVarName = null, droppedComponent = null) {
         this.element.style.display = 'none';
         this.graphPos = this.app.graph.getGraphCoords(clientX, clientY);
         this.sourcePin = sourcePin;
         this.droppedVarName = droppedVarName;
+        this.droppedComponent = droppedComponent;
         this.app.contextMenu.hide();
         this.isHideDelayActive = true;
         setTimeout(() => {
@@ -41,7 +42,7 @@ export class ActionMenu {
         this.element.style.left = `${clientX}px`;
         this.element.style.top = `${clientY}px`;
         this.searchInput.value = '';
-        if (droppedVarName) {
+        if (droppedVarName || droppedComponent) {
             this.searchInput.style.display = 'none';
         } else {
             this.searchInput.style.display = 'block';
@@ -167,6 +168,7 @@ export class ActionMenu {
         const hadSourcePin = this.sourcePin !== null;
         this.sourcePin = null;
         this.droppedVarName = null;
+        this.droppedComponent = null;
 
         // Clear activePin and hide ghost wire
         if (this.app.graph.activePin) {
@@ -242,10 +244,14 @@ export class ActionMenu {
             }
             contextHeader = true;
         }
-        const isGeneralClick = !this.sourcePin && !this.droppedVarName;
+        const isGeneralClick = !this.sourcePin && !this.droppedVarName && !this.droppedComponent;
         const hasVariableAccess = isGeneralClick && filter.length === 0 ? this.showVariableAccess(filter) : false;
         if (this.droppedVarName) {
             this.showVariableDropOptions(this.droppedVarName);
+            return;
+        }
+        if (this.droppedComponent) {
+            this.showComponentDropOptions(this.droppedComponent);
             return;
         }
         let needsSeparatorBeforeNodes = hasVariableAccess || contextHeader;
@@ -347,6 +353,28 @@ export class ActionMenu {
             const color = Utils.getPinColor(variable.type);
             const pillStyle = `display:inline-block; width:8px; height:4px; background-color:${color}; border-radius:2px; margin-right:6px; vertical-align:middle;`;
             item.innerHTML = `<span style="${pillStyle}"></span>${action} ${variable.name}`;
+            item.addEventListener('click', () => {
+                this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);
+                this.app.persistence.autoSave();
+                this.hide();
+            });
+            itemsListContainer.appendChild(item);
+        });
+        this.list.appendChild(itemsListContainer);
+    }
+    showComponentDropOptions(component) {
+        const itemsListContainer = document.createElement('div');
+        itemsListContainer.style.paddingTop = '4px';
+        if (!component) return;
+
+        const color = Utils.getPinColor('object'); // Components are object type
+        const pillStyle = `display:inline-block; width:8px; height:4px; background-color:${color}; border-radius:2px; margin-right:6px; vertical-align:middle;`;
+
+        ['Get', 'Set'].forEach(action => {
+            const nodeKey = `${action}Component_${component.id}`;
+            const item = document.createElement('div');
+            item.className = 'menu-item';
+            item.innerHTML = `<span style="${pillStyle}"></span>${action} ${component.name}`;
             item.addEventListener('click', () => {
                 this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);
                 this.app.persistence.autoSave();

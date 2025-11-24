@@ -71,11 +71,33 @@ export class GraphInteraction {
         const data = e.dataTransfer.getData('text/plain');
         const graphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
 
-        if (data.startsWith('COMPONENT:')) {
-            const compId = data.split(':')[1];
+        // COMPONENT_GET - From Components panel (top), only creates Get node
+        if (data.startsWith('COMPONENT_GET:')) {
+            const compId = data.substring('COMPONENT_GET:'.length);
             const nodeKey = `GetComponent_${compId}`;
             this.controller.addNode(nodeKey, graphCoords.x, graphCoords.y);
             this.app.persistence.autoSave();
+            return;
+        }
+
+        // COMPONENT - From Variables panel, shows Get/Set menu
+        if (data.startsWith('COMPONENT:')) {
+            const compId = data.split(':')[1];
+            const comp = this.app.components.get(compId);
+            if (!comp) return;
+
+            // Check for modifier keys (like variables)
+            let nodeKey = null;
+            if (e.altKey) nodeKey = `SetComponent_${compId}`;
+            else if (e.ctrlKey) nodeKey = `GetComponent_${compId}`;
+
+            if (nodeKey) {
+                this.controller.addNode(nodeKey, graphCoords.x, graphCoords.y);
+                this.app.persistence.autoSave();
+            } else {
+                // Show action menu with Get/Set options
+                this.app.actionMenu.show(e.clientX, e.clientY, null, null, comp);
+            }
         } else if (data.startsWith('VARIABLE:')) {
             const varName = data.split(':')[1];
             let nodeKey = null;

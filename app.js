@@ -69,12 +69,14 @@ class BlueprintApp {
 
         // 2. Data Model/UI Controllers
         BlueprintApp.wiring = new WiringController(graphSvgEl, BlueprintApp);
+
+        // Initialize Components BEFORE Variables because VariableController depends on Components
+        BlueprintApp.components = new Map();
+        BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
+
         BlueprintApp.variables = new VariableController(BlueprintApp);
         BlueprintApp.palette = new PaletteController(BlueprintApp);
         BlueprintApp.details = new DetailsController(BlueprintApp);
-
-        BlueprintApp.components = new Map();
-        BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
 
         // 3. Service Controllers
         // Pass BlueprintApp class, but controllers internally rely on the static props assigned above
@@ -206,10 +208,32 @@ class BlueprintApp {
                     }
                 }
 
+                // --- PRIORITY 2: CHECK FOR COMPONENT DELETION ---
+                let componentToDelete = null;
+
+                if (!varToDelete) {
+                    // Check for focused component in the list
+                    const activeEl = document.activeElement;
+                    if (activeEl) {
+                        const focusedCompEl = activeEl.closest('.tree-item[data-component-id]');
+                        if (focusedCompEl) {
+                            componentToDelete = focusedCompEl.dataset.componentId;
+                        }
+                    }
+
+                    // Fallback to selected component if no specific focus
+                    if (!componentToDelete && BlueprintApp.componentsController && BlueprintApp.componentsController.selectedComponentId) {
+                        componentToDelete = BlueprintApp.componentsController.selectedComponentId;
+                    }
+                }
+
                 if (varToDelete) {
                     BlueprintApp.variables.deleteVariable(varToDelete); // Triggers confirmation modal
                 }
-                // 2. Check for selected nodes/links
+                else if (componentToDelete) {
+                    BlueprintApp.componentsController.deleteComponent(componentToDelete);
+                }
+                // 3. Check for selected nodes/links
                 else if (BlueprintApp.graph.selectedNodes.size > 0 || BlueprintApp.wiring.selectedLinks.size > 0) {
                     BlueprintApp.graph.deleteSelectedNodes();
                 }
@@ -235,6 +259,7 @@ class BlueprintApp {
         }
 
         BlueprintApp.palette.populateList();
+        BlueprintApp.variables.renderPanel(); // Ensure panel is rendered on startup
         BlueprintApp.compiler.validate();
         BlueprintApp.grid.draw();
     }

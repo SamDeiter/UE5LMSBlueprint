@@ -478,8 +478,34 @@ export class VariableController {
             });
         }
 
-        // 4. VARIABLES
+        // 4. VARIABLES - Always keep expanded (contains Components subsection)
         const varSection = createSection('Variables', 'section-variables', () => this.addVariable());
+
+        // FORCE expanded state and DISABLE collapse toggle
+        const varContent = varSection.content;
+        if (varContent) varContent.style.display = 'block';
+
+        // Find and disable the toggle click listener by replacing the header with a non-collapsible version
+        const varHeader = varSection.section.querySelector('.sidebar-section-header');
+        if (varHeader) {
+            // Remove all click event listeners by cloning the node
+            const newHeader = varHeader.cloneNode(true);
+            varHeader.parentNode.replaceChild(newHeader, varHeader);
+
+            // Update arrow icon to show expanded state
+            const arrow = newHeader.querySelector('.fa-caret-right, .fa-caret-down');
+            if (arrow) arrow.className = 'fas fa-caret-down';
+
+            // Make + button still work
+            const addBtn = newHeader.querySelector('.add-btn');
+            if (addBtn) {
+                addBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.addVariable();
+                });
+            }
+        }
+
         this.listContainer.appendChild(varSection.section);
 
         // 4.1 Components Subsection (collapsible within Variables)
@@ -518,58 +544,81 @@ export class VariableController {
         const componentsContent = document.createElement('div');
         componentsContent.style.display = 'block';
 
-        // Toggle collapse
+        // Toggle collapse - make entire header clickable
         let compExpanded = true;
-        leftGroup.addEventListener('click', () => {
+        componentsHeader.addEventListener('click', () => {
             compExpanded = !compExpanded;
             componentsContent.style.display = compExpanded ? 'block' : 'none';
             compArrow.style.transform = compExpanded ? 'rotate(0deg)' : 'rotate(-90deg)';
         });
 
         // Render component items
-        if (this.app.components) {
-            this.app.components.forEach(comp => {
-                const item = document.createElement('div');
-                item.className = 'tree-item';
+        try {
+            if (this.app.components && this.app.components.size > 0) {
+                this.app.components.forEach(comp => {
+                    const item = document.createElement('div');
+                    item.className = 'tree-item';
+                    // Highlight if selected
+                    if (this.app.componentsController && this.app.componentsController.selectedComponentId === comp.id) {
+                        item.classList.add('selected');
+                    }
 
-                // Create output circle indicator
-                const outputCircle = document.createElement('span');
-                outputCircle.style.cssText = `
-                    width: 10px;
-                    height: 10px;
-                    background-color: var(--color-object);
-                    border: 1px solid #000;
-                    border-radius: 50%;
-                    display: inline-block;
-                    margin-right: 6px;
-                    box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
-                `;
+                    // Enable focus for deletion logic
+                    item.setAttribute('tabindex', '0');
+                    item.dataset.componentId = comp.id;
 
-                const iconClass = this.app.componentsController ? this.app.componentsController.getIconForType(comp.type) : 'fa-cube';
-                const icon = document.createElement('i');
-                icon.className = `fas ${iconClass}`;
-                icon.style.cssText = 'margin-right: 6px; font-size: 10px;';
+                    // Create output circle indicator
+                    const outputCircle = document.createElement('span');
+                    outputCircle.style.cssText = `
+                        width: 10px;
+                        height: 10px;
+                        background-color: var(--color-object);
+                        border: 1px solid #000;
+                        border-radius: 50%;
+                        display: inline-block;
+                        margin-right: 6px;
+                        box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
+                    `;
 
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = comp.name;
+                    const iconClass = this.app.componentsController ? this.app.componentsController.getIconForType(comp.type) : 'fa-cube';
+                    const icon = document.createElement('i');
+                    icon.className = `fas ${iconClass}`;
+                    icon.style.cssText = 'margin-right: 6px; font-size: 10px;';
 
-                item.appendChild(outputCircle);
-                item.appendChild(icon);
-                item.appendChild(nameSpan);
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = comp.name;
 
-                // Drag Logic
-                item.draggable = true;
-                item.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', `COMPONENT:${comp.id}`);
+                    item.appendChild(outputCircle);
+                    item.appendChild(icon);
+                    item.appendChild(nameSpan);
+
+                    // Drag Logic
+                    item.draggable = true;
+                    item.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', `COMPONENT:${comp.id}`);
+                    });
+
+                    // Click Logic
+                    item.addEventListener('click', (e) => {
+                        // Clear variable selection
+                        this.app.details.currentVariable = null;
+
+                        if (this.app.componentsController) {
+                            this.app.componentsController.selectComponent(comp.id);
+                        }
+                    });
+
+                    componentsContent.appendChild(item);
                 });
-
-                // Click Logic
-                item.addEventListener('click', () => {
-                    if (this.app.componentsController) this.app.componentsController.selectComponent(comp.id);
-                });
-
-                componentsContent.appendChild(item);
-            });
+            } else {
+                // Show placeholder when no components
+                const placeholder = document.createElement('div');
+                placeholder.style.cssText = 'padding: 8px 12px; color: #666; font-size: 10px; font-style: italic;';
+                placeholder.textContent = 'No components';
+                componentsContent.appendChild(placeholder);
+            }
+        } catch (err) {
+            console.error("Error rendering components in VariableController:", err);
         }
 
         componentsSubsection.appendChild(componentsHeader);
@@ -596,6 +645,11 @@ export class VariableController {
 
             // Click Logic
             el.addEventListener('click', () => {
+                // Clear component selection
+                if (this.app.componentsController) {
+                    this.app.componentsController.selectedComponentId = null;
+                }
+
                 this.app.details.currentVariable = variable;
                 this.app.details.showVariableDetails(variable, true);
                 this.renderPanel();

@@ -57,6 +57,27 @@ export class ComponentsController {
         this.app.persistence.autoSave();
     }
 
+    selectComponent(id) {
+        this.selectedComponentId = id;
+
+        // Clear variable selection
+        if (this.app.details) {
+            this.app.details.currentVariable = null;
+        }
+
+        this.render();
+
+        // Update My Blueprint panel to reflect selection change
+        if (this.app.variables) {
+            this.app.variables.renderPanel();
+        }
+
+        // Sync with My Blueprint selection if possible, or just update details
+        if (this.app.details) {
+            this.app.details.showComponentDetails(this.app.components.get(id));
+        }
+    }
+
     deleteComponent(id) {
         if (!id) return;
         if (this.app.components.has(id)) {
@@ -69,24 +90,29 @@ export class ComponentsController {
                 this.render();
                 this.updateNodeLibrary();
                 if (this.app.variables) this.app.variables.renderPanel();
-                this.app.persistence.autoSave();
+
+                // Force immediate save to history and persistence
+                this.app.history.saveState('component delete');
+                this.app.persistence.save();
             }
         }
     }
 
-    selectComponent(id) {
-        this.selectedComponentId = id;
-        this.render();
-        // Sync with My Blueprint selection if possible, or just update details
-        // this.app.details.showComponentDetails(this.app.components.get(id));
-    }
-
     updateNodeLibrary() {
-        // Register Get nodes for all components
+        // First, unregister all component nodes to avoid duplicates
+        const allKeys = Object.keys(nodeRegistry.getAll());
+        for (const key of allKeys) {
+            if (key.startsWith('GetComponent_') || key.startsWith('SetComponent_')) {
+                nodeRegistry.unregister(key);
+            }
+        }
+
+        // Register Get and Set nodes for all components
         if (this.app.components) {
             this.app.components.forEach(comp => {
-                const nodeKey = `GetComponent_${comp.id}`;
-                nodeRegistry.register(nodeKey, {
+                // Register Get node
+                const getKey = `GetComponent_${comp.id}`;
+                nodeRegistry.register(getKey, {
                     title: `Get ${comp.name}`,
                     category: 'Components',
                     type: 'pure-node',
@@ -95,6 +121,20 @@ export class ComponentsController {
                         { id: 'out', name: comp.name, type: 'object', dir: 'out' }
                     ],
                     properties: { componentId: comp.id }
+                });
+
+                // Register Set node
+                const setKey = `SetComponent_${comp.id}`;
+                nodeRegistry.register(setKey, {
+                    title: `Set ${comp.name}`,
+                    category: 'Components',
+                    type: 'function-node',
+                    pins: [
+                        { id: 'exec_in', name: 'Exec', type: 'exec', dir: 'in' },
+                        { id: 'comp_in', name: comp.name, type: 'object', dir: 'in' },
+                        { id: 'exec_out', name: 'Exec', type: 'exec', dir: 'out' }
+                    ],
+                    customData: { componentId: comp.id }
                 });
             });
         }
@@ -131,12 +171,23 @@ export class ComponentsController {
                 item.style.paddingLeft = '24px'; // Indent
                 if (this.selectedComponentId === comp.id) item.classList.add('selected');
 
+                // Enable focus for deletion logic
+                item.setAttribute('tabindex', '0');
+                item.dataset.componentId = comp.id;
+
                 const iconClass = this.getIconForType(comp.type);
 
                 item.innerHTML = `
                     <i class="fas ${iconClass}" style="margin-right: 8px; color: #ccc;"></i>
                     <span>${comp.name}</span>
                 `;
+
+                // Make draggable - from Components panel, only creates Get node
+                item.draggable = true;
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', `COMPONENT_GET:${comp.id}`);
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
 
                 item.addEventListener('click', () => this.selectComponent(comp.id));
                 this.listContainer.appendChild(item);
