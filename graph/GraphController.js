@@ -67,7 +67,13 @@ class GraphController {
         e.preventDefault();
         const data = e.dataTransfer.getData('text/plain');
         const graphCoords = this.getGraphCoords(e.clientX, e.clientY);
-        if (data.startsWith('VARIABLE:')) {
+
+        if (data.startsWith('COMPONENT:')) {
+            const compId = data.split(':')[1];
+            const nodeKey = `GetComponent_${compId}`;
+            this.addNode(nodeKey, graphCoords.x, graphCoords.y);
+            this.app.persistence.autoSave();
+        } else if (data.startsWith('VARIABLE:')) {
             const varName = data.split(':')[1];
             let nodeKey = null;
             if (e.altKey) nodeKey = `Set_${varName}`;

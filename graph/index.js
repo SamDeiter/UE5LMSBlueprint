@@ -7,3 +7,4 @@ export { Pin } from './Pin.js';
 export { Node } from './Node.js';
 export { WiringController } from './WiringController.js';
 export { GraphController } from './GraphController.js';
+export { GraphSwitcher } from './GraphSwitcher.js';

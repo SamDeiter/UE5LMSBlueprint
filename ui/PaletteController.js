@@ -18,10 +18,14 @@ export class PaletteController {
         const nodeNames = Object.keys(nodeRegistry.getAll());
 
         // 1. Filter Nodes
-        const filtered = nodeNames.filter(name =>
-            name.toLowerCase().includes(filter) ||
-            (nodeRegistry.get(name).title && nodeRegistry.get(name).title.toLowerCase().includes(filter))
-        );
+        // 1. Filter Nodes
+        const filtered = nodeNames.filter(name => {
+            const def = nodeRegistry.get(name);
+            if (def.hidden) return false;
+
+            return name.toLowerCase().includes(filter) ||
+                (def.title && def.title.toLowerCase().includes(filter));
+        });
 
         // 2. Build Tree using shared helper
         const root = buildCategoryTree(filtered, (name) => nodeRegistry.get(name).category || '');

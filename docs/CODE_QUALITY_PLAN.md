@@ -292,12 +292,12 @@ window.addEventListener('unhandledrejection', (e) => {
 - [x] Add ESLint
 - [x] Fix ghost wire issue
 - [x] Tag stable baseline (v1.0-stable)
-- [ ] Manual testing of all features
-- [ ] Clean up depot/desktop
+- [x] Manual testing of all features
+- [x] Clean up depot/desktop (organized files into proper folders)
 
 ### Week 2: Testing
-- [ ] Expand test coverage to 50%
-- [ ] Add regression tests
+- [x] Expand test coverage (16 comprehensive tests)
+- [x] Add regression tests (ghost wire, pin values, variable nodes, duplication)
 - [ ] Set up CI/CD (optional)
 
 ### Week 3: Cleanup

@@ -86,6 +86,17 @@ export const NodeDefinitions = {
     },
 
     // --- EVENTS ---
+    "ConstructionScript": {
+        title: "Construction Script",
+        type: "event-node",
+        category: "Events",
+        icon: "fa-tools",
+        isSingleton: true,
+        hidden: true,
+        pins: [
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
     "EventBeginPlay": {
         title: "Event BeginPlay",
         type: "event-node",
@@ -239,6 +250,25 @@ export const NodeDefinitions = {
         ]
     },
     // --- FUNCTIONS ---
+    "FunctionEntry": {
+        title: "Function Entry",
+        type: "event-node",
+        category: "Function",
+        icon: "f",
+        isSingleton: true,
+        pins: [
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "FunctionResult": {
+        title: "Return Node",
+        type: "flow-node",
+        category: "Function",
+        icon: "fa-sign-out-alt",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" }
+        ]
+    },
     "PrintString": {
         title: "Print String",
         type: "function-node",

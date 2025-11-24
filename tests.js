@@ -107,6 +107,17 @@ export const registerTests = (runner) => {
         assert(node.nodeKey === 'EventBeginPlay', "Node key should be EventBeginPlay");
     });
 
+    runner.register('Add Construction Script Node', (app) => {
+        const initialNodeCount = app.graph.nodes.size;
+        const node = app.graph.addNode('ConstructionScript', 100, 100);
+        assert(node !== null, "ConstructionScript node should be created");
+        assert(app.graph.nodes.size === initialNodeCount + 1, "Node count should increase");
+        assert(node.nodeKey === 'ConstructionScript', "Node key should be ConstructionScript");
+
+        // Verify styling flag (indirectly by checking if render doesn't crash)
+        node.render();
+    });
+
     runner.register('Delete Node', (app) => {
         // Ensure we have a node
         if (app.graph.nodes.size === 0) app.graph.addNode('PrintString', 100, 100);

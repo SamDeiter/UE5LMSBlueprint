@@ -358,23 +358,225 @@ export class VariableController {
         // 1. GRAPHS
         const graphsSection = createSection('Graphs', 'section-graphs', () => { /* TODO: Add Graph */ });
         this.listContainer.appendChild(graphsSection.section);
+
+        // Event Graph
         const eventGraphItem = document.createElement('div');
         eventGraphItem.className = 'tree-item';
+        if (this.app.activeGraph === 'EventGraph') eventGraphItem.classList.add('selected');
         eventGraphItem.innerHTML = '<i class="fas fa-project-diagram" style="margin-right:6px; font-size:10px;"></i> EventGraph';
+        eventGraphItem.addEventListener('click', () => this.app.switchGraph('EventGraph'));
         graphsSection.content.appendChild(eventGraphItem);
 
+        // Construction Script
+        const constScriptItem = document.createElement('div');
+        constScriptItem.className = 'tree-item';
+        if (this.app.activeGraph === 'ConstructionScript') constScriptItem.classList.add('selected');
+        constScriptItem.innerHTML = '<i class="fas fa-tools" style="margin-right:6px; font-size:10px;"></i> Construction Script';
+        constScriptItem.addEventListener('click', () => this.app.switchGraph('ConstructionScript'));
+        graphsSection.content.appendChild(constScriptItem);
+
         // 2. FUNCTIONS
-        const funcSection = createSection('Functions', 'section-functions', () => { /* TODO: Add Function */ });
+        const funcSection = createSection('Functions', 'section-functions', (e) => {
+            // Show Override/Add Dropdown
+            const menu = document.createElement('div');
+            menu.className = 'context-menu';
+            menu.style.position = 'fixed';
+            menu.style.left = `${e.clientX}px`;
+            menu.style.top = `${e.clientY}px`;
+            menu.style.zIndex = '10000';
+            menu.style.background = '#2a2a2a';
+            menu.style.border = '1px solid #000';
+            menu.style.padding = '4px 0';
+            menu.style.minWidth = '150px';
+
+            const createItem = (label, icon, onClick) => {
+                const item = document.createElement('div');
+                item.className = 'menu-item';
+                item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
+                item.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    document.body.removeChild(menu);
+                    onClick();
+                });
+                return item;
+            };
+
+            // Option 1: New Function
+            menu.appendChild(createItem('Function', 'fas fa-plus', () => {
+                const name = window.prompt("Function Name:", `NewFunction_${this.app.functions.size}`);
+                if (name) {
+                    if (this.app.functions.has(name)) {
+                        window.alert("Function name already exists.");
+                        return;
+                    }
+                    this.app.functions.set(name, {
+                        name: name,
+                        graph: { nodes: [], links: [] }
+                    });
+                    this.app.switchGraph(name);
+                    this.renderPanel();
+                    this.app.persistence.autoSave();
+                }
+            }));
+
+            // Option 2: Construction Script
+            menu.appendChild(createItem('Construction Script', 'fas fa-tools', () => {
+                this.app.switchGraph('ConstructionScript');
+            }));
+
+            // Close on click outside
+            const closeMenu = () => {
+                if (document.body.contains(menu)) {
+                    document.body.removeChild(menu);
+                }
+                document.removeEventListener('click', closeMenu);
+            };
+            setTimeout(() => document.addEventListener('click', closeMenu), 0);
+
+            document.body.appendChild(menu);
+        });
         this.listContainer.appendChild(funcSection.section);
 
+        if (this.app.functions) {
+            this.app.functions.forEach(func => {
+                const item = document.createElement('div');
+                item.className = 'tree-item';
+                if (this.app.activeGraph === func.name) item.classList.add('selected');
+                item.innerHTML = `<i class="fas fa-cube" style="margin-right:6px; color:#a8b; font-size:10px;"></i> ${func.name}`;
+                item.addEventListener('click', () => this.app.switchGraph(func.name));
+                funcSection.content.appendChild(item);
+            });
+        }
+
         // 3. MACROS
-        const macroSection = createSection('Macros', 'section-macros', () => { /* TODO: Add Macro */ });
+        const macroSection = createSection('Macros', 'section-macros', () => {
+            const name = window.prompt("Macro Name:", `NewMacro_${this.app.macros.size}`);
+            if (name) {
+                if (this.app.macros.has(name)) {
+                    window.alert("Macro name already exists.");
+                    return;
+                }
+                this.app.macros.set(name, {
+                    name: name,
+                    graph: { nodes: [], links: [] }
+                });
+                this.app.switchGraph(name);
+                this.renderPanel();
+                this.app.persistence.autoSave();
+            }
+        });
         this.listContainer.appendChild(macroSection.section);
+
+        if (this.app.macros) {
+            this.app.macros.forEach(macro => {
+                const item = document.createElement('div');
+                item.className = 'tree-item';
+                if (this.app.activeGraph === macro.name) item.classList.add('selected');
+                item.innerHTML = `<i class="fas fa-play-circle" style="margin-right:6px; color:#ccc; font-size:10px;"></i> ${macro.name}`;
+                item.addEventListener('click', () => this.app.switchGraph(macro.name));
+                macroSection.content.appendChild(item);
+            });
+        }
 
         // 4. VARIABLES
         const varSection = createSection('Variables', 'section-variables', () => this.addVariable());
         this.listContainer.appendChild(varSection.section);
 
+        // 4.1 Components Subsection (collapsible within Variables)
+        const componentsSubsection = document.createElement('div');
+        componentsSubsection.style.cssText = 'border-bottom: 1px solid #111; margin-bottom: 4px;';
+
+        const componentsHeader = document.createElement('div');
+        componentsHeader.className = 'sidebar-section-header';
+        componentsHeader.style.cssText = `
+            padding: 4px 10px;
+            background-color: #1a1a1a;
+            font-size: 10px;
+            text-transform: capitalize;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        `;
+
+        const leftGroup = document.createElement('div');
+        leftGroup.style.cssText = 'display: flex; align-items: center;';
+
+        const compArrow = document.createElement('i');
+        compArrow.className = 'fas fa-caret-down';
+        compArrow.style.cssText = 'margin-right: 6px; font-size: 10px; transition: transform 0.2s;';
+
+        const compLabel = document.createElement('span');
+        compLabel.textContent = 'Components';
+
+        leftGroup.appendChild(compArrow);
+        leftGroup.appendChild(compLabel);
+
+        componentsHeader.appendChild(leftGroup);
+
+        const componentsContent = document.createElement('div');
+        componentsContent.style.display = 'block';
+
+        // Toggle collapse
+        let compExpanded = true;
+        leftGroup.addEventListener('click', () => {
+            compExpanded = !compExpanded;
+            componentsContent.style.display = compExpanded ? 'block' : 'none';
+            compArrow.style.transform = compExpanded ? 'rotate(0deg)' : 'rotate(-90deg)';
+        });
+
+        // Render component items
+        if (this.app.components) {
+            this.app.components.forEach(comp => {
+                const item = document.createElement('div');
+                item.className = 'tree-item';
+
+                // Create output circle indicator
+                const outputCircle = document.createElement('span');
+                outputCircle.style.cssText = `
+                    width: 10px;
+                    height: 10px;
+                    background-color: var(--color-object);
+                    border: 1px solid #000;
+                    border-radius: 50%;
+                    display: inline-block;
+                    margin-right: 6px;
+                    box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
+                `;
+
+                const iconClass = this.app.componentsController ? this.app.componentsController.getIconForType(comp.type) : 'fa-cube';
+                const icon = document.createElement('i');
+                icon.className = `fas ${iconClass}`;
+                icon.style.cssText = 'margin-right: 6px; font-size: 10px;';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = comp.name;
+
+                item.appendChild(outputCircle);
+                item.appendChild(icon);
+                item.appendChild(nameSpan);
+
+                // Drag Logic
+                item.draggable = true;
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', `COMPONENT:${comp.id}`);
+                });
+
+                // Click Logic
+                item.addEventListener('click', () => {
+                    if (this.app.componentsController) this.app.componentsController.selectComponent(comp.id);
+                });
+
+                componentsContent.appendChild(item);
+            });
+        }
+
+        componentsSubsection.appendChild(componentsHeader);
+        componentsSubsection.appendChild(componentsContent);
+        varSection.content.appendChild(componentsSubsection);
+
+        // 4.2 Regular Variables
         for (const variable of this.variables.values()) {
             const el = document.createElement('div');
             el.className = 'ue5-variable-item';

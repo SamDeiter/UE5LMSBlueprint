@@ -28,26 +28,6 @@ The following `console.log` statements are currently in the codebase. Most are u
 - Line 216: `console.log('[WiringController] Showing ghost wire for pin:', ...)`
 
 ### Recommendation
-Keep all console.logs for now - they're helpful for debugging. If you want to remove them later, use ESLint rule `"no-console": "error"` and clean them up in batch.
-
----
-
-## Future Node Implementation Plan
-
-### Phase 1: Event Nodes (High Priority)
-**Construction Script**
-- Special event node that runs on actor construction
-- Visual style: Orange/brown header (construction context)
-- Pins: Single execution output pin
-- Implementation notes:
-  - Similar to EventBeginPlay but different execution context
-  - Needs special "construction" execution type
-  - Should be singleton (only one per blueprint)
-
-**Event Tick**
-- Runs every frame
-- Pins:
-  - Output: Exec (white)
   - Output: Delta Seconds (float, light blue)
 - Visual: Red event header
 - Test: Verify delta time pin provides value
@@ -150,38 +130,6 @@ runner.register('Add [NodeName] Node', (app) => {
     assert(node !== null, "[NodeName] node should be created");
     assert(node.nodeKey === '[NodeKey]', "Node key should match");
     
-    // Verify pins
-    const inputPins = node.pins.filter(p => p.direction === 'input');
-    const outputPins = node.pins.filter(p => p.direction === 'output');
-    assert(inputPins.length === [N], "Should have [N] input pins");
-    assert(outputPins.length === [M], "Should have [M] output pins");
-    
-    // Verify specific pins exist
-    const execPin = node.pins.find(p => p.id === 'exec');
-    assert(execPin !== undefined, "Should have exec pin");
-});
-```
-
----
-
-## Implementation Workflow
-
-1. **Define Node in `data/NodeDefinitions.js`**:
-   - Add node schema with pins, types, visual properties
-   - Set appropriate category
-
-2. **Update Rendering** (if custom visualization needed):
-   - Modify `graph/Node.js` render methods
-   - Add custom styles to `style.css`
-
-3. **Add to Palette**:
-   - Node should auto-appear in palette under its category
-   - Verify searchable
-
-4. **Create Tests**:
-   - Add test cases in `tests.js`
-   - Run `window.runTests()` to verify
-
 5. **Document**:
    - Update README or create node documentation
    - Add usage examples if complex

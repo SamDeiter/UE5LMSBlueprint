@@ -44,6 +44,23 @@ class Node {
         return this.pins.find(p => p.id === pinId);
     }
 
+    getHeaderColor() {
+        if (this.variableType) {
+            return Utils.getVariableHeaderColor(this.variableType);
+        }
+        if (this.nodeKey === 'ConstructionScript') {
+            return { start: '#B54E05', end: '#8A3B04' };
+        }
+        if (this.type === 'event-node') {
+            return { start: '#8B0000', end: '#400000' }; // Red
+        }
+        if (this.type === 'function-node') {
+            return { start: '#005580', end: '#002a40' }; // Blue
+        }
+        // Default
+        return { start: '#333', end: '#111' };
+    }
+
     render() {
 
         if (!this.nodeKey) {
@@ -51,7 +68,7 @@ class Node {
             this.nodeKey = 'INVALID_NODE';
         }
 
-        if (this.nodeKey.startsWith('Get_') || this.nodeKey.startsWith('Conv_')) {
+        if (this.nodeKey.startsWith('Get_') || this.nodeKey.startsWith('Conv_') || this.nodeKey.startsWith('GetComponent_')) {
             return this.renderCompactNode();
         }
         if (this.nodeKey.startsWith('Set_')) {
@@ -68,11 +85,9 @@ class Node {
         const header = document.createElement('div');
         header.className = 'node-title';
 
-        if (this.variableType) {
-            const gradient = Utils.getVariableHeaderColor(this.variableType);
-            header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
-            header.style.borderBottomColor = 'rgba(0,0,0,0.5)';
-        }
+        const gradient = this.getHeaderColor();
+        header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
+        header.style.borderBottomColor = 'rgba(0,0,0,0.5)';
 
         if (this.icon) {
             const iconEl = document.createElement('span');
@@ -315,6 +330,8 @@ class Node {
         // Clean up "Get_" prefix for display to match standard UI
         if (this.nodeKey.startsWith('Get_')) {
             labelSpan.textContent = this.nodeKey.substring(4);
+        } else if (this.nodeKey.startsWith('GetComponent_')) {
+            labelSpan.textContent = this.title.replace('Get ', '');
         } else {
             labelSpan.textContent = this.title;
         }

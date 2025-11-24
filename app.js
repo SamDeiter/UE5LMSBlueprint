@@ -6,7 +6,7 @@
 
 // Import all controllers
 import { WiringController, GraphController } from './graph/index.js';
-import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController } from './ui.js';
+import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
 import { TestRunner, registerTests } from './tests.js?v=2';
@@ -72,6 +72,9 @@ class BlueprintApp {
         BlueprintApp.variables = new VariableController(BlueprintApp);
         BlueprintApp.palette = new PaletteController(BlueprintApp);
         BlueprintApp.details = new DetailsController(BlueprintApp);
+
+        BlueprintApp.components = new Map();
+        BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
 
         // 3. Service Controllers
         // Pass BlueprintApp class, but controllers internally rely on the static props assigned above
