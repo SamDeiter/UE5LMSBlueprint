@@ -288,7 +288,9 @@ window.addEventListener('unhandledrejection', (e) => {
 - [x] Set up pre-commit hooks
 - [x] Add ESLint
 - [x] Fix ghost wire issue
+- [x] Tag stable baseline (v1.0-stable)
 - [ ] Manual testing of all features
+- [ ] Clean up depot/desktop
 
 ### Week 2: Testing
 - [ ] Expand test coverage to 50%
