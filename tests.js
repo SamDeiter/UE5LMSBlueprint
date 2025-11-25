@@ -1,5 +1,6 @@
 
 import { registerComponentTests } from './tests/ComponentsController.test.js';
+import { registerGUIDTests } from './tests/guid.test.js';
 
 export class TestRunner {
     constructor(app) {
@@ -53,6 +54,7 @@ export const registerTests = (runner) => {
 
     // Register component tests first
     registerComponentTests(runner);
+    registerGUIDTests(runner);
 
     // --- Variable Tests ---
 

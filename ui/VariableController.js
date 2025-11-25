@@ -2,6 +2,7 @@
  * VariableController - Manages variable creation, deletion, and list rendering
  */
 import { Utils } from '../utils.js';
+import { generateGUID } from '../utils/guid.js';
 import { nodeRegistry } from '../registries/NodeRegistry.js';
 import { createCollapsibleHeader } from './ui-helpers.js';
 
@@ -102,7 +103,7 @@ export class VariableController {
 
     createVariableFromPin(pin) {
         const name = this.generateUniqueVarName(pin.name.replace(/\s+/g, '').replace(/\(.+\)/, ''));
-        const id = Utils.uniqueId('var');
+        const id = generateGUID();
         // Default promoted variables to NOT instance-editable
         const variable = this.createVariableObject(id, name, pin.type, pin.containerType, false);
         variable.description = `Promoted from pin ${pin.name}`;
@@ -131,7 +132,7 @@ export class VariableController {
     // Called when the (+) button is clicked
     addVariable() {
         const name = this.generateUniqueVarName('NewVar');
-        const id = Utils.uniqueId('var');
+        const id = generateGUID();
         // Default to boolean, single, public (private unchecked)
         // Default to boolean, single, NOT instance-editable
         const variable = this.createVariableObject(id, name, 'bool', 'single', false);

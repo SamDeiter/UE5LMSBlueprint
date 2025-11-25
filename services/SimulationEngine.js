@@ -269,6 +269,14 @@ export class SimulationEngine {
             totalScore += nodeScore;
             totalWeight += 100;
 
+            // Update the node data with the validation results
+            needData.criteria = validatedCriteria;
+
+            // Trigger a re-render of the node to show visual feedback (checkmarks)
+            if (this.app.wiring && this.app.wiring.updateVisuals) {
+                this.app.wiring.updateVisuals(node);
+            }
+
             results.push({
                 title: needData.title,
                 score: nodeScore,

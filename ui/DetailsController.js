@@ -2,6 +2,7 @@
  * DetailsController - Manages the details panel for nodes and variables
  */
 import { Utils } from '../utils.js';
+import { generateGUID } from '../utils/guid.js';
 import { Pin } from '../graph/index.js';
 import { setupToggle } from './ui-helpers.js';
 import { DetailsRenderer } from './DetailsRenderer.js';
@@ -580,7 +581,7 @@ export class DetailsController {
     }
 
     addCustomParameter(node) {
-        const id = Utils.uniqueId('pin');
+        const id = generateGUID();
         const newPinData = {
             id: id,
             name: "NewParam",

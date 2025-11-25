@@ -51,6 +51,12 @@ class GraphController {
         const nodeEl = node.render();
         this.nodesContainer.appendChild(nodeEl);
         this.app.compiler.markDirty();
+
+        // Automatically open the configuration modal for NeedNodes
+        if (nodeKey === 'NeedNode' && this.app.needNodeModal) {
+            this.app.needNodeModal.open(node);
+        }
+
         return node;
     }
 

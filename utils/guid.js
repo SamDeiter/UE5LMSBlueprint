@@ -6,6 +6,9 @@ export function generateGUID() {
         return crypto.randomUUID();
     }
     // Fallback: generate a UUID v4-like string
-    const hex = [...Array(32)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-    return `${hex.substr(0, 8)}-${hex.substr(8, 4)}-${hex.substr(12, 4)}-${hex.substr(16, 4)}-${hex.substr(20)}`;
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }

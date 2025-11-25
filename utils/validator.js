@@ -1,4 +1,6 @@
 
+import { ASSESSMENT_TASKS } from '../data/AssessmentTasks.js';
+
 export class BlueprintValidator {
     constructor(app) {
         this.app = app;
@@ -40,6 +42,10 @@ export class BlueprintValidator {
                     case 'singleton_check':
                         passed = this.checkSingleton(req);
                         message = passed ? `Singleton check passed for '${req.nodeType}'` : `Multiple instances of '${req.nodeType}' found`;
+                        break;
+                    case 'node_title':
+                        passed = this.checkNodeTitle(req);
+                        message = passed ? `Node titled '${req.title}' found` : `Node must be renamed to '${req.title}'`;
                         break;
                     default:
                         console.warn(`Unknown requirement type: ${req.type}`);
@@ -128,6 +134,14 @@ export class BlueprintValidator {
             }
         }
         return false;
+    }
+
+    checkNodeTitle(req) {
+        const nodes = [...this.app.graph.nodes.values()];
+        const targetNodes = nodes.filter(n => n.nodeKey === req.nodeType);
+
+        // Check if any matching node has the required title
+        return targetNodes.some(node => node.title === req.title);
     }
 }
 
@@ -247,5 +261,6 @@ export const TASK_1_2_PRINT_MESSAGE = {
 export const ALL_TASKS = [
     SAMPLE_TASK,
     TASK_1_1_HEALTH_INIT,
-    TASK_1_2_PRINT_MESSAGE
+    TASK_1_2_PRINT_MESSAGE,
+    ...ASSESSMENT_TASKS
 ];

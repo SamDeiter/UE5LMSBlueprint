@@ -25,11 +25,32 @@ export class TaskController {
         const tasks = this.app.taskManager.getAllTasks();
         this.selector.innerHTML = '<option value="">Select Task...</option>';
 
+        // Group tasks by level
+        const tasksByLevel = {};
         tasks.forEach(task => {
-            const option = document.createElement('option');
-            option.value = task.taskId;
-            option.textContent = `${task.level ? `Level ${task.level}: ` : ''}${task.title}`;
-            this.selector.appendChild(option);
+            const level = task.level || 0;
+            if (!tasksByLevel[level]) {
+                tasksByLevel[level] = [];
+            }
+            tasksByLevel[level].push(task);
+        });
+
+        // Sort levels
+        const levels = Object.keys(tasksByLevel).sort((a, b) => a - b);
+
+        levels.forEach(level => {
+            // Add optgroup for each level
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = level === '0' ? 'Sample Tasks' : `Level ${level}`;
+
+            tasksByLevel[level].forEach(task => {
+                const option = document.createElement('option');
+                option.value = task.taskId;
+                option.textContent = task.title;
+                optgroup.appendChild(option);
+            });
+
+            this.selector.appendChild(optgroup);
         });
     }
 
@@ -107,43 +128,94 @@ export class TaskController {
         this.taskDesc.textContent = task.description;
         this.requirementsList.innerHTML = '';
 
-        // If we have validation results, show them. Otherwise show requirements as unchecked.
-        const results = validationResults ? validationResults.results : null;
+        // Add progress bar
+        const progressContainer = document.createElement('div');
+        progressContainer.style.cssText = 'margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 4px;';
 
+        const progressLabel = document.createElement('div');
+        progressLabel.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: #aaa;';
+
+        const results = validationResults ? validationResults.results : null;
+        const passedCount = results ? results.filter(r => r.passed).length : 0;
+        const totalCount = task.requirements.length;
+        const progressPercent = totalCount > 0 ? Math.round((passedCount / totalCount) * 100) : 0;
+
+        progressLabel.innerHTML = `<span>Progress</span><span>${passedCount}/${totalCount} (${progressPercent}%)</span>`;
+        progressContainer.appendChild(progressLabel);
+
+        const progressBarBg = document.createElement('div');
+        progressBarBg.style.cssText = 'width: 100%; height: 20px; background: #222; border-radius: 10px; overflow: hidden; border: 1px solid #444;';
+
+        const progressBarFill = document.createElement('div');
+        progressBarFill.style.cssText = `width: ${progressPercent}%; height: 100%; background: linear-gradient(to right, #4CAF50, #45a049); transition: width 0.3s ease;`;
+        progressBarBg.appendChild(progressBarFill);
+        progressContainer.appendChild(progressBarBg);
+
+        this.requirementsList.appendChild(progressContainer);
+
+        // Requirements list
         task.requirements.forEach((req, index) => {
             const result = results ? results[index] : null;
             const isPassed = result ? result.passed : false;
 
             const item = document.createElement('div');
-            item.style.padding = '8px';
-            item.style.borderBottom = '1px solid #333';
-            item.style.display = 'flex';
-            item.style.alignItems = 'center';
-            item.style.color = isPassed ? '#4caf50' : '#ccc';
+            item.style.cssText = `
+                padding: 12px;
+                border-bottom: 1px solid #333;
+                display: flex;
+                align-items: center;
+                color: ${isPassed ? '#4caf50' : '#ccc'};
+                background: ${isPassed ? 'rgba(76, 175, 80, 0.1)' : 'transparent'};
+                transition: all 0.2s ease;
+            `;
 
             const icon = document.createElement('i');
             icon.className = isPassed ? 'fas fa-check-circle' : 'far fa-circle';
-            icon.style.marginRight = '10px';
+            icon.style.cssText = `
+                margin-right: 12px;
+                font-size: 16px;
+                color: ${isPassed ? '#4caf50' : '#666'};
+            `;
 
             const text = document.createElement('span');
             text.textContent = req.description;
+            text.style.flex = '1';
 
             item.appendChild(icon);
             item.appendChild(text);
             this.requirementsList.appendChild(item);
         });
 
+        // Success message
         if (validationResults && validationResults.success) {
             const successMsg = document.createElement('div');
-            successMsg.style.marginTop = '15px';
-            successMsg.style.padding = '10px';
-            successMsg.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
-            successMsg.style.border = '1px solid #4caf50';
-            successMsg.style.borderRadius = '4px';
-            successMsg.style.color = '#4caf50';
-            successMsg.style.textAlign = 'center';
-            successMsg.innerHTML = '<strong><i class="fas fa-trophy"></i> Task Complete!</strong>';
+            successMsg.style.cssText = `
+                margin-top: 20px;
+                padding: 20px;
+                background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+                border: 2px solid #4caf50;
+                border-radius: 8px;
+                color: #4caf50;
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                animation: pulse 2s ease-in-out infinite;
+            `;
+            successMsg.innerHTML = '<i class="fas fa-trophy" style="margin-right: 10px; font-size: 20px;"></i>Task Complete! Well Done!';
             this.requirementsList.appendChild(successMsg);
+
+            // Add animation keyframes if not already present
+            if (!document.getElementById('pulse-animation')) {
+                const style = document.createElement('style');
+                style.id = 'pulse-animation';
+                style.textContent = `
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.02); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
         }
     }
 }
