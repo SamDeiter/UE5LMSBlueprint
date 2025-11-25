@@ -1,6 +1,7 @@
 
 import { registerComponentTests } from './tests/ComponentsController.test.js';
 import { registerGUIDTests } from './tests/guid.test.js';
+import './tests/NodeRegistryTests.js';
 
 export class TestRunner {
     constructor(app) {

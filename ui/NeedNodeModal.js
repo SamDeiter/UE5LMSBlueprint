@@ -53,12 +53,7 @@ export class NeedNodeModal {
                             <label for="new-task-desc-input" style="font-size: 11px;">Description</label>
                             <textarea id="new-task-desc-input" rows="2" placeholder="Task description..." style="font-size: 12px;"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label style="font-size: 11px;">Current Requirements</label>
-                            <div id="task-requirements-list" style="background: #222; padding: 5px; max-height: 100px; overflow-y: auto; font-size: 11px; color: #aaa; border: 1px solid #444;">
-                                <em style="color: #666;">No requirements defined.</em>
-                            </div>
-                        </div>
+
                         <div class="form-group">
                             <label style="font-size: 11px;">Requirements</label>
                             <div id="task-requirements-list" style="background: #222; padding: 5px; max-height: 100px; overflow-y: auto; font-size: 11px; color: #aaa; border: 1px solid #444; margin-bottom: 5px;">
@@ -705,7 +700,7 @@ export class NeedNodeModal {
             titleInput.value = '';
             descInput.value = '';
             document.getElementById('new-task-form').style.display = 'none';
-            document.getElementById('new-task-form').style.display = 'none';
+
             document.getElementById('btn-show-create-task').style.display = 'block';
             document.getElementById('btn-edit-task').style.display = 'block';
         } else {

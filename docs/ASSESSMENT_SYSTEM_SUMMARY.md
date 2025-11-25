@@ -27,7 +27,7 @@ Successfully implemented a comprehensive assessment and task management system f
 - **SCORM Integration**: Reports scores to LMS via `ScormClient.js`
 
 ### 3. Assessment Tasks ✅
-Created `data/AssessmentTasks.js` with **12 comprehensive learning tasks**:
+Created `data/AssessmentTasks.js` with **20 comprehensive learning tasks**:
 
 #### Level 1: Fundamentals (2 tasks)
 1. **Hello World** - Print message on BeginPlay
@@ -49,12 +49,17 @@ Created `data/AssessmentTasks.js` with **12 comprehensive learning tasks**:
 11. **Simple State Machine** - Manage game states
 12. **Mini Game Logic** - Complete scoring system with win condition
 
-#### Existing Sample Tasks (3 tasks)
-- Sample Task: Health Initialization
-- Level 1 Task 1: Health Initialization (detailed)
-- Level 1 Task 2: Print Message
+#### Level 5: Advanced Patterns (8 tasks)
+13. **One-Time Initialization** - Use DoOnce for single execution
+14. **Gate Flow Control** - Control execution with Gate nodes
+15. **Loop Iteration** - Use ForLoop to count and iterate
+16. **Sequential Execution** - Execute operations in order with Sequence
+17. **Boolean Logic Gates** - Use AND/OR logic for conditions
+18. **Toggle Behavior** - Alternate states with FlipFlop
+19. **Type Conversion** - Convert Int → Float → String
+20. **Advanced Calculator** - Build multi-operation calculator
 
-**Total: 15 learning tasks** across 4 difficulty levels!
+**Total: 20 learning tasks** across 5 difficulty levels!
 
 ### 4. Enhanced Task Manager UI ✅
 **Improvements to `ui/TaskController.js`**:
@@ -111,12 +116,30 @@ UE5LMSBlueprint-main/
 
 ## Next Steps (Optional Enhancements)
 
-1. **More Tasks**: Add Level 2, 3, 4 tasks with increasing complexity
-2. **Hints System**: Provide contextual hints for struggling students
-3. **Save Progress**: Persist task progress across sessions
-4. **Leaderboard**: Track completion times and scores
-5. **Custom Validators**: Add more validation types (e.g., pin literal values)
-6. **Task Editor**: UI for instructors to create tasks without coding
+1. ~~**More Tasks**~~: ✅ **COMPLETED** - Added 8 Level 5 tasks (DoOnce, Gate, ForLoop, Sequence, Boolean Logic, FlipFlop, Type Conversion, Calculator)
+2. ~~**Missing Nodes**~~: ✅ **COMPLETED** - Added SubtractInt, MultiplyInt, DivideInt, comparison operators (>, <, >=, <=, ==, !=), and Append (string concatenation)
+3. **Hints System**: Provide contextual hints for struggling students
+4. **Save Progress**: Persist task progress across sessions
+5. **Leaderboard**: Track completion times and scores
+6. **Custom Validators**: Add more validation types (e.g., pin literal values)
+7. **Task Editor**: UI for instructors to create tasks without coding
+
+## Recent Updates (2025-11-25)
+
+### New Nodes Added:
+- **Integer Math**: SubtractInt, MultiplyInt, DivideInt
+- **Comparison**: Greater (>), GreaterEqual (>=), Less (<), LessEqual (<=), EqualEqual (==), NotEqual (!=)
+- **String**: Append (concatenation)
+
+### New Tasks Added (Level 5):
+- Task 13: One-Time Initialization (DoOnce)
+- Task 14: Gate Flow Control
+- Task 15: Loop Iteration (ForLoop)
+- Task 16: Sequential Execution (Sequence)
+- Task 17: Boolean Logic Gates (AND/OR)
+- Task 18: Toggle Behavior (FlipFlop)
+- Task 19: Type Conversion
+- Task 20: Advanced Calculator
 
 ## Testing
 

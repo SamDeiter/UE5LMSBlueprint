@@ -293,6 +293,39 @@ export const NodeDefinitions = {
             { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
         ]
     },
+    "SubtractInt": {
+        title: "Subtract (Integer)",
+        type: "pure-node",
+        category: "Math|Integer",
+        icon: "-",
+        pins: [
+            { id: "a_in", name: "A", type: "int", dir: "in" },
+            { id: "b_in", name: "B", type: "int", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "MultiplyInt": {
+        title: "Multiply (Integer)",
+        type: "pure-node",
+        category: "Math|Integer",
+        icon: "×",
+        pins: [
+            { id: "a_in", name: "A", type: "int", dir: "in" },
+            { id: "b_in", name: "B", type: "int", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "DivideInt": {
+        title: "Divide (Integer)",
+        type: "pure-node",
+        category: "Math|Integer",
+        icon: "÷",
+        pins: [
+            { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 1 },
+            { id: "b_in", name: "B", type: "int", dir: "in", defaultValue: 1 },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
     "AddFloat": {
         title: "Add (Float)",
         type: "pure-node",
@@ -368,6 +401,85 @@ export const NodeDefinitions = {
         pins: [
             { id: "a_in", name: "A", type: "bool", dir: "in", defaultValue: false },
             { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    // --- COMPARISON OPERATORS ---
+    "Greater": {
+        title: "> (Greater)",
+        type: "pure-node",
+        category: "Math|Comparison",
+        icon: "\u003e",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    "GreaterEqual": {
+        title: ">= (Greater or Equal)",
+        type: "pure-node",
+        category: "Math|Comparison",
+        icon: "≥",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    "Less": {
+        title: "< (Less)",
+        type: "pure-node",
+        category: "Math|Comparison",
+        icon: "\u003c",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    "LessEqual": {
+        title: "<= (Less or Equal)",
+        type: "pure-node",
+        category: "Math|Comparison",
+        icon: "≤",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    "EqualEqual": {
+        title: "== (Equal)",
+        type: "pure-node",
+        category: "Math|Comparison",
+        icon: "=",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    "NotEqual": {
+        title: "!= (Not Equal)",
+        type: "pure-node",
+        category: "Math|Comparison",
+        icon: "≠",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    // --- STRING OPERATIONS ---
+    "Append": {
+        title: "Append",
+        type: "pure-node",
+        category: "String",
+        icon: "+",
+        pins: [
+            { id: "a_in", name: "A", type: "string", dir: "in", defaultValue: "" },
+            { id: "b_in", name: "B", type: "string", dir: "in", defaultValue: "" },
+            { id: "ret_out", name: "Return Value", type: "string", dir: "out" }
         ]
     },
     // --- UTILITY ---

@@ -299,7 +299,29 @@ export class ActionMenu {
             const nodeData = nodeRegistry.get(name);
             const li = document.createElement('div');
             li.className = 'menu-item';
-            li.textContent = nodeData.title || name;
+
+            const title = nodeData.title || name;
+
+            // Highlight matching text if there's a filter
+            if (filter && filter.length > 0) {
+                const lowerTitle = title.toLowerCase();
+                const lowerFilter = filter.toLowerCase();
+                const index = lowerTitle.indexOf(lowerFilter);
+
+                if (index !== -1) {
+                    // Split the title into parts: before match, match, after match
+                    const before = title.substring(0, index);
+                    const match = title.substring(index, index + filter.length);
+                    const after = title.substring(index + filter.length);
+
+                    li.innerHTML = `${before}<span style="background-color: #4CAF50; color: #000; font-weight: bold; padding: 0 2px;">${match}</span>${after}`;
+                } else {
+                    li.textContent = title;
+                }
+            } else {
+                li.textContent = title;
+            }
+
             li.style.paddingLeft = '20px'; // Base indent, will be overridden
             li.addEventListener('click', () => {
                 // Special handling for NeedNode - open modal for configuration
@@ -331,9 +353,12 @@ export class ActionMenu {
         };
 
         // 3. Render tree using shared helper
+        // Auto-expand all categories when filtering
+        const shouldAutoExpand = filter && filter.length > 0;
         renderCategoryTree(root, this.list, createMenuItem, {
             menuStyle: true, // Use menu styling
-            sortCategories: true
+            sortCategories: true,
+            autoExpand: shouldAutoExpand // Auto-expand when searching
         });
 
         if (this.list.children.length === 0) {

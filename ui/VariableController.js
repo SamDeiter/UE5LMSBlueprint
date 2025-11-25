@@ -837,4 +837,21 @@ export class VariableController {
         this.renderPanel();
         this.updateNodeLibrary();
     }
+
+    clearAllVariables() {
+        // Remove all Get/Set nodes from the node registry
+        const allKeys = Object.keys(nodeRegistry.getAll());
+        for (const key of allKeys) {
+            if (key.startsWith('Get_') || key.startsWith('Set_')) {
+                nodeRegistry.unregister(key);
+            }
+        }
+
+        // Clear the variables map
+        this.variables.clear();
+
+        // Re-render the panel
+        this.renderPanel();
+        this.app.palette.populateList();
+    }
 }

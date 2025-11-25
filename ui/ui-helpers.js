@@ -116,7 +116,8 @@ export function renderCategoryTree(node, container, renderItemFn, options = {}) 
         itemIndent = 20,
         sortCategories = true,
         menuStyle = false,  // Use menu-item style instead of sidebar style
-        headerStyle = {}
+        headerStyle = {},
+        autoExpand = false  // Auto-expand all categories (useful for search)
     } = options;
 
     // Render subcategories
@@ -129,13 +130,13 @@ export function renderCategoryTree(node, container, renderItemFn, options = {}) 
         section.className = sectionClass;
 
         const content = document.createElement('div');
-        content.style.display = 'none'; // Collapsed by default
+        content.style.display = autoExpand ? 'block' : 'none'; // Auto-expand if option is set
 
         // Create collapsible header with appropriate styling
         const headerOpts = {
             className: menuStyle ? 'menu-item menu-header-toggle' : headerClass,
             depth,
-            isExpanded: false,
+            isExpanded: autoExpand, // Set initial expanded state based on autoExpand
             style: menuStyle ? {
                 fontWeight: 'bold',
                 display: 'flex',

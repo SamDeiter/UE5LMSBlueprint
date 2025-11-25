@@ -308,6 +308,249 @@ If you're stuck:
 **Bronze Level**: Complete all Level 1 tasks
 **Silver Level**: Complete all Level 1 & 2 tasks  
 **Gold Level**: Complete all Level 1, 2 & 3 tasks
-**Platinum Level**: Complete ALL tasks (1-12)
+**Platinum Level**: Complete ALL tasks (1-20)
+
+---
+
+## 📕 LEVEL 5: ADVANCED PATTERNS
+
+### Task 13: One-Time Initialization
+**Objective:** Use DoOnce to ensure code only runs once.
+
+**Steps:**
+1. Add **Event BeginPlay** node
+2. Add **DoOnce** node
+3. Connect BeginPlay execution to DoOnce input
+4. Add two **Print String** nodes
+5. Connect DoOnce "Completed" output to first Print String ("Initialized!")
+6. (Optional) Add another path that tries to trigger DoOnce again
+
+**Learning Goals:**
+- One-time execution patterns
+- Preventing duplicate initialization
+- DoOnce vs regular execution
+
+---
+
+### Task 14: Gate Flow Control
+**Objective:** Use a Gate to control when execution can pass through.
+
+**Steps:**
+1. Add **Gate** node
+2. Add **Event BeginPlay** node
+3. Connect BeginPlay to Gate's "Open" input
+4. Add **Custom Event** node (name it "TryPass")
+5. Connect Custom Event to Gate's "Enter" input
+6. Add **Print String** node
+7. Connect Gate's "Exit" output to Print String
+
+**Learning Goals:**
+- Flow control gates
+- Opening/closing execution paths
+- Event-driven gating
+
+---
+
+### Task 15: Loop Iteration
+**Objective:** Use a ForLoop to count from 0 to 10.
+
+**Steps:**
+1. Add **Event BeginPlay** node
+2. Add **ForLoop** node
+3. Set "First Index" to 0
+4. Set "Last Index" to 10
+5. Connect BeginPlay to ForLoop
+6. Add **Print String** node
+7. Connect ForLoop "Loop Body" to Print String
+8. Connect ForLoop "Index" output to Print String input (will need conversion)
+
+**Learning Goals:**
+- Loop iteration
+- Index tracking
+- Repeated execution
+
+---
+
+### Task 16: Sequential Execution
+**Objective:** Execute multiple operations in order using Sequence.
+
+**Steps:**
+1. Add **Event BeginPlay** node
+2. Add **Sequence** node
+3. Connect BeginPlay to Sequence
+4. Add two **Print String** nodes
+5. Set first Print String text to "First"
+6. Set second Print String text to "Second"
+7. Connect Sequence "Then 0" to first Print String
+8. Connect Sequence "Then 1" to second Print String
+
+**Learning Goals:**
+- Sequential execution
+- Ordered operations
+- Multiple execution paths
+
+---
+
+### Task 17: Boolean Logic Gates
+**Objective:** Use AND logic to check multiple conditions.
+
+**Steps:**
+1. Create Boolean variables: **HasKey**, **DoorUnlocked**
+2. Set both to true (for testing)
+3. Add **Get HasKey** and **Get DoorUnlocked** nodes
+4. Add **AND** logic node
+5. Connect both Get nodes to AND inputs
+6. Add **Branch** node
+7. Connect AND output to Branch condition
+8. Add **Print String** nodes for True/False branches
+
+**Learning Goals:**
+- Boolean logic operators
+- Multiple condition checking
+- AND/OR/NOT gates
+
+---
+
+### Task 18: Toggle Behavior
+**Objective:** Use FlipFlop to alternate between states.
+
+**Steps:**
+1. Add **Event BeginPlay** node
+2. Add **FlipFlop** node
+3. Connect BeginPlay to FlipFlop
+4. Add two **Print String** nodes
+5. Set first to "State A"
+6. Set second to "State B"
+7. Connect FlipFlop "A" output to first Print String
+8. Connect FlipFlop "B" output to second Print String
+
+**Learning Goals:**
+- Toggle patterns
+- State alternation
+- FlipFlop behavior
+
+---
+
+### Task 19: Type Conversion
+**Objective:** Convert between data types.
+
+**Steps:**
+1. Create Integer variable: **MyNumber** (set to 10)
+2. Add **Get MyNumber** node
+3. Add **To Float (Int)** conversion node
+4. Connect MyNumber to conversion
+5. Add **Multiply (Float)** node
+6. Set second input to 1.5
+7. Connect converted float to multiply
+8. Add **To String (Float)** conversion node
+9. Add **Print String** node
+10. Connect the conversion chain to print the result
+
+**Learning Goals:**
+- Type conversion
+- Int → Float → String
+- Data type compatibility
+
+---
+
+### Task 20: Advanced Calculator
+**Objective:** Build a calculator with multiple operations.
+
+**Steps:**
+1. Create Float variables: **A** (10.0), **B** (5.0)
+2. Create String variable: **Operation** ("+")
+3. Create Float variable: **Result**
+4. Add **Get Operation** node
+5. Add comparison nodes to check Operation value
+6. Add **Branch** nodes for each operation
+7. Add **Add (Float)**, **Subtract (Float)**, **Multiply (Float)** nodes
+8. Connect appropriate branches to each math operation
+9. Add **Set Result** node
+10. Add **Print String** to display result
+
+**Learning Goals:**
+- Complex branching logic
+- String-based operation selection
+- Complete calculator system
+
+---
+
+## 💡 Tips for Success
+
+### General Tips:
+- **Save Often**: Use Ctrl+S to save your work
+- **Test Frequently**: Click "Compile" to validate your graph
+- **Use Comments**: Right-click → Add Comment to organize your graph
+- **Clean Layout**: Keep your nodes organized and wires untangled
+
+### Debugging Tips:
+- **Print Debug Info**: Use Print String to see variable values
+- **Check Connections**: Ensure all pins are properly connected
+- **Verify Types**: Make sure data types match (int to int, float to float)
+- **Execution Flow**: Follow the white execution wires to trace logic
+
+### Common Mistakes:
+- ❌ Forgetting to connect execution pins
+- ❌ Mixing data types (int vs float)
+- ❌ Not setting default variable values
+- ❌ Connecting outputs to outputs (or inputs to inputs)
+
+---
+
+## 🎓 Learning Path
+
+**Recommended Order:**
+1. Complete all Level 1 tasks first
+2. Move to Level 2 only after mastering Level 1
+3. Practice each concept multiple times
+4. Try creating your own variations
+
+**Mastery Checklist:**
+- [ ] Can create and use variables
+- [ ] Understand execution vs data flow
+- [ ] Can use Branch nodes effectively
+- [ ] Can modify variables correctly
+- [ ] Can chain multiple operations
+- [ ] Can create custom events
+- [ ] Can work with different data types
+- [ ] Can build complete game systems
+- [ ] Can use advanced flow control (DoOnce, Gate, FlipFlop)
+- [ ] Can implement loops and iterations
+- [ ] Can perform type conversions
+
+---
+
+## 📊 Progress Tracking
+
+The Task Status panel shows:
+- **Progress Bar**: Visual completion percentage
+- **Requirements List**: Individual criteria with checkmarks
+- **Success Animation**: Trophy when task is complete
+
+**Validation:**
+- Click **Compile** to check your work
+- Green checkmarks = requirement met
+- Gray circles = requirement not met
+- 100% = Task complete!
+
+---
+
+## 🆘 Getting Help
+
+If you're stuck:
+1. Review the task description carefully
+2. Check the requirements list for what's missing
+3. Look at the example screenshots (if provided)
+4. Ask your instructor for guidance
+5. Try a simpler task first to build confidence
+
+---
+
+## 🏆 Achievement Goals
+
+**Bronze Level**: Complete all Level 1 tasks
+**Silver Level**: Complete all Level 1 & 2 tasks  
+**Gold Level**: Complete all Level 1, 2 & 3 tasks
+**Platinum Level**: Complete ALL tasks (1-20)
 
 Good luck, and happy Blueprint building! 🎮

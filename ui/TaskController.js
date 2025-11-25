@@ -59,9 +59,25 @@ export class TaskController {
         this.selector.addEventListener('change', (e) => {
             const taskId = e.target.value;
             if (taskId) {
-                this.app.taskManager.setCurrentTask(taskId);
-                this.updateStatusPanel();
-                this.switchToStatusTab();
+                // Check if there are nodes in the graph
+                const hasNodes = this.app.graph.nodes.size > 0;
+
+                if (hasNodes) {
+                    // Ask user if they want to clear the graph
+                    this.showClearGraphConfirmation(() => {
+                        this.clearGraphAndLoadTask(taskId);
+                    }, () => {
+                        // User chose not to clear - just load the task
+                        this.app.taskManager.setCurrentTask(taskId);
+                        this.updateStatusPanel();
+                        this.switchToStatusTab();
+                    });
+                } else {
+                    // No nodes, just load the task
+                    this.app.taskManager.setCurrentTask(taskId);
+                    this.updateStatusPanel();
+                    this.switchToStatusTab();
+                }
             } else {
                 this.app.taskManager.clearTask();
                 this.updateStatusPanel();
@@ -217,5 +233,70 @@ export class TaskController {
                 document.head.appendChild(style);
             }
         }
+    }
+
+    clearGraphAndLoadTask(taskId) {
+        // Clear the graph completely
+        this.app.graph.nodes.clear();
+        this.app.wiring.links.clear();
+        this.app.graph.clearSelection();
+        this.app.wiring.clearLinkSelection();
+        this.app.graph.renderAllNodes();
+        this.app.graph.drawAllWires();
+        this.app.variables.clearAllVariables();
+
+        // Reset pan and zoom
+        this.app.graph.pan = { x: 0, y: 0 };
+        this.app.graph.zoom = 1;
+        this.app.graph.updateTransform();
+
+        // Load the new task
+        this.app.taskManager.setCurrentTask(taskId);
+        this.updateStatusPanel();
+        this.switchToStatusTab();
+
+        // Save the cleared state
+        this.app.persistence.autoSave();
+    }
+
+    showClearGraphConfirmation(onConfirm, onCancel) {
+        const modal = document.getElementById('confirmation-modal');
+        const message = document.getElementById('confirmation-msg');
+        const yesBtn = document.getElementById('confirm-yes-btn');
+        const noBtn = document.getElementById('confirm-no-btn');
+
+        // Store original values to restore later
+        const originalYesText = yesBtn.textContent;
+        const originalYesColor = yesBtn.style.backgroundColor;
+
+        // Set custom text for clear graph confirmation
+        message.textContent = 'Clear the current graph to start this task fresh?';
+        yesBtn.textContent = 'Clear Graph';
+        yesBtn.style.backgroundColor = '#4CAF50'; // Green for positive action
+
+        modal.style.display = 'flex';
+
+        const handleYes = () => {
+            modal.style.display = 'none';
+            // Reset to original values
+            yesBtn.textContent = originalYesText;
+            yesBtn.style.backgroundColor = originalYesColor;
+            yesBtn.removeEventListener('click', handleYes);
+            noBtn.removeEventListener('click', handleNo);
+            if (onConfirm) onConfirm();
+        };
+
+        const handleNo = () => {
+            modal.style.display = 'none';
+            // Reset to original values
+            yesBtn.textContent = originalYesText;
+            yesBtn.style.backgroundColor = originalYesColor;
+            yesBtn.removeEventListener('click', handleYes);
+            noBtn.removeEventListener('click', handleNo);
+            if (onCancel) onCancel();
+        };
+
+        yesBtn.addEventListener('click', handleYes);
+        noBtn.addEventListener('click', handleNo);
     }
 }
