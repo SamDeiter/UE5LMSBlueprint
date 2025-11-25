@@ -68,20 +68,6 @@ class BlueprintApp {
         BlueprintApp.grid = gridController;
 
         // 2. Data Model/UI Controllers
-        BlueprintApp.wiring = new WiringController(graphSvgEl, BlueprintApp);
-
-        // Initialize Components BEFORE Variables because VariableController depends on Components
-        BlueprintApp.components = new Map();
-        BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
-
-        BlueprintApp.variables = new VariableController(BlueprintApp);
-        BlueprintApp.palette = new PaletteController(BlueprintApp);
-        BlueprintApp.details = new DetailsController(BlueprintApp);
-
-        // 3. Service Controllers
-        // Pass BlueprintApp class, but controllers internally rely on the static props assigned above
-        BlueprintApp.history = new HistoryManager(BlueprintApp);
-        BlueprintApp.persistence = new Persistence(BlueprintApp);
         BlueprintApp.actionMenu = new ActionMenu(BlueprintApp);
         BlueprintApp.contextMenu = new ContextMenu(BlueprintApp);
         BlueprintApp.compiler = new Compiler(BlueprintApp);
