@@ -2,6 +2,7 @@
  * Handles the runtime execution of the Blueprint graph.
  * Traversing execution pins and evaluating data dependencies.
  */
+import { scormClient } from './ScormClient.js';
 export class SimulationEngine {
     constructor(app) {
         this.app = app;
@@ -35,6 +36,9 @@ export class SimulationEngine {
         startNodes.forEach(node => {
             this.executeFlow(node);
         });
+
+        // After execution, evaluate NeedNodes and report to SCORM
+        this.evaluateNeedNodes();
     }
 
     /** Stops the simulation. */
@@ -210,5 +214,144 @@ export class SimulationEngine {
         }
 
         return null;
+    }
+
+    /**
+     * Evaluates all NeedNodes in the graph and reports scores to SCORM LMS
+     */
+    evaluateNeedNodes() {
+        // Find all NeedNodes in the graph
+        const needNodes = [...this.app.graph.nodes.values()].filter(n => n.nodeKey === 'NeedNode');
+
+        if (needNodes.length === 0) {
+            this.log("No NeedNodes found for assessment.");
+            return;
+        }
+
+        this.log(`\n--- Assessment Results ---`, "success");
+
+        let totalScore = 0;
+        let totalWeight = 0;
+        const results = [];
+
+        // Evaluate each NeedNode
+        needNodes.forEach(node => {
+            const needData = node.customData?.needNodeData || node.needNodeData;
+            if (!needData || !needData.criteria) {
+                this.log(`NeedNode "${node.title}" has no criteria configured.`, "error");
+                return;
+            }
+
+            // For now, we'll use a simple validation based on graph structure
+            // In a real implementation, this would check actual blueprint logic
+            const validatedCriteria = needData.criteria.map(criterion => {
+                // Placeholder validation - in production, this would check:
+                // - Node connections
+                // - Variable values
+                // - Component configurations
+                // For demo purposes, we'll mark criteria as passed randomly or based on simple rules
+                const passed = this.validateCriterion(criterion, node);
+                return { ...criterion, passed };
+            });
+
+            // Calculate score for this NeedNode
+            const passedCount = validatedCriteria.filter(c => c.passed).length;
+            const nodeScore = validatedCriteria.length > 0
+                ? Math.round((passedCount / validatedCriteria.length) * 100)
+                : 0;
+
+            const isPassing = nodeScore >= needData.passThreshold;
+
+            // Log results
+            this.log(`\nNeedNode: "${needData.title}"`);
+            this.log(`  Score: ${nodeScore}% (Threshold: ${needData.passThreshold}%)`);
+            this.log(`  Status: ${isPassing ? '✅ PASSED' : '❌ FAILED'}`, isPassing ? 'success' : 'error');
+
+            validatedCriteria.forEach(c => {
+                this.log(`    ${c.passed ? '✅' : '❌'} ${c.description}`);
+            });
+
+            // Accumulate for overall score
+            totalScore += nodeScore;
+            totalWeight += 100;
+
+            results.push({
+                title: needData.title,
+                score: nodeScore,
+                threshold: needData.passThreshold,
+                passed: isPassing,
+                criteria: validatedCriteria
+            });
+        });
+
+        // Calculate overall score
+        const overallScore = totalWeight > 0 ? Math.round(totalScore / needNodes.length) : 0;
+        const allPassed = results.every(r => r.passed);
+
+        this.log(`\n--- Overall Assessment ---`, "success");
+        this.log(`Overall Score: ${overallScore}%`);
+        this.log(`Status: ${allPassed ? '✅ ALL REQUIREMENTS MET' : '❌ SOME REQUIREMENTS NOT MET'}`,
+            allPassed ? 'success' : 'error');
+
+        // Report to SCORM LMS
+        this.reportToSCORM(overallScore, allPassed);
+    }
+
+    /**
+     * Validates a single criterion (placeholder implementation)
+     * In production, this would check actual blueprint logic
+     */
+    validateCriterion(criterion) {
+        // Placeholder validation logic
+        // In a real implementation, this would:
+        // 1. Parse the criterion description
+        // 2. Check if specific nodes/connections exist
+        // 3. Validate variable values
+        // 4. Check component configurations
+
+        // For demo: check if criterion mentions specific keywords and validate against graph
+        const description = criterion.description.toLowerCase();
+
+        // Example: Check if "light" component exists
+        if (description.includes('light')) {
+            const hasLight = [...this.app.components.values()].some(c =>
+                c.name.toLowerCase().includes('light')
+            );
+            return hasLight;
+        }
+
+        // Example: Check if "beginplay" is connected
+        if (description.includes('beginplay')) {
+            const beginPlayNodes = [...this.app.graph.nodes.values()].filter(n =>
+                n.nodeKey === 'EventBeginPlay'
+            );
+            return beginPlayNodes.some(n => n.pinsOut.some(p => p.isConnected()));
+        }
+
+        // Default: return true for demo purposes
+        return true;
+    }
+
+    /**
+     * Reports assessment results to SCORM LMS
+     */
+    reportToSCORM(score, passed) {
+        // Initialize SCORM if not already done
+        if (!scormClient.initialized) {
+            const initialized = scormClient.initialize();
+            if (!initialized) {
+                this.log("\n[SCORM] API not available (local development mode)");
+                this.log("[SCORM] Would report: Score=${score}%, Status=${passed ? 'passed' : 'failed'}");
+                return;
+            }
+        }
+
+        // Set score and success status
+        scormClient.setScore(score);
+        scormClient.setSuccess(passed);
+        scormClient.setCompletionStatus('completed');
+        scormClient.commit();
+
+        this.log(`\n[SCORM] ✅ Reported to LMS: Score=${score}%, Status=${passed ? 'passed' : 'failed'}`, "success");
     }
 }

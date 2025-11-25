@@ -150,6 +150,16 @@ class Node {
             });
         }
 
+        // NeedNode double-click to open configuration modal
+        if (this.nodeKey === 'NeedNode') {
+            header.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                if (this.app.needNodeModal) {
+                    this.app.needNodeModal.open(this);
+                }
+            });
+        }
+
         element.appendChild(header);
 
         const content = document.createElement('div');
@@ -195,6 +205,34 @@ class Node {
                     row.appendChild(spacer);
                 }
                 content.appendChild(row);
+            }
+        }
+
+        // NeedNode Visualization: Show criteria checklist
+        if (this.nodeKey === 'NeedNode' && this.customData && this.customData.needNodeData) {
+            const needData = this.customData.needNodeData;
+            if (!needData.hidden && needData.criteria && needData.criteria.length > 0) {
+                const criteriaContainer = document.createElement('div');
+                criteriaContainer.className = 'need-node-criteria';
+                criteriaContainer.style.cssText = 'padding: 8px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px;';
+
+                needData.criteria.forEach(c => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display: flex; gap: 6px; margin-bottom: 4px; align-items: center; color: #ccc;';
+
+                    // Status icon (updated by simulation)
+                    const icon = document.createElement('span');
+                    icon.textContent = c.passed ? '✅' : '⬜'; // Checkmark or empty box
+
+                    const text = document.createElement('span');
+                    text.textContent = c.description;
+
+                    row.appendChild(icon);
+                    row.appendChild(text);
+                    criteriaContainer.appendChild(row);
+                });
+
+                content.appendChild(criteriaContainer);
             }
         }
 

@@ -2,7 +2,8 @@
 Add debug logging to component deletion
 """
 
-with open('app.js', 'r', encoding='utf-8') as f:
+# This script has been consolidated into tools/ue5lms_tools.py
+
     content = f.read()
 
 old_deletion = """                // --- PRIORITY 2: CHECK FOR COMPONENT DELETION ---

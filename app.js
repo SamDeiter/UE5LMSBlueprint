@@ -6,7 +6,7 @@
 
 // Import all controllers
 import { WiringController, GraphController } from './graph/index.js';
-import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController } from './ui.js';
+import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
 import { TestRunner, registerTests } from './tests.js?v=2';
@@ -95,6 +95,9 @@ class BlueprintApp {
 
         // 7. Task UI Controller
         BlueprintApp.taskUI = new TaskController(BlueprintApp);
+
+        // 8. NeedNode Modal
+        BlueprintApp.needNodeModal = new NeedNodeModal(BlueprintApp);
 
         // 4. Test Runner
         BlueprintApp.testRunner = new TestRunner(BlueprintApp);

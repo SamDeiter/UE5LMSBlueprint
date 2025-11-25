@@ -100,8 +100,21 @@ export class GraphInteraction {
         }
         else if (data.startsWith('PALETTE_NODE:')) {
             const nodeType = data.split(':')[1];
-            this.controller.addNode(nodeType, graphCoords.x, graphCoords.y);
-            this.app.persistence.autoSave();
+
+            // Special handling for NeedNode - open modal for configuration
+            if (nodeType === 'NeedNode') {
+                if (this.app.needNodeModal) {
+                    // Store the drop location for later use
+                    this.app.needNodeModal._pendingLocation = graphCoords;
+                    this.app.needNodeModal.open();
+                } else {
+                    this.controller.addNode(nodeType, graphCoords.x, graphCoords.y);
+                    this.app.persistence.autoSave();
+                }
+            } else {
+                this.controller.addNode(nodeType, graphCoords.x, graphCoords.y);
+                this.app.persistence.autoSave();
+            }
         }
     }
 

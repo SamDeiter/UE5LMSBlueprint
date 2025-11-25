@@ -1,4 +1,5 @@
-with open('app.js', 'r', encoding='utf-8') as f:
+# This script has been consolidated into tools/ue5lms_tools.py
+
     content = f.read()
 
 # Find and replace the Delete key handler to add component deletion support
