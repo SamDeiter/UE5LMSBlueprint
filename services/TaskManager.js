@@ -1,3 +1,4 @@
+
 /**
  * TaskManager - Manages task selection, validation, and progress tracking
  */
@@ -64,6 +65,10 @@ export class TaskManager {
 
         if (updatedTask.requirements) {
             newProps.requirements = updatedTask.requirements;
+        }
+
+        if (updatedTask.graphData) {
+            newProps.graphData = updatedTask.graphData;
         }
 
         this.tasks[index] = {

@@ -1,6 +1,8 @@
 /**
  * NeedNodeModal - UI for creating and editing NeedNode assessment criteria
  */
+import { ValidatorTypes } from '../services/GraphValidator.js';
+
 export class NeedNodeModal {
     constructor(app) {
         this.app = app;
@@ -255,34 +257,172 @@ export class NeedNodeModal {
     }
 
     /**
-     * Add a criterion input row
+     * Add a criterion input row with structured validation rules
      * @param {Object} criterion - Existing criterion data (optional)
      */
     addCriterion(criterion = null) {
         const criteriaList = document.getElementById('criteria-list');
-        // Removed unused criterionId
 
         const row = document.createElement('div');
         row.className = 'criterion-row';
-        row.style.cssText = 'display: flex; gap: 8px; margin-bottom: 8px; align-items: center;';
+        row.style.cssText = 'display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; padding: 10px; background: #2a2a2a; border: 1px solid #444; border-radius: 4px;';
 
-        row.innerHTML = `
-            <input 
-                type="text" 
-                class="criterion-input" 
-                placeholder="e.g., Light component is connected to BeginPlay"
-                value="${criterion ? criterion.description : ''}"
-                style="flex: 1;"
-            />
-            <button type="button" class="btn-icon criterion-delete" title="Delete criterion">🗑️</button>
+        // Validator Type Dropdown
+        const typeRow = document.createElement('div');
+        typeRow.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+
+        const typeLabel = document.createElement('label');
+        typeLabel.textContent = 'Rule Type:';
+        typeLabel.style.cssText = 'min-width: 80px; font-size: 12px; color: #ccc;';
+
+        const typeSelect = document.createElement('select');
+        typeSelect.className = 'criterion-type-select';
+        typeSelect.style.cssText = 'flex: 1; font-size: 12px; background: #1a1a1a; color: white; border: 1px solid #555; padding: 4px; border-radius: 2px;';
+        typeSelect.innerHTML = `
+            <option value="">-- Select Validation Type --</option>
+            <option value="${ValidatorTypes.NODE_EXISTS}">Check Node Exists</option>
+            <option value="${ValidatorTypes.PIN_CONNECTED}">Check Pin Connected</option>
+            <option value="${ValidatorTypes.VARIABLE_VALUE}">Check Variable Value</option>
+            <option value="${ValidatorTypes.COMPONENT_EXISTS}">Check Component Exists</option>
         `;
 
+        if (criterion && criterion.type) {
+            typeSelect.value = criterion.type;
+        }
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn-icon criterion-delete';
+        deleteBtn.title = 'Delete criterion';
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.style.cssText = 'padding: 4px 8px; background: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer;';
+
+        typeRow.appendChild(typeLabel);
+        typeRow.appendChild(typeSelect);
+        typeRow.appendChild(deleteBtn);
+        row.appendChild(typeRow);
+
+        // Parameters Container (dynamically populated based on type)
+        const paramsContainer = document.createElement('div');
+        paramsContainer.className = 'criterion-params';
+        paramsContainer.style.cssText = 'display: flex; flex-direction: column; gap: 6px; padding-left: 10px;';
+        row.appendChild(paramsContainer);
+
+        // Description Field
+        const descRow = document.createElement('div');
+        descRow.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+
+        const descLabel = document.createElement('label');
+        descLabel.textContent = 'Description:';
+        descLabel.style.cssText = 'min-width: 80px; font-size: 12px; color: #ccc;';
+
+        const descInput = document.createElement('input');
+        descInput.type = 'text';
+        descInput.className = 'criterion-description';
+        descInput.placeholder = 'User-friendly description of this requirement';
+        descInput.value = criterion ? (criterion.description || '') : '';
+        descInput.style.cssText = 'flex: 1; font-size: 12px; background: #1a1a1a; color: white; border: 1px solid #555; padding: 4px; border-radius: 2px;';
+
+        descRow.appendChild(descLabel);
+        descRow.appendChild(descInput);
+        row.appendChild(descRow);
+
+        // Event: Type change updates parameter fields
+        typeSelect.addEventListener('change', () => {
+            this.renderParameterFields(typeSelect.value, paramsContainer, criterion);
+        });
+
         // Delete button
-        row.querySelector('.criterion-delete').addEventListener('click', () => {
+        deleteBtn.addEventListener('click', () => {
             row.remove();
         });
 
         criteriaList.appendChild(row);
+
+        // Initialize parameter fields if criterion has a type
+        if (criterion && criterion.type) {
+            this.renderParameterFields(criterion.type, paramsContainer, criterion);
+        }
+    }
+
+    /**
+     * Render dynamic parameter fields based on validator type
+     * @param {string} validatorType - The selected validator type
+     * @param {HTMLElement} container - The container to render fields into
+     * @param {Object} criterion - Existing criterion data for pre-filling
+     */
+    renderParameterFields(validatorType, container, criterion = null) {
+        container.innerHTML = ''; // Clear existing fields
+
+        if (!validatorType) return;
+
+        const params = criterion ? criterion.params || {} : {};
+
+        const createField = (label, inputType, name, value, placeholder = '', options = null) => {
+            const fieldRow = document.createElement('div');
+            fieldRow.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+
+            const fieldLabel = document.createElement('label');
+            fieldLabel.textContent = label + ':';
+            fieldLabel.style.cssText = 'min-width: 100px; font-size: 11px; color: #aaa;';
+
+            let input;
+            if (inputType === 'select' && options) {
+                input = document.createElement('select');
+                input.innerHTML = options.map(opt =>
+                    `<option value="${opt.value}">${opt.label}</option>`
+                ).join('');
+                if (value !== undefined) input.value = value;
+            } else {
+                input = document.createElement('input');
+                input.type = inputType;
+                input.value = value !== undefined ? value : '';
+                input.placeholder = placeholder;
+            }
+
+            input.className = `criterion-param-${name}`;
+            input.dataset.paramName = name;
+            input.style.cssText = 'flex: 1; font-size: 11px; background: #111; color: white; border: 1px solid #444; padding: 3px 6px; border-radius: 2px;';
+
+            fieldRow.appendChild(fieldLabel);
+            fieldRow.appendChild(input);
+            container.appendChild(fieldRow);
+        };
+
+        switch (validatorType) {
+            case ValidatorTypes.NODE_EXISTS:
+                createField('Node Type', 'text', 'nodeKey', params.nodeKey, 'e.g., EventBeginPlay, PrintString');
+                createField('Minimum Count', 'number', 'count', params.count || 1, '1');
+                break;
+
+            case ValidatorTypes.PIN_CONNECTED:
+                createField('Node Type', 'text', 'nodeKey', params.nodeKey, 'e.g., EventBeginPlay');
+                createField('Pin ID', 'text', 'pinId', params.pinId, 'e.g., exec_out');
+                break;
+
+            case ValidatorTypes.VARIABLE_VALUE: {
+                // Get available variables for dropdown
+                const variables = this.app.variables ? Array.from(this.app.variables.variables.keys()) : [];
+                const varOptions = [
+                    { value: '', label: '-- Select Variable --' },
+                    ...variables.map(v => ({ value: v, label: v }))
+                ];
+                createField('Variable Name', 'select', 'name', params.name, '', varOptions);
+                createField('Expected Value', 'text', 'value', params.value, 'e.g., 10, "Hello"');
+                createField('Operator', 'select', 'operator', params.operator || '==', '', [
+                    { value: '==', label: 'Equals (==)' },
+                    { value: '!=', label: 'Not Equals (!=)' },
+                    { value: '>', label: 'Greater Than (>)' },
+                    { value: '<', label: 'Less Than (<)' }
+                ]);
+                break;
+            }
+
+            case ValidatorTypes.COMPONENT_EXISTS:
+                createField('Component Type', 'text', 'type', params.type, 'e.g., PointLight, Camera');
+                createField('Component Name', 'text', 'name', params.name, '(Optional) Specific component name');
+                break;
+        }
     }
 
     /**
@@ -295,15 +435,43 @@ export class NeedNodeModal {
         const hidden = document.getElementById('need-hidden').checked;
         const passThreshold = parseInt(document.getElementById('need-threshold').value);
 
-        // Collect criteria
-        const criteriaInputs = document.querySelectorAll('.criterion-input');
-        const criteria = Array.from(criteriaInputs)
-            .map((input, index) => ({
+        // Collect structured criteria
+        const criteriaRows = document.querySelectorAll('.criterion-row');
+        const criteria = Array.from(criteriaRows).map((row, index) => {
+            const typeSelect = row.querySelector('.criterion-type-select');
+            const descInput = row.querySelector('.criterion-description');
+            const paramsContainer = row.querySelector('.criterion-params');
+
+            const type = typeSelect ? typeSelect.value : '';
+            const desc = descInput ? descInput.value.trim() : '';
+
+            // Collect parameters based on type
+            const params = {};
+            if (paramsContainer && type) {
+                const paramInputs = paramsContainer.querySelectorAll('[data-param-name]');
+                paramInputs.forEach(input => {
+                    const paramName = input.dataset.paramName;
+                    let value = input.value;
+
+                    // Convert to appropriate type
+                    if (input.type === 'number') {
+                        value = parseInt(value) || 1;
+                    }
+
+                    if (value !== '' && value !== undefined) {
+                        params[paramName] = value;
+                    }
+                });
+            }
+
+            return {
                 id: `criterion-${index}`,
-                description: input.value.trim(),
+                type: type,
+                params: params,
+                description: desc,
                 passed: false
-            }))
-            .filter(c => c.description.length > 0);
+            };
+        }).filter(c => c.type && c.description.length > 0); // Only include criteria with type and description
 
         if (!title) {
             window.alert('Please enter a title for the Need Node');
@@ -311,7 +479,7 @@ export class NeedNodeModal {
         }
 
         if (criteria.length === 0) {
-            window.alert('Please add at least one criterion');
+            window.alert('Please add at least one criterion with a type and description');
             return;
         }
 

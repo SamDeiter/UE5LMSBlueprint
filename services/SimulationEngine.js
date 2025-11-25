@@ -3,6 +3,8 @@
  * Traversing execution pins and evaluating data dependencies.
  */
 import { scormClient } from './ScormClient.js';
+import { GraphValidator } from './GraphValidator.js';
+
 export class SimulationEngine {
     constructor(app) {
         this.app = app;
@@ -11,6 +13,7 @@ export class SimulationEngine {
         this.stopBtn = document.getElementById('stop-btn');
         this.consoleOutput = document.getElementById('compiler-results');
         this.simInterval = null;
+        this.validator = new GraphValidator(app);
     }
 
     /** Starts the simulation. */
@@ -242,17 +245,8 @@ export class SimulationEngine {
                 return;
             }
 
-            // For now, we'll use a simple validation based on graph structure
-            // In a real implementation, this would check actual blueprint logic
-            const validatedCriteria = needData.criteria.map(criterion => {
-                // Placeholder validation - in production, this would check:
-                // - Node connections
-                // - Variable values
-                // - Component configurations
-                // For demo purposes, we'll mark criteria as passed randomly or based on simple rules
-                const passed = this.validateCriterion(criterion, node);
-                return { ...criterion, passed };
-            });
+            // Use GraphValidator to check criteria
+            const validatedCriteria = this.validator.validate(needData.criteria);
 
             // Calculate score for this NeedNode
             const passedCount = validatedCriteria.filter(c => c.passed).length;
@@ -297,40 +291,7 @@ export class SimulationEngine {
         this.reportToSCORM(overallScore, allPassed);
     }
 
-    /**
-     * Validates a single criterion (placeholder implementation)
-     * In production, this would check actual blueprint logic
-     */
-    validateCriterion(criterion) {
-        // Placeholder validation logic
-        // In a real implementation, this would:
-        // 1. Parse the criterion description
-        // 2. Check if specific nodes/connections exist
-        // 3. Validate variable values
-        // 4. Check component configurations
-
-        // For demo: check if criterion mentions specific keywords and validate against graph
-        const description = criterion.description.toLowerCase();
-
-        // Example: Check if "light" component exists
-        if (description.includes('light')) {
-            const hasLight = [...this.app.components.values()].some(c =>
-                c.name.toLowerCase().includes('light')
-            );
-            return hasLight;
-        }
-
-        // Example: Check if "beginplay" is connected
-        if (description.includes('beginplay')) {
-            const beginPlayNodes = [...this.app.graph.nodes.values()].filter(n =>
-                n.nodeKey === 'EventBeginPlay'
-            );
-            return beginPlayNodes.some(n => n.pinsOut.some(p => p.isConnected()));
-        }
-
-        // Default: return true for demo purposes
-        return true;
-    }
+    // validateCriterion removed - logic moved to GraphValidator.js
 
     /**
      * Reports assessment results to SCORM LMS

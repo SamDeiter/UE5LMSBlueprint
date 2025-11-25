@@ -2,6 +2,7 @@
  * GraphController class - Manages the graph editor, nodes, and user interactions.
  */
 import { Utils } from '../utils.js';
+import { generateGUID } from '../utils/guid.js';
 import { nodeRegistry } from '../registries/NodeRegistry.js';
 import { Pin } from './Pin.js';
 import { Node } from './Node.js';
@@ -44,7 +45,7 @@ class GraphController {
             }
         }
 
-        const id = Utils.uniqueId('node');
+        const id = generateGUID();
         const node = new Node(id, nodeData, x, y, nodeKey, this.app);
         this.nodes.set(id, node);
         const nodeEl = node.render();

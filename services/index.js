@@ -5,3 +5,4 @@ export { GridController } from './GridController.js';
 export { SimulationEngine } from './SimulationEngine.js';
 export { TaskManager } from './TaskManager.js';
 export { scormClient } from './ScormClient.js';
+export { GraphValidator, ValidatorTypes } from './GraphValidator.js';
