@@ -7,6 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import process from 'process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -167,7 +168,7 @@ function printReport(results) {
 /**
  * Suggest refactoring for large files
  */
-function suggestRefactoring(filePath, lines) {
+function suggestRefactoring(filePath) {
     console.log(`\n📋 Refactoring suggestions for ${filePath}:`);
 
     if (filePath.includes('Controller')) {
@@ -190,7 +191,7 @@ printReport(results);
 if (results.critical.length > 0 || results.exceeded.length > 0) {
     console.log('\n=== REFACTORING SUGGESTIONS ===\n');
     [...results.exceeded, ...results.critical].forEach(f => {
-        suggestRefactoring(f.path, f.lines);
+        suggestRefactoring(f.path);
     });
 }
 

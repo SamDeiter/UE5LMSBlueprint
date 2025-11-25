@@ -201,7 +201,7 @@ export class NeedNodeModal {
             if (!this.currentNode.customData) this.currentNode.customData = {};
             this.currentNode.customData.needNodeData = needNodeData;
 
-            const nodeEl = document.querySelector(`[data-node-id="${this.currentNode.id}"]`);
+            const nodeEl = document.getElementById(this.currentNode.id);
             if (nodeEl) {
                 const titleEl = nodeEl.querySelector('.node-title');
                 if (titleEl) titleEl.textContent = title;
@@ -210,20 +210,24 @@ export class NeedNodeModal {
         } else {
             // Create new node at the pending location
             if (this._pendingLocation) {
-                const nodeId = this.app.graph.addNode('NeedNode', this._pendingLocation.x, this._pendingLocation.y);
-                const node = this.app.graph.nodes.get(nodeId);
+                const node = this.app.graph.addNode('NeedNode', this._pendingLocation.x, this._pendingLocation.y);
                 if (node) {
                     if (!node.customData) node.customData = {};
                     node.customData.needNodeData = needNodeData;
 
-                    const nodeEl = document.querySelector(`[data-node-id="${nodeId}"]`);
+                    // Update the node title in the DOM
+                    const nodeEl = document.getElementById(node.id);
                     if (nodeEl) {
                         const titleEl = nodeEl.querySelector('.node-title');
                         if (titleEl) titleEl.textContent = title;
                     }
+                } else {
+                    console.error('Failed to create NeedNode - addNode returned null');
                 }
                 this._pendingLocation = null;
                 this.app.persistence.autoSave();
+            } else {
+                console.error('Cannot create NeedNode: _pendingLocation is not set!');
             }
         }
 

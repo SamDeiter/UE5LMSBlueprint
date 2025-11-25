@@ -302,6 +302,21 @@ export class ActionMenu {
             li.textContent = nodeData.title || name;
             li.style.paddingLeft = '20px'; // Base indent, will be overridden
             li.addEventListener('click', () => {
+                // Special handling for NeedNode - open modal for configuration
+                if (name === 'NeedNode') {
+                    if (this.app.needNodeModal) {
+                        this.app.needNodeModal._pendingLocation = this.graphPos;
+                        this.app.needNodeModal.open();
+                        this.hide();
+                    } else {
+                        console.warn('needNodeModal not found, creating node directly');
+                        this.app.graph.addNode(name, this.graphPos.x, this.graphPos.y);
+                        this.app.persistence.autoSave();
+                        this.hide();
+                    }
+                    return;
+                }
+
                 const newNode = this.app.graph.addNode(name, this.graphPos.x, this.graphPos.y);
                 if (this.sourcePin && newNode) {
                     const targetPin = newNode.pins.find(p => this.app.graph.canConnect(this.sourcePin, p));

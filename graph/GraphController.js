@@ -29,7 +29,10 @@ class GraphController {
 
     addNode(nodeKey, x, y) {
         const nodeData = nodeRegistry.get(nodeKey);
-        if (!nodeData) return null;
+        if (!nodeData) {
+            console.error(`NodeRegistry missing definition for ${nodeKey}`);
+            return null;
+        }
 
         // Check for Singleton
         if (nodeData.isSingleton) {
@@ -338,14 +341,13 @@ class GraphController {
             newPins.push(newPin);
         });
 
-        // 2. Cleanup pins/literals/links for pins that no longer exist (e.g., when changing variable type and pins change)
+        // 2. Cleanup pins/literals/links for pins that no longer exist
         oldPinsMap.forEach((oldPin, oldId) => {
             if (!newPins.some(p => p.id === oldId)) {
                 // Pin was removed: break its links
                 this.app.wiring.breakPinLinks(oldId);
             }
         });
-
 
         node.pins = newPins;
         node.pinLiterals = newLiterals;
