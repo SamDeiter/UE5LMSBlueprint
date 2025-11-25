@@ -125,8 +125,9 @@ export class Persistence {
         // --- CRITICAL FIX: Ensure graph and history are available before execution ---
         if (this.app.graph && this.app.history) {
             // This helper only ADDS nodes, then calls history.saveState to capture the new state
-            this.app.graph.addNode("EventBeginPlay", 50, 50);
-            this.app.graph.addNode("PrintString", 300, 50);
+            this.app.graph.addNode("EventBeginPlay", 200, 200);
+            this.app.graph.addNode("EventTick", 200, 400);
+            this.app.graph.addNode("EventActorBeginOverlap", 200, 600);
 
             // Capture the state immediately here. HistoryManager handles adding it to the stack.
             this.app.history.saveState('default graph load');

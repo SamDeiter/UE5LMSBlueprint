@@ -364,7 +364,10 @@ export class VariableController {
         eventGraphItem.className = 'tree-item';
         if (this.app.activeGraph === 'EventGraph') eventGraphItem.classList.add('selected');
         eventGraphItem.innerHTML = '<i class="fas fa-project-diagram" style="margin-right:6px; font-size:10px;"></i> EventGraph';
-        eventGraphItem.addEventListener('click', () => this.app.switchGraph('EventGraph'));
+        eventGraphItem.addEventListener('click', () => {
+            this.app.switchGraph('EventGraph');
+            this.renderPanel(); // Re-render to update selection
+        });
         graphsSection.content.appendChild(eventGraphItem);
 
         // Construction Script
@@ -372,7 +375,10 @@ export class VariableController {
         constScriptItem.className = 'tree-item';
         if (this.app.activeGraph === 'ConstructionScript') constScriptItem.classList.add('selected');
         constScriptItem.innerHTML = '<i class="fas fa-tools" style="margin-right:6px; font-size:10px;"></i> Construction Script';
-        constScriptItem.addEventListener('click', () => this.app.switchGraph('ConstructionScript'));
+        constScriptItem.addEventListener('click', () => {
+            this.app.switchGraph('ConstructionScript');
+            this.renderPanel(); // Re-render to update selection
+        });
         graphsSection.content.appendChild(constScriptItem);
 
         // 2. FUNCTIONS
@@ -604,7 +610,12 @@ export class VariableController {
                         this.app.details.currentVariable = null;
 
                         if (this.app.componentsController) {
-                            this.app.componentsController.selectComponent(comp.id);
+                            if (this.app.componentsController.selectedComponentId === comp.id) {
+                                this.app.componentsController.selectComponent(null);
+                                e.target.blur();
+                            } else {
+                                this.app.componentsController.selectComponent(comp.id);
+                            }
                         }
                     });
 

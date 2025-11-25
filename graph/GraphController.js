@@ -188,20 +188,26 @@ class GraphController {
     findPinById(pinId) {
         if (!pinId) return null;
         // The format is usually 'node-id-part1-pinName'
-        const parts = pinId.split('-');
-        if (parts.length < 2) return null;
-
-        // Find the node ID part, which could be 'node-XXXX' or similar
-        // We try to reconstruct the Node ID by iterating from the end
-        let nodeId = parts[0];
+        // We iterate keys to find the node ID that is a prefix of the pin ID.
+        // CRITICAL FIX: We must check for the separator '-' to avoid partial matches
+        // (e.g. 'node-1' matching 'node-10-pin').
 
         const nodeIds = Array.from(this.nodes.keys());
+        let nodeId = null;
 
         for (const id of nodeIds) {
-            if (pinId.startsWith(id)) {
+            // Check if pinId starts with "id-" to ensure we matched the full node ID
+            if (pinId.startsWith(id + '-')) {
                 nodeId = id;
                 break;
             }
+        }
+
+        // Fallback: if no dash found (unlikely for valid pins), try exact match or loose match
+        // but the strict check above solves the "node-1 vs node-10" issue.
+        if (!nodeId) {
+            // Try to see if the pinId IS the nodeId (edge case?)
+            if (this.nodes.has(pinId)) nodeId = pinId;
         }
 
         const node = this.nodes.get(nodeId);

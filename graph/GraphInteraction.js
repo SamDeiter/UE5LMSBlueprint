@@ -50,18 +50,6 @@ export class GraphInteraction {
                 this.app.wiring.deleteSelectedLinks();
             }
         }
-        if (e.key === 'd' && (e.ctrlKey || e.metaKey)) {
-            if (this.controller.selectedNodes.size > 0) {
-                e.preventDefault();
-                // We need to implement duplicateSelectedNodes in GraphController or here
-                // It was missing in the original file I read? 
-                // Ah, user mentioned restoring it in a previous conversation.
-                // I'll assume it exists on controller or I need to implement it.
-                if (this.controller.duplicateSelectedNodes) {
-                    this.controller.duplicateSelectedNodes();
-                }
-            }
-        }
     }
 
     handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
@@ -138,8 +126,10 @@ export class GraphInteraction {
             const pinId = pinElement.dataset.pinId;
             this.activePin = this.controller.findPinById(pinId);
 
-            if (e.altKey && this.activePin && this.activePin.isConnected()) {
-                this.app.wiring.breakPinLinks(this.activePin.id);
+            if (e.altKey && this.activePin) {
+                if (this.activePin.isConnected()) {
+                    this.app.wiring.breakPinLinks(this.activePin.id);
+                }
             }
 
             if (this.activePin && this.activePin.dir === 'in' && this.activePin.isConnected()) {
@@ -210,6 +200,10 @@ export class GraphInteraction {
 
             if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
                 this.controller.clearSelection();
+                // Deselect component if one is selected
+                if (this.app.componentsController && this.app.componentsController.selectedComponentId) {
+                    this.app.componentsController.selectComponent(null);
+                }
             }
 
             document.addEventListener('mousemove', this.handleGlobalMouseMove);
@@ -307,7 +301,7 @@ export class GraphInteraction {
             if (pinElement) {
                 const pinId = pinElement.dataset.pinId;
                 const targetPin = this.controller.findPinById(pinId);
-                if (targetPin && this.activePin) {
+                if (targetPin && this.activePin && targetPin.id !== this.activePin.id) {
                     this.app.wiring.createConnection(this.activePin, targetPin);
                 }
             } else {

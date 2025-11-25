@@ -73,6 +73,17 @@ export class GraphSwitcher {
             this.app.persistence.loadGraphData(newGraphData);
         }
 
+        // 5a. Populate Default Nodes if Empty (UE5 Style)
+        if (this.app.graph.nodes.size === 0) {
+            if (graphName === 'ConstructionScript') {
+                this.app.graph.addNode('ConstructionScript', 200, 200);
+            } else if (graphName === 'EventGraph') {
+                this.app.graph.addNode('EventBeginPlay', 200, 200);
+                this.app.graph.addNode('EventTick', 200, 400);
+                this.app.graph.addNode('EventActorBeginOverlap', 200, 600);
+            }
+        }
+
         // 5. Re-render
         this.app.graph.renderAllNodes();
         this.app.graph.drawAllWires();

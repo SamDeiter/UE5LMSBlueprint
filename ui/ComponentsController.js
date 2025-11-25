@@ -69,7 +69,7 @@ export class ComponentsController {
         if (this.listContainer) {
             const items = this.listContainer.querySelectorAll('.tree-item');
             items.forEach(item => {
-                if (item.dataset.componentId === id) {
+                if (id && item.dataset.componentId === id) {
                     item.classList.add('selected');
                 } else {
                     item.classList.remove('selected');
@@ -81,7 +81,7 @@ export class ComponentsController {
         if (this.app.variables && this.app.variables.panel) {
             const items = this.app.variables.panel.querySelectorAll('.tree-item[data-component-id]');
             items.forEach(item => {
-                if (item.dataset.componentId === id) {
+                if (id && item.dataset.componentId === id) {
                     item.classList.add('selected');
                 } else {
                     item.classList.remove('selected');
@@ -91,7 +91,11 @@ export class ComponentsController {
 
         // Sync with My Blueprint selection if possible, or just update details
         if (this.app.details) {
-            this.app.details.showComponentDetails(this.app.components.get(id));
+            if (id) {
+                this.app.details.showComponentDetails(this.app.components.get(id));
+            } else {
+                this.app.details.clear();
+            }
         }
     }
 
@@ -254,7 +258,15 @@ export class ComponentsController {
                     e.dataTransfer.effectAllowed = 'copy';
                 });
 
-                item.addEventListener('click', () => this.selectComponent(comp.id));
+                item.addEventListener('click', (e) => {
+                    if (this.selectedComponentId === comp.id) {
+                        // Deselect if already selected
+                        this.selectComponent(null);
+                        e.target.blur(); // Remove focus to prevent accidental deletion
+                    } else {
+                        this.selectComponent(comp.id);
+                    }
+                });
                 this.listContainer.appendChild(item);
             });
         }

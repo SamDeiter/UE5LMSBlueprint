@@ -36,6 +36,10 @@ class WiringController {
     }
     createConnection(pinA, pinB) {
         if (!pinA || !pinB) return;
+        if (pinA.node.id === pinB.node.id) {
+            console.warn('[Wiring] Cannot connect pins on the same node.');
+            return;
+        }
         const startPin = pinA.dir === 'out' ? pinA : pinB;
         const endPin = pinA.dir === 'in' ? pinA : pinB;
 
@@ -132,7 +136,17 @@ class WiringController {
     breakLinkById(linkId) {
         const link = this.links.get(linkId);
         if (!link) return;
-        const { startPin, endPin } = link;
+
+        // CRITICAL: Always look up the pins by ID to ensure we have the LATEST pin instances
+        // from the GraphController. Stale pin references in the link object can cause
+        // visual state desync (e.g. pin remaining filled after disconnect).
+        const startPinId = link.startPin.id;
+        const endPinId = link.endPin.id;
+
+        const startPin = this.app.graph.findPinById(startPinId) || link.startPin;
+        const endPin = this.app.graph.findPinById(endPinId) || link.endPin;
+
+        console.log(`[Wiring] Breaking link ${linkId} between ${startPin.id} and ${endPin.id}`);
 
         // Remove link ID from pins' link lists
         if (startPin && startPin.links) {
@@ -154,12 +168,28 @@ class WiringController {
         }
 
         // Re-render nodes to update pin dot appearance (full vs. hollow)
-        if (endPin) this.updateVisuals(endPin.node);
-        if (startPin) this.updateVisuals(startPin.node);
+        if (endPin && endPin.node) {
+            // Paranoid check: ensure link is gone
+            if (endPin.links.includes(linkId)) {
+                console.error(`[Wiring] Link ${linkId} still present in endPin ${endPin.id} after filter! Forcing removal.`);
+                endPin.links = endPin.links.filter(id => id !== linkId);
+            }
+            this.updateVisuals(endPin.node);
+            this.updatePinVisualState(endPin);
+        }
+        if (startPin && startPin.node) {
+            // Paranoid check: ensure link is gone
+            if (startPin.links.includes(linkId)) {
+                console.error(`[Wiring] Link ${linkId} still present in startPin ${startPin.id} after filter! Forcing removal.`);
+                startPin.links = startPin.links.filter(id => id !== linkId);
+            }
+            this.updateVisuals(startPin.node);
+            this.updatePinVisualState(startPin);
+        }
 
         requestAnimationFrame(() => {
-            if (endPin) this.app.graph.redrawNodeWires(endPin.node.id);
-            if (startPin) this.app.graph.redrawNodeWires(startPin.node.id);
+            if (endPin && endPin.node) this.app.graph.redrawNodeWires(endPin.node.id);
+            if (startPin && startPin.node) this.app.graph.redrawNodeWires(startPin.node.id);
             this.app.persistence.autoSave();
             this.app.compiler.markDirty();
         });
@@ -168,9 +198,16 @@ class WiringController {
      * Update the visual state of a pin (filled vs hollow) based on its connections
      */
     updatePinVisualState(pin) {
-        if (!pin || !pin.element) return;
+        if (!pin || !pin.element) {
+            console.warn('[Wiring] updatePinVisualState called with invalid pin or element', pin);
+            return;
+        }
 
-        const isConnected = pin.links && pin.links.length > 0;
+        const linkCount = pin.links ? pin.links.length : 0;
+        const isConnected = linkCount > 0;
+
+        console.log(`[Wiring] updatePinVisualState for ${pin.id}. Links: ${linkCount}. Connected: ${isConnected}`);
+
         if (isConnected) {
             pin.element.classList.remove('hollow');
         } else {
@@ -180,9 +217,23 @@ class WiringController {
 
     breakPinLinks(pinId) {
         const linksToBreak = this.findLinksByPinId(pinId);
+        console.log(`[Wiring] breakPinLinks for ${pinId}. Found ${linksToBreak.length} links.`);
         // Important: use link IDs to break, as breaking modifies the list
         linksToBreak.map(l => l.id).forEach(linkId => this.breakLinkById(linkId));
+        this.cleanupOrphanWires();
     }
+
+    cleanupOrphanWires() {
+        const wires = this.svgGroup.querySelectorAll('path.wire');
+        wires.forEach(wire => {
+            if (wire.id === 'ghost-wire') return;
+            if (!this.links.has(wire.id)) {
+                console.warn(`[Wiring] Removing orphan wire: ${wire.id}`);
+                wire.remove();
+            }
+        });
+    }
+
     drawWire(link) {
         const { startPin, endPin } = link;
 
@@ -231,7 +282,6 @@ class WiringController {
             return;
         }
 
-        console.log('[WiringController] Showing ghost wire for pin:', startPin.id);
         // Force display block
         this.ghostWire.style.display = 'block';
 
@@ -277,6 +327,7 @@ class WiringController {
             this.breakLinkById(linkId);
         });
         this.clearLinkSelection();
+        this.cleanupOrphanWires();
         this.app.persistence.autoSave();
     }
 }

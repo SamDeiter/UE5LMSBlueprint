@@ -92,7 +92,7 @@ export const NodeDefinitions = {
         category: "Events",
         icon: "fa-tools",
         isSingleton: true,
-        hidden: true,
+        hidden: false,
         pins: [
             { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
         ]

@@ -861,11 +861,11 @@ textarea:focus {
 }
 
 .pin-dot.hollow {
-    background-color: #1a1a1a !important;
+    background-color: transparent !important;
     border: 2px solid currentColor;
     width: 10px;
     height: 10px;
-    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.8);
+    box-shadow: none;
 }
 
 /* --- EXEC PIN STYLES (UPDATED: Hollow Arrow Style) --- */
@@ -2191,6 +2191,7 @@ div .var-eye-icon.active {
 #compile-btn.error i {
     color: #ff5555;
 }
+
 /* Component Selector Modal */
 .component-selector-modal {
     position: fixed;
@@ -2316,4 +2317,3 @@ div .var-eye-icon.active {
     width: 16px;
     text-align: center;
 }
-

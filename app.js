@@ -235,21 +235,10 @@ class BlueprintApp {
                 if (varToDelete) {
                     console.log("Deleting variable...");
                     BlueprintApp.variables.deleteVariable(varToDelete); // Triggers confirmation modal
-                }
-                else if (componentToDelete) {
+                } else if (componentToDelete) {
                     console.log("Deleting component...");
                     BlueprintApp.componentsController.deleteComponent(componentToDelete);
                 }
-                // 3. Check for selected nodes/links
-                else if (BlueprintApp.graph.selectedNodes.size > 0 || BlueprintApp.wiring.selectedLinks.size > 0) {
-                    console.log("Deleting graph selection...");
-                    BlueprintApp.graph.deleteSelectedNodes();
-                }
-            }
-
-            if (e.key === 'F7') {
-                e.preventDefault();
-                BlueprintApp.compiler.compile();
             }
         });
 

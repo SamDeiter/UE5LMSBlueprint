@@ -143,6 +143,15 @@ class Utils {
         };
         return conversions[key] || null;
     }
+    /**
+     * Checks if a pin type supports an inline input widget (literal value).
+     * @param {string} type - The logical pin type.
+     * @returns {boolean} True if the pin type supports an input widget.
+     */
+    static canHaveInputWidget(type) {
+        const supportedTypes = ['bool', 'byte', 'int', 'int64', 'float', 'name', 'string', 'text', 'vector', 'rotator', 'transform'];
+        return supportedTypes.includes(type.toLowerCase());
+    }
 }
 
 export { Utils };

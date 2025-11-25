@@ -424,6 +424,8 @@ class Node {
         const isDataPin = pin.type !== 'exec';
         const isConnected = pin.links.length > 0;
 
+
+
         if (pin.dir === 'in' && isDataPin && !isConnected) {
             inputWidget = this.createInputWidget(pin);
         }
