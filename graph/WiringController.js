@@ -2,6 +2,7 @@
  * WiringController class - Manages wire connections, rendering, and interaction.
  */
 import { Utils } from '../utils.js';
+import { generateGUID } from '../utils/guid.js';
 
 class WiringController {
     constructor(svg, app) {
@@ -108,7 +109,7 @@ class WiringController {
     }
     _addLink(startPin, endPin) {
         const link = {
-            id: Utils.uniqueId('link'),
+            id: generateGUID(),
             startPin: startPin,
             endPin: endPin,
         };

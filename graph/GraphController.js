@@ -505,7 +505,7 @@ class GraphController {
                 pins: pinsToUse // Use the determined pin structure
             };
 
-            const id = Utils.uniqueId('node');
+            const id = generateGUID();
             const newNode = new Node(id, newNodeData, oldNode.x + offset, oldNode.y + offset, oldNode.nodeKey, this.app);
 
             // Transfer pin literal values
