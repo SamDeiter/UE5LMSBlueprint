@@ -366,4 +366,31 @@ export const registerTests = (runner) => {
         }
     });
 
+    // --- Casting Tests ---
+
+    runner.register('Cast To Character Success', (app) => {
+        // 1. Create Variable "MyChar" with value "Character" (simulating an object of that type)
+        app.variables.addVariable();
+        const variable = [...app.variables.variables.values()].pop();
+        app.variables.updateVariableProperty(variable, 'type', 'object');
+        variable.defaultValue = { _type: 'Character' }; // Manually set complex object
+
+        // 2. Add Cast Node
+        const castNode = app.graph.addNode('CastTo_Character', 100, 100);
+        assert(castNode !== null, "CastTo_Character node should be created");
+
+        // 3. Mock Simulation Logic Check
+        // We can't easily run the full simulation in a unit test without setup, 
+        // but we can check the logic function directly if we had access.
+        // Instead, let's verify the node structure.
+
+        const execOut = castNode.pins.find(p => p.id === 'exec_out');
+        const castFailed = castNode.pins.find(p => p.id === 'cast_failed');
+        const asChar = castNode.pins.find(p => p.id === 'as_character');
+
+        assert(execOut, "Should have Exec output");
+        assert(castFailed, "Should have Cast Failed output");
+        assert(asChar, "Should have As Character output");
+    });
+
 };

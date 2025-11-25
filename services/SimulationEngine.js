@@ -141,6 +141,27 @@ export class SimulationEngine {
             }
 
             default:
+                // Handle Casting
+                if (node.nodeKey.startsWith('CastTo_')) {
+                    const targetType = node.nodeKey.replace('CastTo_', '');
+                    const obj = this.evaluateInput(node, 'object_in');
+
+                    // Simple type check (mocking inheritance/class system)
+                    // We assume objects might have a _type property, or we check if the value ITSELF is the type name for simple tests
+                    // For a robust system, we'd check obj._type === targetType
+
+                    let isMatch = false;
+                    if (obj && typeof obj === 'object' && obj._type === targetType) {
+                        isMatch = true;
+                    }
+                    // Fallback for simple string testing if users pass a string as an "object"
+                    else if (typeof obj === 'string' && obj === targetType) {
+                        isMatch = true;
+                    }
+
+                    return isMatch ? 'exec_out' : 'cast_failed';
+                }
+
                 // Handle dynamic Set nodes
                 if (node.nodeKey.startsWith('Set_')) {
                     const varName = node.nodeKey.replace('Set_', '');
@@ -214,6 +235,21 @@ export class SimulationEngine {
             const a = this.evaluateInput(node, 'a_in');
             const b = this.evaluateInput(node, 'b_in');
             return parseFloat(a) - parseFloat(b);
+        }
+
+        // 4. Cast Nodes (Data Output)
+        if (node.nodeKey.startsWith('CastTo_')) {
+            const targetType = node.nodeKey.replace('CastTo_', '');
+            const obj = this.evaluateInput(node, 'object_in');
+
+            // Same logic as executeNodeLogic
+            if (obj && typeof obj === 'object' && obj._type === targetType) {
+                return obj;
+            }
+            if (typeof obj === 'string' && obj === targetType) {
+                return obj;
+            }
+            return null; // Cast failed
         }
 
         return null;

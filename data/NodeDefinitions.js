@@ -623,7 +623,34 @@ export const NodeDefinitions = {
             { id: "val_out", name: "Output", type: "object", dir: "out" }
         ]
     },
-    // --- ASSESSMENT ---
+    // --- CASTING ---
+    "CastTo_Character": {
+        title: "Cast To Character",
+        type: "flow-node",
+        category: "Casting",
+        icon: "fa-cube",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "object_in", name: "Object", type: "object", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "cast_failed", name: "Cast Failed", type: "exec", dir: "out" },
+            { id: "as_character", name: "As Character", type: "object", dir: "out" }
+        ]
+    },
+    "CastTo_Pawn": {
+        title: "Cast To Pawn",
+        type: "flow-node",
+        category: "Casting",
+        icon: "fa-chess-pawn",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "object_in", name: "Object", type: "object", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "cast_failed", name: "Cast Failed", type: "exec", dir: "out" },
+            { id: "as_pawn", name: "As Pawn", type: "object", dir: "out" }
+        ]
+    },
+
     "NeedNode": {
         title: "Need Node",
         type: "assessment-node",
