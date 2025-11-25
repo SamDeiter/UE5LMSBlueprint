@@ -7,6 +7,7 @@ export class TaskManager {
     constructor(app) {
         this.app = app;
         this.validator = new BlueprintValidator(app);
+        this.tasks = [...ALL_TASKS]; // Initialize with copy of static tasks
         this.currentTask = null;
         this.validationResults = null;
         this.autoValidate = false; // Auto-validate on graph changes
@@ -16,14 +17,33 @@ export class TaskManager {
      * Get all available tasks
      */
     getAllTasks() {
-        return ALL_TASKS;
+        return this.tasks;
     }
 
     /**
      * Get task by ID
      */
     getTaskById(taskId) {
-        return ALL_TASKS.find(t => t.taskId === taskId);
+        return this.tasks.find(t => t.taskId === taskId);
+    }
+
+    /**
+     * Add a new task
+     */
+    addTask(task) {
+        if (!task.taskId || !task.title) {
+            console.error('Cannot add task: Missing ID or Title');
+            return false;
+        }
+
+        if (this.getTaskById(task.taskId)) {
+            console.error(`Cannot add task: Task ID ${task.taskId} already exists`);
+            return false;
+        }
+
+        this.tasks.push(task);
+        console.log(`Task added: ${task.title} (${task.taskId})`);
+        return true;
     }
 
     /**

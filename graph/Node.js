@@ -57,6 +57,9 @@ class Node {
         if (this.type === 'function-node') {
             return { start: '#005580', end: '#002a40' }; // Blue
         }
+        if (this.type === 'assessment-node') {
+            return { start: '#6030a0', end: '#301560' }; // Purple
+        }
         // Default
         return { start: '#333', end: '#111' };
     }

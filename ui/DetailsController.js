@@ -330,6 +330,59 @@ export class DetailsController {
             return;
         }
 
+        // Special handling for NeedNode
+        if (node.nodeKey === 'NeedNode') {
+            const needData = node.customData?.needNodeData || {};
+            const criteriaCount = needData.criteria?.length || 0;
+
+            this.panel.innerHTML = `
+                <div class="details-group">
+                    <h4 style="color: #ddd; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;">
+                        <i class="fas fa-caret-down"></i> Need Node
+                    </h4>
+                    <div class="detail-row">
+                        <label>Title</label>
+                        <span class="detail-value-static">${needData.title || 'Not configured'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>Task ID</label>
+                        <span class="detail-value-static">${needData.taskId || 'None'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>Description</label>
+                        <span class="detail-value-static" style="font-size: 10px; color: #999;">${needData.description || 'None'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>Criteria</label>
+                        <span class="detail-value-static">${criteriaCount} requirement(s)</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>Pass Threshold</label>
+                        <span class="detail-value-static">${needData.passThreshold || 80}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>Hidden</label>
+                        <span class="detail-value-static">${needData.hidden ? 'Yes' : 'No'}</span>
+                    </div>
+                </div>
+                <div class="details-group">
+                    <button id="edit-need-node-btn" class="btn-primary" style="width: 100%; padding: 8px;">
+                        <i class="fas fa-edit"></i> Edit Configuration
+                    </button>
+                </div>
+            `;
+
+            const editBtn = this.panel.querySelector('#edit-need-node-btn');
+            if (editBtn) {
+                editBtn.addEventListener('click', () => {
+                    if (this.app.needNodeModal) {
+                        this.app.needNodeModal.open(node);
+                    }
+                });
+            }
+            return;
+        }
+
         this.panel.innerHTML = `
             <div class="details-group">
                 <h4>Node Details</h4>

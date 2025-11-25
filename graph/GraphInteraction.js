@@ -100,14 +100,19 @@ export class GraphInteraction {
         }
         else if (data.startsWith('PALETTE_NODE:')) {
             const nodeType = data.split(':')[1];
+            console.log('PALETTE_NODE dropped:', nodeType, 'at', graphCoords);
 
             // Special handling for NeedNode - open modal for configuration
             if (nodeType === 'NeedNode') {
+                console.log('NeedNode detected, checking for modal...');
                 if (this.app.needNodeModal) {
+                    console.log('Modal exists, setting pending location and opening...');
                     // Store the drop location for later use
                     this.app.needNodeModal._pendingLocation = graphCoords;
                     this.app.needNodeModal.open();
+                    console.log('Modal.open() called');
                 } else {
+                    console.warn('needNodeModal not found, creating node directly');
                     this.controller.addNode(nodeType, graphCoords.x, graphCoords.y);
                     this.app.persistence.autoSave();
                 }
