@@ -5,6 +5,7 @@ export class NeedNodeModal {
     constructor(app) {
         this.app = app;
         this.currentNode = null;
+        this.tempRequirements = []; // Temporary storage for task requirements
         this.createModal();
     }
 
@@ -31,12 +32,13 @@ export class NeedNodeModal {
                                 <option value="">-- Select a Task --</option>
                             </select>
                             <button id="btn-show-create-task" class="btn-secondary" style="padding: 4px 8px; font-size: 12px;">+ New</button>
+                            <button id="btn-edit-task" class="btn-secondary" style="padding: 4px 8px; font-size: 12px; display: none;">Edit</button>
                         </div>
                     </div>
 
-                    <!-- New Task Creation Form (Hidden by default) -->
+                    <!-- New/Edit Task Form (Hidden by default) -->
                     <div id="new-task-form" style="display: none; background: #2a2a2a; padding: 10px; border: 1px solid #444; margin-bottom: 15px; border-radius: 4px;">
-                        <h4 style="margin-top: 0; color: #ddd; font-size: 12px; text-transform: uppercase;">Create New Task</h4>
+                        <h4 id="task-form-title" style="margin-top: 0; color: #ddd; font-size: 12px; text-transform: uppercase;">Create New Task</h4>
                         <div class="form-group">
                             <label for="new-task-id-input" style="font-size: 11px;">Task ID</label>
                             <input type="text" id="new-task-id-input" placeholder="e.g., custom_task_01" style="font-size: 12px;" />
@@ -49,7 +51,23 @@ export class NeedNodeModal {
                             <label for="new-task-desc-input" style="font-size: 11px;">Description</label>
                             <textarea id="new-task-desc-input" rows="2" placeholder="Task description..." style="font-size: 12px;"></textarea>
                         </div>
-                        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <div class="form-group">
+                            <label style="font-size: 11px;">Current Requirements</label>
+                            <div id="task-requirements-list" style="background: #222; padding: 5px; max-height: 100px; overflow-y: auto; font-size: 11px; color: #aaa; border: 1px solid #444;">
+                                <em style="color: #666;">No requirements defined.</em>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label style="font-size: 11px;">Requirements</label>
+                            <div id="task-requirements-list" style="background: #222; padding: 5px; max-height: 100px; overflow-y: auto; font-size: 11px; color: #aaa; border: 1px solid #444; margin-bottom: 5px;">
+                                <em style="color: #666;">No requirements defined.</em>
+                            </div>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="text" id="new-req-input" placeholder="Add requirement..." style="font-size: 12px; flex: 1;" />
+                                <button id="btn-add-req" class="btn-secondary" style="font-size: 11px; padding: 4px 8px;">Add</button>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
                             <button id="btn-cancel-create-task" class="btn-secondary" style="font-size: 11px; padding: 4px 8px;">Cancel</button>
                             <button id="btn-confirm-create-task" class="btn-primary" style="font-size: 11px; padding: 4px 8px;">Create Task</button>
                         </div>
@@ -100,8 +118,13 @@ export class NeedNodeModal {
      */
     bindEvents() {
         // Close buttons
-        document.getElementById('need-node-close').addEventListener('click', () => this.close());
-        document.getElementById('need-node-cancel').addEventListener('click', () => this.close());
+        const handleClose = () => {
+            if (!this.closeTaskForm()) {
+                this.close();
+            }
+        };
+        document.getElementById('need-node-close').addEventListener('click', handleClose);
+        document.getElementById('need-node-cancel').addEventListener('click', handleClose);
 
         // Save button
         document.getElementById('need-node-save').addEventListener('click', () => this.save());
@@ -116,29 +139,55 @@ export class NeedNodeModal {
         // Add criterion button
         document.getElementById('add-criterion').addEventListener('click', () => this.addCriterion());
 
-        // Close on outside click
-        this.modal.addEventListener('click', (e) => {
-            if (e.target === this.modal) this.close();
-        });
 
-        // Task Creation Toggles
+
+        // Task Creation/Editing Toggles
         const newTaskForm = document.getElementById('new-task-form');
         const showCreateBtn = document.getElementById('btn-show-create-task');
+        const editTaskBtn = document.getElementById('btn-edit-task');
         const cancelCreateBtn = document.getElementById('btn-cancel-create-task');
         const confirmCreateBtn = document.getElementById('btn-confirm-create-task');
+        const taskSelect = document.getElementById('need-task-id');
+
+        // Show Edit button only when a task is selected
+        taskSelect.addEventListener('change', () => {
+            editTaskBtn.style.display = taskSelect.value ? 'block' : 'none';
+        });
 
         showCreateBtn.addEventListener('click', () => {
+            this.resetTaskForm('create');
             newTaskForm.style.display = 'block';
             showCreateBtn.style.display = 'none';
+            editTaskBtn.style.display = 'none';
+        });
+
+        editTaskBtn.addEventListener('click', () => {
+            const taskId = taskSelect.value;
+            if (taskId) {
+                this.populateTaskForm(taskId);
+                newTaskForm.style.display = 'block';
+                showCreateBtn.style.display = 'none';
+                editTaskBtn.style.display = 'none';
+            }
         });
 
         cancelCreateBtn.addEventListener('click', () => {
-            newTaskForm.style.display = 'none';
-            showCreateBtn.style.display = 'block';
+            this.closeTaskForm();
         });
 
         confirmCreateBtn.addEventListener('click', () => {
             this.createNewTask();
+        });
+
+        // Add Requirement Button
+        document.getElementById('btn-add-req').addEventListener('click', () => {
+            const input = document.getElementById('new-req-input');
+            const text = input.value.trim();
+            if (text) {
+                this.tempRequirements.push({ description: text });
+                this.renderRequirementsList();
+                input.value = '';
+            }
         });
     }
 
@@ -164,11 +213,20 @@ export class NeedNodeModal {
             }
         }
 
+        // Update Edit button visibility based on initial selection
+        const editTaskBtn = document.getElementById('btn-edit-task');
+        if (editTaskBtn) {
+            editTaskBtn.style.display = 'none'; // Default to hidden
+        }
+
         // Populate fields
         if (nodeData && (nodeData.customData?.needNodeData || nodeData.needNodeData)) {
             // Handle both new location (customData) and legacy/temp location
             const data = nodeData.customData?.needNodeData || nodeData.needNodeData;
-            document.getElementById('need-task-id').value = data.taskId || '';
+            const taskId = data.taskId || '';
+            document.getElementById('need-task-id').value = taskId;
+            if (editTaskBtn) editTaskBtn.style.display = taskId ? 'block' : 'none';
+
             document.getElementById('need-title').value = data.title || '';
             document.getElementById('need-description').value = data.description || '';
             document.getElementById('need-hidden').checked = data.hidden || false;
@@ -305,7 +363,112 @@ export class NeedNodeModal {
     }
 
     /**
-     * Create a new task from the modal inputs
+     * Close the task creation/edit form if it's open
+     * @returns {boolean} True if the form was closed, false if it wasn't open
+     */
+    closeTaskForm() {
+        const newTaskForm = document.getElementById('new-task-form');
+        if (newTaskForm && newTaskForm.style.display !== 'none') {
+            newTaskForm.style.display = 'none';
+
+            const showCreateBtn = document.getElementById('btn-show-create-task');
+            const editTaskBtn = document.getElementById('btn-edit-task');
+            const taskSelect = document.getElementById('need-task-id');
+
+            if (showCreateBtn) showCreateBtn.style.display = 'block';
+            if (editTaskBtn && taskSelect) editTaskBtn.style.display = taskSelect.value ? 'block' : 'none';
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Reset task form for creation or editing
+     */
+    resetTaskForm(mode) {
+        const idInput = document.getElementById('new-task-id-input');
+        const titleInput = document.getElementById('new-task-title-input');
+        const descInput = document.getElementById('new-task-desc-input');
+        const formTitle = document.getElementById('task-form-title');
+        const confirmBtn = document.getElementById('btn-confirm-create-task');
+
+        if (mode === 'create') {
+            formTitle.textContent = 'Create New Task';
+            confirmBtn.textContent = 'Create Task';
+            idInput.value = '';
+            idInput.disabled = false;
+            titleInput.value = '';
+            descInput.value = '';
+            this.tempRequirements = [];
+            this.renderRequirementsList();
+            confirmBtn.dataset.mode = 'create';
+        } else {
+            formTitle.textContent = 'Edit Task';
+            confirmBtn.textContent = 'Update Task';
+            idInput.disabled = true; // ID cannot be changed
+            confirmBtn.dataset.mode = 'edit';
+        }
+    }
+
+    /**
+     * Populate form with existing task data
+     */
+    populateTaskForm(taskId) {
+        const task = this.app.taskManager.getTaskById(taskId);
+        if (task) {
+            this.resetTaskForm('edit');
+            document.getElementById('new-task-id-input').value = task.taskId;
+            document.getElementById('new-task-title-input').value = task.title;
+            document.getElementById('new-task-desc-input').value = task.description || '';
+
+            document.getElementById('new-task-desc-input').value = task.description || '';
+
+            // Load requirements into temp array
+            this.tempRequirements = [];
+            if (task.requirements && task.requirements.length > 0) {
+                // Deep copy to avoid modifying original task directly until save
+                this.tempRequirements = JSON.parse(JSON.stringify(task.requirements));
+            }
+            this.renderRequirementsList();
+        }
+    }
+
+    /**
+     * Render the requirements list in the task form
+     */
+    renderRequirementsList() {
+        const reqList = document.getElementById('task-requirements-list');
+        if (!reqList) return;
+
+        reqList.innerHTML = '';
+        if (this.tempRequirements.length > 0) {
+            this.tempRequirements.forEach((req, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid #333;';
+
+                const textSpan = document.createElement('span');
+                textSpan.textContent = req.description || req.text || req.id || 'Unknown Requirement';
+
+                const delBtn = document.createElement('button');
+                delBtn.innerHTML = '&times;';
+                delBtn.style.cssText = 'background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 14px; padding: 0 4px;';
+                delBtn.onclick = () => {
+                    this.tempRequirements.splice(index, 1);
+                    this.renderRequirementsList();
+                };
+
+                div.appendChild(textSpan);
+                div.appendChild(delBtn);
+                reqList.appendChild(div);
+            });
+        } else {
+            reqList.innerHTML = '<em style="color: #666;">No requirements defined.</em>';
+        }
+    }
+
+    /**
+     * Create or Update a task from the modal inputs
      */
     createNewTask() {
         const idInput = document.getElementById('new-task-id-input');
@@ -321,25 +484,48 @@ export class NeedNodeModal {
             return;
         }
 
-        const newTask = {
-            taskId: taskId,
-            title: title,
-            description: description,
-            requirements: [] // Empty requirements for now, or could infer from NeedNode criteria later
-        };
+        const confirmBtn = document.getElementById('btn-confirm-create-task');
+        const mode = confirmBtn.dataset.mode || 'create';
+        let success = false;
 
-        const success = this.app.taskManager.addTask(newTask);
+        if (mode === 'create') {
+            const newTask = {
+                taskId: taskId,
+                title: title,
+                description: description,
+                requirements: this.tempRequirements
+            };
+            success = this.app.taskManager.addTask(newTask);
+        } else {
+            // Update existing
+            const updatedTask = {
+                taskId: taskId,
+                title: title,
+                description: description,
+                requirements: this.tempRequirements
+            };
+            success = this.app.taskManager.updateTask(updatedTask);
+        }
 
         if (success) {
-            // Refresh dropdown
             const taskSelect = document.getElementById('need-task-id');
-            const option = document.createElement('option');
-            option.value = newTask.taskId;
-            option.textContent = `${newTask.taskId}: ${newTask.title}`;
-            taskSelect.appendChild(option);
 
-            // Select the new task
-            taskSelect.value = newTask.taskId;
+            if (mode === 'create') {
+                // Add new option
+                const option = document.createElement('option');
+                option.value = taskId;
+                option.textContent = `${taskId}: ${title}`;
+                taskSelect.appendChild(option);
+            } else {
+                // Update existing option text
+                const option = taskSelect.querySelector(`option[value="${taskId}"]`);
+                if (option) {
+                    option.textContent = `${taskId}: ${title}`;
+                }
+            }
+
+            // Select the task
+            taskSelect.value = taskId;
 
             // Refresh the main toolbar task selector
             if (this.app.taskUI) {
@@ -351,9 +537,11 @@ export class NeedNodeModal {
             titleInput.value = '';
             descInput.value = '';
             document.getElementById('new-task-form').style.display = 'none';
+            document.getElementById('new-task-form').style.display = 'none';
             document.getElementById('btn-show-create-task').style.display = 'block';
+            document.getElementById('btn-edit-task').style.display = 'block';
         } else {
-            window.alert('Failed to create task. ID might already exist.');
+            window.alert(mode === 'create' ? 'Failed to create task. ID might already exist.' : 'Failed to update task.');
         }
     }
 

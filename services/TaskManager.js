@@ -47,6 +47,35 @@ export class TaskManager {
     }
 
     /**
+     * Update an existing task
+     */
+    updateTask(updatedTask) {
+        const index = this.tasks.findIndex(t => t.taskId === updatedTask.taskId);
+        if (index === -1) {
+            console.error(`Cannot update task: Task ID ${updatedTask.taskId} not found`);
+            return false;
+        }
+
+        // Update properties
+        const newProps = {
+            title: updatedTask.title,
+            description: updatedTask.description
+        };
+
+        if (updatedTask.requirements) {
+            newProps.requirements = updatedTask.requirements;
+        }
+
+        this.tasks[index] = {
+            ...this.tasks[index],
+            ...newProps
+        };
+
+        console.log(`Task updated: ${updatedTask.title} (${updatedTask.taskId})`);
+        return true;
+    }
+
+    /**
      * Set the current active task
      */
     setCurrentTask(taskId) {
