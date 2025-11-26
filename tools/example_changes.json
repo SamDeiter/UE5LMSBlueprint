@@ -1,0 +1,13 @@
+{
+    "description": "Example: Add a new node definition to NodeDefinitions.js",
+    "edits": [
+        {
+            "file": "data/NodeDefinitions.js",
+            "action": "insert",
+            "target": "object_key",
+            "identifier": "Timeline",
+            "position": "after",
+            "payload": "    \"Delay\": {\n        title: \"Delay\",\n        type: \"flow-node\",\n        category: \"Utilities|Time\",\n        icon: \"fa-hourglass-half\",\n        pins: [\n            { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n            { id: \"duration_in\", name: \"Duration\", type: \"float\", dir: \"in\", defaultValue: 1.0 },\n            { id: \"exec_out\", name: \"Completed\", type: \"exec\", dir: \"out\" }\n        ]\n    },"
+        }
+    ]
+}
