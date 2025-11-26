@@ -135,4 +135,88 @@ export function registerGUIDTests(testRunner) {
 
         return true;
     });
+
+    testRunner.addTest('GUID: Serialization Persistence', (app) => {
+        // Clear graph to start fresh
+        app.graph.nodes.forEach(node => app.graph.removeNode(node.id));
+        app.wiring.links.clear();
+        app.variables.variables.clear();
+
+        // Create test entities
+        const nodeA = app.graph.addNode('PrintString', 100, 100);
+        const nodeB = app.graph.addNode('PrintString', 300, 100);
+        app.variables.addVariable();
+
+        const variable = [...app.variables.variables.values()][0];
+        const pinA = nodeA.pins.find(p => p.type === 'exec' && p.dir === 'out');
+        const pinB = nodeB.pins.find(p => p.type === 'exec' && p.dir === 'in');
+        app.wiring.createConnection(pinA, pinB);
+
+        const link = [...app.wiring.links.values()][0];
+
+        // Store original GUIDs
+        const originalNodeAId = nodeA.id;
+        const originalNodeBId = nodeB.id;
+        const originalVariableId = variable.id;
+        const originalLinkId = link.id;
+
+        // Verify they're all valid GUIDs
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(originalNodeAId)) {
+            throw new Error(`Node A ID ${originalNodeAId} is not a valid GUID`);
+        }
+        if (!uuidRegex.test(originalNodeBId)) {
+            throw new Error(`Node B ID ${originalNodeBId} is not a valid GUID`);
+        }
+        if (!uuidRegex.test(originalVariableId)) {
+            throw new Error(`Variable ID ${originalVariableId} is not a valid GUID`);
+        }
+        if (!uuidRegex.test(originalLinkId)) {
+            throw new Error(`Link ID ${originalLinkId} is not a valid GUID`);
+        }
+
+        // Save state
+        app.persistence.save(true);
+
+        // Clear everything
+        app.graph.nodes.forEach(node => app.graph.removeNode(node.id));
+        app.wiring.links.clear();
+        app.variables.variables.clear();
+
+        // Verify cleared
+        if (app.graph.nodes.size !== 0) {
+            throw new Error('Graph not cleared before reload');
+        }
+
+        // Load state
+        app.persistence.load();
+
+        // Verify GUIDs are preserved (not regenerated)
+        const loadedNodes = [...app.graph.nodes.values()];
+        const loadedNodeA = loadedNodes.find(n => n.id === originalNodeAId);
+        const loadedNodeB = loadedNodes.find(n => n.id === originalNodeBId);
+
+        if (!loadedNodeA) {
+            throw new Error(`Node A with ID ${originalNodeAId} not found after load`);
+        }
+        if (!loadedNodeB) {
+            throw new Error(`Node B with ID ${originalNodeBId} not found after load`);
+        }
+
+        const loadedVariable = app.variables.variables.get(variable.name);
+        if (!loadedVariable) {
+            throw new Error(`Variable ${variable.name} not found after load`);
+        }
+        if (loadedVariable.id !== originalVariableId) {
+            throw new Error(`Variable ID changed from ${originalVariableId} to ${loadedVariable.id}`);
+        }
+
+        const loadedLinks = [...app.wiring.links.values()];
+        const loadedLink = loadedLinks.find(l => l.id === originalLinkId);
+        if (!loadedLink) {
+            throw new Error(`Link with ID ${originalLinkId} not found after load`);
+        }
+
+        return true;
+    });
 }
