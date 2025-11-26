@@ -24,6 +24,33 @@ export class TestRunner {
         console.log('%c🧪 Starting Test Suite...', 'color: #3498db; font-weight: bold; font-size: 14px;');
         let passed = 0;
         let failed = 0;
+        const failedTests = [];
+
+        // Create or clear results container
+        let resultsDiv = document.getElementById('test-results');
+        if (!resultsDiv) {
+            resultsDiv = document.createElement('div');
+            resultsDiv.id = 'test-results';
+            resultsDiv.style.position = 'fixed';
+            resultsDiv.style.top = '50%';
+            resultsDiv.style.left = '50%';
+            resultsDiv.style.transform = 'translate(-50%, -50%)';
+            resultsDiv.style.backgroundColor = '#222';
+            resultsDiv.style.color = '#eee';
+            resultsDiv.style.padding = '30px';
+            resultsDiv.style.zIndex = '10000';
+            resultsDiv.style.borderRadius = '8px';
+            resultsDiv.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+            resultsDiv.style.width = '600px';
+            resultsDiv.style.maxHeight = '80vh';
+            resultsDiv.style.overflowY = 'auto';
+            resultsDiv.style.fontFamily = 'sans-serif';
+            resultsDiv.style.fontSize = '16px';
+            resultsDiv.style.border = '1px solid #444';
+            document.body.appendChild(resultsDiv);
+        }
+
+        resultsDiv.innerHTML = '<h2 style="margin-top:0">Running tests...</h2>';
 
         for (const test of this.tests) {
             try {
@@ -35,12 +62,39 @@ export class TestRunner {
                 console.error(`%c❌ Failed: ${error.message}`, 'color: #e74c3c; font-weight: bold;');
                 console.error(error);
                 failed++;
+                failedTests.push({ name: test.name, message: error.message });
             } finally {
                 console.groupEnd();
             }
         }
 
         console.log(`%c🏁 Tests Completed: ${passed} Passed, ${failed} Failed`, 'color: #f1c40f; font-weight: bold; font-size: 14px;');
+
+        let failuresHtml = '';
+        if (failedTests.length > 0) {
+            failuresHtml = '<div style="margin-top: 20px; background: #330000; padding: 15px; border-radius: 4px;">' +
+                '<h3 style="color: #ff6b6b; margin-top: 0;">Failures:</h3><ul style="padding-left: 20px;">' +
+                failedTests.map(f => `<li style="color: #ff9999; margin-bottom: 8px;"><strong>${f.name}</strong><br><span style="font-size: 0.9em; opacity: 0.9;">${f.message}</span></li>`).join('') +
+                '</ul></div>';
+        }
+
+        const statusColor = failed === 0 ? '#4caf50' : '#f44336';
+        const statusText = failed === 0 ? 'SUCCESS' : 'FAILURE';
+
+        resultsDiv.innerHTML = `
+            <button onclick="this.parentElement.remove()" style="position:absolute; top:10px; right:15px; background:none; border:none; color:#aaa; font-size:24px; cursor:pointer;">×</button>
+            <h2 style="margin-top:0; border-bottom: 1px solid #444; padding-bottom: 10px;">Test Results</h2>
+            <div style="display: flex; gap: 20px; margin: 20px 0; font-size: 1.2em;">
+                <div style="color: #4caf50;">Passed: <strong>${passed}</strong></div>
+                <div style="color: #f44336;">Failed: <strong>${failed}</strong></div>
+            </div>
+            <div style="font-size: 1.5em; font-weight: bold; color: ${statusColor}; margin-bottom: 10px;">
+                Status: ${statusText}
+            </div>
+            ${failuresHtml}
+        `;
+        resultsDiv.style.border = `2px solid ${statusColor}`;
+
         return failed === 0;
     }
 }

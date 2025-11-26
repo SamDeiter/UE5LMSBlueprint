@@ -67,4 +67,72 @@ export function registerGUIDTests(testRunner) {
 
         return true;
     });
+
+    testRunner.addTest('GUID: Link ID Integration', (app) => {
+        const nodeA = app.graph.addNode('PrintString', 0, 0);
+        const nodeB = app.graph.addNode('PrintString', 200, 0);
+
+        if (!nodeA || !nodeB) {
+            throw new Error('Failed to create nodes for link test');
+        }
+
+        const pinA = nodeA.pins.find(p => p.type === 'exec' && p.dir === 'out');
+        const pinB = nodeB.pins.find(p => p.type === 'exec' && p.dir === 'in');
+
+        if (!pinA || !pinB) {
+            throw new Error('Failed to find exec pins');
+        }
+
+        app.wiring.createConnection(pinA, pinB);
+
+        const links = [...app.wiring.links.values()];
+        const newLink = links[links.length - 1];
+
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(newLink.id)) {
+            throw new Error(`Link ID ${newLink.id} is not a valid GUID`);
+        }
+
+        // Cleanup
+        app.wiring.breakLinkById(newLink.id);
+        app.graph.nodes.delete(nodeA.id);
+        app.graph.nodes.delete(nodeB.id);
+        nodeA.element.remove();
+        nodeB.element.remove();
+
+        return true;
+    });
+
+    testRunner.addTest('GUID: Duplication', (app) => {
+        const node = app.graph.addNode('PrintString', 100, 100);
+        app.graph.selectNode(node.id);
+
+        // Duplicate
+        app.graph.duplicateSelectedNodes();
+
+        // Find the new node (should be the one selected now, or just find the one with different ID)
+        const nodes = [...app.graph.nodes.values()];
+        const duplicateNode = nodes.find(n => n.nodeKey === 'PrintString' && n.id !== node.id);
+
+        if (!duplicateNode) {
+            throw new Error('Duplication failed to create a new node');
+        }
+
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(duplicateNode.id)) {
+            throw new Error(`Duplicate Node ID ${duplicateNode.id} is not a valid GUID`);
+        }
+
+        if (duplicateNode.id === node.id) {
+            throw new Error('Duplicate node has same ID as original');
+        }
+
+        // Cleanup
+        app.graph.selectNode(duplicateNode.id);
+        app.graph.deleteSelectedNodes();
+        app.graph.selectNode(node.id);
+        app.graph.deleteSelectedNodes();
+
+        return true;
+    });
 }

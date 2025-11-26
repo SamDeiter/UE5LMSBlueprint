@@ -41,7 +41,7 @@ export function registerComponentTests(testRunner) {
         app.componentsController.selectComponent(component.id);
 
         // Verify selection
-        if (app.componentsController.selectedComponentId !== component.id) {
+        if (!app.componentsController.selectedComponentIds.has(component.id)) {
             throw new Error('Component was not selected');
         }
 
@@ -63,7 +63,8 @@ export function registerComponentTests(testRunner) {
         const componentToDelete = components[components.length - 1];
 
         // Execute deletion directly (bypass modal)
-        app.componentsController.executeComponentDeletion(componentToDelete.id);
+        app.componentsController.selectComponent(componentToDelete.id);
+        app.componentsController.executeDeletion();
 
         // Verify component was deleted
         if (app.components.size !== initialSize - 1) {
@@ -118,7 +119,8 @@ export function registerComponentTests(testRunner) {
         }
 
         // Delete the component
-        app.componentsController.executeComponentDeletion(component.id);
+        app.componentsController.selectComponent(component.id);
+        app.componentsController.executeDeletion();
 
         // Verify nodes are unregistered
         allNodes = app.nodeRegistry.getAll();
@@ -172,7 +174,8 @@ export function registerComponentTests(testRunner) {
         }
 
         // Delete the component
-        app.componentsController.executeComponentDeletion(component.id);
+        app.componentsController.selectComponent(component.id);
+        app.componentsController.executeDeletion();
 
         // Verify it's removed from HTML
         html = app.componentsController.listContainer.innerHTML;
