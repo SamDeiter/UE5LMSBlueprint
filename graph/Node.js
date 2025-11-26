@@ -41,7 +41,12 @@ class Node {
     }
 
     findPinById(pinId) {
-        return this.pins.find(p => p.id === pinId);
+        // Try exact match first
+        let pin = this.pins.find(p => p.id === pinId);
+        if (pin) return pin;
+
+        // Try matching by local ID (suffix)
+        return this.pins.find(p => p.id === `${this.id}-${pinId}`);
     }
 
     getHeaderColor() {

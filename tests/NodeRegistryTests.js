@@ -202,7 +202,7 @@ export class NodeRegistryTests {
 if (typeof window !== 'undefined') {
     window.runNodeTests = () => {
         const tests = new NodeRegistryTests();
-        const success = tests.runAllTests();
+        tests.runAllTests();
         return tests.getReport();
     };
 

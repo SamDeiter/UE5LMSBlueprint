@@ -169,10 +169,15 @@ export class ComponentsController {
 
     updateNodeLibrary() {
         // First, unregister all component nodes to avoid duplicates
-        const allKeys = Object.keys(nodeRegistry.getAll());
+        const registry = nodeRegistry || this.app.nodeRegistry;
+        if (!registry) {
+            console.error('[ComponentsController] NodeRegistry not available');
+            return;
+        }
+        const allKeys = Object.keys(registry.getAll());
         for (const key of allKeys) {
             if (key.startsWith('GetComponent_') || key.startsWith('SetComponent_')) {
-                nodeRegistry.unregister(key);
+                registry.unregister(key);
             }
         }
 
@@ -181,26 +186,26 @@ export class ComponentsController {
             this.app.components.forEach(comp => {
                 // Register Get node
                 const getKey = `GetComponent_${comp.id}`;
-                nodeRegistry.register(getKey, {
+                registry.register(getKey, {
                     title: `Get ${comp.name}`,
                     category: 'Components',
                     type: 'pure-node',
                     inputs: [],
                     outputs: [
-                        { id: 'out', name: comp.name, type: 'object', dir: 'out' }
+                        { id: 'out', name: comp.name, type: comp.type, dir: 'out' }
                     ],
                     properties: { componentId: comp.id }
                 });
 
                 // Register Set node
                 const setKey = `SetComponent_${comp.id}`;
-                nodeRegistry.register(setKey, {
+                registry.register(setKey, {
                     title: `Set ${comp.name}`,
                     category: 'Components',
                     type: 'function-node',
                     pins: [
                         { id: 'exec_in', name: 'Exec', type: 'exec', dir: 'in' },
-                        { id: 'comp_in', name: comp.name, type: 'object', dir: 'in' },
+                        { id: 'comp_in', name: comp.name, type: comp.type, dir: 'in' },
                         { id: 'exec_out', name: 'Exec', type: 'exec', dir: 'out' }
                     ],
                     customData: { componentId: comp.id }

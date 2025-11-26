@@ -1,3 +1,5 @@
 node_modules/
 .DS_Store
 *.log
+eslint_report*.json
+lint_output*.txt

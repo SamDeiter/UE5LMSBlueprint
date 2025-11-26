@@ -19,8 +19,14 @@ export class Persistence {
     }
 
     /** Serializes the latest state from history and saves it to localStorage. */
-    save() {
+    save(forceCapture = false) {
         try {
+            // Force a state capture if requested (e.g. from Save button or tests)
+            if (forceCapture) {
+                this.app.history.saveState('manual save');
+                return; // saveState will call save() again without forceCapture
+            }
+
             if (this.app.history.undoStack.length === 0) {
                 // Nothing to save if the undo stack is empty (should only happen on startup)
                 return;

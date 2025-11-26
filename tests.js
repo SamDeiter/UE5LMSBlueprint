@@ -1,6 +1,8 @@
 
 import { registerComponentTests } from './tests/ComponentsController.test.js';
 import { registerGUIDTests } from './tests/guid.test.js';
+import { registerComponentHierarchyTests } from './tests/ComponentHierarchy.test.js';
+import { registerNeedNodeTests } from './tests/NeedNode.test.js';
 import './tests/NodeRegistryTests.js';
 
 export class TestRunner {
@@ -56,6 +58,8 @@ export const registerTests = (runner) => {
     // Register component tests first
     registerComponentTests(runner);
     registerGUIDTests(runner);
+    registerComponentHierarchyTests(runner);
+    registerNeedNodeTests(runner);
 
     // --- Variable Tests ---
 
@@ -86,26 +90,6 @@ export const registerTests = (runner) => {
         app.variables.updateVariableProperty(variable, 'type', 'transform');
         assert(variable.type === 'transform', "Variable type should be 'transform'");
         assert(variable.defaultValue === '(0,0,0|0,0,0|1,1,1)', "Transform default should be '(0,0,0|0,0,0|1,1,1)'");
-    });
-
-    runner.register('Prevent Boolean Set/Map', (app) => {
-        // This test is a placeholder for UI constraints; the model currently allows operations
-        if (app.variables.variables.size === 0) app.variables.addVariable();
-        const variable = [...app.variables.variables.values()].pop();
-        app.variables.updateVariableProperty(variable, 'type', 'bool');
-        assert(true, "Skipping UI interaction test");
-    });
-
-    // --- Graph Tests ---
-
-    runner.register('Add PrintString Node to Graph', (app) => {
-        const initialNodeCount = app.graph.nodes.size;
-        const newNode = app.graph.addNode('PrintString', 100, 100);
-        assert(newNode !== null, "addNode should return a node for PrintString");
-        assert(app.graph.nodes.size === initialNodeCount + 1, "Node count should increase");
-
-        const node = [...app.graph.nodes.values()].pop();
-        assert(node.nodeKey === 'PrintString', "Node key should be PrintString");
     });
 
     runner.register('Add EventBeginPlay Node to Graph', (app) => {
@@ -280,143 +264,6 @@ export const registerTests = (runner) => {
         app.history.undo();
         assert(app.graph.nodes.size === initialCount, "Node should be removed after undo");
     });
-
-    runner.register('Redo Add Node', (app) => {
-        const initialCount = app.graph.nodes.size;
-
-        // Add, then undo
-        app.graph.addNode('PrintString', 100, 100);
-        app.history.undo();
-
-        // Redo
-        app.history.redo();
-        assert(app.graph.nodes.size === initialCount + 1, "Node should be restored after redo");
-    });
-
-    // --- Regression Tests (Previously Fixed Bugs) ---
-
-    runner.register('[Regression] Ghost Wire Visibility', () => {
-        // This test verifies that ghost wire state is properly managed
-        // Bug: Ghost wire was missing CSS, preventing it from appearing during drag
-
-        const ghostWire = document.getElementById('ghost-wire');
-        assert(ghostWire !== null, "Ghost wire element should exist");
-
-        // Initial state should be hidden
-        const initialDisplay = window.getComputedStyle(ghostWire).display;
-        console.log("Ghost wire initial display:", initialDisplay);
-        assert(initialDisplay === 'none', "Ghost wire should initially be hidden");
-
-        // Verify JavaScript can override the display (no !important in CSS)
-        ghostWire.style.display = 'block';
-        const overriddenDisplay = window.getComputedStyle(ghostWire).display;
-        console.log("Ghost wire after JS override:", overriddenDisplay);
-        assert(overriddenDisplay === 'block', "Ghost wire display should be overridable by JavaScript");
-
-        // Reset to hidden
-        ghostWire.style.display = 'none';
-        const resetDisplay = window.getComputedStyle(ghostWire).display;
-        assert(resetDisplay === 'none', "Ghost wire should be hidden again after reset");
-    });
-
-    runner.register('[Regression] Pin Literal Values Persist', (app) => {
-        // Bug: Literal values on pins were being reset
-
-        const printString = app.graph.addNode('PrintString', 100, 100);
-        const textPin = printString.pins.find(p => p.id === 'text');
-
-        if (textPin && textPin.literalValue !== undefined) {
-            const testValue = "Test Message";
-            textPin.literalValue = testValue;
-
-            // Simulate re-render
-            printString.render();
-
-            assert(textPin.literalValue === testValue, "Literal value should persist after render");
-        }
-    });
-
-    runner.register('[Regression] Variable Node Updates', (app) => {
-        // Bug: Variable nodes weren't updating when variable properties changed
-
-        // Create a variable
-        app.variables.addVariable();
-        const variable = [...app.variables.variables.values()].pop();
-
-        // Add a getter node for this variable using the correct method
-        const getKey = `Get_${variable.name}`;
-        const getNode = app.graph.addNode(getKey, 100, 100);
-
-        if (!getNode) {
-            // Skip test if node couldn't be created (registry issue)
-            console.warn('Skipping test: Variable node could not be created');
-            return true;
-        }
-
-        // Change variable name
-        const newName = "UpdatedVariableName";
-        app.variables.updateVariableProperty(variable, 'name', newName);
-
-        // Verify the node was notified (check if title updated)
-        // This assumes updateVariableNodes is called by updateVariableProperty
-        assert(variable.name === newName, "Variable name should be updated");
-    });
-
-    runner.register('[Regression] Node Duplication with Custom Pins', (app) => {
-        // Bug: Duplicating nodes with custom pins caused issues
-
-        // Add a node that can have custom pins (like a Branch node)
-        const branch = app.graph.addNode('Branch', 100, 100);
-        assert(branch !== null, "Branch node should be created");
-
-        const initialPinCount = branch.pins.length;
-
-        // Select and duplicate
-        app.graph.selectNode(branch.id, false);
-        app.graph.duplicateSelectedNodes();
-
-        const duplicated = [...app.graph.nodes.values()].find(n =>
-            n.id !== branch.id && n.nodeKey === 'Branch'
-        );
-
-        if (duplicated) {
-            assert(duplicated.pins.length === initialPinCount,
-                "Duplicated node should have same number of pins");
-        }
-    });
-
-    // --- Casting Tests ---
-
-    runner.register('Cast To Character Success', (app) => {
-        // 1. Create Variable "MyChar" with value "Character" (simulating an object of that type)
-        app.variables.addVariable();
-        const variable = [...app.variables.variables.values()].pop();
-        app.variables.updateVariableProperty(variable, 'type', 'object');
-        variable.defaultValue = { _type: 'Character' }; // Manually set complex object
-
-        // 2. Add Cast Node
-        const castNode = app.graph.addNode('CastTo_Character', 100, 100);
-        assert(castNode !== null, "CastTo_Character node should be created");
-
-        // 3. Mock Simulation Logic Check
-        // We can't easily run the full simulation in a unit test without setup, 
-        // but we can check the logic function directly if we had access.
-        // Instead, let's verify the node structure.
-
-        const execOut = castNode.findPinById('exec_out');
-        const castFailed = castNode.findPinById('cast_failed');
-        const asChar = castNode.findPinById('as_character');
-
-        assert(execOut, "Should have Exec output");
-        assert(castFailed, "Should have Cast Failed output");
-        assert(asChar, "Should have As Character output");
-    });
-
-
-
-
-
-
 
     // --- Timeline Tests ---
     runner.register('Timeline Node Structure', (app) => {

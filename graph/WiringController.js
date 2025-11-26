@@ -9,6 +9,7 @@ class WiringController {
         this.svgGroup = svg.getElementById('wire-group');
         this.ghostWire = svg.getElementById('ghost-wire');
         this.ghostWire.setAttribute('fill', 'none');
+        this.ghostWire.style.display = 'none';
         this.links = new Map();
         this.selectedLinks = new Set();
         this.app = app;
@@ -56,8 +57,8 @@ class WiringController {
             this.breakPinLinks(endPin.id);
         }
         const isExecPin = startPin.type === 'exec' || endPin.type === 'exec';
-        const typesMatch = startPin.type === endPin.type;
-        if (!isExecPin && !typesMatch) {
+        const isCompatible = Utils.isTypeCompatible(startPin.type, endPin.type);
+        if (!isExecPin && !isCompatible) {
             const convKey = Utils.getConversionNodeKey(startPin.type, endPin.type);
             if (convKey) {
                 const startPos = Utils.getPinPosition(startPin.element, this.app);
@@ -93,6 +94,8 @@ class WiringController {
                     }
                 }
             }
+            // Incompatible and no conversion found
+            return;
         }
         this._addLink(startPin, endPin);
         this.updateVisuals(endPin.node);

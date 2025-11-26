@@ -128,6 +128,26 @@ export const NodeDefinitions = {
             // Removed delegate_out
         ]
     },
+    "Timeline": {
+        title: "Timeline",
+        type: "flow-node",
+        category: "Utilities|Time",
+        icon: "fa-clock",
+        pins: [
+            { id: "play", name: "Play", type: "exec", dir: "in" },
+            { id: "stop", name: "Stop", type: "exec", dir: "in" },
+            { id: "reverse", name: "Reverse", type: "exec", dir: "in" },
+            { id: "reverse_from_end", name: "Reverse From End", type: "exec", dir: "in" },
+            { id: "update", name: "Update", type: "exec", dir: "out" },
+            { id: "finished", name: "Finished", type: "exec", dir: "out" },
+            { id: "alpha", name: "Alpha", type: "float", dir: "out", defaultValue: 0.0 },
+            { id: "direction", name: "Direction", type: "int", dir: "out", defaultValue: 1 }
+        ],
+        customData: {
+            length: 5.0,
+            loop: false
+        }
+    },
     "EventActorBeginOverlap": {
         title: "Event ActorBeginOverlap",
         type: "event-node",
@@ -635,6 +655,27 @@ export const NodeDefinitions = {
             { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
             { id: "cast_failed", name: "Cast Failed", type: "exec", dir: "out" },
             { id: "as_character", name: "As Character", type: "object", dir: "out" }
+        ]
+    },
+    // --- COMPONENT UTILS ---
+    "SetVisibility": {
+        title: "Set Visibility",
+        type: "function-node",
+        category: "Rendering",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "target", name: "Target", type: "scenecomponent", dir: "in" },
+            { id: "new_visibility", name: "New Visibility", type: "bool", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "GetWorldLocation": {
+        title: "Get World Location",
+        type: "pure-node",
+        category: "Transformation",
+        pins: [
+            { id: "target", name: "Target", type: "scenecomponent", dir: "in" },
+            { id: "location", name: "Return Value", type: "vector", dir: "out" }
         ]
     },
     "CastTo_Pawn": {

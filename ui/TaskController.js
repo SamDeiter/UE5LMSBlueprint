@@ -22,6 +22,10 @@ export class TaskController {
     }
 
     populateTaskSelector() {
+        if (!this.app.taskManager) {
+            console.warn('TaskManager not initialized yet.');
+            return;
+        }
         const tasks = this.app.taskManager.getAllTasks();
         this.selector.innerHTML = '<option value="">Select Task...</option>';
 

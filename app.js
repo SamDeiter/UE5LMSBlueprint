@@ -10,7 +10,7 @@ import { GraphSwitcher } from './graph/GraphSwitcher.js';
 import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
-import { TestRunner, registerTests } from './tests.js?v=2';
+import { TestRunner, registerTests } from './tests.js?v=4';
 import { BlueprintValidator, SAMPLE_TASK } from './utils/validator.js';
 import { TaskManager } from './services/TaskManager.js';
 import { nodeRegistry } from './registries/NodeRegistry.js';

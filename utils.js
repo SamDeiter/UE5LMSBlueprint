@@ -152,6 +152,73 @@ class Utils {
         const supportedTypes = ['bool', 'byte', 'int', 'int64', 'float', 'name', 'string', 'text', 'vector', 'rotator', 'transform'];
         return supportedTypes.includes(type.toLowerCase());
     }
+    /**
+     * Checks if two pin types are compatible for connection.
+     * Handles inheritance-like logic for components and objects.
+     * @param {string} sourceType - The type of the output pin.
+     * @param {string} targetType - The type of the input pin.
+     * @returns {boolean} True if compatible.
+     */
+    static isTypeCompatible(sourceType, targetType) {
+        if (!sourceType || !targetType) return false;
+        const s = sourceType.toLowerCase();
+        const t = targetType.toLowerCase();
+
+        // Exact match
+        if (s === t) return true;
+
+        // Exec to Exec
+        if (s === 'exec' && t === 'exec') return true;
+
+        // Wildcard support
+        if (s === 'wildcard' || t === 'wildcard') return true;
+
+        // Object Inheritance Logic
+        // All components are Objects
+        if (t === 'object' && s.includes('component')) return true;
+
+        // Component Hierarchy Definition
+        // Child -> Parent
+        const hierarchy = {
+            // Lights
+            'pointlightcomponent': 'lightcomponent',
+            'spotlightcomponent': 'pointlightcomponent',
+            'directionallightcomponent': 'lightcomponent',
+            'lightcomponent': 'scenecomponent',
+
+            // Meshes
+            'staticmeshcomponent': 'meshcomponent',
+            'skeletalmeshcomponent': 'meshcomponent',
+            'meshcomponent': 'primitivecomponent',
+
+            // Shapes / Collision
+            'boxcomponent': 'shapecomponent',
+            'spherecomponent': 'shapecomponent',
+            'capsulecomponent': 'shapecomponent',
+            'shapecomponent': 'primitivecomponent',
+            'primitivecomponent': 'scenecomponent',
+
+            // Camera
+            'cameracomponent': 'scenecomponent',
+            'springarmcomponent': 'scenecomponent',
+
+            // Audio
+            'audiocomponent': 'scenecomponent',
+
+            // General
+            'scenecomponent': 'actorcomponent',
+            'actorcomponent': 'object'
+        };
+
+        // Traverse up the hierarchy from source to see if we hit target
+        let current = s;
+        while (hierarchy[current]) {
+            current = hierarchy[current];
+            if (current === t) return true;
+        }
+
+        return false;
+    }
 }
 
 export { Utils };

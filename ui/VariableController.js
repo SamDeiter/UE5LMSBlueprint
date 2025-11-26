@@ -41,6 +41,9 @@ export class VariableController {
             case 'int64':
             case 'byte': return 0;
             case 'float': return 0.0;
+            case 'vector': return '(0,0,0)';
+            case 'rotator': return '(0,0,0)';
+            case 'transform': return '(0,0,0|0,0,0|1,1,1)';
             default: return '';
         }
     }

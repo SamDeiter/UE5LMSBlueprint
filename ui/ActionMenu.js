@@ -91,39 +91,45 @@ export class ActionMenu {
         const itemsListContainer = document.createElement('div');
         itemsListContainer.style.display = 'none';
         variableGroupsContainer.appendChild(itemsListContainer);
+
         let hasRelevantVariables = false;
-        for (const variable of this.app.variables.variables.values()) {
-            const varName = variable.name;
-            hasRelevantVariables = true;
-            const color = Utils.getPinColor(variable.type);
-            const pillStyle = `display:inline-block; width:8px; height:4px; background-color:${color}; border-radius:2px; margin-right:6px; vertical-align:middle;`;
-            const paddingLeft = '35px';
-            const varItemContainer = document.createElement('div');
-            varItemContainer.style.marginBottom = '2px';
-            const getItem = document.createElement('div');
-            getItem.className = 'menu-item';
-            getItem.innerHTML = `<span style="${pillStyle}"></span>Get ${varName}`;
-            getItem.style.paddingLeft = paddingLeft;
-            getItem.addEventListener('click', () => {
-                const nodeKey = `Get_${varName}`;
-                this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);
-                this.app.persistence.autoSave();
-                this.hide();
-            });
-            varItemContainer.appendChild(getItem);
-            const setItem = document.createElement('div');
-            setItem.className = 'menu-item';
-            setItem.innerHTML = `<span style="${pillStyle}"></span>Set ${varName}`;
-            setItem.style.paddingLeft = paddingLeft;
-            setItem.addEventListener('click', () => {
-                const nodeKey = `Set_${varName}`;
-                this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);
-                this.app.persistence.autoSave();
-                this.hide();
-            });
-            varItemContainer.appendChild(setItem);
-            itemsListContainer.appendChild(varItemContainer);
+        if (this.app.variables && this.app.variables.variables) {
+            for (const variable of this.app.variables.variables.values()) {
+                const varName = variable.name;
+                hasRelevantVariables = true;
+                const color = Utils.getPinColor(variable.type);
+                const pillStyle = `display:inline-block; width:8px; height:4px; background-color:${color}; border-radius:2px; margin-right:6px; vertical-align:middle;`;
+                const paddingLeft = '35px';
+                const varItemContainer = document.createElement('div');
+                varItemContainer.style.marginBottom = '2px';
+
+                const getItem = document.createElement('div');
+                getItem.className = 'menu-item';
+                getItem.innerHTML = `<span style="${pillStyle}"></span>Get ${varName}`;
+                getItem.style.paddingLeft = paddingLeft;
+                getItem.addEventListener('click', () => {
+                    const nodeKey = `Get_${varName}`;
+                    this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);
+                    this.app.persistence.autoSave();
+                    this.hide();
+                });
+                varItemContainer.appendChild(getItem);
+
+                const setItem = document.createElement('div');
+                setItem.className = 'menu-item';
+                setItem.innerHTML = `<span style="${pillStyle}"></span>Set ${varName}`;
+                setItem.style.paddingLeft = paddingLeft;
+                setItem.addEventListener('click', () => {
+                    const nodeKey = `Set_${varName}`;
+                    this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);
+                    this.app.persistence.autoSave();
+                    this.hide();
+                });
+                varItemContainer.appendChild(setItem);
+                itemsListContainer.appendChild(varItemContainer);
+            }
         }
+
         rootHeader.addEventListener('click', (e) => {
             e.stopPropagation();
             const isCollapsed = variableGroupsContainer.style.display === 'none';
@@ -131,12 +137,14 @@ export class ActionMenu {
             rootIcon.className = isCollapsed ? 'fas fa-caret-down' : 'fas fa-caret-right';
             if (isCollapsed) subHeader.dispatchEvent(new Event('click'));
         });
+
         subHeader.addEventListener('click', (e) => {
             e.stopPropagation();
             const isCollapsed = itemsListContainer.style.display === 'none';
             itemsListContainer.style.display = isCollapsed ? 'block' : 'none';
             subIcon.className = isCollapsed ? 'fas fa-caret-down' : 'fas fa-caret-right';
         });
+
         if (hasRelevantVariables) {
             this.list.appendChild(varAccessContainer);
             return true;

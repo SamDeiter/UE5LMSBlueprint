@@ -8,6 +8,7 @@
     "lint:fix": "eslint . --fix",
     "test": "echo \"Tests run in browser - open index.html and run window.runTests()\"",
     "serve": "python -m http.server 8000",
+    "preview": "npm run serve && start http://localhost:8000",
     "check-sizes": "node scripts/file-size-monitor.js",
     "validate": "npm run lint && npm run check-sizes",
     "precommit": "npm run validate",

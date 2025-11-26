@@ -57,6 +57,11 @@ class GraphController {
             this.app.needNodeModal.open(node);
         }
 
+        // Save state for undo/redo
+        if (this.app.history) {
+            this.app.history.saveState('add node');
+        }
+
         return node;
     }
 
@@ -238,9 +243,8 @@ class GraphController {
         // Check container type match (single, array, set, map)
         if (startPin.containerType !== endPin.containerType) return false;
 
-        // Check type match or executable type
-        if (startPin.type === endPin.type) return true;
-        if (startPin.type === 'exec' && endPin.type === 'exec') return true;
+        // Check type match using Utils.isTypeCompatible
+        if (Utils.isTypeCompatible(startPin.type, endPin.type)) return true;
 
         // Check for implicit conversion
         const conversionKey = Utils.getConversionNodeKey(startPin.type, endPin.type);
@@ -437,6 +441,33 @@ class GraphController {
         } else {
             this.app.details.clear();
         }
+    }
+
+    removeNode(nodeId) {
+        const node = this.nodes.get(nodeId);
+        if (!node) return;
+
+        // 1. Break all associated wires
+        node.pins.forEach(pin => {
+            this.app.wiring.breakPinLinks(pin.id);
+        });
+
+        // 2. Remove node element from DOM
+        if (node.element) {
+            node.element.remove();
+        }
+
+        // 3. Remove node from graph map
+        this.nodes.delete(nodeId);
+
+        // 4. Update selection if needed
+        if (this.selectedNodes.has(nodeId)) {
+            this.selectedNodes.delete(nodeId);
+        }
+
+        this.app.details.clear();
+        this.app.persistence.autoSave();
+        this.app.compiler.markDirty();
     }
 
     deleteSelectedNodes() {

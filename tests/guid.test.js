@@ -53,7 +53,7 @@ export function registerGUIDTests(testRunner) {
     });
 
     testRunner.addTest('GUID: Variable ID Integration', (app) => {
-        const initialCount = app.variables.variables.size;
+
         app.variables.addVariable();
 
         // Get the new variable
