@@ -59,9 +59,10 @@ export class GraphInteraction {
         const data = e.dataTransfer.getData('text/plain');
         const graphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
 
-        // COMPONENT_GET - From Components panel (top), only creates Get node
-        if (data.startsWith('COMPONENT_GET:')) {
-            const compId = data.substring('COMPONENT_GET:'.length);
+        // COMPONENT_GET or COMPONENT_REPARENT - From Components panel
+        if (data.startsWith('COMPONENT_GET:') || data.startsWith('COMPONENT_REPARENT:')) {
+            const prefix = data.startsWith('COMPONENT_GET:') ? 'COMPONENT_GET:' : 'COMPONENT_REPARENT:';
+            const compId = data.substring(prefix.length);
             const nodeKey = `GetComponent_${compId}`;
             this.controller.addNode(nodeKey, graphCoords.x, graphCoords.y);
             this.app.persistence.autoSave();

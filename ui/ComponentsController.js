@@ -255,57 +255,169 @@ export class ComponentsController {
         return 'fa-puzzle-piece';
     }
 
+
     render() {
         if (!this.listContainer) return;
         this.listContainer.innerHTML = '';
 
-        // Render Root Component (Self)
-        const rootItem = document.createElement('div');
-        rootItem.className = 'tree-item';
-        rootItem.innerHTML = `<i class="fas fa-dot-circle" style="margin-right: 8px; color: #ccc;"></i> <span>NewBlueprint (Self)</span>`;
+        // Track expanded state (persist across renders)
+        if (!this.expandedComponents) {
+            this.expandedComponents = new Set(['root']); // Root is expanded by default
+        }
+
+        // Render Root Component (Self) with expand/collapse
+        const rootItem = this.createComponentTreeItem({
+            id: 'root',
+            name: 'NewBlueprint (Self)',
+            type: 'Root',
+            parentId: null
+        }, 0, true);
         this.listContainer.appendChild(rootItem);
 
-        // Render Components
-        if (this.app.components) {
-            this.app.components.forEach(comp => {
-                const item = document.createElement('div');
-                item.className = 'tree-item';
-                item.style.paddingLeft = '24px'; // Indent
-                if (this.selectedComponentIds.has(comp.id)) item.classList.add('selected');
+        // Render component hierarchy recursively
+        this.renderComponentChildren('root', 1);
+    }
 
-                // Enable focus for deletion logic
-                item.setAttribute('tabindex', '0');
-                item.dataset.componentId = comp.id;
+    renderComponentChildren(parentId, depth) {
+        if (!this.app.components) return;
 
-                const iconClass = this.getIconForType(comp.type);
+        // Find all children of this parent
+        const children = [...this.app.components.values()].filter(comp => comp.parentId === parentId);
 
-                item.innerHTML = `
-                    <i class="fas ${iconClass}" style="margin-right: 8px; color: #ccc;"></i>
-                    <span>${comp.name}</span>
-                `;
+        children.forEach(comp => {
+            const item = this.createComponentTreeItem(comp, depth, false);
+            this.listContainer.appendChild(item);
 
-                // Make draggable - from Components panel, only creates Get node
-                item.draggable = true;
-                item.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', `COMPONENT_GET:${comp.id}`);
-                    e.dataTransfer.effectAllowed = 'copy';
-                });
+            // Recursively render children if expanded
+            if (this.expandedComponents.has(comp.id)) {
+                this.renderComponentChildren(comp.id, depth + 1);
+            }
+        });
+    }
 
-                item.addEventListener('click', (e) => {
-                    // Check for modifier keys
-                    const isMulti = e.ctrlKey || e.shiftKey || e.metaKey;
+    createComponentTreeItem(comp, depth, isRoot) {
+        const item = document.createElement('div');
+        item.className = 'tree-item';
+        item.style.paddingLeft = `${depth * 16 + 8}px`;
 
-                    if (this.selectedComponentIds.has(comp.id) && isMulti) {
-                        // Deselect if already selected and using modifier
-                        this.selectComponent(comp.id, true);
-                        e.target.blur();
-                    } else {
-                        // Select (either single or multi add)
-                        this.selectComponent(comp.id, isMulti);
-                    }
-                });
-                this.listContainer.appendChild(item);
+        if (!isRoot && this.selectedComponentIds.has(comp.id)) {
+            item.classList.add('selected');
+        }
+
+        item.setAttribute('tabindex', '0');
+        item.dataset.componentId = comp.id;
+
+        const iconClass = isRoot ? 'fa-dot-circle' : this.getIconForType(comp.type);
+
+        // Check if this component has children
+        const hasChildren = !isRoot && [...this.app.components.values()].some(c => c.parentId === comp.id);
+        const isExpanded = this.expandedComponents.has(comp.id);
+
+        // Create expand/collapse arrow if has children
+        let expandArrow = '';
+        if (hasChildren) {
+            const arrowIcon = isExpanded ? 'fa-caret-down' : 'fa-caret-right';
+            expandArrow = `<i class="fas ${arrowIcon} expand-arrow" style="margin-right: 4px; cursor: pointer; width: 12px;"></i>`;
+        } else if (!isRoot) {
+            expandArrow = '<span style="display: inline-block; width: 16px;"></span>'; // Spacer for alignment
+        }
+
+        item.innerHTML = `
+            ${expandArrow}
+            <i class="fas ${iconClass}" style="margin-right: 8px; color: #ccc;"></i>
+            <span>${comp.name}</span>
+        `;
+
+        // Expand/collapse functionality
+        if (hasChildren) {
+            const arrow = item.querySelector('.expand-arrow');
+            arrow.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (this.expandedComponents.has(comp.id)) {
+                    this.expandedComponents.delete(comp.id);
+                } else {
+                    this.expandedComponents.add(comp.id);
+                }
+                this.render();
             });
         }
+
+        // Make draggable - serves both for graph (Get node) and reparenting
+        if (!isRoot) {
+            item.draggable = true;
+            item.addEventListener('dragstart', (e) => {
+                // We use COMPONENT_REPARENT as the universal type.
+                // The GraphInteraction handles this by creating a Get node.
+                // The ComponentsController handles this by reparenting.
+                e.dataTransfer.setData('text/plain', `COMPONENT_REPARENT:${comp.id}`);
+                e.dataTransfer.effectAllowed = 'copyMove';
+                e.stopPropagation();
+            });
+        }
+
+        // Allow dropping components onto this item to reparent
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            item.style.backgroundColor = 'rgba(100, 150, 255, 0.2)';
+        });
+
+        item.addEventListener('dragleave', (e) => {
+            e.stopPropagation();
+            item.style.backgroundColor = '';
+        });
+
+        item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            item.style.backgroundColor = '';
+
+            const data = e.dataTransfer.getData('text/plain');
+
+            // Check if this is a component being reparented
+            if (data.startsWith('COMPONENT_REPARENT:')) {
+                const draggedId = data.replace('COMPONENT_REPARENT:', '');
+                const draggedComp = this.app.components.get(draggedId);
+
+                if (draggedComp && draggedId !== comp.id) {
+                    // Prevent circular parenting
+                    if (!this.isDescendant(comp.id, draggedId)) {
+                        draggedComp.parentId = comp.id;
+                        this.expandedComponents.add(comp.id); // Auto-expand parent
+                        this.render();
+                        this.app.persistence.autoSave();
+                    }
+                }
+            }
+        });
+
+        // Selection functionality
+        if (!isRoot) {
+            item.addEventListener('click', (e) => {
+                // Don't select if clicking arrow
+                if (e.target.classList.contains('expand-arrow')) return;
+
+                const isMulti = e.ctrlKey || e.shiftKey || e.metaKey;
+
+                if (this.selectedComponentIds.has(comp.id) && isMulti) {
+                    this.selectComponent(comp.id, true);
+                    e.target.blur();
+                } else {
+                    this.selectComponent(comp.id, isMulti);
+                }
+            });
+        }
+
+        return item;
+    }
+
+    // Helper to check if targetId is a descendant of potentialAncestorId
+    isDescendant(targetId, potentialAncestorId) {
+        let current = this.app.components.get(targetId);
+        while (current && current.parentId) {
+            if (current.parentId === potentialAncestorId) return true;
+            current = this.app.components.get(current.parentId);
+        }
+        return false;
     }
 }
