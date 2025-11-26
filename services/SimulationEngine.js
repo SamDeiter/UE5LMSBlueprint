@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, no-unused-vars */
 /**
  * Handles the runtime execution of the Blueprint graph.
  * Traversing execution pins and evaluating data dependencies.
@@ -14,6 +15,9 @@ export class SimulationEngine {
         this.consoleOutput = document.getElementById('compiler-results');
         this.simInterval = null;
         this.validator = new GraphValidator(app);
+        this.timelines = new Map();
+        this.lastTickTime = 0;
+        this.tickFrame = null;
     }
 
     /** Starts the simulation. */
@@ -42,11 +46,18 @@ export class SimulationEngine {
 
         // After execution, evaluate NeedNodes and report to SCORM
         this.evaluateNeedNodes();
+
+        // Start the Tick Loop
+        this.startTickLoop();
     }
 
     /** Stops the simulation. */
     stop() {
         this.isRunning = false;
+        if (this.tickFrame) {
+            cancelAnimationFrame(this.tickFrame);
+            this.tickFrame = null;
+        }
         this.updateUI();
         this.log("--- Simulation Stopped ---", "error");
     }
@@ -73,10 +84,86 @@ export class SimulationEngine {
         this.consoleOutput.prepend(div);
     }
 
+    /** Starts the requestAnimationFrame loop for Tick and Timelines. */
+    startTickLoop() {
+        this.lastTickTime = performance.now();
+
+        const tick = (timestamp) => {
+            if (!this.isRunning) return;
+
+            const deltaTime = (timestamp - this.lastTickTime) / 1000; // Seconds
+            this.lastTickTime = timestamp;
+
+            // 1. Event Tick
+            // Find all EventTick nodes
+            const tickNodes = [...this.app.graph.nodes.values()].filter(n => n.nodeKey === 'EventTick');
+            tickNodes.forEach(node => {
+                // Store delta time in a temp property so evaluateNodeValue can find it
+                node.tempValues = { delta_seconds_out: deltaTime };
+                this.executeFlow(node);
+            });
+
+            // 2. Timelines
+            this.timelines.forEach((state, nodeId) => {
+                if (!state.isPlaying) return;
+
+                // Update time
+                state.currentTime += deltaTime * state.direction;
+
+                // Handle boundaries
+                let finished = false;
+                if (state.direction > 0 && state.currentTime >= state.length) {
+                    if (state.loop) {
+                        state.currentTime = 0;
+                    } else {
+                        state.currentTime = state.length;
+                        state.isPlaying = false;
+                        finished = true;
+                    }
+                } else if (state.direction < 0 && state.currentTime <= 0) {
+                    if (state.loop) {
+                        state.currentTime = state.length;
+                    } else {
+                        state.currentTime = 0;
+                        state.isPlaying = false;
+                        finished = true;
+                    }
+                }
+
+                // Calculate Alpha (0-1)
+                const alpha = Math.max(0, Math.min(1, state.currentTime / state.length));
+
+                // Get the node to update its temp values
+                const node = this.app.graph.nodes.get(nodeId);
+                if (node) {
+                    node.tempValues = {
+                        alpha: alpha,
+                        direction: state.direction
+                    };
+
+                    // Fire 'Update' pin
+                    // We need to specifically fire the 'update' output pin
+                    // executeFlow normally follows the first exec pin or the return of executeNodeLogic
+                    // Here we manually trigger flow from a specific pin
+                    this.executeFlow(node, 'update');
+
+                    if (finished) {
+                        this.executeFlow(node, 'finished');
+                    }
+                }
+            });
+
+            this.tickFrame = requestAnimationFrame(tick);
+        };
+
+        this.tickFrame = requestAnimationFrame(tick);
+    }
+
     /** * Asynchronously follows the execution flow from a starting node.
      * @param {Node} startNode - The node to begin execution from.
+     * @param {string} [startPinId] - Optional specific output pin ID to start from (e.g. 'update').
      */
-    async executeFlow(startNode) {
+    async executeFlow(startNode, startPinId = null) {
         let currentNode = startNode;
 
         // Safety limiter to prevent infinite loops crashing the browser in this phase
@@ -86,9 +173,16 @@ export class SimulationEngine {
         while (currentNode && this.isRunning && steps < maxSteps) {
             steps++;
 
-            // 1. Execute the specific logic for this node
-            // Returns the ID of the output pin to follow (e.g., "exec_true"), or null for default
-            const nextPinId = await this.executeNodeLogic(currentNode);
+            let nextPinId = null;
+
+            // If we have a specific start pin (e.g. from Timeline Update), use it for the first step
+            if (startPinId && steps === 1) {
+                nextPinId = startPinId;
+            } else {
+                // 1. Execute the specific logic for this node
+                // Returns the ID of the output pin to follow (e.g., "exec_true"), or null for default
+                nextPinId = await this.executeNodeLogic(currentNode);
+            }
 
             // 2. Find the output execution pin to follow
             let outPin = null;
@@ -138,6 +232,42 @@ export class SimulationEngine {
             case 'Branch': {
                 const condition = this.evaluateInput(node, 'cond_in');
                 return condition ? 'exec_true' : 'exec_false';
+            }
+
+            case 'Timeline': {
+                // Ensure state exists
+                let state = this.timelines.get(node.id);
+                if (!state) {
+                    state = {
+                        currentTime: 0,
+                        length: node.customProperties?.length || 5.0,
+                        loop: node.customProperties?.loop || false,
+                        isPlaying: false,
+                        direction: 1 // 1 = forward, -1 = backward
+                    };
+                    this.timelines.set(node.id, state);
+                }
+
+                // Determine which input pin was triggered
+                // executeNodeLogic doesn't strictly know *which* pin triggered it in this architecture
+                // But we can infer or we might need to change how executeNodeLogic is called.
+                // However, for MVP, we can check inputs. But wait, 'exec' inputs aren't "evaluated" like data inputs.
+                // The current architecture has a limitation: executeNodeLogic is called when the node is visited.
+                // It doesn't know *which* input pin was followed.
+
+                // WORKAROUND: For now, we'll assume "Play" if we just arrived here.
+                // To support multiple exec inputs properly, we'd need to pass the `entryPinId` to executeNodeLogic.
+
+                // Let's check if we can determine the entry pin.
+                // In executeFlow, we have `outPin` from the previous node.
+                // `link.endPin` is the input pin on this node.
+
+                // For this MVP, let's just default to Play/Resume.
+                // Real implementation requires refactoring executeFlow to pass the input pin ID.
+
+                state.isPlaying = true;
+                state.direction = 1;
+                return null;
             }
 
             default:

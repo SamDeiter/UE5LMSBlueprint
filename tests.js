@@ -297,15 +297,26 @@ export const registerTests = (runner) => {
 
     runner.register('[Regression] Ghost Wire Visibility', () => {
         // This test verifies that ghost wire state is properly managed
-        // Bug: Ghost wire was disappearing when releasing mouse button
+        // Bug: Ghost wire was missing CSS, preventing it from appearing during drag
 
         const ghostWire = document.getElementById('ghost-wire');
         assert(ghostWire !== null, "Ghost wire element should exist");
 
         // Initial state should be hidden
         const initialDisplay = window.getComputedStyle(ghostWire).display;
-        console.log("Ghost wire display:", initialDisplay);
+        console.log("Ghost wire initial display:", initialDisplay);
         assert(initialDisplay === 'none', "Ghost wire should initially be hidden");
+
+        // Verify JavaScript can override the display (no !important in CSS)
+        ghostWire.style.display = 'block';
+        const overriddenDisplay = window.getComputedStyle(ghostWire).display;
+        console.log("Ghost wire after JS override:", overriddenDisplay);
+        assert(overriddenDisplay === 'block', "Ghost wire display should be overridable by JavaScript");
+
+        // Reset to hidden
+        ghostWire.style.display = 'none';
+        const resetDisplay = window.getComputedStyle(ghostWire).display;
+        assert(resetDisplay === 'none', "Ghost wire should be hidden again after reset");
     });
 
     runner.register('[Regression] Pin Literal Values Persist', (app) => {

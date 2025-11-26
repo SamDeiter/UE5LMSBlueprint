@@ -1,7 +1,7 @@
 /**
  * GraphInteraction - Handles user input events (mouse, keyboard, drag-drop) for the Graph Editor.
  */
-import { Utils } from '../utils.js';
+
 
 export class GraphInteraction {
     constructor(controller) {
@@ -45,7 +45,7 @@ export class GraphInteraction {
             if (this.controller.selectedNodes.size > 0) {
                 e.preventDefault();
                 this.controller.deleteSelectedNodes();
-            } else if (this.app.wiring.selectedLinks.size > 0) {
+            } else if (this.app.wiring && this.app.wiring.selectedLinks.size > 0) {
                 e.preventDefault();
                 this.app.wiring.deleteSelectedLinks();
             }
