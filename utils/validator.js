@@ -35,9 +35,13 @@ export class BlueprintValidator {
                         passed = this.checkConnection(req);
                         message = passed ? `Connection valid` : `Missing connection`;
                         break;
+                    case 'link_exists':
+                        passed = this.checkLinkExists(req);
+                        message = passed ? `Link from ${req.sourceNode}.${req.sourcePin} to ${req.targetNode}.${req.targetPin} exists` : `Missing specific link connection`;
+                        break;
                     case 'node_property':
                         passed = this.checkNodeProperty(req);
-                        message = passed ? `Property check passed` : `Property check failed`;
+                        message = passed ? `Property check passed for ${req.nodeKey}.${req.pinId}` : `Property value incorrect`;
                         break;
                     case 'singleton_check':
                         passed = this.checkSingleton(req);
@@ -46,6 +50,10 @@ export class BlueprintValidator {
                     case 'node_title':
                         passed = this.checkNodeTitle(req);
                         message = passed ? `Node titled '${req.title}' found` : `Node must be renamed to '${req.title}'`;
+                        break;
+                    case 'component_exists':
+                        passed = this.checkComponent(req);
+                        message = passed ? `Component '${req.componentType}' exists` : `Missing component '${req.componentType}'`;
                         break;
                     default:
                         console.warn(`Unknown requirement type: ${req.type}`);
@@ -120,20 +128,59 @@ export class BlueprintValidator {
 
     checkNodeProperty(req) {
         const nodes = [...this.app.graph.nodes.values()];
-        const targetNodes = nodes.filter(n => n.nodeKey === req.nodeType);
+        const targetNodes = nodes.filter(n => n.nodeKey === req.nodeKey);
 
         for (const node of targetNodes) {
-            // Check customData or direct properties
-            const val = node.customData[req.property] !== undefined ? node.customData[req.property] : node[req.property];
-            if (val == req.value) return true; // Loose equality for "100" vs 100
-
-            // Special check for default values on pins if property is not on node
-            if (req.property === 'defaultValue') {
-                // Check input pins for a value
-                // This is complex as pins are arrays. We might need a pinId in the requirement
+            // Check if this is a pin literal value check
+            if (req.pinId) {
+                const pin = node.pins.find(p => p.id.endsWith(req.pinId) || p.id === `${node.id}-${req.pinId}`);
+                if (pin) {
+                    const literalValue = node.pinLiterals.get(pin.id);
+                    // Convert both to strings for comparison
+                    if (String(literalValue) === String(req.value)) {
+                        return true;
+                    }
+                }
+            } else {
+                // Check customData or direct properties
+                const val = node.customData[req.property] !== undefined ? node.customData[req.property] : node[req.property];
+                if (val == req.value) return true; // Loose equality for "100" vs 100
             }
         }
         return false;
+    }
+
+    checkLinkExists(req) {
+        const nodes = [...this.app.graph.nodes.values()];
+        const sourceNodes = nodes.filter(n => n.nodeKey === req.sourceNode);
+        const targetNodes = nodes.filter(n => n.nodeKey === req.targetNode);
+
+        if (sourceNodes.length === 0 || targetNodes.length === 0) return false;
+
+        // Check if ANY instance of source is connected to ANY instance of target via the specified pins
+        for (const srcNode of sourceNodes) {
+            for (const tgtNode of targetNodes) {
+                const srcPin = srcNode.pins.find(p => p.id.endsWith(req.sourcePin) || p.name === req.sourcePin);
+                const tgtPin = tgtNode.pins.find(p => p.id.endsWith(req.targetPin) || p.name === req.targetPin);
+
+                if (!srcPin || !tgtPin) continue;
+
+                // Check if there's a link between these specific pins
+                const links = [...this.app.wiring.links.values()];
+                const linkExists = links.some(link =>
+                    link.startPin.id === srcPin.id && link.endPin.id === tgtPin.id
+                );
+
+                if (linkExists) return true;
+            }
+        }
+        return false;
+    }
+
+    checkComponent(req) {
+        if (!this.app.components) return false;
+        const components = [...this.app.components.values()];
+        return components.some(comp => comp.type === req.componentType);
     }
 
     checkNodeTitle(req) {
