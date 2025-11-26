@@ -108,16 +108,20 @@ export const registerTests = (runner) => {
         assert(node.nodeKey === 'PrintString', "Node key should be PrintString");
     });
 
-    // Historical test: Add Event BeginPlay node (kept for broader coverage)
     runner.register('Add EventBeginPlay Node to Graph', (app) => {
-        const initialNodeCount = app.graph.nodes.size;
-        // Use the NodeDefinitions key 'EventBeginPlay'
-        const evtNode = app.graph.addNode('EventBeginPlay', 100, 100);
-        assert(evtNode !== null, "addNode should return a node for EventBeginPlay");
-        assert(app.graph.nodes.size === initialNodeCount + 1, "Node count should increase");
+        // Clear graph first to avoid singleton conflict
+        app.graph.nodes.forEach(node => app.graph.removeNode(node.id));
 
-        const node = [...app.graph.nodes.values()].pop();
+        // Verify it's gone
+        const existing = [...app.graph.nodes.values()].find(n => n.nodeKey === 'EventBeginPlay');
+        if (existing) {
+            app.graph.removeNode(existing.id);
+        }
+
+        const node = app.graph.addNode('EventBeginPlay', 100, 100);
+        assert(node !== null, "addNode should return a node for EventBeginPlay");
         assert(node.nodeKey === 'EventBeginPlay', "Node key should be EventBeginPlay");
+        assert(app.graph.nodes.has(node.id), "Node should be in graph");
     });
 
     runner.register('Add Construction Script Node', (app) => {
@@ -188,16 +192,19 @@ export const registerTests = (runner) => {
         assert(beginPlay !== null, "BeginPlay node should be created");
         assert(printString !== null, "PrintString node should be created");
 
-        // Get the pins
-        const execOutPin = beginPlay.pins.find(p => p.id === 'exec' && p.direction === 'output');
-        const execInPin = printString.pins.find(p => p.id === 'exec' && p.direction === 'input');
+        // Get the pins - note that pin IDs include the node ID prefix
+        const execOutPin = beginPlay.findPinById('exec_out');
+        const execInPin = printString.findPinById('exec_in');
+
+        if (!execOutPin) console.error("BeginPlay pins:", beginPlay.pins.map(p => ({ id: p.id, dir: p.dir, type: p.type })));
+        if (!execInPin) console.error("PrintString pins:", printString.pins.map(p => ({ id: p.id, dir: p.dir, type: p.type })));
 
         assert(execOutPin, "BeginPlay should have exec output pin");
         assert(execInPin, "PrintString should have exec input pin");
 
         // Create connection
         const initialLinkCount = app.wiring.links.size;
-        app.wiring.createLink(execOutPin, execInPin);
+        app.wiring.createConnection(execOutPin, execInPin);
 
         assert(app.wiring.links.size === initialLinkCount + 1, "Link count should increase");
     });
@@ -217,7 +224,7 @@ export const registerTests = (runner) => {
                 const execOut = beginPlay.pins.find(p => p.direction === 'output');
                 const execIn = printString.pins.find(p => p.direction === 'input');
                 if (execOut && execIn) {
-                    app.wiring.createLink(execOut, execIn);
+                    app.wiring.createConnection(execOut, execIn);
                 }
             }
         }
@@ -225,7 +232,7 @@ export const registerTests = (runner) => {
         const initialCount = app.wiring.links.size;
         if (initialCount > 0) {
             const link = [...app.wiring.links.values()][0];
-            app.wiring.removeLink(link.id);
+            app.wiring.breakLinkById(link.id);
             assert(app.wiring.links.size === initialCount - 1, "Link count should decrease");
         }
     });
@@ -245,8 +252,8 @@ export const registerTests = (runner) => {
         const nodeCount = app.graph.nodes.size;
         const varCount = app.variables.variables.size;
 
-        // Save state
-        app.persistence.save();
+        // Save state (FORCE CAPTURE)
+        app.persistence.save(true);
 
         // Clear everything
         app.graph.nodes.forEach(node => app.graph.removeNode(node.id));
@@ -297,6 +304,7 @@ export const registerTests = (runner) => {
 
         // Initial state should be hidden
         const initialDisplay = window.getComputedStyle(ghostWire).display;
+        console.log("Ghost wire display:", initialDisplay);
         assert(initialDisplay === 'none', "Ghost wire should initially be hidden");
     });
 
@@ -384,13 +392,43 @@ export const registerTests = (runner) => {
         // but we can check the logic function directly if we had access.
         // Instead, let's verify the node structure.
 
-        const execOut = castNode.pins.find(p => p.id === 'exec_out');
-        const castFailed = castNode.pins.find(p => p.id === 'cast_failed');
-        const asChar = castNode.pins.find(p => p.id === 'as_character');
+        const execOut = castNode.findPinById('exec_out');
+        const castFailed = castNode.findPinById('cast_failed');
+        const asChar = castNode.findPinById('as_character');
 
         assert(execOut, "Should have Exec output");
         assert(castFailed, "Should have Cast Failed output");
         assert(asChar, "Should have As Character output");
     });
 
+
+
+
+
+
+
+    // --- Timeline Tests ---
+    runner.register('Timeline Node Structure', (app) => {
+        const timeline = app.graph.addNode('Timeline', 300, 300);
+        assert(timeline !== null, "Timeline node should be created");
+
+        // Check Pins
+        const play = timeline.findPinById('play');
+        const stop = timeline.findPinById('stop');
+        const reverse = timeline.findPinById('reverse');
+        const update = timeline.findPinById('update');
+        const finished = timeline.findPinById('finished');
+        const alpha = timeline.findPinById('alpha');
+
+        assert(play && play.dir === 'in', "Should have Play input pin");
+        assert(stop && stop.dir === 'in', "Should have Stop input pin");
+        assert(reverse && reverse.dir === 'in', "Should have Reverse input pin");
+        assert(update && update.dir === 'out', "Should have Update output pin");
+        assert(finished && finished.dir === 'out', "Should have Finished output pin");
+        assert(alpha && alpha.dir === 'out', "Should have Alpha output pin");
+
+        // Check Default Properties
+        assert(timeline.customData.length === 5.0, "Default length should be 5.0s");
+        assert(timeline.customData.loop === false, "Default loop should be false");
+    });
 };

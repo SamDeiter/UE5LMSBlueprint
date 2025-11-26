@@ -6,6 +6,7 @@
 
 // Import all controllers
 import { WiringController, GraphController } from './graph/index.js';
+import { GraphSwitcher } from './graph/GraphSwitcher.js';
 import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
@@ -26,15 +27,15 @@ class BlueprintApp {
     static init() {
         // Expose for inline events (onclick)
         window.app = BlueprintApp;
-
+        BlueprintApp.nodeRegistry = nodeRegistry;
 
         // Register static node definitions into the runtime registry
-        // Ensures `graph.addNode(nodeKey, ...)` can find node definitions
         try {
             nodeRegistry.registerBatch(NodeDefinitions);
         } catch (err) {
             console.error('Failed to register NodeDefinitions:', err);
         }
+
         // DOM Elements - Fail early if missing
         const graphEditorEl = document.getElementById('graph-editor');
         const nodesContainerEl = document.getElementById('nodes-container');
@@ -48,58 +49,62 @@ class BlueprintApp {
 
         // --- Controller Initialization (Order is Crucial) ---
 
-        // 0. Layout Controller (Resizers) - Needs to be early to bind to DOM
-        BlueprintApp.layout = new LayoutController(BlueprintApp);
+        // 1. Core Data Structures
+        BlueprintApp.components = new Map();
 
-        // 1. Core Graph/Canvas Handlers 
-        // Use local variable to ensure stability throughout init()
-        const graphController = new GraphController(
+        // 2. Low-Level Controllers (Layout, Wiring, Grid)
+        BlueprintApp.layout = new LayoutController(BlueprintApp);
+        BlueprintApp.wiring = new WiringController(graphSvgEl, BlueprintApp);
+        BlueprintApp.grid = new GridController(graphCanvasEl, BlueprintApp);
+
+        // 3. Data Controllers (Variables, History)
+        BlueprintApp.variables = new VariableController(BlueprintApp);
+        BlueprintApp.history = new HistoryManager(BlueprintApp);
+
+        // 4. Main Graph Controller (Depends on Wiring, Variables, History)
+        BlueprintApp.graph = new GraphController(
             graphEditorEl,
             graphSvgEl,
             nodesContainerEl,
             BlueprintApp
         );
-        BlueprintApp.graph = graphController;
 
-        const gridController = new GridController(
-            graphCanvasEl,
-            BlueprintApp
-        );
-        BlueprintApp.grid = gridController;
-
-        // 2. Data Model/UI Controllers
-        BlueprintApp.actionMenu = new ActionMenu(BlueprintApp);
-        BlueprintApp.contextMenu = new ContextMenu(BlueprintApp);
+        // 5. Service Controllers (Persistence, Compiler, Sim)
+        BlueprintApp.persistence = new Persistence(BlueprintApp);
         BlueprintApp.compiler = new Compiler(BlueprintApp);
         BlueprintApp.sim = new SimulationEngine(BlueprintApp);
 
-        // 6. Task Manager
+        // 6. UI Controllers
+        BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
+        BlueprintApp.palette = new PaletteController(BlueprintApp);
+        BlueprintApp.details = new DetailsController(BlueprintApp);
+        BlueprintApp.actionMenu = new ActionMenu(BlueprintApp);
+        BlueprintApp.contextMenu = new ContextMenu(BlueprintApp);
+        BlueprintApp.needNodeModal = new NeedNodeModal(BlueprintApp);
+
+        // 7. Task System
         BlueprintApp.taskManager = new TaskManager(BlueprintApp);
         window.setTask = (taskId) => BlueprintApp.taskManager.setCurrentTask(taskId);
         window.validateTask = () => BlueprintApp.taskManager.validateCurrentTask();
         window.clearTask = () => BlueprintApp.taskManager.clearTask();
 
-        // 7. Task UI Controller
         BlueprintApp.taskUI = new TaskController(BlueprintApp);
 
-        // 8. NeedNode Modal
-        BlueprintApp.needNodeModal = new NeedNodeModal(BlueprintApp);
+        // 8. Graph Switcher
+        BlueprintApp.graphSwitcher = new GraphSwitcher(BlueprintApp);
+        BlueprintApp.switchGraph = (graphName) => BlueprintApp.graphSwitcher.switchGraph(graphName);
 
-        // 4. Test Runner
+        // 9. Validators & Runners
         BlueprintApp.testRunner = new TestRunner(BlueprintApp);
         registerTests(BlueprintApp.testRunner);
         window.runTests = () => BlueprintApp.testRunner.run();
 
-        // 5. Blueprint Validator
         BlueprintApp.validator = new BlueprintValidator(BlueprintApp);
         window.validateSampleTask = () => BlueprintApp.validator.validateTask(SAMPLE_TASK);
 
         // --- Bind Events ---
-        // Use the local variable 'graphController' to guarantee it exists
-        if (graphController) {
-            graphController.initEvents();
-        } else {
-            console.error("GraphController failed to initialize.");
+        if (BlueprintApp.graph) {
+            BlueprintApp.graph.initEvents();
         }
 
         // Trigger full compilation logic instead of just validation
@@ -107,7 +112,7 @@ class BlueprintApp {
         if (compileBtn) compileBtn.addEventListener('click', () => BlueprintApp.compiler.compile());
 
         const saveBtn = document.getElementById('save-btn');
-        if (saveBtn) saveBtn.addEventListener('click', () => BlueprintApp.persistence.save());
+        if (saveBtn) saveBtn.addEventListener('click', () => BlueprintApp.persistence.save(true));
 
         // Bind Undo/Redo Buttons
         const undoBtn = document.getElementById('undo-btn');
@@ -142,69 +147,35 @@ class BlueprintApp {
 
         // --- Global Hotkeys ---
         document.addEventListener('keydown', (e) => {
-            // Use e.target to strictly identify the element receiving the input
             const target = e.target;
             const tagName = target.tagName ? target.tagName.toUpperCase() : '';
+            const isTextEditor = tagName === 'INPUT' || tagName === 'TEXTAREA' || target.isContentEditable;
 
-            // Allow typing in inputs/textareas/contentEditable unless explicitly handled
-            const isTextEditor = tagName === 'INPUT' ||
-                tagName === 'TEXTAREA' ||
-                target.isContentEditable;
-
-            if (isTextEditor) {
-                return;
-            }
+            if (isTextEditor) return;
 
             if (e.ctrlKey) {
-                if (e.key === 'z' || e.key === 'Z') {
-                    e.preventDefault();
-                    BlueprintApp.history.undo();
-                    return;
-                }
-                if (e.key === 'y' || e.key === 'Y') {
-                    e.preventDefault();
-                    BlueprintApp.history.redo();
-                    return;
-                }
-                if (e.key === 's' || e.key === 'S') {
-                    e.preventDefault();
-                    BlueprintApp.persistence.save();
-                    return;
-                }
-                if (e.key === 'w' || e.key === 'W') {
-                    e.preventDefault();
-                    BlueprintApp.graph.duplicateSelectedNodes();
-                    return;
-                }
+                if (e.key === 'z' || e.key === 'Z') { e.preventDefault(); BlueprintApp.history.undo(); return; }
+                if (e.key === 'y' || e.key === 'Y') { e.preventDefault(); BlueprintApp.history.redo(); return; }
+                if (e.key === 's' || e.key === 'S') { e.preventDefault(); BlueprintApp.persistence.save(); return; }
+                if (e.key === 'w' || e.key === 'W') { e.preventDefault(); BlueprintApp.graph.duplicateSelectedNodes(); return; }
             }
 
             if (e.key === 'Delete' || e.key === 'Backspace') {
                 e.preventDefault();
-                console.log("Delete/Backspace pressed");
-
-                let varToDelete = null;
-
-                // --- PRIORITY 1: CHECK FOR VARIABLE DELETION ---
-                varToDelete = BlueprintApp.details.currentVariable;
+                let varToDelete = BlueprintApp.details.currentVariable;
 
                 if (!varToDelete) {
                     const activeEl = document.activeElement;
                     if (activeEl) {
                         const focusedVarEl = activeEl.closest('.tree-item[data-var-id]');
                         if (focusedVarEl) {
-                            const varId = focusedVarEl.dataset.varId;
-                            varToDelete = [...BlueprintApp.variables.variables.values()].find(v => v.id === varId);
+                            varToDelete = [...BlueprintApp.variables.variables.values()].find(v => v.id === focusedVarEl.dataset.varId);
                         }
                     }
                 }
 
-                console.log("varToDelete:", varToDelete);
-
-                // --- PRIORITY 2: CHECK FOR COMPONENT DELETION ---
                 let componentToDelete = null;
-
                 if (!varToDelete) {
-                    // Check for focused component in the list
                     const activeEl = document.activeElement;
                     if (activeEl) {
                         const focusedCompEl = activeEl.closest('.tree-item[data-component-id]');
@@ -212,40 +183,45 @@ class BlueprintApp {
                             componentToDelete = focusedCompEl.dataset.componentId;
                         }
                     }
-
-                    // Fallback to selected component if no specific focus
                     if (!componentToDelete && BlueprintApp.componentsController && BlueprintApp.componentsController.selectedComponentId) {
                         componentToDelete = BlueprintApp.componentsController.selectedComponentId;
                     }
                 }
 
-                console.log("componentToDelete:", componentToDelete);
-
                 if (varToDelete) {
-                    console.log("Deleting variable...");
-                    BlueprintApp.variables.deleteVariable(varToDelete); // Triggers confirmation modal
+                    BlueprintApp.variables.deleteVariable(varToDelete);
                 } else if (componentToDelete) {
-                    console.log("Deleting component...");
                     BlueprintApp.componentsController.deleteComponent(componentToDelete);
                 }
             }
         });
 
         // --- Load & Render Sequence ---
-        BlueprintApp.persistence.load();
+        try {
+            if (BlueprintApp.persistence) {
+                BlueprintApp.persistence.load();
+            } else {
+                console.error("Persistence controller not initialized!");
+            }
+        } catch (err) {
+            console.error("Failed to load persistence state:", err);
+        }
 
-        // Use the local variable again to be safe
-        if (graphController) {
-            graphController.renderAllNodes();
+        // Initialize history with the loaded state
+        if (BlueprintApp.history) {
+            BlueprintApp.history.saveState('initial load');
+        }
 
-            // Draw wires in the next frame.
+        if (BlueprintApp.graph) {
+            BlueprintApp.graph.renderAllNodes();
             requestAnimationFrame(() => {
-                graphController.drawAllWires();
+                BlueprintApp.graph.drawAllWires();
             });
         }
 
         BlueprintApp.palette.populateList();
-        BlueprintApp.variables.renderPanel(); // Ensure panel is rendered on startup
+        BlueprintApp.variables.renderPanel();
+        BlueprintApp.componentsController.render(); // Ensure components panel is rendered
         BlueprintApp.compiler.validate();
         BlueprintApp.grid.draw();
     }
