@@ -3,11 +3,13 @@
  * TaskManager - Manages task selection, validation, and progress tracking
  */
 import { BlueprintValidator, ALL_TASKS } from '../utils/validator.js';
+import { GraphValidator } from './GraphValidator.js';
 
 export class TaskManager {
     constructor(app) {
         this.app = app;
         this.validator = new BlueprintValidator(app);
+        this.graphValidator = new GraphValidator(app);
         this.tasks = [...ALL_TASKS]; // Initialize with copy of static tasks
         this.currentTask = null;
         this.validationResults = null;
@@ -93,7 +95,8 @@ export class TaskManager {
         this.currentTask = task;
         this.validationResults = null;
 
-
+        // Trigger initial validation to update UI
+        this.validateCurrentTask();
 
         return true;
     }
@@ -115,7 +118,68 @@ export class TaskManager {
             return { success: false, results: [] };
         }
 
-        this.validationResults = this.validator.validateTask(this.currentTask);
+        // 1. Standard JSON-based validation
+        const jsonValidation = this.validator.validateTask(this.currentTask);
+        let allPassed = jsonValidation.success;
+        let combinedResults = [...jsonValidation.results];
+
+        // 2. NeedNode-based validation
+        // Find all NeedNodes associated with this task
+        const needNodes = [...this.app.graph.nodes.values()]
+            .filter(n => n.nodeKey === 'NeedNode' && n.customData?.needNodeData?.taskId === this.currentTask.taskId);
+
+        if (needNodes.length > 0) {
+            needNodes.forEach(node => {
+                const needData = node.customData.needNodeData;
+                if (needData.criteria && needData.criteria.length > 0) {
+                    // Validate criteria using GraphValidator
+                    const validatedCriteria = this.graphValidator.validate(needData.criteria);
+
+                    // Update node data with results
+                    node.customData.needNodeData.criteria = validatedCriteria;
+
+                    // Check if this node passed (all criteria met)
+                    const nodePassed = validatedCriteria.every(c => c.passed);
+                    if (!nodePassed) allPassed = false;
+
+                    // Add to combined results for UI display
+                    validatedCriteria.forEach(c => {
+                        combinedResults.push({
+                            description: `[${node.title}] ${c.description}`,
+                            passed: c.passed
+                        });
+                    });
+
+                    // Force re-render of this node to show updated status
+                    // We can't easily re-render just one node without accessing the renderer, 
+                    // but we can update its element if we have access to it.
+                    // The simplest way is to re-render all nodes or trigger a specific update.
+                    // For now, let's try to re-render the specific node if possible, or all.
+                    if (this.app.graph && this.app.graph.renderer) {
+                        // Ideally we'd have a updateNode(node) method. 
+                        // For now, let's just re-render all to be safe and simple.
+                        // Optimization: could be improved later.
+                        // this.app.graph.renderer.renderAllNodes(); 
+                        // Actually, renderAllNodes is expensive. Let's try to update the specific node element.
+                        const newElement = node.render();
+                        const oldElement = document.getElementById(node.id);
+                        if (oldElement && oldElement.parentNode) {
+                            oldElement.parentNode.replaceChild(newElement, oldElement);
+                            // Re-bind events? Node.render() creates new elements with events attached.
+                            // We need to make sure wires are re-drawn if positions changed (they didn't).
+                            // But we need to make sure the node is still draggable.
+                            // GraphController handles drag events on the container, so it should be fine.
+                        }
+                    }
+                }
+            });
+        }
+
+        this.validationResults = {
+            success: allPassed,
+            results: combinedResults
+        };
+
         return this.validationResults;
     }
 
