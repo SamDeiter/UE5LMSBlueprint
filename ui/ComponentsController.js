@@ -219,11 +219,10 @@ export class ComponentsController {
                     title: `Get ${comp.name}`,
                     category: 'Components',
                     type: 'pure-node',
-                    inputs: [],
-                    outputs: [
+                    pins: [
                         { id: 'out', name: comp.name, type: comp.type, dir: 'out' }
                     ],
-                    properties: { componentId: comp.id }
+                    customData: { componentId: comp.id }
                 });
 
                 // Register Set node
