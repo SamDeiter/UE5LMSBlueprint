@@ -174,8 +174,13 @@ class BlueprintApp {
                     }
                 }
 
+                // Check for component deletion
+                // Priority 1: Multi-selection
+                const hasSelectedComponents = BlueprintApp.componentsController && BlueprintApp.componentsController.selectedComponentIds.size > 0;
+
+                // Priority 2: Focused element (if not in selection)
                 let componentToDelete = null;
-                if (!varToDelete) {
+                if (!varToDelete && !hasSelectedComponents) {
                     const activeEl = document.activeElement;
                     if (activeEl) {
                         const focusedCompEl = activeEl.closest('.tree-item[data-component-id]');
@@ -183,13 +188,12 @@ class BlueprintApp {
                             componentToDelete = focusedCompEl.dataset.componentId;
                         }
                     }
-                    if (!componentToDelete && BlueprintApp.componentsController && BlueprintApp.componentsController.selectedComponentId) {
-                        componentToDelete = BlueprintApp.componentsController.selectedComponentId;
-                    }
                 }
 
                 if (varToDelete) {
                     BlueprintApp.variables.deleteVariable(varToDelete);
+                } else if (hasSelectedComponents) {
+                    BlueprintApp.componentsController.deleteSelectedComponents();
                 } else if (componentToDelete) {
                     BlueprintApp.componentsController.deleteComponent(componentToDelete);
                 }

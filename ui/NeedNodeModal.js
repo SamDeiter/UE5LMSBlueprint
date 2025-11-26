@@ -279,6 +279,8 @@ export class NeedNodeModal {
             <option value="${ValidatorTypes.PIN_CONNECTED}">Check Pin Connected</option>
             <option value="${ValidatorTypes.VARIABLE_VALUE}">Check Variable Value</option>
             <option value="${ValidatorTypes.COMPONENT_EXISTS}">Check Component Exists</option>
+            <option value="${ValidatorTypes.LINK_EXISTS}">Check Link Exists</option>
+            <option value="${ValidatorTypes.NODE_PROPERTY}">Check Node Property</option>
         `;
 
         if (criterion && criterion.type) {
@@ -416,6 +418,19 @@ export class NeedNodeModal {
             case ValidatorTypes.COMPONENT_EXISTS:
                 createField('Component Type', 'text', 'type', params.type, 'e.g., PointLight, Camera');
                 createField('Component Name', 'text', 'name', params.name, '(Optional) Specific component name');
+                break;
+
+            case ValidatorTypes.LINK_EXISTS:
+                createField('Source Node', 'text', 'sourceNode', params.sourceNode, 'e.g., EventBeginPlay');
+                createField('Source Pin', 'text', 'sourcePin', params.sourcePin, 'e.g., exec_out');
+                createField('Target Node', 'text', 'targetNode', params.targetNode, 'e.g., PrintString');
+                createField('Target Pin', 'text', 'targetPin', params.targetPin, '(Optional) e.g., exec_in');
+                break;
+
+            case ValidatorTypes.NODE_PROPERTY:
+                createField('Node Type', 'text', 'nodeKey', params.nodeKey, 'e.g., PrintString');
+                createField('Pin ID (Property)', 'text', 'pinId', params.pinId, 'e.g., str_in');
+                createField('Expected Value', 'text', 'value', params.value, 'e.g., Hello World');
                 break;
         }
     }

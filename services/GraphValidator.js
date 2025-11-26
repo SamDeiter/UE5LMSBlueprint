@@ -9,7 +9,8 @@ export const ValidatorTypes = {
     NODE_EXISTS: 'NODE_EXISTS',
     PIN_CONNECTED: 'PIN_CONNECTED',
     VARIABLE_VALUE: 'VARIABLE_VALUE',
-    COMPONENT_EXISTS: 'COMPONENT_EXISTS',
+    LINK_EXISTS: 'LINK_EXISTS',
+    NODE_PROPERTY: 'NODE_PROPERTY',
     // Future types can be added here
 };
 
@@ -53,6 +54,10 @@ export class GraphValidator {
                     return this.checkVariableValue(criterion.params);
                 case ValidatorTypes.COMPONENT_EXISTS:
                     return this.checkComponentExists(criterion.params);
+                case ValidatorTypes.LINK_EXISTS:
+                    return this.checkLinkExists(criterion.params);
+                case ValidatorTypes.NODE_PROPERTY:
+                    return this.checkNodeProperty(criterion.params);
                 default:
                     console.warn(`[GraphValidator] Unknown validator type: ${criterion.type}`);
                     return false;
@@ -113,6 +118,56 @@ export class GraphValidator {
             return components.some(c => c.type === type || c.name.toLowerCase().includes(type.toLowerCase()));
         }
         return false;
+    }
+
+    checkLinkExists(params) {
+        // params: { sourceNode: 'EventBeginPlay', sourcePin: 'exec_out', targetNode: 'PrintString', targetPin: 'exec_in' }
+        if (!params || !params.sourceNode || !params.targetNode) return false;
+        const { sourceNode, sourcePin, targetNode, targetPin } = params;
+
+        // Find all source nodes
+        const sources = [...this.app.graph.nodes.values()].filter(n => n.nodeKey === sourceNode);
+
+        return sources.some(src => {
+            // Get the specific output pin
+            const outPin = src.findPinById(`${src.id}-${sourcePin}`);
+            if (!outPin || !outPin.isConnected()) return false;
+
+            // Check all connections from this pin
+            return outPin.connections.some(conn => {
+                // conn is the target pin
+                const targetNodeObj = conn.node;
+                if (targetNodeObj.nodeKey !== targetNode) return false;
+
+                // If target pin ID is specified, check it
+                if (targetPin) {
+                    // Connection pin ID format is usually "nodeId-pinId"
+                    // We need to extract the local pin ID or check if it ends with the targetPin
+                    return conn.id.endsWith(`-${targetPin}`);
+                }
+                return true;
+            });
+        });
+    }
+
+    checkNodeProperty(params) {
+        // params: { nodeKey: 'PrintString', pinId: 'str_in', value: 'Hello', operator: '==' }
+        if (!params || !params.nodeKey || !params.pinId) return false;
+        const { nodeKey, pinId, value } = params;
+
+        const nodes = [...this.app.graph.nodes.values()].filter(n => n.nodeKey === nodeKey);
+
+        return nodes.some(node => {
+            // Find the input pin that holds the value
+            const pin = node.findPinById(`${node.id}-${pinId}`);
+            if (!pin) return false;
+
+            // If pin is connected, we can't easily check the value without simulation
+            // For now, we only check the default value set on the pin (literal value)
+            if (pin.isConnected()) return false; // Or maybe true if we assume connection provides correct value? Let's stick to literal check.
+
+            return String(pin.defaultValue) === String(value);
+        });
     }
 
     // --- Legacy Support ---

@@ -5,7 +5,7 @@ export class ComponentsController {
     constructor(app) {
         console.log('ComponentsController initialized (v2)');
         this.app = app;
-        this.selectedComponentId = null;
+        this.selectedComponentIds = new Set(); // Changed to Set for multi-selection
         this.panel = document.getElementById('components-panel');
         this.listContainer = this.panel ? this.panel.querySelector('.panel-content') : null;
         this.addBtn = this.panel ? this.panel.querySelector('.btn-green-add') : null;
@@ -47,7 +47,7 @@ export class ComponentsController {
         };
 
         this.app.components.set(id, newComponent);
-        this.selectComponent(id); // Auto-select new component
+        this.selectComponent(id); // Auto-select new component (clears others)
         this.updateNodeLibrary();
 
         // Render both the Components panel and the My Blueprint panel (since it mirrors components)
@@ -57,8 +57,23 @@ export class ComponentsController {
         this.app.persistence.autoSave();
     }
 
-    selectComponent(id) {
-        this.selectedComponentId = id;
+    selectComponent(id, multiSelect = false) {
+        if (!id) {
+            this.selectedComponentIds.clear();
+        } else {
+            if (multiSelect) {
+                // Toggle selection
+                if (this.selectedComponentIds.has(id)) {
+                    this.selectedComponentIds.delete(id);
+                } else {
+                    this.selectedComponentIds.add(id);
+                }
+            } else {
+                // Single selection
+                this.selectedComponentIds.clear();
+                this.selectedComponentIds.add(id);
+            }
+        }
 
         // Clear variable selection
         if (this.app.details) {
@@ -69,7 +84,8 @@ export class ComponentsController {
         if (this.listContainer) {
             const items = this.listContainer.querySelectorAll('.tree-item');
             items.forEach(item => {
-                if (id && item.dataset.componentId === id) {
+                const itemId = item.dataset.componentId;
+                if (itemId && this.selectedComponentIds.has(itemId)) {
                     item.classList.add('selected');
                 } else {
                     item.classList.remove('selected');
@@ -81,7 +97,8 @@ export class ComponentsController {
         if (this.app.variables && this.app.variables.panel) {
             const items = this.app.variables.panel.querySelectorAll('.tree-item[data-component-id]');
             items.forEach(item => {
-                if (id && item.dataset.componentId === id) {
+                const itemId = item.dataset.componentId;
+                if (itemId && this.selectedComponentIds.has(itemId)) {
                     item.classList.add('selected');
                 } else {
                     item.classList.remove('selected');
@@ -89,26 +106,26 @@ export class ComponentsController {
             });
         }
 
-        // Sync with My Blueprint selection if possible, or just update details
+        // Sync with Details Panel
+        // Show details for the LAST selected item, or clear if empty
         if (this.app.details) {
-            if (id) {
-                this.app.details.showComponentDetails(this.app.components.get(id));
+            if (this.selectedComponentIds.size > 0) {
+                // Get the last added ID (most recently clicked)
+                const lastId = Array.from(this.selectedComponentIds).pop();
+                this.app.details.showComponentDetails(this.app.components.get(lastId));
             } else {
                 this.app.details.clear();
             }
         }
     }
 
-    deleteComponent(id) {
-        console.log('[ComponentsController] Deleting component:', id);
-        if (!id) return;
+    /**
+     * Deletes all selected components
+     */
+    deleteSelectedComponents() {
+        if (this.selectedComponentIds.size === 0) return;
 
-        if (!this.app.components.has(id)) {
-            console.log('[ComponentsController] Component not found');
-            return;
-        }
-
-        const comp = this.app.components.get(id);
+        console.log('[ComponentsController] Deleting selected components:', this.selectedComponentIds);
 
         // Use the same confirmation modal as variable deletion
         const modal = document.getElementById('confirmation-modal');
@@ -116,15 +133,20 @@ export class ComponentsController {
         const yesBtn = document.getElementById('confirm-yes-btn');
         const noBtn = document.getElementById('confirm-no-btn');
 
+        const count = this.selectedComponentIds.size;
+        const messageText = count === 1
+            ? `Delete component '${this.app.components.get([...this.selectedComponentIds][0]).name}'?`
+            : `Delete ${count} components?`;
+
         if (!modal) {
             console.error('[ComponentsController] Confirmation modal not found, using window.confirm as fallback');
-            if (window.confirm(`Delete component '${comp.name}'?`)) {
-                this.executeComponentDeletion(id);
+            if (window.confirm(messageText)) {
+                this.executeDeletion();
             }
             return;
         }
 
-        msg.textContent = `Are you sure you want to delete component '${comp.name}'?`;
+        msg.textContent = messageText;
         modal.style.display = 'flex';
 
         // Clone buttons to remove old listeners
@@ -134,7 +156,7 @@ export class ComponentsController {
         noBtn.parentNode.replaceChild(newNo, noBtn);
 
         newYes.addEventListener('click', () => {
-            this.executeComponentDeletion(id);
+            this.executeDeletion();
             modal.style.display = 'none';
         });
 
@@ -144,14 +166,15 @@ export class ComponentsController {
         });
     }
 
-    executeComponentDeletion(id) {
-        console.log('[ComponentsController] Executing deletion for:', id);
-        this.app.components.delete(id);
-        console.log('[ComponentsController] Component deleted, refreshing UI...');
+    executeDeletion() {
+        this.selectedComponentIds.forEach(id => {
+            if (this.app.components.has(id)) {
+                this.app.components.delete(id);
+            }
+        });
 
-        if (this.selectedComponentId === id) {
-            this.selectedComponentId = null;
-        }
+        console.log('[ComponentsController] Components deleted, refreshing UI...');
+        this.selectedComponentIds.clear();
 
         this.render();
         this.updateNodeLibrary();
@@ -165,6 +188,12 @@ export class ComponentsController {
         this.app.persistence.save();
 
         console.log('[ComponentsController] Component deletion complete');
+    }
+
+    // Legacy method for backward compatibility if called directly
+    deleteComponent(id) {
+        this.selectComponent(id);
+        this.deleteSelectedComponents();
     }
 
     updateNodeLibrary() {
@@ -243,7 +272,7 @@ export class ComponentsController {
                 const item = document.createElement('div');
                 item.className = 'tree-item';
                 item.style.paddingLeft = '24px'; // Indent
-                if (this.selectedComponentId === comp.id) item.classList.add('selected');
+                if (this.selectedComponentIds.has(comp.id)) item.classList.add('selected');
 
                 // Enable focus for deletion logic
                 item.setAttribute('tabindex', '0');
@@ -264,12 +293,16 @@ export class ComponentsController {
                 });
 
                 item.addEventListener('click', (e) => {
-                    if (this.selectedComponentId === comp.id) {
-                        // Deselect if already selected
-                        this.selectComponent(null);
-                        e.target.blur(); // Remove focus to prevent accidental deletion
+                    // Check for modifier keys
+                    const isMulti = e.ctrlKey || e.shiftKey || e.metaKey;
+
+                    if (this.selectedComponentIds.has(comp.id) && isMulti) {
+                        // Deselect if already selected and using modifier
+                        this.selectComponent(comp.id, true);
+                        e.target.blur();
                     } else {
-                        this.selectComponent(comp.id);
+                        // Select (either single or multi add)
+                        this.selectComponent(comp.id, isMulti);
                     }
                 });
                 this.listContainer.appendChild(item);
