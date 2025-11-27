@@ -27,6 +27,8 @@
     --color-int: #28E897;
     --color-int64: #76D37E;
     --color-float: #96EE35;
+    --color-double: #85DD24;
+    /* Slightly darker green than float */
     --color-name: #CC99FF;
     --color-string: #FF00FF;
     --color-text: #E27696;
@@ -34,6 +36,8 @@
     --color-rotator: #99CCFF;
     --color-transform: #FF7300;
     --color-object: #00A2E8;
+    --color-enum: #00BB55;
+    /* Forest green for enumerators */
     --color-dev-yellow: #FFC72C;
     --color-dev-black: #202020;
     --color-array-dim: 2px;
@@ -916,10 +920,10 @@ textarea:focus {
     width: 0;
     height: 0;
     border-top: 3px solid transparent;
-    border-bottom: 3px solid transparent;
-    border-left: 4px solid currentColor;
-    pointer-events: none;
+    box-shadow: none;
+    background-color: transparent;
 }
+
 
 /* Pin Colors */
 .pin-dot.exec-pin {
@@ -944,6 +948,10 @@ textarea:focus {
 
 .pin-dot.float-pin {
     color: var(--color-float);
+}
+
+.pin-dot.double-pin {
+    color: var(--color-double);
 }
 
 .pin-dot.name-pin {
@@ -972,6 +980,10 @@ textarea:focus {
 
 .pin-dot.object-pin {
     color: var(--color-object);
+}
+
+.pin-dot.enum-pin {
+    color: var(--color-enum);
 }
 
 .pin-dot.array-pin {
@@ -2900,4 +2912,13 @@ div .var-eye-icon.active {
     opacity: 1;
     filter: drop-shadow(0 0 5px var(--color-accent-blue));
     cursor: pointer;
+}
+
+/* New Variable Type Pins */
+.double-pin {
+    background-color: var(--color-double);
+}
+
+.enum-pin {
+    background-color: var(--color-enum);
 }

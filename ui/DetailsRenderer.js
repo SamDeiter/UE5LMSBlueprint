@@ -56,7 +56,7 @@ export class DetailsRenderer {
             <!-- Description -->
             <div class="detail-row">
                 <label>Description</label>
-                <input type="text" class="details-input" value="${variable.description || ''}" data-prop="description" placeholder="Tooltip">
+                <textarea class="details-textarea" data-prop="description" placeholder="Tooltip" rows="2">${variable.description || ''}</textarea>
             </div>
 
             <!-- Instance Editable -->
@@ -92,10 +92,7 @@ export class DetailsRenderer {
             <!-- Category -->
             <div class="detail-row">
                 <label>Category</label>
-                <select class="details-select" data-prop="category" style="flex-grow: 1;">
-                    <option value="Default" ${variable.category === 'Default' ? 'selected' : ''}>Default</option>
-                    <option value="Config" ${variable.category === 'Config' ? 'selected' : ''}>Config</option>
-                </select>
+                <input type="text" class="details-input" value="${variable.category || 'Default'}" data-prop="category" placeholder="Default">
             </div>
 
             <!-- Replication -->
@@ -161,6 +158,25 @@ export class DetailsRenderer {
                 <label>Deprecation Message</label>
                 <input type="text" class="details-input" data-prop="deprecationMessage" value="${variable.deprecationMessage || ''}">
             </div>
+            
+            <!-- Value Range (for numeric types only) -->
+            ${['int', 'int64', 'byte', 'float', 'double'].includes(variable.type) ? `
+            <div class="detail-row">
+                <label>Value Range</label>
+                <div style="display: flex; gap: 5px; width: 100%;">
+                    <input type="number" class="details-input" placeholder="Min" data-prop="valueMin" value="${variable.valueMin !== null ? variable.valueMin : ''}" style="flex: 1;">
+                    <input type="number" class="details-input" placeholder="Max" data-prop="valueMax" value="${variable.valueMax !== null ? variable.valueMax : ''}" style="flex: 1;">
+                </div>
+            </div>
+            <div class="detail-row">
+                <label>UI Range</label>
+                <div style="display: flex; gap: 5px; width: 100%;">
+                    <input type="number" class="details-input" placeholder="UI Min" data-prop="uiMin" value="${variable.uiMin !== null ? variable.uiMin : ''}" style="flex: 1;">
+                    <input type="number" class="details-input" placeholder="UI Max" data-prop="uiMax" value="${variable.uiMax !== null ? variable.uiMax : ''}" style="flex: 1;">
+                </div>
+            </div>
+            ` : ''}
+            
             <div class="detail-row">
                 <label>Drop-down Options</label>
                 <select class="details-select" style="flex-grow: 1;">
@@ -248,8 +264,8 @@ export class DetailsRenderer {
         if (type === 'bool') {
             return `<input type="checkbox" class="ue5-checkbox" data-prop="defaultValue" ${value ? 'checked' : ''} ${extraAttrs}>`;
         }
-        if (type === 'int' || type === 'int64' || type === 'byte' || type === 'float') {
-            const step = (type === 'float') ? '0.01' : '1';
+        if (type === 'int' || type === 'int64' || type === 'byte' || type === 'float' || type === 'double' || type === 'enum') {
+            const step = (type === 'float' || type === 'double') ? '0.01' : '1';
             return `<input type="number" class="details-input" value="${value}" step="${step}" data-prop="defaultValue" ${extraAttrs}>`;
         }
         if (type === 'string' || type === 'name' || type === 'text') {
@@ -405,7 +421,7 @@ export class DetailsRenderer {
                 </div>
             `;
         }
-        if (type === 'int' || type === 'int64' || type === 'byte' || type === 'float' || type === 'string' || type === 'name' || type === 'text') {
+        if (type === 'int' || type === 'int64' || type === 'byte' || type === 'float' || type === 'double' || type === 'enum' || type === 'string' || type === 'name' || type === 'text') {
             return `
                 <div class="detail-row">
                     <label>${label}</label>
