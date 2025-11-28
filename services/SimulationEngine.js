@@ -1,6 +1,7 @@
 /* eslint-disable no-undef, no-unused-vars */
 import { GraphValidator } from './GraphValidator.js';
 import { scormClient } from './ScormClient.js';
+import { Utils } from '../utils.js';
 /**
  * Handles the runtime execution of the Blueprint graph.
  * Traversing execution pins and evaluating data dependencies.
@@ -430,6 +431,90 @@ export class SimulationEngine {
                 return obj;
             }
             return null; // Cast failed
+        }
+
+        // 5. Vector / Rotator / Transform Operations
+        switch (node.nodeKey) {
+            case 'MakeVector': {
+                const x = this.evaluateInput(node, 'x_in') || 0;
+                const y = this.evaluateInput(node, 'y_in') || 0;
+                const z = this.evaluateInput(node, 'z_in') || 0;
+                return `(${x},${y},${z})`;
+            }
+            case 'BreakVector': {
+                const vecStr = this.evaluateInput(node, 'vec_in') || '(0,0,0)';
+                // We need to know WHICH output pin is being requested.
+                // evaluateNodeValue is usually called by evaluateInput which knows the source pin.
+                // However, evaluateNodeValue signature is (node). It doesn't know the requested pin.
+                // We need to change the architecture slightly or use a workaround.
+                // Workaround: The caller (evaluateInput) knows the sourcePin.
+                // Let's update evaluateNodeValue to accept the pinId or return an object if possible?
+                // No, evaluateInput expects a value.
+                // Actually, `evaluateInput` calls `evaluateNodeValue(sourceNode, sourcePin)`.
+                // Let's check `evaluateInput` implementation.
+                // It calls `this.evaluateNodeValue(sourceNode, sourcePin);` (line 379 of original file)
+                // So we DO have the pin available in arguments!
+                // Wait, the signature in line 388 is `evaluateNodeValue(node)`.
+                // I need to update the signature to `evaluateNodeValue(node, pin)`.
+
+                // Let's assume I fix the signature below.
+                // But wait, I can't change the signature in this replace_file_content easily if I don't see the definition line.
+                // The definition line is 388: `evaluateNodeValue(node) {`
+                // I am replacing content inside the function.
+
+                // I will assume for now that I can access `arguments[1]` or that I will update the signature in a separate edit if needed.
+                // Actually, looking at line 379: `return this.evaluateNodeValue(sourceNode, sourcePin);`
+                // The caller IS passing the pin. So I just need to update the definition to accept it.
+
+                // Since I am replacing the end of the function, I can't easily change the start line 388.
+                // I will use a multi-replace to fix the signature AND add the logic.
+
+                // For now, let's just add the logic and I will fix the signature in a separate tool call to be safe, 
+                // OR I can try to access the pin from the arguments if JS allows (it does).
+                // `const pin = arguments[1];`
+
+                const pin = arguments[1];
+                const parsed = Utils.parseVector(vecStr);
+                if (pin && pin.id.endsWith('x_out')) return parsed.x;
+                if (pin && pin.id.endsWith('y_out')) return parsed.y;
+                if (pin && pin.id.endsWith('z_out')) return parsed.z;
+                return 0;
+            }
+            case 'MakeRotator': {
+                const r = this.evaluateInput(node, 'roll_in') || 0;
+                const p = this.evaluateInput(node, 'pitch_in') || 0;
+                const y = this.evaluateInput(node, 'yaw_in') || 0;
+                return `(R=${r},P=${p},Y=${y})`;
+            }
+            case 'BreakRotator': {
+                const rotStr = this.evaluateInput(node, 'rot_in') || '(R=0,P=0,Y=0)';
+                const pin = arguments[1];
+                const parsed = Utils.parseRotator(rotStr);
+                if (pin && pin.id.endsWith('roll_out')) return parsed.roll;
+                if (pin && pin.id.endsWith('pitch_out')) return parsed.pitch;
+                if (pin && pin.id.endsWith('yaw_out')) return parsed.yaw;
+                return 0;
+            }
+            case 'MakeTransform': {
+                // For MVP, just return a simple object or string representation
+                const loc = this.evaluateInput(node, 'loc_in');
+                const rot = this.evaluateInput(node, 'rot_in');
+                const scale = this.evaluateInput(node, 'scale_in');
+                return {
+                    location: Utils.parseVector(loc),
+                    rotation: Utils.parseRotator(rot),
+                    scale: Utils.parseVector(scale)
+                };
+            }
+            case 'BreakTransform': {
+                const trans = this.evaluateInput(node, 'trans_in');
+                const parsed = Utils.parseTransform(trans);
+                const pin = arguments[1];
+                if (pin && pin.id.endsWith('loc_out')) return `(${parsed.location.x},${parsed.location.y},${parsed.location.z})`;
+                if (pin && pin.id.endsWith('rot_out')) return `(R=${parsed.rotation.roll},P=${parsed.rotation.pitch},Y=${parsed.rotation.yaw})`;
+                if (pin && pin.id.endsWith('scale_out')) return `(${parsed.scale.x},${parsed.scale.y},${parsed.scale.z})`;
+                return null;
+            }
         }
 
         return null;

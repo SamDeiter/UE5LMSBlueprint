@@ -488,8 +488,86 @@ export const NodeDefinitions = {
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
             { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
             { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ],
+    },
+    // --- VECTOR OPERATIONS ---
+    "MakeVector": {
+        title: "Make Vector",
+        category: "Math|Vector",
+        type: "pure-node",
+        icon: "fa-plus",
+        pins: [
+            { id: "x_in", name: "X", type: "float", dir: "in", defaultValue: 0 },
+            { id: "y_in", name: "Y", type: "float", dir: "in", defaultValue: 0 },
+            { id: "z_in", name: "Z", type: "float", dir: "in", defaultValue: 0 },
+            { id: "vec_out", name: "Return Value", type: "vector", dir: "out" }
         ]
     },
+    "BreakVector": {
+        title: "Break Vector",
+        category: "Math|Vector",
+        type: "pure-node",
+        icon: "fa-minus",
+        pins: [
+            { id: "vec_in", name: "Vector", type: "vector", dir: "in" },
+            { id: "x_out", name: "X", type: "float", dir: "out" },
+            { id: "y_out", name: "Y", type: "float", dir: "out" },
+            { id: "z_out", name: "Z", type: "float", dir: "out" }
+        ]
+    },
+
+    // --- ROTATOR OPERATIONS ---
+    "MakeRotator": {
+        title: "Make Rotator",
+        category: "Math|Rotator",
+        type: "pure-node",
+        icon: "fa-sync",
+        pins: [
+            { id: "roll_in", name: "Roll (X)", type: "float", dir: "in", defaultValue: 0 },
+            { id: "pitch_in", name: "Pitch (Y)", type: "float", dir: "in", defaultValue: 0 },
+            { id: "yaw_in", name: "Yaw (Z)", type: "float", dir: "in", defaultValue: 0 },
+            { id: "rot_out", name: "Return Value", type: "rotator", dir: "out" }
+        ]
+    },
+    "BreakRotator": {
+        title: "Break Rotator",
+        category: "Math|Rotator",
+        type: "pure-node",
+        icon: "fa-sync",
+        pins: [
+            { id: "rot_in", name: "Rotator", type: "rotator", dir: "in" },
+            { id: "roll_out", name: "Roll", type: "float", dir: "out" },
+            { id: "pitch_out", name: "Pitch", type: "float", dir: "out" },
+            { id: "yaw_out", name: "Yaw", type: "float", dir: "out" }
+        ]
+    },
+
+    // --- TRANSFORM OPERATIONS ---
+    "MakeTransform": {
+        title: "Make Transform",
+        category: "Math|Transform",
+        type: "pure-node",
+        icon: "fa-cube",
+        pins: [
+            { id: "loc_in", name: "Location", type: "vector", dir: "in" },
+            { id: "rot_in", name: "Rotation", type: "rotator", dir: "in" },
+            { id: "scale_in", name: "Scale", type: "vector", dir: "in" }, // Default scale usually 1,1,1 but we'll handle in logic or default
+            { id: "trans_out", name: "Return Value", type: "transform", dir: "out" }
+        ]
+    },
+    "BreakTransform": {
+        title: "Break Transform",
+        category: "Math|Transform",
+        type: "pure-node",
+        icon: "fa-cube",
+        pins: [
+            { id: "trans_in", name: "Transform", type: "transform", dir: "in" },
+            { id: "loc_out", name: "Location", type: "vector", dir: "out" },
+            { id: "rot_out", name: "Rotation", type: "rotator", dir: "out" },
+            { id: "scale_out", name: "Scale", type: "vector", dir: "out" }
+        ]
+    },
+
     // --- STRING OPERATIONS ---
     "Append": {
         title: "Append",

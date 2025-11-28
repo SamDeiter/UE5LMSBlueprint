@@ -225,6 +225,65 @@ class Utils {
 
         return false;
     }
+
+    /**
+     * Parses a Vector string "(x,y,z)" into an object {x,y,z}.
+     */
+    static parseVector(value) {
+        const str = String(value).replace(/[()]/g, '').trim();
+        const parts = str.split(',').map(p => parseFloat(p.trim()) || 0);
+        return {
+            x: parts[0] || 0,
+            y: parts[1] || 0,
+            z: parts[2] || 0
+        };
+    }
+
+    /**
+     * Parses a Rotator string "(R=...,P=...,Y=...)" or "(x,y,z)" into {roll, pitch, yaw}.
+     */
+    static parseRotator(value) {
+        let str = String(value).trim();
+        // Handle (R=0,P=0,Y=0) format
+        if (str.includes('R=') || str.includes('P=') || str.includes('Y=')) {
+            str = str.replace(/[()]/g, '');
+            const parts = str.split(',');
+            let r = 0, p = 0, y = 0;
+            parts.forEach(part => {
+                const [k, v] = part.split('=').map(s => s.trim());
+                const val = parseFloat(v) || 0;
+                if (k === 'R') r = val;
+                if (k === 'P') p = val;
+                if (k === 'Y') y = val;
+            });
+            return { roll: r, pitch: p, yaw: y };
+        }
+        // Handle simple csv (x,y,z) mapping to (roll, pitch, yaw)
+        const v = this.parseVector(value);
+        return { roll: v.x, pitch: v.y, yaw: v.z };
+    }
+
+    /**
+     * Parses a Transform string.
+     * Simplified format: "T(Loc(x,y,z)|Rot(r,p,y)|Scale(x,y,z))" or just returns defaults if parsing fails.
+     * For this MVP, we might just store it as a JSON object or a specific string format.
+     * Let's use a JSON-like structure or a custom string format.
+     * Format: "Loc(0,0,0) Rot(0,0,0) Scale(1,1,1)"
+     */
+    static parseTransform(value) {
+        const str = String(value);
+        // Regex to extract parts
+        // This is a bit complex for regex, let's assume a standard format we generate.
+        // If it's an object, return it.
+        if (typeof value === 'object' && value !== null) return value;
+
+        // Default
+        return {
+            location: { x: 0, y: 0, z: 0 },
+            rotation: { roll: 0, pitch: 0, yaw: 0 },
+            scale: { x: 1, y: 1, z: 1 }
+        };
+    }
 }
 
 export { Utils };

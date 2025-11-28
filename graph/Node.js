@@ -346,212 +346,215 @@ class Node {
         }
 
         const pinIn = this.pinsIn[0];
-        const pinOut = this.pinsOut[0];
-
-        // 1. Left Pin (Input)
-        if (pinIn) {
-            const pinContainer = document.createElement('div');
-            pinContainer.className = `pin-container in ${Utils.getPinTypeClass(pinIn.type)}`;
-            pinContainer.dataset.pinId = pinIn.id;
-
-            const pinDot = this.createPinDot(pinIn);
-            pinIn.element = pinDot;
-            pinContainer.appendChild(pinDot);
-
-            // If unconnected, show the input widget (pill-box style)
-            if (!pinIn.isConnected()) {
-                const inputWidget = this.createInputWidget(pinIn);
-                if (inputWidget) {
-                    inputWidget.classList.add('compact-input-widget');
-                    pinContainer.appendChild(inputWidget);
-                }
-            }
-
-            container.appendChild(pinContainer);
-        }
-
-        // --- INSERT LABEL ---
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'compact-node-label';
-        // Clean up "Get_" prefix for display to match standard UI
-        if (this.nodeKey.startsWith('Get_')) {
-            labelSpan.textContent = this.nodeKey.substring(4);
-        } else if (this.nodeKey.startsWith('GetComponent_')) {
-            labelSpan.textContent = this.title.replace('Get ', '');
-        } else {
-            labelSpan.textContent = this.title;
-        }
-        container.appendChild(labelSpan);
-
-        // 3. Right Pin (Output)
-        if (pinOut) {
-            const pinContainer = document.createElement('div');
-            pinContainer.className = `pin-container out ${Utils.getPinTypeClass(pinOut.type)}`;
-            pinContainer.dataset.pinId = pinOut.id;
-
-            const pinDot = this.createPinDot(pinOut);
-            pinOut.element = pinDot;
-            pinContainer.appendChild(pinDot);
-
-            container.appendChild(pinContainer);
-        }
-
-        element.appendChild(container);
-        this.element = element;
-        return element;
     }
 
-    createPinDot(pin, forceHollow = false) {
-        const typeClass = Utils.getPinTypeClass(pin.type);
-        const pinDot = document.createElement('div');
-        let dotClasses = `pin-dot ${typeClass}`;
-        const isConnected = pin.links.length > 0;
-        if (forceHollow || !isConnected) {
-            dotClasses += ' hollow';
-        }
-        pinDot.className = dotClasses;
-        pinDot.title = `${pin.name} (${pin.type})`;
+    const pinIn = this.pinsIn[0];
+    const pinOut = this.pinsOut[0];
 
-        // Handle container types with proper icons
-        // Only add container styling if it's not a single value
-        if (pin.containerType && pin.containerType !== 'single') {
-            pinDot.classList.add('container-pin'); // Remove default circle styling
-
-            if (pin.containerType === 'array') {
-                pinDot.classList.add('array-pin');
-                const icon = document.createElement('i');
-                icon.className = 'fas fa-th';
-                icon.style.fontSize = '8px';
-                icon.style.color = Utils.getPinColor(pin.type);
-                pinDot.appendChild(icon);
-            } else if (pin.containerType === 'set') {
-                pinDot.classList.add('set-pin');
-                const icon = document.createElement('span');
-                icon.textContent = '{}';
-                icon.style.fontSize = '8px';
-                icon.style.fontWeight = 'bold';
-                icon.style.color = Utils.getPinColor(pin.type);
-                pinDot.appendChild(icon);
-            } else if (pin.containerType === 'map') {
-                pinDot.classList.add('map-pin');
-                const icon = document.createElement('i');
-                icon.className = 'fas fa-list-ul';
-                icon.style.fontSize = '8px';
-                icon.style.color = Utils.getPinColor(pin.type);
-                pinDot.appendChild(icon);
-            }
-        }
-
-        return pinDot;
-    }
-
-    renderPin(pin, hideLabel = false) {
+    // 1. Left Pin (Input)
+    if(pinIn) {
         const pinContainer = document.createElement('div');
-        const typeClass = Utils.getPinTypeClass(pin.type);
-        pinContainer.className = `pin-container ${pin.dir} ${typeClass}`;
-        pinContainer.dataset.pinId = pin.id;
+        pinContainer.className = `pin-container in ${Utils.getPinTypeClass(pinIn.type)}`;
+        pinContainer.dataset.pinId = pinIn.id;
 
-        const pinDot = this.createPinDot(pin);
-        pin.element = pinDot;
+        const pinDot = this.createPinDot(pinIn);
+        pinIn.element = pinDot;
+        pinContainer.appendChild(pinDot);
 
-        let effectiveHideLabel = hideLabel;
-        if (this.type === 'function-node' && pin.type === 'exec') {
-            effectiveHideLabel = true;
-        }
-
-        const pinLabel = document.createElement('span');
-        pinLabel.className = `pin-label-${pin.dir}`;
-        pinLabel.textContent = pin.name;
-        if (effectiveHideLabel) {
-            pinLabel.style.display = 'none';
-        }
-
-        let inputWidget = null;
-        const isDataPin = pin.type !== 'exec';
-        const isConnected = pin.links.length > 0;
-
-
-
-        if (pin.dir === 'in' && isDataPin && !isConnected) {
-            inputWidget = this.createInputWidget(pin);
-        }
-
-        if (pin.dir === 'in') {
-            pinContainer.appendChild(pinDot);
-            // UPDATED: Added 'pin-wrapper' class for easier styling access
-            const wrapper = document.createElement('div');
-            wrapper.className = 'pin-wrapper'; // Class added here
-            wrapper.style.display = 'flex';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.gap = '5px'; // Added gap for spacing label and widget
-
-            if (!effectiveHideLabel) wrapper.appendChild(pinLabel);
-            if (inputWidget) wrapper.appendChild(inputWidget);
-            pinContainer.appendChild(wrapper);
-        } else {
-            if (!effectiveHideLabel) pinContainer.appendChild(pinLabel);
-            pinContainer.appendChild(pinDot);
-        }
-        return pinContainer;
-    }
-
-    createInputWidget(pin) {
-        let inputEl;
-        const pinValue = this.pinLiterals.get(pin.id);
-        const updateLiteral = (e) => {
-            let newValue = e.target.value;
-            if (['int', 'int64', 'byte'].includes(pin.type)) {
-                newValue = parseInt(newValue) || 0;
-            } else if (pin.type === 'float') {
-                newValue = parseFloat(newValue) || 0.0;
-            } else if (pin.type === 'bool') {
-                newValue = e.target.checked;
+        // If unconnected, show the input widget (pill-box style)
+        if (!pinIn.isConnected()) {
+            const inputWidget = this.createInputWidget(pinIn);
+            if (inputWidget) {
+                inputWidget.classList.add('compact-input-widget');
+                pinContainer.appendChild(inputWidget);
             }
-            this.pinLiterals.set(pin.id, newValue);
-            this.app.persistence.autoSave();
-        };
-
-        if (pin.type === 'bool') {
-            inputEl = document.createElement('input');
-            inputEl.type = 'checkbox';
-            inputEl.className = 'ue5-checkbox';
-            inputEl.checked = pinValue;
-            inputEl.addEventListener('change', updateLiteral);
-            inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
-        } else {
-            inputEl = document.createElement('input');
-            inputEl.type = 'text';
-            inputEl.value = pinValue;
-            inputEl.className = 'node-literal-input';
-            const wideTypes = ['string', 'text', 'name'];
-            inputEl.style.width = wideTypes.includes(pin.type) ? '80px' : '40px';
-            inputEl.style.backgroundColor = '#111';
-            inputEl.style.color = 'white';
-            inputEl.style.border = '1px solid #444';
-            inputEl.style.borderRadius = '2px';
-            inputEl.style.marginLeft = '5px';
-            inputEl.addEventListener('change', updateLiteral);
-            inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
-
-            // Add focus/blur listeners to prevent graph interaction while editing
-            inputEl.addEventListener('focus', () => this.app.graph.isEditingLiteral = true);
-            inputEl.addEventListener('blur', () => this.app.graph.isEditingLiteral = false);
         }
-        return inputEl;
+
+        container.appendChild(pinContainer);
     }
 
-    getPinsData() {
-        return this.pins.map(p => ({
-            id: p.id ? p.id.replace(`${this.id}-`, '') : 'CORRUPTED',
-            name: p.name,
-            type: p.type,
-            dir: p.dir,
-            containerType: p.containerType,
-            // Only save literal value if it's the default or it's not connected
-            literalValue: this.pinLiterals.get(p.id),
-            isCustom: p.isCustom
-        }));
+    // --- INSERT LABEL ---
+    const labelSpan = document.createElement('span');
+        labelSpan.className = 'compact-node-label';
+    // Clean up "Get_" prefix for display to match standard UI
+    if(this.nodeKey.startsWith('Get_')) {
+    labelSpan.textContent = this.nodeKey.substring(4);
+} else if (this.nodeKey.startsWith('GetComponent_')) {
+    labelSpan.textContent = this.title.replace('Get ', '');
+} else {
+    labelSpan.textContent = this.title;
+}
+container.appendChild(labelSpan);
+
+// 3. Right Pin (Output)
+if (pinOut) {
+    const pinContainer = document.createElement('div');
+    pinContainer.className = `pin-container out ${Utils.getPinTypeClass(pinOut.type)}`;
+    pinContainer.dataset.pinId = pinOut.id;
+
+    const pinDot = this.createPinDot(pinOut);
+    pinOut.element = pinDot;
+    pinContainer.appendChild(pinDot);
+
+    container.appendChild(pinContainer);
+}
+
+element.appendChild(container);
+this.element = element;
+return element;
     }
+
+createPinDot(pin, forceHollow = false) {
+    const typeClass = Utils.getPinTypeClass(pin.type);
+    const pinDot = document.createElement('div');
+    let dotClasses = `pin-dot ${typeClass}`;
+    const isConnected = pin.links.length > 0;
+    if (forceHollow || !isConnected) {
+        dotClasses += ' hollow';
+    }
+    pinDot.className = dotClasses;
+    pinDot.title = `${pin.name} (${pin.type})`;
+
+    // Handle container types with proper icons
+    // Only add container styling if it's not a single value
+    if (pin.containerType && pin.containerType !== 'single') {
+        pinDot.classList.add('container-pin'); // Remove default circle styling
+
+        if (pin.containerType === 'array') {
+            pinDot.classList.add('array-pin');
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-th';
+            icon.style.fontSize = '8px';
+            icon.style.color = Utils.getPinColor(pin.type);
+            pinDot.appendChild(icon);
+        } else if (pin.containerType === 'set') {
+            pinDot.classList.add('set-pin');
+            const icon = document.createElement('span');
+            icon.textContent = '{}';
+            icon.style.fontSize = '8px';
+            icon.style.fontWeight = 'bold';
+            icon.style.color = Utils.getPinColor(pin.type);
+            pinDot.appendChild(icon);
+        } else if (pin.containerType === 'map') {
+            pinDot.classList.add('map-pin');
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-list-ul';
+            icon.style.fontSize = '8px';
+            icon.style.color = Utils.getPinColor(pin.type);
+            pinDot.appendChild(icon);
+        }
+    }
+
+    return pinDot;
+}
+
+renderPin(pin, hideLabel = false) {
+    const pinContainer = document.createElement('div');
+    const typeClass = Utils.getPinTypeClass(pin.type);
+    pinContainer.className = `pin-container ${pin.dir} ${typeClass}`;
+    pinContainer.dataset.pinId = pin.id;
+
+    const pinDot = this.createPinDot(pin);
+    pin.element = pinDot;
+
+    let effectiveHideLabel = hideLabel;
+    if (this.type === 'function-node' && pin.type === 'exec') {
+        effectiveHideLabel = true;
+    }
+
+    const pinLabel = document.createElement('span');
+    pinLabel.className = `pin-label-${pin.dir}`;
+    pinLabel.textContent = pin.name;
+    if (effectiveHideLabel) {
+        pinLabel.style.display = 'none';
+    }
+
+    let inputWidget = null;
+    const isDataPin = pin.type !== 'exec';
+    const isConnected = pin.links.length > 0;
+
+
+
+    if (pin.dir === 'in' && isDataPin && !isConnected) {
+        inputWidget = this.createInputWidget(pin);
+    }
+
+    if (pin.dir === 'in') {
+        pinContainer.appendChild(pinDot);
+        // UPDATED: Added 'pin-wrapper' class for easier styling access
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pin-wrapper'; // Class added here
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.gap = '5px'; // Added gap for spacing label and widget
+
+        if (!effectiveHideLabel) wrapper.appendChild(pinLabel);
+        if (inputWidget) wrapper.appendChild(inputWidget);
+        pinContainer.appendChild(wrapper);
+    } else {
+        if (!effectiveHideLabel) pinContainer.appendChild(pinLabel);
+        pinContainer.appendChild(pinDot);
+    }
+    return pinContainer;
+}
+
+createInputWidget(pin) {
+    let inputEl;
+    const pinValue = this.pinLiterals.get(pin.id);
+    const updateLiteral = (e) => {
+        let newValue = e.target.value;
+        if (['int', 'int64', 'byte'].includes(pin.type)) {
+            newValue = parseInt(newValue) || 0;
+        } else if (pin.type === 'float') {
+            newValue = parseFloat(newValue) || 0.0;
+        } else if (pin.type === 'bool') {
+            newValue = e.target.checked;
+        }
+        this.pinLiterals.set(pin.id, newValue);
+        this.app.persistence.autoSave();
+    };
+
+    if (pin.type === 'bool') {
+        inputEl = document.createElement('input');
+        inputEl.type = 'checkbox';
+        inputEl.className = 'ue5-checkbox';
+        inputEl.checked = pinValue;
+        inputEl.addEventListener('change', updateLiteral);
+        inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
+    } else {
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.value = pinValue;
+        inputEl.className = 'node-literal-input';
+        const wideTypes = ['string', 'text', 'name'];
+        inputEl.style.width = wideTypes.includes(pin.type) ? '80px' : '40px';
+        inputEl.style.backgroundColor = '#111';
+        inputEl.style.color = 'white';
+        inputEl.style.border = '1px solid #444';
+        inputEl.style.borderRadius = '2px';
+        inputEl.style.marginLeft = '5px';
+        inputEl.addEventListener('change', updateLiteral);
+        inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        // Add focus/blur listeners to prevent graph interaction while editing
+        inputEl.addEventListener('focus', () => this.app.graph.isEditingLiteral = true);
+        inputEl.addEventListener('blur', () => this.app.graph.isEditingLiteral = false);
+    }
+    return inputEl;
+}
+
+getPinsData() {
+    return this.pins.map(p => ({
+        id: p.id ? p.id.replace(`${this.id}-`, '') : 'CORRUPTED',
+        name: p.name,
+        type: p.type,
+        dir: p.dir,
+        containerType: p.containerType,
+        // Only save literal value if it's the default or it's not connected
+        literalValue: this.pinLiterals.get(p.id),
+        isCustom: p.isCustom
+    }));
+}
 }
 
 export { Node };
