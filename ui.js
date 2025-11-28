@@ -1,47 +1,5 @@
 /**
- * UI Panel Logic: VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController.
- * This file handles all side panel and menu interactions.
- * 
- * REFACTOR NOTE: This file now serves as an aggregator for the individual controller modules.
- */
-/**
- * UI Panel Logic: VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController.
- * This file handles all side panel and menu interactions.
- * 
- * REFACTOR NOTE: This file now serves as an aggregator for the individual controller modules.
- */
-
-/**
- * UI Panel Logic: VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController.
- * This file handles all side panel and menu interactions.
- * 
- * REFACTOR NOTE: This file now serves as an aggregator for the individual controller modules.
- */
-/**
-/**
- * UI Panel Logic: VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController.
- * This file handles all side panel and menu interactions.
- * 
- * REFACTOR NOTE: This file now serves as an aggregator for the individual controller modules.
- */
-/**
- * UI Panel Logic: VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController.
- * This file handles all side panel and menu interactions.
- * 
- * REFACTOR NOTE: This file now serves as an aggregator for the individual controller modules.
- */
-
-/**
- * UI Panel Logic: VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController.
- * This file handles all side panel and menu interactions.
- * 
- * REFACTOR NOTE: This file now serves as an aggregator for the individual controller modules.
- */
-/**
- * UI Panel Logic: VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController.
- * This file handles all side panel and menu interactions.
- * 
- * REFACTOR NOTE: This file now serves as an aggregator for the individual controller modules.
+ * UI Panel Logic: Aggregator for individual UI controller modules.
  */
 
 import { LayoutController } from './ui/LayoutController.js';
@@ -52,16 +10,24 @@ import { ActionMenu } from './ui/ActionMenu.js';
 import { DetailsController } from './ui/DetailsController.js';
 import { TaskController } from './ui/TaskController.js';
 import { ComponentsController } from './ui/ComponentsController.js';
+import { FunctionsController } from './ui/FunctionsController.js';
+import { LocalVariablesController } from './ui/LocalVariablesController.js';
+import { MacrosController } from './ui/MacrosController.js';
 import { NeedNodeModal } from './ui/NeedNodeModal.js';
+import { DebuggerController } from './ui/DebuggerController.js';
 
 export {
-    LayoutController,
-    ContextMenu,
-    VariableController,
-    PaletteController,
     ActionMenu,
-    DetailsController,
-    TaskController,
     ComponentsController,
-    NeedNodeModal
+    ContextMenu,
+    DebuggerController,
+    DetailsController,
+    FunctionsController,
+    LayoutController,
+    LocalVariablesController,
+    MacrosController,
+    NeedNodeModal,
+    PaletteController,
+    TaskController,
+    VariableController
 };

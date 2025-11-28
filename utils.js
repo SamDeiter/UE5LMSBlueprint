@@ -146,6 +146,9 @@ class Utils {
             'text->string': 'Conv_TextToString',
             'int->float': 'Conv_IntToFloat',
             'byte->int': 'Conv_ByteToInt',
+            'vector->string': 'Conv_VectorToString',
+            'rotator->string': 'Conv_RotatorToString',
+            'transform->string': 'Conv_TransformToString',
         };
         return conversions[key] || null;
     }
@@ -271,13 +274,26 @@ class Utils {
      * Format: "Loc(0,0,0) Rot(0,0,0) Scale(1,1,1)"
      */
     static parseTransform(value) {
-        const str = String(value);
-        // Regex to extract parts
-        // This is a bit complex for regex, let's assume a standard format we generate.
-        // If it's an object, return it.
+        // If it's already an object, return it
         if (typeof value === 'object' && value !== null) return value;
 
-        // Default
+        const str = String(value).trim();
+
+        // Expected format: (0,0,0|0,0,0|1,1,1) or similar
+        // Split by pipe |
+        // Remove outer parens if present
+        const cleanStr = str.replace(/^[()]+|[()]+$/g, '');
+        const parts = cleanStr.split('|');
+
+        if (parts.length === 3) {
+            return {
+                location: this.parseVector(parts[0]),
+                rotation: this.parseRotator(parts[1]),
+                scale: this.parseVector(parts[2])
+            };
+        }
+
+        // Default fallback
         return {
             location: { x: 0, y: 0, z: 0 },
             rotation: { roll: 0, pitch: 0, yaw: 0 },

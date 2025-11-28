@@ -343,4 +343,29 @@ export const registerTests = (runner) => {
         assert(timeline.customData.length === 5.0, "Default length should be 5.0s");
         assert(timeline.customData.loop === false, "Default loop should be false");
     });
+
+    runner.register('Split Struct Pin', (app) => {
+        // 1. Create Make Vector Node
+        const makeVector = app.graph.addNode('MakeVector', 100, 100);
+        assert(makeVector !== null, "MakeVector node should be created");
+
+        // 2. Find Return Value Pin
+        const returnPin = makeVector.findPinById('vec_out');
+        assert(returnPin !== null, "Return Value pin should exist");
+        assert(returnPin.type === 'vector', "Return Value pin should be type vector");
+        assert(!returnPin.isSplit, "Pin should not be split initially");
+
+        // 3. Split the Pin
+        returnPin.split();
+        assert(returnPin.isSplit, "Pin should be split after calling split()");
+        assert(returnPin.subPins.length === 3, "Vector pin should have 3 sub-pins (X, Y, Z)");
+        assert(returnPin.subPins[0].name === 'X', "First sub-pin should be X");
+        assert(returnPin.subPins[1].name === 'Y', "Second sub-pin should be Y");
+        assert(returnPin.subPins[2].name === 'Z', "Third sub-pin should be Z");
+
+        // 4. Recombine the Pin
+        returnPin.recombine();
+        assert(!returnPin.isSplit, "Pin should not be split after recombine()");
+        assert(returnPin.subPins.length === 0, "Sub-pins should be cleared after recombine");
+    });
 };

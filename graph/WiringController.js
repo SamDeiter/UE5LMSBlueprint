@@ -70,6 +70,10 @@ class WiringController {
                     // Update node key to reflect variable name if applicable (e.g. for custom Get_Variable type conversion)
                     if (startPin.node.variableId || endPin.node.variableId) {
                         convNode.title = `Convert ${startPin.type.toUpperCase()} to ${endPin.type.toUpperCase()}`;
+                    } else if (convKey.includes('ToString')) {
+                        // Handle generic ToString conversions
+                        const sourceType = startPin.type.charAt(0).toUpperCase() + startPin.type.slice(1);
+                        convNode.title = `To String (${sourceType})`;
                     }
 
                     const convIn = convNode.findPinById(`${convNode.id}-val_in`);
@@ -258,6 +262,10 @@ class WiringController {
                 e.stopPropagation();
                 this.toggleLinkSelection(link.id);
             });
+            wireEl.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                this.handleWireDoubleClick(link, e);
+            });
         } else {
             wireEl.style.display = '';
         }
@@ -332,6 +340,56 @@ class WiringController {
         });
         this.clearLinkSelection();
         this.cleanupOrphanWires();
+        this.app.persistence.autoSave();
+    }
+
+    handleWireDoubleClick(link, e) {
+        const wireType = link.startPin.type;
+
+        // Only insert Break nodes for Vector/Rotator/Transform
+        if (!['vector', 'rotator', 'transform'].includes(wireType)) {
+            return;
+        }
+
+        const breakNodeKey = wireType === 'vector' ? 'BreakVector' :
+            wireType === 'rotator' ? 'BreakRotator' : 'BreakTransform';
+
+        // Get click position in graph coordinates
+        const graphPos = this.app.graph.getGraphCoords(e.clientX, e.clientY);
+
+        // Create the Break node
+        const breakNode = this.app.graph.addNode(breakNodeKey, graphPos.x - 75, graphPos.y - 30);
+
+        if (!breakNode) return;
+
+        // Break the existing link
+        this.breakLinkById(link.id);
+
+        // Connect the original source to the Break node input
+        const breakInputPin = breakNode.pinsIn[0];
+        if (breakInputPin) {
+            this._addLink(link.startPin, breakInputPin);
+        }
+
+        // Connect the Break node output to the original target
+        // For struct types, reconnect to the first output (the whole struct)
+        const breakOutputPin = breakNode.pinsOut[0];
+        if (breakOutputPin) {
+            this._addLink(breakOutputPin, link.endPin);
+        }
+
+        // Update visuals
+        this.updateVisuals(link.startPin.node);
+        this.updateVisuals(breakNode);
+        this.updateVisuals(link.endPin.node);
+
+        // Redraw wires
+        requestAnimationFrame(() => {
+            this.app.graph.redrawNodeWires(link.startPin.node.id);
+            this.app.graph.redrawNodeWires(breakNode.id);
+            this.app.graph.redrawNodeWires(link.endPin.node.id);
+        });
+
         this.app.persistence.autoSave();
     }
 }

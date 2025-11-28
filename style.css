@@ -307,39 +307,6 @@ textarea:focus {
 #components-panel {
     display: flex;
     flex-direction: column;
-    flex: 0 0 200px;
-    min-height: 100px;
-    border-bottom: 1px solid #000;
-}
-
-#my-blueprint {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    /* Takes remaining space */
-    min-height: 100px;
-    border-bottom: 1px solid #000;
-}
-
-#palette {
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 30%;
-    /* Give Palette 30% of the space */
-    min-height: 100px;
-}
-
-
-#right-panel {
-    grid-area: right;
-    display: flex;
-    flex-direction: column;
-    background: #1a1a1a;
-}
-
-/* Ensure the main sidebar content fills the space if palette is hidden */
-#sidebar-top {
-    display: flex;
     flex-direction: column;
     height: 100%;
 }

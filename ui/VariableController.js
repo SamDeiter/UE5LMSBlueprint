@@ -9,7 +9,7 @@ import { createCollapsibleHeader } from './ui-helpers.js';
 export class VariableController {
     constructor(app) {
         this.app = app;
-        this.listContainer = document.getElementById('my-blueprint-content');
+        this.listContainer = document.getElementById('variables-list');
         // Bind input elements for creation (can be triggered from new Add button)
         this.nameInput = document.getElementById('new-var-name');
         this.typeSelect = document.getElementById('new-var-type');
@@ -26,6 +26,23 @@ export class VariableController {
         if (this.nameInput) {
             this.nameInput.addEventListener('keyup', (e) => {
                 if (e.key === 'Enter') this.addVariable();
+            });
+        }
+
+        // Deselect when clicking on empty space
+        if (this.listContainer) {
+            this.listContainer.addEventListener('click', (e) => {
+                // Check if click is NOT on a variable item or component item
+                if (!e.target.closest('.ue5-variable-item') && !e.target.closest('.tree-item') && !e.target.closest('.sidebar-section-header')) {
+                    if (this.app.details) {
+                        this.app.details.currentVariable = null;
+                        this.app.details.clear();
+                    }
+                    if (this.app.componentsController) {
+                        this.app.componentsController.selectComponent(null);
+                    }
+                    this.renderPanel();
+                }
             });
         }
     }
@@ -338,6 +355,7 @@ export class VariableController {
     }
 
     renderPanel() {
+        if (!this.listContainer) return;
         this.listContainer.innerHTML = '';
 
         // Helper to create collapsible sections - REFACTORED to use ui-helpers
@@ -359,137 +377,11 @@ export class VariableController {
             return { section, content };
         };
 
-        // 1. GRAPHS
-        const graphsSection = createSection('Graphs', 'section-graphs', () => { /* TODO: Add Graph */ });
-        this.listContainer.appendChild(graphsSection.section);
-
-        // Event Graph
-        const eventGraphItem = document.createElement('div');
-        eventGraphItem.className = 'tree-item';
-        if (this.app.activeGraph === 'EventGraph') eventGraphItem.classList.add('selected');
-        eventGraphItem.innerHTML = '<i class="fas fa-project-diagram" style="margin-right:6px; font-size:10px;"></i> EventGraph';
-        eventGraphItem.addEventListener('click', () => {
-            this.app.switchGraph('EventGraph');
-            this.renderPanel(); // Re-render to update selection
+        // 3. VARIABLES
+        const varSection = createSection('Variables', 'section-variables', (e) => {
+            e.stopPropagation();
+            this.addVariable();
         });
-        graphsSection.content.appendChild(eventGraphItem);
-
-        // Construction Script
-        const constScriptItem = document.createElement('div');
-        constScriptItem.className = 'tree-item';
-        if (this.app.activeGraph === 'ConstructionScript') constScriptItem.classList.add('selected');
-        constScriptItem.innerHTML = '<i class="fas fa-tools" style="margin-right:6px; font-size:10px;"></i> Construction Script';
-        constScriptItem.addEventListener('click', () => {
-            this.app.switchGraph('ConstructionScript');
-            this.renderPanel(); // Re-render to update selection
-        });
-        graphsSection.content.appendChild(constScriptItem);
-
-        // 2. FUNCTIONS
-        const funcSection = createSection('Functions', 'section-functions', (e) => {
-            // Show Override/Add Dropdown
-            const menu = document.createElement('div');
-            menu.className = 'context-menu';
-            menu.style.position = 'fixed';
-            menu.style.left = `${e.clientX}px`;
-            menu.style.top = `${e.clientY}px`;
-            menu.style.zIndex = '10000';
-            menu.style.background = '#2a2a2a';
-            menu.style.border = '1px solid #000';
-            menu.style.padding = '4px 0';
-            menu.style.minWidth = '150px';
-
-            const createItem = (label, icon, onClick) => {
-                const item = document.createElement('div');
-                item.className = 'menu-item';
-                item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
-                item.addEventListener('click', (ev) => {
-                    ev.stopPropagation();
-                    document.body.removeChild(menu);
-                    onClick();
-                });
-                return item;
-            };
-
-            // Option 1: New Function
-            menu.appendChild(createItem('Function', 'fas fa-plus', () => {
-                const name = window.prompt("Function Name:", `NewFunction_${this.app.functions.size}`);
-                if (name) {
-                    if (this.app.functions.has(name)) {
-                        window.alert("Function name already exists.");
-                        return;
-                    }
-                    this.app.functions.set(name, {
-                        name: name,
-                        graph: { nodes: [], links: [] }
-                    });
-                    this.app.switchGraph(name);
-                    this.renderPanel();
-                    this.app.persistence.autoSave();
-                }
-            }));
-
-            // Option 2: Construction Script
-            menu.appendChild(createItem('Construction Script', 'fas fa-tools', () => {
-                this.app.switchGraph('ConstructionScript');
-            }));
-
-            // Close on click outside
-            const closeMenu = () => {
-                if (document.body.contains(menu)) {
-                    document.body.removeChild(menu);
-                }
-                document.removeEventListener('click', closeMenu);
-            };
-            setTimeout(() => document.addEventListener('click', closeMenu), 0);
-
-            document.body.appendChild(menu);
-        });
-        this.listContainer.appendChild(funcSection.section);
-
-        if (this.app.functions) {
-            this.app.functions.forEach(func => {
-                const item = document.createElement('div');
-                item.className = 'tree-item';
-                if (this.app.activeGraph === func.name) item.classList.add('selected');
-                item.innerHTML = `<i class="fas fa-cube" style="margin-right:6px; color:#a8b; font-size:10px;"></i> ${func.name}`;
-                item.addEventListener('click', () => this.app.switchGraph(func.name));
-                funcSection.content.appendChild(item);
-            });
-        }
-
-        // 3. MACROS
-        const macroSection = createSection('Macros', 'section-macros', () => {
-            const name = window.prompt("Macro Name:", `NewMacro_${this.app.macros.size}`);
-            if (name) {
-                if (this.app.macros.has(name)) {
-                    window.alert("Macro name already exists.");
-                    return;
-                }
-                this.app.macros.set(name, {
-                    name: name,
-                    graph: { nodes: [], links: [] }
-                });
-                this.app.switchGraph(name);
-                this.renderPanel();
-                this.app.persistence.autoSave();
-            }
-        });
-        this.listContainer.appendChild(macroSection.section);
-
-        if (this.app.macros) {
-            this.app.macros.forEach(macro => {
-                const item = document.createElement('div');
-                item.className = 'tree-item';
-                if (this.app.activeGraph === macro.name) item.classList.add('selected');
-                item.innerHTML = `<i class="fas fa-play-circle" style="margin-right:6px; color:#ccc; font-size:10px;"></i> ${macro.name}`;
-                item.addEventListener('click', () => this.app.switchGraph(macro.name));
-                macroSection.content.appendChild(item);
-            });
-        }
-
-        // 4. VARIABLES - Always keep expanded (contains Components subsection)
-        const varSection = createSection('Variables', 'section-variables', () => this.addVariable());
 
         // FORCE expanded state and DISABLE collapse toggle
         const varContent = varSection.content;
@@ -658,6 +550,7 @@ export class VariableController {
                 e.dataTransfer.effectAllowed = 'copy';
             });
 
+
             // Click Logic
             el.addEventListener('click', () => {
                 // Clear component selection
@@ -669,6 +562,14 @@ export class VariableController {
                 this.app.details.showVariableDetails(variable, true);
                 this.renderPanel();
             });
+
+            // Context Menu (Right-click)
+            el.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.showVariableContextMenu(e, variable);
+            });
+
 
             // Variable name (left side)
             if (this.renamingVarId === variable.id) {
@@ -856,5 +757,104 @@ export class VariableController {
         // Re-render the panel
         this.renderPanel();
         this.app.palette.populateList();
+    }
+
+    showVariableContextMenu(e, variable) {
+        // Remove any existing context menu
+        const existingMenu = document.querySelector('.variable-context-menu');
+        if (existingMenu) existingMenu.remove();
+
+        const menu = document.createElement('div');
+        menu.className = 'context-menu variable-context-menu';
+        menu.style.position = 'fixed';
+        menu.style.left = `${e.clientX}px`;
+        menu.style.top = `${e.clientY}px`;
+        menu.style.zIndex = '10000';
+
+        const createMenuItem = (label, icon, onClick) => {
+            const item = document.createElement('div');
+            item.className = 'menu-item';
+            item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
+            item.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                document.body.removeChild(menu);
+                onClick();
+            });
+            return item;
+        };
+
+        // Get [Variable]
+        menu.appendChild(createMenuItem(`Get ${variable.name}`, 'fas fa-arrow-down', () => {
+            const centerX = this.app.graph.editor.offsetWidth / 2;
+            const centerY = this.app.graph.editor.offsetHeight / 2;
+            const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+            this.app.graph.addNode(`Get_${variable.name}`, worldPos.x, worldPos.y);
+        }));
+
+        // Set [Variable]
+        menu.appendChild(createMenuItem(`Set ${variable.name}`, 'fas fa-arrow-up', () => {
+            const centerX = this.app.graph.editor.offsetWidth / 2;
+            const centerY = this.app.graph.editor.offsetHeight / 2;
+            const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+            this.app.graph.addNode(`Set_${variable.name}`, worldPos.x, worldPos.y);
+        }));
+
+        // Add separator
+        const separator = document.createElement('div');
+        separator.style.cssText = 'height: 1px; background: #444; margin: 4px 0;';
+        menu.appendChild(separator);
+
+        // Make/Break options for complex types
+        if (variable.type === 'vector') {
+            menu.appendChild(createMenuItem('Make Vector', 'fas fa-plus', () => {
+                const centerX = this.app.graph.editor.offsetWidth / 2;
+                const centerY = this.app.graph.editor.offsetHeight / 2;
+                const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+                this.app.graph.addNode('MakeVector', worldPos.x, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Vector', 'fas fa-minus', () => {
+                const centerX = this.app.graph.editor.offsetWidth / 2;
+                const centerY = this.app.graph.editor.offsetHeight / 2;
+                const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+                this.app.graph.addNode('BreakVector', worldPos.x, worldPos.y);
+            }));
+        } else if (variable.type === 'rotator') {
+            menu.appendChild(createMenuItem('Make Rotator', 'fas fa-sync', () => {
+                const centerX = this.app.graph.editor.offsetWidth / 2;
+                const centerY = this.app.graph.editor.offsetHeight / 2;
+                const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+                this.app.graph.addNode('MakeRotator', worldPos.x, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Rotator', 'fas fa-sync', () => {
+                const centerX = this.app.graph.editor.offsetWidth / 2;
+                const centerY = this.app.graph.editor.offsetHeight / 2;
+                const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+                this.app.graph.addNode('BreakRotator', worldPos.x, worldPos.y);
+            }));
+        } else if (variable.type === 'transform') {
+            menu.appendChild(createMenuItem('Make Transform', 'fas fa-cube', () => {
+                const centerX = this.app.graph.editor.offsetWidth / 2;
+                const centerY = this.app.graph.editor.offsetHeight / 2;
+                const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+                this.app.graph.addNode('MakeTransform', worldPos.x, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Transform', 'fas fa-cube', () => {
+                const centerX = this.app.graph.editor.offsetWidth / 2;
+                const centerY = this.app.graph.editor.offsetHeight / 2;
+                const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+                this.app.graph.addNode('BreakTransform', worldPos.x, worldPos.y);
+            }));
+        }
+
+        // Close menu on click outside
+        const closeMenu = () => {
+            if (document.body.contains(menu)) {
+                document.body.removeChild(menu);
+            }
+            document.removeEventListener('click', closeMenu);
+        };
+        setTimeout(() => document.addEventListener('click', closeMenu), 0);
+
+        document.body.appendChild(menu);
     }
 }

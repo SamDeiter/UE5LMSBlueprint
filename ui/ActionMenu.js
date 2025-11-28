@@ -252,6 +252,45 @@ export class ActionMenu {
             }
             contextHeader = true;
         }
+
+        // Add Break [Struct] suggestion for Vector/Rotator/Transform pins
+        if (this.sourcePin && ['vector', 'rotator', 'transform'].includes(this.sourcePin.type)) {
+            const breakNodeKey = this.sourcePin.type === 'vector' ? 'BreakVector' :
+                this.sourcePin.type === 'rotator' ? 'BreakRotator' : 'BreakTransform';
+
+            const breakNodeData = nodeRegistry.get(breakNodeKey);
+            if (breakNodeData) {
+                const suggestionHeader = document.createElement('div');
+                suggestionHeader.className = 'menu-item menu-header';
+                suggestionHeader.style.fontWeight = 'bold';
+                suggestionHeader.style.color = '#4CAF50';
+                suggestionHeader.style.fontSize = '10px';
+                suggestionHeader.textContent = 'Suggested';
+                this.list.appendChild(suggestionHeader);
+
+                const breakItem = document.createElement('div');
+                breakItem.className = 'menu-item';
+                breakItem.style.paddingLeft = '20px';
+                breakItem.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+                breakItem.textContent = breakNodeData.title || breakNodeKey;
+                breakItem.addEventListener('click', () => {
+                    const newNode = this.app.graph.addNode(breakNodeKey, this.graphPos.x, this.graphPos.y);
+                    if (newNode) {
+                        const targetPin = newNode.pins.find(p => this.app.graph.canConnect(this.sourcePin, p));
+                        if (targetPin) {
+                            this.app.wiring.createConnection(this.sourcePin, targetPin);
+                        }
+                    }
+                    this.app.persistence.autoSave();
+                    this.hide();
+                });
+                this.list.appendChild(breakItem);
+
+                const sep = document.createElement('div');
+                sep.className = 'menu-separator';
+                this.list.appendChild(sep);
+            }
+        }
         const isGeneralClick = !this.sourcePin && !this.droppedVarName && !this.droppedComponent;
 
         // Removed special top-level variable access to let them sort naturally in the list

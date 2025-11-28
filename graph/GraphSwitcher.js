@@ -17,10 +17,10 @@ export class GraphSwitcher {
         let currentGraphStorage;
         if (this.app.graphs[this.app.activeGraph]) {
             currentGraphStorage = this.app.graphs[this.app.activeGraph];
-        } else if (this.app.functions.has(this.app.activeGraph)) {
-            currentGraphStorage = this.app.functions.get(this.app.activeGraph).graph;
-        } else if (this.app.macros.has(this.app.activeGraph)) {
-            currentGraphStorage = this.app.macros.get(this.app.activeGraph).graph;
+        } else if (this.app.functionRegistry && this.app.functionRegistry.getByName(this.app.activeGraph)) {
+            currentGraphStorage = this.app.functionRegistry.getByName(this.app.activeGraph).graph;
+        } else if (this.app.macroRegistry && this.app.macroRegistry.getByName(this.app.activeGraph)) {
+            currentGraphStorage = this.app.macroRegistry.getByName(this.app.activeGraph).graph;
         }
 
         if (currentGraphStorage) {
@@ -35,10 +35,10 @@ export class GraphSwitcher {
         let newGraphData;
         if (this.app.graphs[graphName]) {
             newGraphData = this.app.graphs[graphName];
-        } else if (this.app.functions.has(graphName)) {
-            newGraphData = this.app.functions.get(graphName).graph;
-        } else if (this.app.macros.has(graphName)) {
-            newGraphData = this.app.macros.get(graphName).graph;
+        } else if (this.app.functionRegistry && this.app.functionRegistry.getByName(graphName)) {
+            newGraphData = this.app.functionRegistry.getByName(graphName).graph;
+        } else if (this.app.macroRegistry && this.app.macroRegistry.getByName(graphName)) {
+            newGraphData = this.app.macroRegistry.getByName(graphName).graph;
         }
 
         // 4. Clear and Reload Nodes/Links
@@ -81,6 +81,14 @@ export class GraphSwitcher {
                 this.app.graph.addNode('EventBeginPlay', 200, 200);
                 this.app.graph.addNode('EventTick', 200, 400);
                 this.app.graph.addNode('EventActorBeginOverlap', 200, 600);
+            } else if (this.app.functionRegistry && this.app.functionRegistry.getByName(graphName)) {
+                // Spawn Entry and Result nodes for new functions
+                this.app.graph.addNode('FunctionEntry', 200, 200);
+                this.app.graph.addNode('FunctionResult', 600, 200);
+            } else if (this.app.macroRegistry && this.app.macroRegistry.getByName(graphName)) {
+                // Spawn Entry and Result nodes for new macros
+                this.app.graph.addNode('MacroEntry', 200, 200);
+                this.app.graph.addNode('MacroResult', 600, 200);
             }
         }
 
@@ -91,5 +99,10 @@ export class GraphSwitcher {
         // 6. Update active tab styling
         document.querySelectorAll('.graph-tab').forEach(t => t.classList.remove('active'));
         document.querySelector(`.graph-tab[data-graph="${graphName}"]`)?.classList.add('active');
+
+        // 7. Update Local Variables Panel
+        if (this.app.localVariablesController) {
+            this.app.localVariablesController.render();
+        }
     }
 }

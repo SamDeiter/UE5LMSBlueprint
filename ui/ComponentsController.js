@@ -23,6 +23,17 @@ export class ComponentsController {
                 this.showComponentSelector();
             });
         }
+
+        // Deselect when clicking on empty space in the panel
+        if (this.panel) {
+            this.panel.addEventListener('click', (e) => {
+                // If clicking directly on the panel or content area (not on an item)
+                // More robust check: if we didn't click inside a tree-item, deselect.
+                if (!e.target.closest('.tree-item')) {
+                    this.selectComponent(null);
+                }
+            });
+        }
     }
 
     showComponentSelector() {
@@ -189,6 +200,20 @@ export class ComponentsController {
             }
         });
 
+        // 3. Remove associated nodes from the graph
+        if (this.app.graph && this.app.graph.nodes) {
+            const nodesToRemove = [];
+            for (const node of this.app.graph.nodes.values()) {
+                if (node.customData && node.customData.componentId && idsToDelete.has(node.customData.componentId)) {
+                    nodesToRemove.push(node.id);
+                }
+            }
+
+            nodesToRemove.forEach(nodeId => {
+                this.app.graph.removeNode(nodeId);
+            });
+        }
+
         console.log('[ComponentsController] Components deleted, refreshing UI...');
         this.selectedComponentIds.clear();
 
@@ -247,6 +272,7 @@ export class ComponentsController {
                     title: `Set ${comp.name}`,
                     category: 'Components',
                     type: 'function-node',
+                    variableType: 'object', // Ensure correct header color (blue)
                     pins: [
                         { id: 'exec_in', name: 'Exec', type: 'exec', dir: 'in' },
                         { id: 'comp_in', name: comp.name, type: comp.type, dir: 'in' },

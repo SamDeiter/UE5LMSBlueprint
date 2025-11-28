@@ -98,6 +98,16 @@ export class GraphInteraction {
             } else {
                 this.app.actionMenu.show(e.clientX, e.clientY, null, varName);
             }
+        } else if (data.startsWith('FUNCTION:')) {
+            const funcName = data.split(':')[1];
+            const nodeKey = `Func_${funcName}`;
+            this.controller.addNode(nodeKey, graphCoords.x, graphCoords.y);
+            this.app.persistence.autoSave();
+        } else if (data.startsWith('MACRO:')) {
+            const macroName = data.split(':')[1];
+            const nodeKey = `Macro_${macroName}`;
+            this.controller.addNode(nodeKey, graphCoords.x, graphCoords.y);
+            this.app.persistence.autoSave();
         }
         else if (data.startsWith('PALETTE_NODE:')) {
             const nodeType = data.split(':')[1];
@@ -361,8 +371,85 @@ export class GraphInteraction {
 
     handleContextMenu(e) {
         e.preventDefault();
-        if (e.target.closest('.node')) { return; }
+        const nodeEl = e.target.closest('.node');
+
+        if (nodeEl) {
+            const node = this.controller.nodes.get(nodeEl.id);
+            if (node && (node.nodeKey.startsWith('Get_') || node.nodeKey.startsWith('Set_'))) {
+                // Check if it's a Vector/Rotator/Transform variable
+                const varName = node.nodeKey.replace(/^(Get_|Set_)/, '');
+                const variable = this.app.variables.variables.get(varName);
+
+                if (variable && ['vector', 'rotator', 'transform'].includes(variable.type)) {
+                    this.showNodeContextMenu(e, node, variable);
+                    return;
+                }
+            }
+        }
+
         this.app.actionMenu.show(e.clientX, e.clientY, null);
+    }
+
+    showNodeContextMenu(e, node, variable) {
+        const menu = document.createElement('div');
+        menu.className = 'context-menu';
+        menu.style.position = 'fixed';
+        menu.style.left = `${e.clientX}px`;
+        menu.style.top = `${e.clientY}px`;
+        menu.style.zIndex = '10000';
+
+        const createMenuItem = (label, icon, onClick) => {
+            const item = document.createElement('div');
+            item.className = 'menu-item';
+            item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
+            item.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                document.body.removeChild(menu);
+                onClick();
+            });
+            return item;
+        };
+
+        // Add Make/Break options based on type
+        if (variable.type === 'vector') {
+            menu.appendChild(createMenuItem('Make Vector', 'fas fa-plus', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('MakeVector', worldPos.x + 50, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Vector', 'fas fa-minus', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('BreakVector', worldPos.x + 50, worldPos.y);
+            }));
+        } else if (variable.type === 'rotator') {
+            menu.appendChild(createMenuItem('Make Rotator', 'fas fa-sync', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('MakeRotator', worldPos.x + 50, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Rotator', 'fas fa-sync', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('BreakRotator', worldPos.x + 50, worldPos.y);
+            }));
+        } else if (variable.type === 'transform') {
+            menu.appendChild(createMenuItem('Make Transform', 'fas fa-cube', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('MakeTransform', worldPos.x + 50, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Transform', 'fas fa-cube', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('BreakTransform', worldPos.x + 50, worldPos.y);
+            }));
+        }
+
+        // Close menu on click outside
+        const closeMenu = () => {
+            if (document.body.contains(menu)) {
+                document.body.removeChild(menu);
+            }
+            document.removeEventListener('click', closeMenu);
+        };
+        setTimeout(() => document.addEventListener('click', closeMenu), 0);
+
+        document.body.appendChild(menu);
     }
 
     handlePinContextMenu(e) {
@@ -371,13 +458,75 @@ export class GraphInteraction {
             e.preventDefault();
             e.stopPropagation();
             const pinId = pinContainerEl.dataset.pinId;
-            const pin = this.controller.findPinById(pinId);
+            let pin = this.controller.findPinById(pinId);
 
-            if (!pin || pin.type === 'exec') return;
+            if (!pin) return;
 
-            const items = [
-                { label: `Promote to Variable`, callback: () => this.controller.promotePinToVariable(pin) }
-            ];
+            // Check if this is a sub-pin - if so, find the parent
+            const parentPinId = pinContainerEl.dataset.parentPinId;
+            let parentPin = null;
+            if (parentPinId) {
+                parentPin = this.controller.findPinById(parentPinId);
+            }
+
+            const items = [];
+
+            // Watch Value
+            if (pin.type !== 'exec') {
+                items.push({
+                    label: 'Watch this value',
+                    callback: () => {
+                        this.app.sim.addWatch(pin);
+                    }
+                });
+                items.push({ label: '---', callback: () => { } });
+            }
+
+            items.push({ label: `Promote to Variable`, callback: () => this.controller.promotePinToVariable(pin) });
+
+            // Add Split/Recombine options
+            if (parentPin && parentPin.isSplit) {
+                items.push({
+                    label: 'Recombine Struct Pin', callback: () => {
+                        if (parentPin.subPins) {
+                            parentPin.subPins.forEach(sub => {
+                                if (sub.isConnected()) {
+                                    this.app.wiring.breakPinLinks(sub.id);
+                                }
+                            });
+                        }
+                        parentPin.recombine();
+                        this.app.wiring.updateVisuals(parentPin.node);
+                        this.app.persistence.autoSave();
+                    }
+                });
+            } else if (pin.canSplit()) {
+                items.push({
+                    label: 'Split Struct Pin', callback: () => {
+                        if (pin.isConnected()) {
+                            this.app.wiring.breakPinLinks(pin.id);
+                        }
+                        pin.split();
+                        this.app.wiring.updateVisuals(pin.node);
+                        this.app.persistence.autoSave();
+                    }
+                });
+            } else if (pin.isSplit) {
+                items.push({
+                    label: 'Recombine Struct Pin', callback: () => {
+                        if (pin.subPins) {
+                            pin.subPins.forEach(sub => {
+                                if (sub.isConnected()) {
+                                    this.app.wiring.breakPinLinks(sub.id);
+                                }
+                            });
+                        }
+                        pin.recombine();
+                        this.app.wiring.updateVisuals(pin.node);
+                        this.app.persistence.autoSave();
+                    }
+                });
+            }
 
             const node = pin.node;
             if (node.nodeKey === 'CustomEvent' && pin.isCustom) {

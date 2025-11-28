@@ -20,11 +20,93 @@ export class SimulationEngine {
         this.timelines = new Map();
         this.lastTickTime = 0;
         this.tickFrame = null;
+        this.callStack = [];
+        this.functionReturnValues = null;
+
+        // Debugging State
+        this.isPaused = false;
+        this.pausedNode = null;
+        this.isStepping = false;
+        this.resolveStep = null; // Promise resolver for stepping
+
+        this.watchedPins = new Set();
+        this.createWatchPanel();
+    }
+
+    createWatchPanel() {
+        this.watchPanel = document.createElement('div');
+        this.watchPanel.id = 'watch-panel';
+        this.watchPanel.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            display: none;
+            z-index: 100;
+            min-width: 200px;
+        `;
+        this.watchPanel.innerHTML = '<div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px;">Watched Values</div><div id="watch-list"></div>';
+        document.getElementById('graph-editor').appendChild(this.watchPanel);
+    }
+
+    addWatch(pin) {
+        this.watchedPins.add(pin.id);
+        this.log(`Watching pin: ${pin.name}`, 'success');
+        this.updateWatchPanel();
+        this.watchPanel.style.display = 'block';
+    }
+
+    updateWatchPanel() {
+        const list = this.watchPanel.querySelector('#watch-list');
+        list.innerHTML = '';
+
+        if (this.watchedPins.size === 0) {
+            this.watchPanel.style.display = 'none';
+            return;
+        }
+
+        this.watchedPins.forEach(pinId => {
+            // Find pin (it might be on a different graph, so this is tricky if we switch graphs)
+            // For MVP, we'll just look in the active graph or try to find it.
+            // Actually, pin objects persist, but we need their current value.
+
+            // We need to find the node and get its value.
+            // Since we don't have a global pin registry, we have to search.
+            let pin = null;
+            for (const node of this.app.graph.nodes.values()) {
+                pin = node.findPinById(pinId);
+                if (pin) break;
+            }
+
+            if (pin) {
+                const row = document.createElement('div');
+                row.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 2px;';
+
+                // Get value - this is the hard part. 
+                // We need to capture values during execution.
+                // For now, we'll just show "Pending..." or the last known value if we store it.
+                const val = pin.node.tempValues ? (pin.node.tempValues[pin.name] !== undefined ? pin.node.tempValues[pin.name] : 'N/A') : 'N/A';
+
+                row.innerHTML = `<span style="color: #aaa;">${pin.node.title}.${pin.name}:</span> <span style="color: #4CAF50;">${val}</span>`;
+                list.appendChild(row);
+            }
+        });
     }
 
     /** Starts the simulation. */
     run() {
-        if (this.isRunning) return;
+        if (this.isRunning && !this.isPaused) return;
+
+        if (this.isPaused) {
+            this.resume();
+            return;
+        }
 
         // FORCE VALIDATION BEFORE RUNNING
         // In UE5, you cannot Play In Editor (PIE) if there are compiler errors.
@@ -56,20 +138,89 @@ export class SimulationEngine {
     /** Stops the simulation. */
     stop() {
         this.isRunning = false;
+        this.isPaused = false;
+        this.pausedNode = null;
         if (this.tickFrame) {
             cancelAnimationFrame(this.tickFrame);
             this.tickFrame = null;
         }
         this.updateUI();
         this.log("--- Simulation Stopped ---", "error");
+
+        // Clear active wire styling
+        this.app.graph.clearActiveWires();
+
+        if (this.app.debugger) this.app.debugger.update();
+    }
+
+    pause(node) {
+        this.isPaused = true;
+        this.isStepping = false; // Clear stepping flag as we have now paused
+        this.pausedNode = node;
+        this.log(`Paused at: ${node.title}`, 'warning');
+        this.updateUI();
+
+        // Highlight paused node
+        if (node.element) {
+            node.element.classList.add('paused-node');
+        }
+
+        if (this.app.debugger) this.app.debugger.update();
+    }
+
+    resume() {
+        if (!this.isPaused) return;
+
+        this.isPaused = false;
+        if (this.pausedNode && this.pausedNode.element) {
+            this.pausedNode.element.classList.remove('paused-node');
+        }
+        this.pausedNode = null;
+        this.updateUI();
+        this.log("Resuming execution...", "success");
+
+        if (this.app.debugger) this.app.debugger.update();
+
+        // Resolve the promise that was holding up execution
+        if (this.resolveStep) {
+            const resolve = this.resolveStep;
+            this.resolveStep = null;
+            resolve();
+        }
+    }
+
+    stepOver() {
+        if (!this.isPaused) return;
+        this.isStepping = true;
+        this.stepMode = 'over';
+        this.stepOverStackDepth = this.callStack.length;
+        this.resume();
+    }
+
+    stepInto() {
+        if (!this.isPaused) return;
+        this.isStepping = true;
+        this.stepMode = 'into';
+        this.resume();
     }
 
     /** Updates Play/Stop button state and UI visual cues. */
     updateUI() {
-        if (this.playBtn) this.playBtn.disabled = this.isRunning;
+        if (this.playBtn) {
+            this.playBtn.disabled = this.isRunning && !this.isPaused;
+            this.playBtn.textContent = this.isPaused ? 'Resume' : 'Play';
+        }
         if (this.stopBtn) this.stopBtn.disabled = !this.isRunning;
 
-        if (this.isRunning) {
+        const stepBtn = document.getElementById('step-btn');
+        if (stepBtn) stepBtn.disabled = !this.isPaused;
+
+        const stepIntoBtn = document.getElementById('step-into-btn');
+        if (stepIntoBtn) stepIntoBtn.disabled = !this.isPaused;
+
+        if (this.isPaused) {
+            this.app.graph.editor.style.boxShadow = 'inset 0 0 0 4px #FFC107'; // Amber border for pause
+        } else if (this.isRunning) {
             this.app.graph.editor.style.boxShadow = 'inset 0 0 0 2px #4CAF50'; // Green border
         } else {
             this.app.graph.editor.style.boxShadow = 'none';
@@ -175,19 +326,39 @@ export class SimulationEngine {
         while (currentNode && this.isRunning && steps < maxSteps) {
             steps++;
 
-            let nextPinId = null;
+            // --- PAUSE / STEPPING LOGIC ---
+            let shouldPause = false;
 
-            // If we have a specific start pin (e.g. from Timeline Update), use it for the first step
-            if (startPinId && steps === 1) {
-                nextPinId = startPinId;
-            } else {
-                // 1. Execute the specific logic for this node
-                // Returns the ID of the output pin to follow (e.g., "exec_true"), or null for default
-                nextPinId = await this.executeNodeLogic(currentNode);
+            if (this.isStepping) {
+                if (this.stepMode === 'into') {
+                    // Step Into: Pause at every node
+                    shouldPause = true;
+                } else if (this.stepMode === 'over') {
+                    // Step Over: Pause only if we are at the same stack depth or lower
+                    if (this.callStack.length <= this.stepOverStackDepth) {
+                        shouldPause = true;
+                    }
+                }
+            } else if (this.isPaused) {
+                // Manual pause triggered externally
+                shouldPause = true;
             }
 
-            // 2. Find the output execution pin to follow
+            if (shouldPause) {
+                this.pause(currentNode);
+                // Wait for resume signal
+                await new Promise(resolve => this.resolveStep = resolve);
+                // After resume, we continue execution of the CURRENT node.
+                // The isStepping flag is cleared in pause() to ensure we don't double-pause
+                // unless the user requested another step.
+            }
+
+            // Execute Logic
+            // Note: executeNodeLogic is async and might switch graphs!
+            const nextPinId = await this.executeNodeLogic(currentNode);
+
             let outPin = null;
+
             if (nextPinId) {
                 outPin = currentNode.findPinById(`${currentNode.id}-${nextPinId}`);
             } else {
@@ -221,9 +392,234 @@ export class SimulationEngine {
 
     /** Executes the core logic of a specific node. */
     async executeNodeLogic(node) {
+        // 0. Check for Function Call Nodes (Dynamic)
+        if (node.nodeKey.startsWith('Func_')) {
+            const funcName = node.nodeKey.replace('Func_', '');
+            const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
+
+            if (!funcDef) {
+                this.log(`Error: Function '${funcName}' not found.`, 'error');
+                return null;
+            }
+
+            // 1. Evaluate Inputs
+            const inputValues = {};
+            funcDef.inputs.forEach(input => {
+                const val = this.evaluateInput(node, `in_${input.name}`);
+                inputValues[input.name] = val;
+            });
+
+            // 2. Push Context
+            const callerGraph = this.app.activeGraph;
+
+            // Initialize Local Variables
+            const localVars = {};
+            if (funcDef.localVariables) {
+                funcDef.localVariables.forEach(v => {
+                    localVars[v.name] = v.defaultValue;
+                });
+            }
+
+            this.callStack.push({
+                callerGraph: callerGraph,
+                callerNodeId: node.id,
+                localVariables: localVars
+            });
+
+            // 3. Switch to Function Graph
+            this.app.switchGraph(funcName);
+
+            // 4. Find Entry Node and Set Inputs
+            const entryNode = [...this.app.graph.nodes.values()].find(n => n.nodeKey === 'FunctionEntry');
+            if (entryNode) {
+                // Store inputs on the Entry node so internal nodes can read them
+                entryNode.tempValues = {};
+                funcDef.inputs.forEach(input => {
+                    // Map function input name to the Entry node's output pin ID format
+                    // Entry node pins are named same as function inputs
+                    entryNode.tempValues[input.name] = inputValues[input.name];
+                });
+            } else {
+                this.log(`Error: FunctionEntry node missing in '${funcName}'.`, 'error');
+                this.app.switchGraph(callerGraph);
+                this.callStack.pop();
+                return null;
+            }
+
+            // 5. Execute Function (Recursive)
+            // We await this, so the outer loop pauses until the function completes
+            await this.executeFlow(entryNode);
+
+            // 6. Retrieve Return Values (set by FunctionResult)
+            const returnValues = this.functionReturnValues || {};
+            this.functionReturnValues = null; // Clear
+
+            // 7. Restore Context
+            this.app.switchGraph(callerGraph);
+            this.callStack.pop();
+
+            // 8. Store Outputs on the Call Node (so downstream nodes can read them)
+            // We use tempValues on the Call Node itself
+            node.tempValues = {};
+            funcDef.outputs.forEach(output => {
+                node.tempValues[`out_${output.name}`] = returnValues[output.name];
+            });
+
+            return 'exec_out';
+        }
+
+        // 0b. Check for Macro Nodes (Dynamic Expansion)
+        if (node.nodeKey.startsWith('Macro_')) {
+            const macroName = node.nodeKey.replace('Macro_', '');
+            const macroDef = this.app.macroRegistry.getAll().find(m => m.name === macroName);
+
+            if (!macroDef) {
+                this.log(`Error: Macro '${macroName}' not found.`, 'error');
+                return null;
+            }
+
+            // 1. Evaluate Inputs
+            const inputValues = {};
+            let execInputName = null;
+
+            // We need to know WHICH exec pin triggered this macro to know where to start inside.
+            // But executeNodeLogic doesn't know the entry pin.
+            // Assumption: For MVP, we assume the first Exec input is the entry point.
+            // TODO: Support multiple exec inputs by passing entryPinId to executeNodeLogic.
+
+            macroDef.inputs.forEach(input => {
+                if (input.type === 'exec') {
+                    if (!execInputName) execInputName = input.name;
+                } else {
+                    const val = this.evaluateInput(node, `in_${input.name}`);
+                    inputValues[input.name] = val;
+                }
+            });
+
+            // 2. Switch Context (Virtual)
+            // Macros don't push a new call stack frame in the same way functions do (no local vars).
+            // But we need to switch the "active graph" context to the macro's graph to execute its nodes.
+            // And we need to map the MacroEntry node's outputs to the inputValues we just calculated.
+
+            const callerGraph = this.app.activeGraph;
+            this.app.switchGraph(macroName);
+
+            // 3. Find Entry Node
+            const entryNode = [...this.app.graph.nodes.values()].find(n => n.nodeKey === 'MacroEntry');
+            if (entryNode) {
+                entryNode.tempValues = inputValues;
+                // We also need to know which Exec pin on the Entry node to fire.
+                // It should match the execInputName.
+                // executeFlow will start from the Entry node.
+                // We need to tell it which output pin (Exec) to follow.
+                // The Entry node has Outputs that match the Macro's Inputs.
+                // So if we entered via "Execute", we fire the "Execute" output of the Entry node.
+            } else {
+                this.log(`Error: MacroEntry node missing in '${macroName}'.`, 'error');
+                this.app.switchGraph(callerGraph);
+                return null;
+            }
+
+            // 4. Execute Macro Graph
+            // We await this. The macro graph will eventually hit a MacroResult node.
+            // When it does, we need to capture which Exec output of the Result node was triggered.
+
+            this.macroResult = null; // Reset result state
+            await this.executeFlow(entryNode, execInputName); // Start flow from specific exec pin
+
+            // 5. Handle Result
+            const result = this.macroResult; // { exitPinName: 'Then', outputs: { ... } }
+            this.macroResult = null;
+
+            // 6. Restore Context
+            this.app.switchGraph(callerGraph);
+
+            if (result) {
+                // Store output values on the Macro node for downstream
+                node.tempValues = {};
+                macroDef.outputs.forEach(output => {
+                    if (output.type !== 'exec') {
+                        node.tempValues[`out_${output.name}`] = result.outputs[output.name];
+                    }
+                });
+
+                // Return the name of the output exec pin to follow
+                // The Macro node has output pins named `out_${exitPinName}`
+                return `out_${result.exitPinName}`;
+            }
+
+            return null;
+        }
+
         switch (node.nodeKey) {
             case 'EventBeginPlay':
-                return null; // Pass through
+            case 'FunctionEntry':
+            case 'MacroEntry': // Pass through for flow start
+                return null;
+
+            case 'MacroResult': {
+                // Determine which Exec input was triggered?
+                // Again, we don't know which input pin triggered us.
+                // We assume the first connected one or we need that entryPinId.
+                // For MVP, if we are here, we are exiting.
+                // We need to find which Exec input pin is connected/active.
+                // Since we don't track active path, we'll just take the first Exec input.
+                // OR better: The MacroResult node has Inputs matching the Macro Outputs.
+                // We need to know which "Exit" we are taking.
+
+                // Let's assume we take the first Exec input for now.
+                // TODO: Fix this when we have entryPinId.
+
+                const macroName = this.app.activeGraph;
+                const macroDef = this.app.macroRegistry.getAll().find(m => m.name === macroName);
+
+                if (macroDef) {
+                    const outputs = {};
+                    let exitPinName = 'Then'; // Default
+
+                    macroDef.outputs.forEach(output => {
+                        if (output.type === 'exec') {
+                            exitPinName = output.name; // Take the last one? No, we need the triggered one.
+                        } else {
+                            // Evaluate data inputs
+                            const pin = node.pins.find(p => p.name === output.name && p.dir === 'in');
+                            if (pin) {
+                                outputs[output.name] = this.evaluatePin(pin);
+                            }
+                        }
+                    });
+
+                    this.macroResult = {
+                        exitPinName: exitPinName,
+                        outputs: outputs
+                    };
+                }
+                return null; // Stop flow in macro graph
+            }
+
+            case 'FunctionResult': {
+                // Evaluate inputs (which are the function's return values)
+                const funcName = this.app.activeGraph;
+                const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
+
+                if (funcDef) {
+                    this.functionReturnValues = {};
+                    funcDef.outputs.forEach(output => {
+                        // FunctionResult pins match output names
+                        // But wait, FunctionResult pins are inputs.
+                        // We need to find the pin on this node that corresponds to the output.
+                        // Pin IDs are likely just the name or generated.
+                        // Let's assume the pin name matches the output name.
+                        // We need to find the pin ID.
+                        const pin = node.pins.find(p => p.name === output.name && p.dir === 'in');
+                        if (pin) {
+                            const val = this.evaluatePin(pin);
+                            this.functionReturnValues[output.name] = val;
+                        }
+                    });
+                }
+                return null; // End of flow
+            }
 
             case 'PrintString': {
                 const strVal = this.evaluateInput(node, 'str_in');
@@ -299,6 +695,15 @@ export class SimulationEngine {
                     const varName = node.nodeKey.replace('Set_', '');
                     const val = this.evaluateInput(node, 'val_in');
 
+                    // Check Local Variables First
+                    if (this.callStack.length > 0) {
+                        const currentFrame = this.callStack[this.callStack.length - 1];
+                        if (currentFrame.localVariables && currentFrame.localVariables.hasOwnProperty(varName)) {
+                            currentFrame.localVariables[varName] = val;
+                            return null;
+                        }
+                    }
+
                     const variable = this.app.variables.variables.get(varName);
                     if (variable) {
                         variable.defaultValue = val; // Update the runtime value
@@ -369,6 +774,29 @@ export class SimulationEngine {
         const pin = node.findPinById(fullPinId);
 
         if (!pin) return null;
+        return this.evaluatePin(pin);
+    }
+
+    evaluatePin(pin) {
+        // Handle Split Pins
+        if (pin.isSplit && pin.subPins) {
+            if (pin.type === 'vector') {
+                const x = this.evaluatePin(pin.subPins[0]) || 0;
+                const y = this.evaluatePin(pin.subPins[1]) || 0;
+                const z = this.evaluatePin(pin.subPins[2]) || 0;
+                return `(${x},${y},${z})`;
+            } else if (pin.type === 'rotator') {
+                const r = this.evaluatePin(pin.subPins[0]) || 0;
+                const p = this.evaluatePin(pin.subPins[1]) || 0;
+                const y = this.evaluatePin(pin.subPins[2]) || 0;
+                return `(R=${r},P=${p},Y=${y})`;
+            } else if (pin.type === 'transform') {
+                const loc = this.evaluatePin(pin.subPins[0]) || '(0,0,0)';
+                const rot = this.evaluatePin(pin.subPins[1]) || '(R=0,P=0,Y=0)';
+                const scale = this.evaluatePin(pin.subPins[2]) || '(1,1,1)';
+                return `(${loc}|${rot}|${scale})`;
+            }
+        }
 
         // 1. If connected, pull value from the source node
         if (pin.isConnected()) {
@@ -381,15 +809,51 @@ export class SimulationEngine {
         }
 
         // 2. If not connected, use the literal value (or default)
-        const literal = node.pinLiterals.get(fullPinId);
+        const literal = pin.node.pinLiterals.get(pin.id);
         return literal !== undefined ? literal : pin.defaultValue;
     }
 
     /** Evaluates the return value of a node (Pure nodes). */
-    evaluateNodeValue(node) {
+    evaluateNodeValue(node, pin) {
+        // 0. Check Temp Values (for FunctionEntry, Call Nodes, etc.)
+        if (node.tempValues) {
+            // Try to match pin ID suffix with tempValue key
+            // Pin ID format: nodeId-pinName. We need pinName.
+            // But wait, pins on FunctionEntry are named "InputName".
+            // tempValues keys are "InputName".
+            // So we need to extract the pin name from the pin ID or object.
+
+            // If pin object is passed:
+            if (pin) {
+                // Check exact match first
+                if (node.tempValues[pin.name] !== undefined) {
+                    return node.tempValues[pin.name];
+                }
+
+                // Check if pin ID ends with any key (for generated IDs)
+                for (const key in node.tempValues) {
+                    if (pin.id.endsWith(key)) {
+                        return node.tempValues[key];
+                    }
+                }
+            }
+        }
+
         // 1. Variable Getters
         if (node.nodeKey.startsWith('Get_')) {
             const varName = node.nodeKey.replace('Get_', '');
+
+            // Check Local Variables First (if in function context)
+            if (this.callStack.length > 0) {
+                const currentFrame = this.callStack[this.callStack.length - 1];
+                // Local variables are stored where?
+                // We need to initialize local variables when entering the function.
+                // Let's assume we store them in the frame.
+                if (currentFrame.localVariables && currentFrame.localVariables[varName] !== undefined) {
+                    return currentFrame.localVariables[varName];
+                }
+            }
+
             const variable = this.app.variables.variables.get(varName);
             return variable ? variable.defaultValue : null;
         }
@@ -443,38 +907,8 @@ export class SimulationEngine {
             }
             case 'BreakVector': {
                 const vecStr = this.evaluateInput(node, 'vec_in') || '(0,0,0)';
-                // We need to know WHICH output pin is being requested.
-                // evaluateNodeValue is usually called by evaluateInput which knows the source pin.
-                // However, evaluateNodeValue signature is (node). It doesn't know the requested pin.
-                // We need to change the architecture slightly or use a workaround.
-                // Workaround: The caller (evaluateInput) knows the sourcePin.
-                // Let's update evaluateNodeValue to accept the pinId or return an object if possible?
-                // No, evaluateInput expects a value.
-                // Actually, `evaluateInput` calls `evaluateNodeValue(sourceNode, sourcePin)`.
-                // Let's check `evaluateInput` implementation.
-                // It calls `this.evaluateNodeValue(sourceNode, sourcePin);` (line 379 of original file)
-                // So we DO have the pin available in arguments!
-                // Wait, the signature in line 388 is `evaluateNodeValue(node)`.
-                // I need to update the signature to `evaluateNodeValue(node, pin)`.
-
-                // Let's assume I fix the signature below.
-                // But wait, I can't change the signature in this replace_file_content easily if I don't see the definition line.
-                // The definition line is 388: `evaluateNodeValue(node) {`
-                // I am replacing content inside the function.
-
-                // I will assume for now that I can access `arguments[1]` or that I will update the signature in a separate edit if needed.
-                // Actually, looking at line 379: `return this.evaluateNodeValue(sourceNode, sourcePin);`
-                // The caller IS passing the pin. So I just need to update the definition to accept it.
-
-                // Since I am replacing the end of the function, I can't easily change the start line 388.
-                // I will use a multi-replace to fix the signature AND add the logic.
-
-                // For now, let's just add the logic and I will fix the signature in a separate tool call to be safe, 
-                // OR I can try to access the pin from the arguments if JS allows (it does).
-                // `const pin = arguments[1];`
-
-                const pin = arguments[1];
                 const parsed = Utils.parseVector(vecStr);
+
                 if (pin && pin.id.endsWith('x_out')) return parsed.x;
                 if (pin && pin.id.endsWith('y_out')) return parsed.y;
                 if (pin && pin.id.endsWith('z_out')) return parsed.z;
@@ -488,28 +922,25 @@ export class SimulationEngine {
             }
             case 'BreakRotator': {
                 const rotStr = this.evaluateInput(node, 'rot_in') || '(R=0,P=0,Y=0)';
-                const pin = arguments[1];
                 const parsed = Utils.parseRotator(rotStr);
+
                 if (pin && pin.id.endsWith('roll_out')) return parsed.roll;
                 if (pin && pin.id.endsWith('pitch_out')) return parsed.pitch;
                 if (pin && pin.id.endsWith('yaw_out')) return parsed.yaw;
                 return 0;
             }
             case 'MakeTransform': {
-                // For MVP, just return a simple object or string representation
-                const loc = this.evaluateInput(node, 'loc_in');
-                const rot = this.evaluateInput(node, 'rot_in');
-                const scale = this.evaluateInput(node, 'scale_in');
-                return {
-                    location: Utils.parseVector(loc),
-                    rotation: Utils.parseRotator(rot),
-                    scale: Utils.parseVector(scale)
-                };
+                const loc = Utils.parseVector(this.evaluateInput(node, 'loc_in'));
+                const rot = Utils.parseRotator(this.evaluateInput(node, 'rot_in'));
+                const scale = Utils.parseVector(this.evaluateInput(node, 'scale_in'));
+
+                // Return string format: (x,y,z|r,p,y|sx,sy,sz)
+                return `(${loc.x},${loc.y},${loc.z}|${rot.roll},${rot.pitch},${rot.yaw}|${scale.x},${scale.y},${scale.z})`;
             }
             case 'BreakTransform': {
                 const trans = this.evaluateInput(node, 'trans_in');
                 const parsed = Utils.parseTransform(trans);
-                const pin = arguments[1];
+
                 if (pin && pin.id.endsWith('loc_out')) return `(${parsed.location.x},${parsed.location.y},${parsed.location.z})`;
                 if (pin && pin.id.endsWith('rot_out')) return `(R=${parsed.rotation.roll},P=${parsed.rotation.pitch},Y=${parsed.rotation.yaw})`;
                 if (pin && pin.id.endsWith('scale_out')) return `(${parsed.scale.x},${parsed.scale.y},${parsed.scale.z})`;
