@@ -60,6 +60,6 @@ Improve maintainability, readability, and performance by modularizing large file
 
 ## 📅 Execution Roadmap
 
-1.  **Phase 1: CSS (Immediate)** - Low risk, high visual impact.
-2.  **Phase 2: Simulation Engine** - High value for future extensibility (Functions/Macros).
-3.  **Phase 3: UI Controllers** - Improve code quality and testability.
+1.  ✅ **Phase 1: CSS (COMPLETE)** - Split into 8 modular files. See `CSS_REFACTORING_PROGRESS.md`
+2.  ✅ **Phase 2: Simulation Engine (COMPLETE)** - Refactored using Executor Pattern. See `PHASE2_COMPLETE.md`
+3.  **Phase 3: UI Controllers (NEXT)** - Improve code quality and testability.

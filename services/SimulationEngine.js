@@ -2,6 +2,21 @@
 import { GraphValidator } from './GraphValidator.js';
 import { scormClient } from './ScormClient.js';
 import { Utils } from '../utils.js';
+
+// Executor Pattern Imports
+import { ExecutorRegistry } from './executors/ExecutorRegistry.js';
+import { EventExecutor } from './executors/EventExecutor.js';
+import { FlowControlExecutor } from './executors/FlowControlExecutor.js';
+import { PrintExecutor } from './executors/PrintExecutor.js';
+import { MathExecutor } from './executors/MathExecutor.js';
+import { VariableExecutor } from './executors/VariableExecutor.js';
+import { CastExecutor } from './executors/CastExecutor.js';
+import { ConversionExecutor } from './executors/ConversionExecutor.js';
+import { TimelineExecutor } from './executors/TimelineExecutor.js';
+import { FunctionExecutor } from './executors/FunctionExecutor.js';
+import { MacroExecutor } from './executors/MacroExecutor.js';
+import { NeedNodeExecutor } from './executors/NeedNodeExecutor.js';
+
 /**
  * Handles the runtime execution of the Blueprint graph.
  * Traversing execution pins and evaluating data dependencies.
@@ -33,7 +48,53 @@ export class SimulationEngine {
         this.createWatchPanel();
     }
 
-    createWatchPanel() {
+
+    /**
+     * Initialize all node executors and register them
+     */
+    initializeExecutors() {
+        // Create executor instances
+        const eventExecutor = new EventExecutor(this);
+        const flowControlExecutor = new FlowControlExecutor(this);
+        const printExecutor = new PrintExecutor(this);
+        const mathExecutor = new MathExecutor(this);
+        const variableExecutor = new VariableExecutor(this);
+        const castExecutor = new CastExecutor(this);
+        const conversionExecutor = new ConversionExecutor(this);
+        const timelineExecutor = new TimelineExecutor(this);
+        const functionExecutor = new FunctionExecutor(this);
+        const macroExecutor = new MacroExecutor(this);
+        const needNodeExecutor = new NeedNodeExecutor(this);
+
+        // Register exact match executors
+        this.executorRegistry.register('EventBeginPlay', eventExecutor);
+        this.executorRegistry.register('EventTick', eventExecutor);
+        this.executorRegistry.register('FunctionEntry', functionExecutor);
+        this.executorRegistry.register('FunctionResult', functionExecutor);
+        this.executorRegistry.register('MacroEntry', macroExecutor);
+        this.executorRegistry.register('MacroResult', macroExecutor);
+        this.executorRegistry.register('Branch', flowControlExecutor);
+        this.executorRegistry.register('PrintString', printExecutor);
+        this.executorRegistry.register('Timeline', timelineExecutor);
+        this.executorRegistry.register('NeedNode', needNodeExecutor);
+        
+        // Math nodes
+        this.executorRegistry.register('AddInt', mathExecutor);
+        this.executorRegistry.register('AddFloat', mathExecutor);
+        this.executorRegistry.register('SubtractFloat', mathExecutor);
+        this.executorRegistry.register('MultiplyFloat', mathExecutor);
+        this.executorRegistry.register('DivideFloat', mathExecutor);
+
+        // Register pattern-based executors
+        this.executorRegistry.registerPattern(/^Get_/, variableExecutor);
+        this.executorRegistry.registerPattern(/^Set_/, variableExecutor);
+        this.executorRegistry.registerPattern(/^CastTo_/, castExecutor);
+        this.executorRegistry.registerPattern(/^Conv_/, conversionExecutor);
+        this.executorRegistry.registerPattern(/^Func_/, functionExecutor);
+        this.executorRegistry.registerPattern(/^Macro_/, macroExecutor);
+    }
+
+        createWatchPanel() {
         this.watchPanel = document.createElement('div');
         this.watchPanel.id = 'watch-panel';
         this.watchPanel.style.cssText = `
@@ -392,377 +453,13 @@ export class SimulationEngine {
 
     /** Executes the core logic of a specific node. */
     async executeNodeLogic(node) {
-        // 0. Check for Function Call Nodes (Dynamic)
-        if (node.nodeKey.startsWith('Func_')) {
-            const funcName = node.nodeKey.replace('Func_', '');
-            const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
-
-            if (!funcDef) {
-                this.log(`Error: Function '${funcName}' not found.`, 'error');
-                return null;
-            }
-
-            // 1. Evaluate Inputs
-            const inputValues = {};
-            funcDef.inputs.forEach(input => {
-                const val = this.evaluateInput(node, `in_${input.name}`);
-                inputValues[input.name] = val;
-            });
-
-            // 2. Push Context
-            const callerGraph = this.app.activeGraph;
-
-            // Initialize Local Variables
-            const localVars = {};
-            if (funcDef.localVariables) {
-                funcDef.localVariables.forEach(v => {
-                    localVars[v.name] = v.defaultValue;
-                });
-            }
-
-            this.callStack.push({
-                callerGraph: callerGraph,
-                callerNodeId: node.id,
-                localVariables: localVars
-            });
-
-            // 3. Switch to Function Graph
-            this.app.switchGraph(funcName);
-
-            // 4. Find Entry Node and Set Inputs
-            const entryNode = [...this.app.graph.nodes.values()].find(n => n.nodeKey === 'FunctionEntry');
-            if (entryNode) {
-                // Store inputs on the Entry node so internal nodes can read them
-                entryNode.tempValues = {};
-                funcDef.inputs.forEach(input => {
-                    // Map function input name to the Entry node's output pin ID format
-                    // Entry node pins are named same as function inputs
-                    entryNode.tempValues[input.name] = inputValues[input.name];
-                });
-            } else {
-                this.log(`Error: FunctionEntry node missing in '${funcName}'.`, 'error');
-                this.app.switchGraph(callerGraph);
-                this.callStack.pop();
-                return null;
-            }
-
-            // 5. Execute Function (Recursive)
-            // We await this, so the outer loop pauses until the function completes
-            await this.executeFlow(entryNode);
-
-            // 6. Retrieve Return Values (set by FunctionResult)
-            const returnValues = this.functionReturnValues || {};
-            this.functionReturnValues = null; // Clear
-
-            // 7. Restore Context
-            this.app.switchGraph(callerGraph);
-            this.callStack.pop();
-
-            // 8. Store Outputs on the Call Node (so downstream nodes can read them)
-            // We use tempValues on the Call Node itself
-            node.tempValues = {};
-            funcDef.outputs.forEach(output => {
-                node.tempValues[`out_${output.name}`] = returnValues[output.name];
-            });
-
-            return 'exec_out';
+        const executor = this.executorRegistry.getExecutor(node.nodeKey);
+        if (executor) {
+            return await executor.execute(node);
         }
-
-        // 0b. Check for Macro Nodes (Dynamic Expansion)
-        if (node.nodeKey.startsWith('Macro_')) {
-            const macroName = node.nodeKey.replace('Macro_', '');
-            const macroDef = this.app.macroRegistry.getAll().find(m => m.name === macroName);
-
-            if (!macroDef) {
-                this.log(`Error: Macro '${macroName}' not found.`, 'error');
-                return null;
-            }
-
-            // 1. Evaluate Inputs
-            const inputValues = {};
-            let execInputName = null;
-
-            // We need to know WHICH exec pin triggered this macro to know where to start inside.
-            // But executeNodeLogic doesn't know the entry pin.
-            // Assumption: For MVP, we assume the first Exec input is the entry point.
-            // TODO: Support multiple exec inputs by passing entryPinId to executeNodeLogic.
-
-            macroDef.inputs.forEach(input => {
-                if (input.type === 'exec') {
-                    if (!execInputName) execInputName = input.name;
-                } else {
-                    const val = this.evaluateInput(node, `in_${input.name}`);
-                    inputValues[input.name] = val;
-                }
-            });
-
-            // 2. Switch Context (Virtual)
-            // Macros don't push a new call stack frame in the same way functions do (no local vars).
-            // But we need to switch the "active graph" context to the macro's graph to execute its nodes.
-            // And we need to map the MacroEntry node's outputs to the inputValues we just calculated.
-
-            const callerGraph = this.app.activeGraph;
-            this.app.switchGraph(macroName);
-
-            // 3. Find Entry Node
-            const entryNode = [...this.app.graph.nodes.values()].find(n => n.nodeKey === 'MacroEntry');
-            if (entryNode) {
-                entryNode.tempValues = inputValues;
-                // We also need to know which Exec pin on the Entry node to fire.
-                // It should match the execInputName.
-                // executeFlow will start from the Entry node.
-                // We need to tell it which output pin (Exec) to follow.
-                // The Entry node has Outputs that match the Macro's Inputs.
-                // So if we entered via "Execute", we fire the "Execute" output of the Entry node.
-            } else {
-                this.log(`Error: MacroEntry node missing in '${macroName}'.`, 'error');
-                this.app.switchGraph(callerGraph);
-                return null;
-            }
-
-            // 4. Execute Macro Graph
-            // We await this. The macro graph will eventually hit a MacroResult node.
-            // When it does, we need to capture which Exec output of the Result node was triggered.
-
-            this.macroResult = null; // Reset result state
-            await this.executeFlow(entryNode, execInputName); // Start flow from specific exec pin
-
-            // 5. Handle Result
-            const result = this.macroResult; // { exitPinName: 'Then', outputs: { ... } }
-            this.macroResult = null;
-
-            // 6. Restore Context
-            this.app.switchGraph(callerGraph);
-
-            if (result) {
-                // Store output values on the Macro node for downstream
-                node.tempValues = {};
-                macroDef.outputs.forEach(output => {
-                    if (output.type !== 'exec') {
-                        node.tempValues[`out_${output.name}`] = result.outputs[output.name];
-                    }
-                });
-
-                // Return the name of the output exec pin to follow
-                // The Macro node has output pins named `out_${exitPinName}`
-                return `out_${result.exitPinName}`;
-            }
-
-            return null;
-        }
-
-        switch (node.nodeKey) {
-            case 'EventBeginPlay':
-            case 'FunctionEntry':
-            case 'MacroEntry': // Pass through for flow start
-                return null;
-
-            case 'MacroResult': {
-                // Determine which Exec input was triggered?
-                // Again, we don't know which input pin triggered us.
-                // We assume the first connected one or we need that entryPinId.
-                // For MVP, if we are here, we are exiting.
-                // We need to find which Exec input pin is connected/active.
-                // Since we don't track active path, we'll just take the first Exec input.
-                // OR better: The MacroResult node has Inputs matching the Macro Outputs.
-                // We need to know which "Exit" we are taking.
-
-                // Let's assume we take the first Exec input for now.
-                // TODO: Fix this when we have entryPinId.
-
-                const macroName = this.app.activeGraph;
-                const macroDef = this.app.macroRegistry.getAll().find(m => m.name === macroName);
-
-                if (macroDef) {
-                    const outputs = {};
-                    let exitPinName = 'Then'; // Default
-
-                    macroDef.outputs.forEach(output => {
-                        if (output.type === 'exec') {
-                            exitPinName = output.name; // Take the last one? No, we need the triggered one.
-                        } else {
-                            // Evaluate data inputs
-                            const pin = node.pins.find(p => p.name === output.name && p.dir === 'in');
-                            if (pin) {
-                                outputs[output.name] = this.evaluatePin(pin);
-                            }
-                        }
-                    });
-
-                    this.macroResult = {
-                        exitPinName: exitPinName,
-                        outputs: outputs
-                    };
-                }
-                return null; // Stop flow in macro graph
-            }
-
-            case 'FunctionResult': {
-                // Evaluate inputs (which are the function's return values)
-                const funcName = this.app.activeGraph;
-                const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
-
-                if (funcDef) {
-                    this.functionReturnValues = {};
-                    funcDef.outputs.forEach(output => {
-                        // FunctionResult pins match output names
-                        // But wait, FunctionResult pins are inputs.
-                        // We need to find the pin on this node that corresponds to the output.
-                        // Pin IDs are likely just the name or generated.
-                        // Let's assume the pin name matches the output name.
-                        // We need to find the pin ID.
-                        const pin = node.pins.find(p => p.name === output.name && p.dir === 'in');
-                        if (pin) {
-                            const val = this.evaluatePin(pin);
-                            this.functionReturnValues[output.name] = val;
-                        }
-                    });
-                }
-                return null; // End of flow
-            }
-
-            case 'PrintString': {
-                const strVal = this.evaluateInput(node, 'str_in');
-                this.log(`Print: ${strVal}`);
-                return null;
-            }
-
-            case 'Branch': {
-                const condition = this.evaluateInput(node, 'cond_in');
-                return condition ? 'exec_true' : 'exec_false';
-            }
-
-            case 'Timeline': {
-                // Ensure state exists
-                let state = this.timelines.get(node.id);
-                if (!state) {
-                    state = {
-                        currentTime: 0,
-                        length: node.customProperties?.length || 5.0,
-                        loop: node.customProperties?.loop || false,
-                        isPlaying: false,
-                        direction: 1 // 1 = forward, -1 = backward
-                    };
-                    this.timelines.set(node.id, state);
-                }
-
-                // Determine which input pin was triggered
-                // executeNodeLogic doesn't strictly know *which* pin triggered it in this architecture
-                // But we can infer or we might need to change how executeNodeLogic is called.
-                // However, for MVP, we can check inputs. But wait, 'exec' inputs aren't "evaluated" like data inputs.
-                // The current architecture has a limitation: executeNodeLogic is called when the node is visited.
-                // It doesn't know *which* input pin was followed.
-
-                // WORKAROUND: For now, we'll assume "Play" if we just arrived here.
-                // To support multiple exec inputs properly, we'd need to pass the `entryPinId` to executeNodeLogic.
-
-                // Let's check if we can determine the entry pin.
-                // In executeFlow, we have `outPin` from the previous node.
-                // `link.endPin` is the input pin on this node.
-
-                // For this MVP, let's just default to Play/Resume.
-                // Real implementation requires refactoring executeFlow to pass the input pin ID.
-
-                state.isPlaying = true;
-                state.direction = 1;
-                return null;
-            }
-
-            default:
-                // Handle Casting
-                if (node.nodeKey.startsWith('CastTo_')) {
-                    const targetType = node.nodeKey.replace('CastTo_', '');
-                    const obj = this.evaluateInput(node, 'object_in');
-
-                    // Simple type check (mocking inheritance/class system)
-                    // We assume objects might have a _type property, or we check if the value ITSELF is the type name for simple tests
-                    // For a robust system, we'd check obj._type === targetType
-
-                    let isMatch = false;
-                    if (obj && typeof obj === 'object' && obj._type === targetType) {
-                        isMatch = true;
-                    }
-                    // Fallback for simple string testing if users pass a string as an "object"
-                    else if (typeof obj === 'string' && obj === targetType) {
-                        isMatch = true;
-                    }
-
-                    return isMatch ? 'exec_out' : 'cast_failed';
-                }
-
-                // Handle dynamic Set nodes
-                if (node.nodeKey.startsWith('Set_')) {
-                    const varName = node.nodeKey.replace('Set_', '');
-                    const val = this.evaluateInput(node, 'val_in');
-
-                    // Check Local Variables First
-                    if (this.callStack.length > 0) {
-                        const currentFrame = this.callStack[this.callStack.length - 1];
-                        if (currentFrame.localVariables && currentFrame.localVariables.hasOwnProperty(varName)) {
-                            currentFrame.localVariables[varName] = val;
-                            return null;
-                        }
-                    }
-
-                    const variable = this.app.variables.variables.get(varName);
-                    if (variable) {
-                        variable.defaultValue = val; // Update the runtime value
-                        // Note: This mutates the 'default' value which persists in the UI.
-                        // In a real engine, runtime state is separate from edit-time defaults.
-                    }
-                    return null;
-                }
-                return null;
-
-            case 'NeedNode': {
-                const needData = node.customData ? node.customData.needNodeData : null;
-                if (!needData) {
-                    console.warn(`NeedNode ${node.id} has no configuration data.`);
-                    return 'exec_out';
-                }
-
-                // 1. Validate Criteria
-                const validator = new GraphValidator(this.app);
-                const results = validator.validate(needData.criteria);
-
-                // 2. Calculate Score
-                const total = results.length;
-                const passedCount = results.filter(r => r.passed).length;
-                const score = total > 0 ? Math.round((passedCount / total) * 100) : 0;
-                const passed = score >= (needData.passThreshold || 80);
-
-                console.log(`[NeedNode] Executed. Score: ${score}%, Passed: ${passed}`);
-
-                // 3. Report to SCORM
-                if (scormClient) {
-                    scormClient.setScore(score, 100, 0);
-                    if (passed) {
-                        scormClient.setSuccess('passed');
-                        scormClient.setCompletion('completed');
-                    } else {
-                        scormClient.setSuccess('failed');
-                        scormClient.setCompletion('incomplete');
-                    }
-                    scormClient.save();
-                }
-
-                // 4. Update Output Pins (Runtime Values)
-                // We need a way to set output values for the next nodes to read.
-                // In this simplified engine, we can store them on the node itself or a runtime state map.
-                // For now, let's store them in pinLiterals which act as the "current value" for outputs in this engine.
-                const scorePin = node.findPinById(`${node.id}-score_out`);
-                const passedPin = node.findPinById(`${node.id}-passed_out`);
-
-                if (scorePin) node.pinLiterals.set(scorePin.id, score);
-                if (passedPin) node.pinLiterals.set(passedPin.id, passed);
-
-                // 5. Visual Feedback (Optional but good)
-                node.devWarning = passed ? "Assessment Passed!" : "Assessment Failed";
-                this.app.wiring.updateVisuals(node);
-
-                return 'exec_out';
-            }
-        }
+        
+        this.log(`Unknown node type: ${node.nodeKey}`, 'error');
+        return null;
     }
 
     /** * Recursively evaluates the value of an input pin.
@@ -839,121 +536,15 @@ export class SimulationEngine {
             }
         }
 
-        // 1. Variable Getters
-        if (node.nodeKey.startsWith('Get_')) {
-            const varName = node.nodeKey.replace('Get_', '');
-
-            // Check Local Variables First (if in function context)
-            if (this.callStack.length > 0) {
-                const currentFrame = this.callStack[this.callStack.length - 1];
-                // Local variables are stored where?
-                // We need to initialize local variables when entering the function.
-                // Let's assume we store them in the frame.
-                if (currentFrame.localVariables && currentFrame.localVariables[varName] !== undefined) {
-                    return currentFrame.localVariables[varName];
-                }
-            }
-
-            const variable = this.app.variables.variables.get(varName);
-            return variable ? variable.defaultValue : null;
-        }
-
-        // 2. Type Conversions
-        if (node.nodeKey.startsWith('Conv_')) {
-            const val = this.evaluateInput(node, 'val_in');
-            // Basic string conversion
-            return String(val);
-        }
-
-        // 3. Math Nodes
-        if (node.nodeKey === 'AddInt') {
-            const a = this.evaluateInput(node, 'a_in');
-            const b = this.evaluateInput(node, 'b_in');
-            return Number(a) + Number(b);
-        }
-        if (node.nodeKey === 'AddFloat') {
-            const a = this.evaluateInput(node, 'a_in');
-            const b = this.evaluateInput(node, 'b_in');
-            return parseFloat(a) + parseFloat(b);
-        }
-        if (node.nodeKey === 'SubtractFloat') {
-            const a = this.evaluateInput(node, 'a_in');
-            const b = this.evaluateInput(node, 'b_in');
-            return parseFloat(a) - parseFloat(b);
-        }
-
-        // 4. Cast Nodes (Data Output)
-        if (node.nodeKey.startsWith('CastTo_')) {
-            const targetType = node.nodeKey.replace('CastTo_', '');
-            const obj = this.evaluateInput(node, 'object_in');
-
-            // Same logic as executeNodeLogic
-            if (obj && typeof obj === 'object' && obj._type === targetType) {
-                return obj;
-            }
-            if (typeof obj === 'string' && obj === targetType) {
-                return obj;
-            }
-            return null; // Cast failed
-        }
-
-        // 5. Vector / Rotator / Transform Operations
-        switch (node.nodeKey) {
-            case 'MakeVector': {
-                const x = this.evaluateInput(node, 'x_in') || 0;
-                const y = this.evaluateInput(node, 'y_in') || 0;
-                const z = this.evaluateInput(node, 'z_in') || 0;
-                return `(${x},${y},${z})`;
-            }
-            case 'BreakVector': {
-                const vecStr = this.evaluateInput(node, 'vec_in') || '(0,0,0)';
-                const parsed = Utils.parseVector(vecStr);
-
-                if (pin && pin.id.endsWith('x_out')) return parsed.x;
-                if (pin && pin.id.endsWith('y_out')) return parsed.y;
-                if (pin && pin.id.endsWith('z_out')) return parsed.z;
-                return 0;
-            }
-            case 'MakeRotator': {
-                const r = this.evaluateInput(node, 'roll_in') || 0;
-                const p = this.evaluateInput(node, 'pitch_in') || 0;
-                const y = this.evaluateInput(node, 'yaw_in') || 0;
-                return `(R=${r},P=${p},Y=${y})`;
-            }
-            case 'BreakRotator': {
-                const rotStr = this.evaluateInput(node, 'rot_in') || '(R=0,P=0,Y=0)';
-                const parsed = Utils.parseRotator(rotStr);
-
-                if (pin && pin.id.endsWith('roll_out')) return parsed.roll;
-                if (pin && pin.id.endsWith('pitch_out')) return parsed.pitch;
-                if (pin && pin.id.endsWith('yaw_out')) return parsed.yaw;
-                return 0;
-            }
-            case 'MakeTransform': {
-                const loc = Utils.parseVector(this.evaluateInput(node, 'loc_in'));
-                const rot = Utils.parseRotator(this.evaluateInput(node, 'rot_in'));
-                const scale = Utils.parseVector(this.evaluateInput(node, 'scale_in'));
-
-                // Return string format: (x,y,z|r,p,y|sx,sy,sz)
-                return `(${loc.x},${loc.y},${loc.z}|${rot.roll},${rot.pitch},${rot.yaw}|${scale.x},${scale.y},${scale.z})`;
-            }
-            case 'BreakTransform': {
-                const trans = this.evaluateInput(node, 'trans_in');
-                const parsed = Utils.parseTransform(trans);
-
-                if (pin && pin.id.endsWith('loc_out')) return `(${parsed.location.x},${parsed.location.y},${parsed.location.z})`;
-                if (pin && pin.id.endsWith('rot_out')) return `(R=${parsed.rotation.roll},P=${parsed.rotation.pitch},Y=${parsed.rotation.yaw})`;
-                if (pin && pin.id.endsWith('scale_out')) return `(${parsed.scale.x},${parsed.scale.y},${parsed.scale.z})`;
-                return null;
-            }
+        // Delegate to executor
+        const executor = this.executorRegistry.getExecutor(node.nodeKey);
+        if (executor && executor.evaluateValue) {
+            return executor.evaluateValue(node, pin);
         }
 
         return null;
     }
 
-    /**
-     * Evaluates all NeedNodes in the graph and reports scores to SCORM LMS
-     */
     evaluateNeedNodes() {
         // Find all NeedNodes in the graph
         const needNodes = [...this.app.graph.nodes.values()].filter(n => n.nodeKey === 'NeedNode');
