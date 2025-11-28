@@ -522,20 +522,29 @@ export class SimulationEngine {
      */
     reportToSCORM(score, passed) {
         // Initialize SCORM if not already done
-        if (!scormClient.initialized) {
+        if (!scormClient.isInitialized) {
             const initialized = scormClient.initialize();
             if (!initialized) {
                 this.log("\n[SCORM] API not available (local development mode)");
-                this.log("[SCORM] Would report: Score=${score}%, Status=${passed ? 'passed' : 'failed'}");
+                this.log(`[SCORM] Would report: Score=${score}%, Status=${passed ? 'passed' : 'failed'}`);
                 return;
             }
         }
 
         // Set score and success status
         scormClient.setScore(score);
-        scormClient.setSuccess(passed);
-        scormClient.setCompletionStatus('completed');
-        scormClient.commit();
+
+        if (passed) {
+            scormClient.setPassed(true);
+        } else {
+            scormClient.setPassed(false);
+            // Optionally keep it incomplete until passed?
+            // For now, let's mark it as failed but completed? 
+            // Or just use setPassed(false) which sets success_status='failed' and completion_status='completed'
+            // My ScormClient.setPassed does exactly that.
+        }
+
+        // scormClient.commit() is called inside setScore and setPassed
 
         this.log(`\n[SCORM] ✅ Reported to LMS: Score=${score}%, Status=${passed ? 'passed' : 'failed'}`, "success");
     }

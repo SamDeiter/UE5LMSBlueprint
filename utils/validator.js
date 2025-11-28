@@ -82,6 +82,7 @@ export class BlueprintValidator {
         const variable = this.app.variables.variables.get(req.name);
         if (!variable) return false;
         if (req.varType && variable.type !== req.varType) return false;
+        if (req.containerType && variable.containerType !== req.containerType) return false;
         return true;
     }
 

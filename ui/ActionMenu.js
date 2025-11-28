@@ -253,7 +253,11 @@ export class ActionMenu {
             contextHeader = true;
         }
         const isGeneralClick = !this.sourcePin && !this.droppedVarName && !this.droppedComponent;
-        const hasVariableAccess = isGeneralClick && filter.length === 0 ? this.showVariableAccess(filter) : false;
+
+        // Removed special top-level variable access to let them sort naturally in the list
+        // const hasVariableAccess = isGeneralClick && filter.length === 0 ? this.showVariableAccess(filter) : false;
+        const hasVariableAccess = false;
+
         if (this.droppedVarName) {
             this.showVariableDropOptions(this.droppedVarName);
             return;
@@ -265,11 +269,12 @@ export class ActionMenu {
         let needsSeparatorBeforeNodes = hasVariableAccess || contextHeader;
         const nodeNames = Object.keys(nodeRegistry.getAll());
         let filtered = nodeNames.filter(name => {
-            const isVariableNode = name.startsWith('Get_');
+            // Allow variable nodes to appear in the main list
+            // const isVariableNode = name.startsWith('Get_');
             const nodeData = nodeRegistry.get(name);
             const title = nodeData.title || name;
             const matchesFilter = title.toLowerCase().includes(filter) || name.toLowerCase().includes(filter);
-            if (isVariableNode) return false;
+            // if (isVariableNode) return false;
             if (this.sourcePin) {
                 if (!matchesFilter) return false;
                 if (this.isContextSensitive) {

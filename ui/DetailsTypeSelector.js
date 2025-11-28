@@ -68,13 +68,15 @@ export class DetailsTypeSelector {
             { id: 'int', label: 'Integer', color: '#28E897' },        // Cyan/Green
             { id: 'int64', label: 'Integer64', color: '#76D37E' },    // Pale Green
             { id: 'float', label: 'Float', color: '#96EE35' },        // Lime
+            { id: 'double', label: 'Double', color: '#85DD24' },      // Darker green
             { id: 'name', label: 'Name', color: '#CC99FF' },          // Purple
             { id: 'string', label: 'String', color: '#FF00FF' },      // Magenta
             { id: 'text', label: 'Text', color: '#E27696' },          // Pink
             { id: 'vector', label: 'Vector', color: '#FFC700' },      // Gold
             { id: 'rotator', label: 'Rotator', color: '#99CCFF' },    // Blue
             { id: 'transform', label: 'Transform', color: '#FF7300' },// Orange
-            { id: 'object', label: 'Object', color: '#00A2E8' }       // Blue
+            { id: 'object', label: 'Object', color: '#00A2E8' },      // Blue
+            { id: 'enum', label: 'Enum', color: '#00BB55' }           // Forest green
         ];
 
         // Render Function
@@ -113,7 +115,7 @@ export class DetailsTypeSelector {
             });
 
             // B) Render Collapsible Categories (Visual Only for now, as per request focus)
-            const categories = ['Structure', 'Interface', 'Object Types', 'Enum'];
+            const categories = ['Structure', 'Interface', 'Object Types'];
             categories.forEach(cat => {
                 if (cat.toLowerCase().includes(lowerFilter) || filterText === '') {
                     const catRow = document.createElement('div');
@@ -138,7 +140,7 @@ export class DetailsTypeSelector {
         footer.className = 'type-selector-footer';
 
         const countSpan = document.createElement('span');
-        countSpan.textContent = `${commonTypes.length + 4} items`; // Mock count
+        countSpan.textContent = `${commonTypes.length + 3} items`; // 16 types + 3 categories
 
         const checkboxContainer = document.createElement('div');
         checkboxContainer.style.display = 'flex';

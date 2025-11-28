@@ -703,5 +703,266 @@ export const NodeDefinitions = {
             { id: "score_out", name: "Score", type: "int", dir: "out" },
             { id: "passed_out", name: "Passed", type: "bool", dir: "out" }
         ]
+    },
+
+    // --- ARRAY OPERATIONS ---
+    "Array_Add": {
+        title: "ADD (Array)",
+        type: "function-node",
+        category: "Utilities|Array",
+        icon: "fa-plus-square",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array", isRef: true },
+            { id: "item_in", name: "New Item", type: "wildcard", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "index_out", name: "Output Index", type: "int", dir: "out" }
+        ]
+    },
+    "Array_RemoveIndex": {
+        title: "Remove Index",
+        type: "function-node",
+        category: "Utilities|Array",
+        icon: "fa-minus-square",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array", isRef: true },
+            { id: "index_in", name: "Index", type: "int", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "Array_RemoveItem": {
+        title: "Remove Item",
+        type: "function-node",
+        category: "Utilities|Array",
+        icon: "fa-minus-square",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array", isRef: true },
+            { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "removed_out", name: "Removed", type: "bool", dir: "out" }
+        ]
+    },
+    "Array_Get": {
+        title: "GET (Array)",
+        type: "pure-node",
+        category: "Utilities|Array",
+        icon: "fa-th",
+        pins: [
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array" },
+            { id: "index_in", name: "Index", type: "int", dir: "in" },
+            { id: "item_out", name: "Item", type: "wildcard", dir: "out" }
+        ]
+    },
+    "Array_SetElem": {
+        title: "Set Array Elem",
+        type: "function-node",
+        category: "Utilities|Array",
+        icon: "fa-edit",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array", isRef: true },
+            { id: "index_in", name: "Index", type: "int", dir: "in" },
+            { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "size_change_out", name: "Size to Fit", type: "bool", dir: "out" }
+        ]
+    },
+    "Array_Length": {
+        title: "Length",
+        type: "pure-node",
+        category: "Utilities|Array",
+        icon: "fa-ruler-horizontal",
+        pins: [
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array" },
+            { id: "length_out", name: "Length", type: "int", dir: "out" }
+        ]
+    },
+    "Array_Clear": {
+        title: "Clear",
+        type: "function-node",
+        category: "Utilities|Array",
+        icon: "fa-trash-alt",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array", isRef: true },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "Array_Contains": {
+        title: "Contains",
+        type: "pure-node",
+        category: "Utilities|Array",
+        icon: "fa-search",
+        pins: [
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array" },
+            { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+            { id: "found_out", name: "Found", type: "bool", dir: "out" }
+        ]
+    },
+    "Array_Find": {
+        title: "Find Item",
+        type: "pure-node",
+        category: "Utilities|Array",
+        icon: "fa-search-location",
+        pins: [
+            { id: "array_in", name: "Target Array", type: "wildcard", dir: "in", containerType: "array" },
+            { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+            { id: "index_out", name: "Index", type: "int", dir: "out" }
+        ]
+    },
+
+    // --- SET OPERATIONS ---
+    "Set_Add": {
+        title: "ADD (Set)",
+        type: "function-node",
+        category: "Utilities|Set",
+        icon: "fa-plus-circle",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "set_in", name: "Target Set", type: "wildcard", dir: "in", containerType: "set", isRef: true },
+            { id: "item_in", name: "New Item", type: "wildcard", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "added_out", name: "Added", type: "bool", dir: "out" }
+        ]
+    },
+    "Set_Remove": {
+        title: "Remove (Set)",
+        type: "function-node",
+        category: "Utilities|Set",
+        icon: "fa-minus-circle",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "set_in", name: "Target Set", type: "wildcard", dir: "in", containerType: "set", isRef: true },
+            { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "removed_out", name: "Removed", type: "bool", dir: "out" }
+        ]
+    },
+    "Set_Contains": {
+        title: "Contains (Set)",
+        type: "pure-node",
+        category: "Utilities|Set",
+        icon: "fa-search",
+        pins: [
+            { id: "set_in", name: "Target Set", type: "wildcard", dir: "in", containerType: "set" },
+            { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+            { id: "found_out", name: "Found", type: "bool", dir: "out" }
+        ]
+    },
+    "Set_Clear": {
+        title: "Clear (Set)",
+        type: "function-node",
+        category: "Utilities|Set",
+        icon: "fa-trash-alt",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "set_in", name: "Target Set", type: "wildcard", dir: "in", containerType: "set", isRef: true },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "Set_Length": {
+        title: "Length (Set)",
+        type: "pure-node",
+        category: "Utilities|Set",
+        icon: "fa-ruler-horizontal",
+        pins: [
+            { id: "set_in", name: "Target Set", type: "wildcard", dir: "in", containerType: "set" },
+            { id: "length_out", name: "Length", type: "int", dir: "out" }
+        ]
+    },
+    "Set_ToArray": {
+        title: "To Array (Set)",
+        type: "pure-node",
+        category: "Utilities|Set",
+        icon: "fa-list",
+        pins: [
+            { id: "set_in", name: "Target Set", type: "wildcard", dir: "in", containerType: "set" },
+            { id: "array_out", name: "Array", type: "wildcard", dir: "out", containerType: "array" }
+        ]
+    },
+
+    // --- MAP OPERATIONS ---
+    "Map_Add": {
+        title: "ADD (Map)",
+        type: "function-node",
+        category: "Utilities|Map",
+        icon: "fa-plus-square",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "map_in", name: "Target Map", type: "wildcard", dir: "in", containerType: "map", isRef: true },
+            { id: "key_in", name: "Key", type: "wildcard", dir: "in" },
+            { id: "value_in", name: "Value", type: "wildcard", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "added_out", name: "Added", type: "bool", dir: "out" }
+        ]
+    },
+    "Map_Remove": {
+        title: "Remove (Map)",
+        type: "function-node",
+        category: "Utilities|Map",
+        icon: "fa-minus-square",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "map_in", name: "Target Map", type: "wildcard", dir: "in", containerType: "map", isRef: true },
+            { id: "key_in", name: "Key", type: "wildcard", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "removed_out", name: "Removed", type: "bool", dir: "out" }
+        ]
+    },
+    "Map_Find": {
+        title: "Find (Map)",
+        type: "pure-node",
+        category: "Utilities|Map",
+        icon: "fa-search",
+        pins: [
+            { id: "map_in", name: "Target Map", type: "wildcard", dir: "in", containerType: "map" },
+            { id: "key_in", name: "Key", type: "wildcard", dir: "in" },
+            { id: "value_out", name: "Value", type: "wildcard", dir: "out" },
+            { id: "found_out", name: "Found", type: "bool", dir: "out" }
+        ]
+    },
+    "Map_Clear": {
+        title: "Clear (Map)",
+        type: "function-node",
+        category: "Utilities|Map",
+        icon: "fa-trash-alt",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "map_in", name: "Target Map", type: "wildcard", dir: "in", containerType: "map", isRef: true },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "Map_Length": {
+        title: "Length (Map)",
+        type: "pure-node",
+        category: "Utilities|Map",
+        icon: "fa-ruler-horizontal",
+        pins: [
+            { id: "map_in", name: "Target Map", type: "wildcard", dir: "in", containerType: "map" },
+            { id: "length_out", name: "Length", type: "int", dir: "out" }
+        ]
+    },
+    "Map_Keys": {
+        title: "Keys (Map)",
+        type: "pure-node",
+        category: "Utilities|Map",
+        icon: "fa-key",
+        pins: [
+            { id: "map_in", name: "Target Map", type: "wildcard", dir: "in", containerType: "map" },
+            { id: "keys_out", name: "Keys", type: "wildcard", dir: "out", containerType: "array" }
+        ]
+    },
+    "Map_Values": {
+        title: "Values (Map)",
+        type: "pure-node",
+        category: "Utilities|Map",
+        icon: "fa-list-ul",
+        pins: [
+            { id: "map_in", name: "Target Map", type: "wildcard", dir: "in", containerType: "map" },
+            { id: "values_out", name: "Values", type: "wildcard", dir: "out", containerType: "array" }
+        ]
     }
+
 };

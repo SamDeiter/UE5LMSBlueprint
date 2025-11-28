@@ -1,171 +1,136 @@
 /**
- * SCORM Client - Wrapper for SCORM 1.3 (2004) API integration with Totara LMS.
- * Provides methods to initialize, report scores, and commit LMS data.
- * Gracefully handles environments where SCORM API is unavailable (e.g., local development).
+ * ScormClient.js
+ * Handles communication with the LMS via SCORM 1.3 (2004) API.
  */
 export class ScormClient {
     constructor() {
-        this.api = null;
-        this.initialized = false;
+        this.API = null;
+        this.isInitialized = false;
+        this.debug = true;
     }
 
     /**
-     * Initialize the SCORM API connection.
-     * @returns {boolean} true if SCORM API is available and initialized
+     * Initialize the SCORM connection
+     * @returns {boolean} True if connection successful
      */
     initialize() {
-        try {
-            // SCORM 2004 API
-            this.api = window.API_1484_11 || window.API || null;
+        if (this.isInitialized) return true;
 
-            if (this.api) {
-                const result = this.api.Initialize('');
-                this.initialized = result === 'true';
-                if (this.initialized) {
-                    console.log('[SCORMClient] Successfully initialized');
-                }
-                return this.initialized;
-            } else {
-                console.warn('[SCORMClient] SCORM API not available (local development mode)');
-                return false;
-            }
-        } catch (e) {
-            console.error('[SCORMClient] Initialization error:', e);
+        this.API = this.findAPI();
+        if (!this.API) {
+            this.log("SCORM API not found.");
+            return false;
+        }
+
+        const result = this.API.Initialize("");
+        if (result === "true") {
+            this.isInitialized = true;
+            this.log("SCORM Initialized successfully.");
+            this.setIncomplete(); // Mark as incomplete on start
+            return true;
+        } else {
+            this.handleError("Initialize");
             return false;
         }
     }
 
     /**
-     * Set the raw score (0-100).
-     * @param {number} score - Score between 0 and 100
-     * @returns {boolean} true if successful
+     * Find the SCORM API in window hierarchy
+     */
+    findAPI(win = window) {
+        let attempts = 0;
+        while ((win.API_1484_11 == null) && (win.parent != null) && (win.parent != win)) {
+            attempts++;
+            if (attempts > 10) return null;
+            win = win.parent;
+        }
+        return win.API_1484_11;
+    }
+
+    /**
+     * Set the score (0-100)
+     * @param {number} score 
      */
     setScore(score) {
-        if (!this.initialized || !this.api) {
-            console.log(`[SCORMClient] Would set score: ${score} (API unavailable)`);
-            return false;
-        }
+        if (!this.isInitialized) return;
 
-        try {
-            const result = this.api.SetValue('cmi.score.raw', String(score));
-            return result === 'true';
-        } catch (e) {
-            console.error('[SCORMClient] Error setting score:', e);
-            return false;
-        }
+        // SCORM 2004 format: scaled (0..1), raw (0..100), min, max
+        this.setValue("cmi.score.scaled", (score / 100).toFixed(2));
+        this.setValue("cmi.score.raw", score);
+        this.setValue("cmi.score.min", "0");
+        this.setValue("cmi.score.max", "100");
+        this.commit();
     }
 
     /**
-     * Set the success status (passed/failed).
-     * @param {boolean} passed - true for passed, false for failed
-     * @returns {boolean} true if successful
+     * Set completion status
+     * @param {boolean} passed 
      */
-    setSuccess(passed) {
-        if (!this.initialized || !this.api) {
-            console.log(`[SCORMClient] Would set success: ${passed ? 'passed' : 'failed'} (API unavailable)`);
-            return false;
-        }
+    setPassed(passed) {
+        if (!this.isInitialized) return;
 
-        try {
-            const status = passed ? 'passed' : 'failed';
-            const result = this.api.SetValue('cmi.success_status', status);
-            return result === 'true';
-        } catch (e) {
-            console.error('[SCORMClient] Error setting success status:', e);
-            return false;
-        }
+        const status = passed ? "passed" : "failed";
+        this.setValue("cmi.success_status", status);
+        this.setValue("cmi.completion_status", "completed");
+        this.commit();
+    }
+
+    setIncomplete() {
+        if (!this.isInitialized) return;
+        this.setValue("cmi.completion_status", "incomplete");
+        this.commit();
     }
 
     /**
-     * Set the completion status.
-     * @param {string} status - 'completed', 'incomplete', 'not attempted', or 'unknown'
-     * @returns {boolean} true if successful
+     * Helper to set value
      */
-    setCompletionStatus(status = 'completed') {
-        if (!this.initialized || !this.api) {
-            console.log(`[SCORMClient] Would set completion: ${status} (API unavailable)`);
-            return false;
-        }
-
-        try {
-            const result = this.api.SetValue('cmi.completion_status', status);
-            return result === 'true';
-        } catch (e) {
-            console.error('[SCORMClient] Error setting completion status:', e);
-            return false;
+    setValue(parameter, value) {
+        if (!this.isInitialized) return;
+        const result = this.API.SetValue(parameter, value);
+        if (result !== "true") {
+            this.handleError(`SetValue(${parameter}, ${value})`);
         }
     }
 
     /**
-     * Commit/save the current state to the LMS.
-     * @returns {boolean} true if successful
+     * Commit changes to LMS
      */
     commit() {
-        if (!this.initialized || !this.api) {
-            console.log('[SCORMClient] Would commit data (API unavailable)');
-            return false;
-        }
-
-        try {
-            const result = this.api.Commit('');
-            return result === 'true';
-        } catch (e) {
-            console.error('[SCORMClient] Error committing data:', e);
-            return false;
+        if (!this.isInitialized) return;
+        const result = this.API.Commit("");
+        if (result !== "true") {
+            this.handleError("Commit");
         }
     }
 
     /**
-     * Terminate the SCORM session.
-     * @returns {boolean} true if successful
+     * Terminate session
      */
     terminate() {
-        if (!this.initialized || !this.api) {
-            console.log('[SCORMClient] Would terminate session (API unavailable)');
-            return false;
-        }
-
-        try {
-            const result = this.api.Terminate('');
-            this.initialized = false;
-            return result === 'true';
-        } catch (e) {
-            console.error('[SCORMClient] Error terminating session:', e);
-            return false;
+        if (!this.isInitialized) return;
+        const result = this.API.Terminate("");
+        if (result === "true") {
+            this.isInitialized = false;
+            this.log("SCORM Terminated.");
+        } else {
+            this.handleError("Terminate");
         }
     }
 
-    /**
-     * Get the last error code from the SCORM API.
-     * @returns {string|null} Error code or null
-     */
-    getLastError() {
-        if (!this.api) return null;
-
-        try {
-            return this.api.GetLastError();
-        } catch (e) {
-            console.error('[SCORMClient] Error getting last error:', e);
-            return null;
-        }
+    handleError(action) {
+        if (!this.API) return;
+        const code = this.API.GetLastError();
+        const message = this.API.GetErrorString(code);
+        const diagnostic = this.API.GetDiagnostic(code);
+        console.error(`SCORM Error [${action}]: ${code} - ${message} (${diagnostic})`);
     }
 
-    /**
-     * Get error string for a given error code.
-     * @param {string} errorCode - SCORM error code
-     * @returns {string|null} Error description or null
-     */
-    getErrorString(errorCode) {
-        if (!this.api) return null;
-
-        try {
-            return this.api.GetErrorString(errorCode);
-        } catch (e) {
-            console.error('[SCORMClient] Error getting error string:', e);
-            return null;
+    log(msg) {
+        if (this.debug) {
+            console.log(`[ScormClient] ${msg}`);
         }
     }
 }
 
-// Export a singleton instance
+// Export singleton
 export const scormClient = new ScormClient();

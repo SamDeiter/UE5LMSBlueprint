@@ -25,6 +25,7 @@ class Utils {
             'int': 'int-pin',
             'int64': 'int64-pin',
             'float': 'float-pin',
+            'double': 'double-pin',
             'name': 'name-pin',
             'string': 'string-pin',
             'text': 'text-pin',
@@ -32,6 +33,7 @@ class Utils {
             'rotator': 'rotator-pin',
             'transform': 'transform-pin',
             'object': 'object-pin',
+            'enum': 'enum-pin',
         };
         return typeMap[type.toLowerCase()] || 'default-pin';
     }
@@ -49,6 +51,7 @@ class Utils {
             'int': 'var(--color-int)',
             'int64': 'var(--color-int64)',
             'float': 'var(--color-float)',
+            'double': 'var(--color-double)',
             'name': 'var(--color-name)',
             'string': 'var(--color-string)',
             'text': 'var(--color-text)',
@@ -56,6 +59,7 @@ class Utils {
             'rotator': 'var(--color-rotator)',
             'transform': 'var(--color-transform)',
             'object': 'var(--color-object)',
+            'enum': 'var(--color-enum)',
         };
         return colorMap[type.toLowerCase()] || '#888888';
     }
@@ -72,6 +76,7 @@ class Utils {
             'int': { start: '#1E855E', end: '#0F422F' },
             'int64': { start: '#668044', end: '#334022' },
             'float': { start: '#6AA826', end: '#355413' },
+            'double': { start: '#5FA826', end: '#2F5413' },
             'name': { start: '#8F5E99', end: '#472F4C' },
             'string': { start: '#BF00BF', end: '#600060' },
             'text': { start: '#BF7885', end: '#603C42' },
@@ -79,6 +84,7 @@ class Utils {
             'rotator': { start: '#5E7AA8', end: '#2F3D54' },
             'transform': { start: '#BF6600', end: '#603300' },
             'object': { start: '#005580', end: '#002A40' },
+            'enum': { start: '#006633', end: '#003319' },
         };
         return colors[type.toLowerCase()] || { start: '#303030', end: '#151515' };
     }

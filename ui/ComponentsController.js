@@ -167,7 +167,23 @@ export class ComponentsController {
     }
 
     executeDeletion() {
-        this.selectedComponentIds.forEach(id => {
+        // 1. Collect all IDs to delete (selected + descendants)
+        const idsToDelete = new Set(this.selectedComponentIds);
+
+        // Iteratively find children until no more are found
+        let added;
+        do {
+            added = false;
+            for (const [id, comp] of this.app.components) {
+                if (!idsToDelete.has(id) && idsToDelete.has(comp.parentId)) {
+                    idsToDelete.add(id);
+                    added = true;
+                }
+            }
+        } while (added);
+
+        // 2. Delete them
+        idsToDelete.forEach(id => {
             if (this.app.components.has(id)) {
                 this.app.components.delete(id);
             }
