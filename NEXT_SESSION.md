@@ -34,4 +34,17 @@ Implement "Step Out" functionality and robust Breakpoint management to complete 
 ### 3. Variable Watch Panel Refinement
 **Purpose**: Improve the watch panel to show values for local variables in the current stack frame.
 
+### 4. Refine Functions and Macros
+**Purpose**: Align implementation with Unreal Engine documentation.
+**Resources**:
+*   [Functions in Unreal Engine](https://dev.epicgames.com/documentation/en-us/unreal-engine/functions-in-unreal-engine)
+*   [Macros in Unreal Engine](https://dev.epicgames.com/documentation/en-us/unreal-engine/macros-in-unreal-engine)
+### 4. Refine Functions and Macros
+**Purpose**: Align implementation with Unreal Engine documentation.
+**Plan**: See `FUNCTIONS_MACROS_PLAN.md` for detailed tasks.
+**Key Focus Areas**:
+*   Pure vs Impure Functions.
+*   Local Variables.
+*   Macro Flow Control (Multiple Execs).
+
 ## ⏱️ Estimated Time: 1.5 hours

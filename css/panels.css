@@ -1,0 +1,1222 @@
+/* --- MATH NODE STYLES --- */
+.node.math-node {
+    background: linear-gradient(to bottom, #3a3a3a, #1a1a1a);
+    border-radius: 12px;
+    border: 1px solid #000;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 10px rgba(0, 0, 0, 0.5);
+    min-width: 100px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.math-node-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.math-node-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 6px;
+    position: relative;
+}
+
+.math-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.math-outputs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.math-operator {
+    color: #ccc;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px black;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.math-node-bottom {
+    padding: 4px 8px 6px 8px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.math-add-pin-btn {
+    color: #ddd;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.math-add-pin-btn:hover {
+    opacity: 1;
+    color: white;
+}
+
+.math-add-pin-btn i {
+    font-size: 12px;
+}
+
+.math-node .pin-container {
+    padding: 0;
+}
+
+/* --- PARAMETER INPUT LIST --- */
+.param-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 5px;
+    align-items: center;
+    background-color: #222;
+    padding: 4px;
+    margin-bottom: 2px;
+    border-radius: 3px;
+    border: 1px solid #333;
+}
+
+.param-type-trigger {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #111;
+    border: 1px solid #444;
+    padding: 2px 6px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 10px;
+    color: #ccc;
+    min-width: 80px;
+    justify-content: space-between;
+}
+
+.param-type-trigger:hover {
+    background-color: #333;
+    border-color: #666;
+    color: white;
+}
+
+.param-color-dot {
+    width: 8px;
+    height: 4px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+.param-delete-btn {
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 12px;
+}
+
+.param-delete-btn:hover {
+    color: #ff4444;
+}
+
+/* --- TYPE SELECTOR DROPDOWN MENU --- */
+#type-selector-menu {
+    position: fixed;
+    background-color: #1a1a1a;
+    border: 1px solid #111;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    width: 220px;
+    z-index: 6000;
+    display: none;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    color: #ccc;
+}
+
+.type-selector-header {
+    display: flex;
+    align-items: center;
+    background-color: #111;
+    padding: 4px 8px;
+    border-bottom: 1px solid #333;
+}
+
+.type-selector-header i {
+    color: #aaa;
+    margin-right: 6px;
+    font-size: 10px;
+}
+
+.type-selector-search-input {
+    background: transparent;
+    border: none;
+    color: #eee;
+    width: 100%;
+    outline: none;
+    font-size: 11px;
+    padding: 2px 0;
+}
+
+.type-selector-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+    padding: 4px 0;
+}
+
+.tree-item {
+    padding: 4px 8px 4px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Changed from flex-start to space-between */
+    color: #ccc;
+    font-size: 11px;
+    user-select: none;
+}
+
+.tree-item:hover {
+    background-color: #2a2a2a;
+    color: white;
+}
+
+/* Selected State */
+.tree-item.selected {
+    background-color: #0070e0;
+    /* UE5 Blue Selection */
+    color: white;
+}
+
+.tree-item.selected .ue5-variable-name-text {
+    color: white;
+}
+
+/* Ensure icons inherit white color when selected, except for colored type indicators */
+.tree-item.selected .var-eye-icon {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tree-item.selected .var-eye-icon.active {
+    color: white !important;
+}
+
+.type-selector-section {
+    padding: 4px 8px;
+    color: #aaa;
+    font-weight: bold;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.type-selector-section:hover {
+    background-color: #2a2a2a;
+    color: #eee;
+}
+
+.type-selector-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #222;
+    border-top: 1px solid #111;
+    padding: 4px 8px;
+    font-size: 9px;
+    color: #888;
+}
+
+/* Custom Dropdown Pill (Variable Details) */
+.ue5-dropdown-pill {
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 2px 6px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    height: 22px;
+    box-sizing: border-box;
+}
+
+.ue5-dropdown-pill:hover {
+    background-color: #1a1a1a;
+    border-color: #555;
+}
+
+/* --- NEW: UE5 TOP BAR STYLES --- */
+
+/* Menubar */
+.menubar {
+    grid-area: menubar;
+    height: 32px;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 11px;
+    color: #ccc;
+    border-bottom: 1px solid #222;
+}
+
+.menubar .menu-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.ue-logo-icon {
+    height: 20px;
+    width: 20px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.menubar .menu-item {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 3px;
+}
+
+.menubar .menu-item:hover {
+    background-color: #333;
+    color: white;
+}
+
+.menubar .menu-right .window-controls {
+    display: flex;
+    gap: 15px;
+    color: #888;
+    font-size: 10px;
+}
+
+.menubar .menu-right .window-controls i:hover {
+    color: white;
+    cursor: pointer;
+}
+
+/* Tab Bar */
+.tabbar {
+    grid-area: tabbar;
+    background-color: #111;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    border-bottom: 1px solid #000;
+}
+
+.tab {
+    background-color: #222;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #eee;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    margin-right: 2px;
+    position: relative;
+    cursor: pointer;
+}
+
+.tab.active {
+    background-color: #333;
+    color: white;
+}
+
+.tab .tab-close {
+    margin-left: 8px;
+    font-size: 9px;
+    color: #666;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tab:hover .tab-close {
+    opacity: 1;
+}
+
+.tab-spacer {
+    flex-grow: 1;
+}
+
+.parent-class-label {
+    color: #666;
+    font-size: 10px;
+    margin-right: 15px;
+}
+
+.parent-class-label a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.parent-class-label a:hover {
+    text-decoration: underline;
+}
+
+/* Updated Toolbar Layout */
+.toolbar-ue5 {
+    grid-area: toolbar;
+    background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 4px;
+    border-bottom: 1px solid #000;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 6px;
+    border-right: 1px solid #333;
+    height: 80%;
+}
+
+.toolbar-group:last-child {
+    border-right: none;
+}
+
+.toolbar-btn {
+    background: transparent;
+    border: none;
+    color: #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    gap: 2px;
+    min-width: 40px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.toolbar-btn:hover {
+    background-color: #333;
+    color: white;
+}
+
+.toolbar-btn img,
+.toolbar-btn i {
+    height: 20px;
+    width: 20px;
+    font-size: 18px;
+    object-fit: contain;
+    margin-bottom: 2px;
+}
+
+/* Large Compile Button Special Styling */
+.toolbar-btn.large-btn {
+    min-width: 60px;
+    position: relative;
+}
+
+.icon-stack {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-stack i.fa-hammer {
+    font-size: 20px;
+    color: #ccc;
+}
+
+.status-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    font-size: 10px;
+    background-color: #1a1a1a;
+    border-radius: 50%;
+}
+
+.status-badge.success {
+    color: #4CAF50;
+}
+
+/* Play Controls Group */
+.play-group {
+    gap: 0;
+    background-color: #111;
+    border-radius: 4px;
+    padding: 2px;
+    border: 1px solid #333;
+    margin-left: 10px;
+}
+
+.play-main-btn {
+    flex-direction: row;
+    background-color: #222;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-right: 2px;
+    gap: 8px;
+}
+
+.play-main-btn:hover {
+    background-color: #333;
+}
+
+.play-main-btn img {
+    height: 18px;
+    width: 18px;
+    margin-bottom: 0;
+}
+
+.play-arrow-container {
+    font-size: 8px;
+    color: #888;
+}
+
+.play-sub-controls {
+    display: flex;
+    gap: 1px;
+}
+
+.toolbar-icon-only {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+
+.toolbar-icon-only:hover {
+    background-color: #333;
+    color: white;
+}
+
+.toolbar-icon-only img {
+    width: 14px;
+    height: 14px;
+}
+
+.toolbar-icon-only i {
+    font-size: 12px;
+}
+
+/* Right Aligned Debug Object */
+.toolbar-group.right-aligned {
+    margin-left: auto;
+    border-right: none;
+}
+
+.debug-object-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #111;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    color: #ddd;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.debug-object-selector:hover {
+    border-color: #555;
+}
+
+/* === UE5 VARIABLE LIST ITEMS === */
+.ue5-variable-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    color: #ccc;
+    font-size: 12px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.ue5-variable-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.ue5-variable-item.selected {
+    background: rgba(74, 144, 226, 0.3);
+    border-left-color: transparent;
+    color: #fff;
+}
+
+.ue5-variable-name-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 12px;
+}
+
+.ue5-variable-type-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.ue5-variable-type-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+}
+
+.ue5-variable-type-name {
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 60px;
+}
+
+.ue5-variable-menu-icon {
+    font-size: 10px;
+    color: #666;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    cursor: pointer;
+}
+
+.ue5-variable-item:hover .ue5-variable-menu-icon {
+    opacity: 1;
+}
+
+.ue5-variable-menu-icon:hover {
+    color: #aaa;
+}
+
+.ue5-variable-rename-input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #4a90e2;
+    border-radius: 3px;
+    color: #fff;
+    padding: 3px 6px;
+    font-size: 12px;
+    outline: none;
+}
+
+.ue5-variable-rename-input:focus {
+    border-color: #6db3ff;
+    background: #222;
+}
+
+/* UE5 Dropdown Pill Style for Details Panel */
+.ue5-dropdown-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.ue5-dropdown-pill:hover {
+    background-color: #252525;
+    border-color: #555;
+}
+
+/* Variable Eye Icon */
+.var-eye-icon {
+    font-size: 10px;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-left: 8px;
+}
+
+.var-eye-icon:hover {
+    color: #aaa;
+}
+
+/* Compile Button States */
+#compile-btn.dirty {
+    background-color: #5a4a00;
+    border-color: #ffaa00;
+    color: #ffaa00;
+}
+
+#compile-btn.dirty i {
+    color: #ffaa00;
+}
+
+#compile-btn.success {
+    background-color: #2e5a2e;
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+#compile-btn.success i {
+    color: #4CAF50;
+}
+
+#compile-btn.error {
+    background-color: #5a2e2e;
+    border-color: #ff5555;
+    color: #ff5555;
+}
+
+#compile-btn.error i {
+    color: #ff5555;
+}
+
+/* Component Selector Modal */
+.component-selector-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+}
+
+.component-selector-content {
+    background-color: #2a2a2a;
+    border: 1px solid #111;
+    border-radius: 4px;
+    width: 300px;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    color: #e0e0e0;
+}
+
+.component-selector-title-bar {
+    background: linear-gradient(to bottom, #333, #222);
+    padding: 4px 8px;
+    border-bottom: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.component-selector-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.component-selector-close:hover {
+    color: #fff;
+}
+
+.component-selector-toolbar {
+    padding: 4px;
+    background-color: #222;
+    border-bottom: 1px solid #000;
+    display: flex;
+    gap: 4px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 2px 6px;
+}
+
+.search-box i {
+    color: #666;
+    margin-right: 6px;
+}
+
+.component-search-input {
+    background: none;
+    border: none;
+    color: #fff;
+    width: 100%;
+    font-size: 11px;
+    outline: none;
+}
+
+.component-selector-settings {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.component-selector-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 4px 0;
+    max-height: 400px;
+}
+
+.component-category-header-collapsible {
+    padding: 4px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #ccc;
+    font-weight: bold;
+}
+
+.component-category-header-collapsible:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.component-selector-item {
+    padding: 4px 8px 4px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #ccc;
+}
+
+.ue5-variable-rename-input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #4a90e2;
+    border-radius: 3px;
+    color: #fff;
+    padding: 3px 6px;
+    font-size: 12px;
+    outline: none;
+}
+
+.ue5-variable-rename-input:focus {
+    border-color: #6db3ff;
+    background: #222;
+}
+
+/* UE5 Dropdown Pill Style for Details Panel */
+.ue5-dropdown-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.ue5-dropdown-pill:hover {
+    background-color: #252525;
+    border-color: #555;
+}
+
+/* Variable Eye Icon */
+.var-eye-icon {
+    font-size: 10px;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-left: 8px;
+}
+
+.var-eye-icon:hover {
+    color: #aaa;
+}
+
+/* Compile Button States */
+#compile-btn.dirty {
+    background-color: #5a4a00;
+    border-color: #ffaa00;
+    color: #ffaa00;
+}
+
+#compile-btn.dirty i {
+    color: #ffaa00;
+}
+
+#compile-btn.success {
+    background-color: #2e5a2e;
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+#compile-btn.success i {
+    color: #4CAF50;
+}
+
+#compile-btn.error {
+    background-color: #5a2e2e;
+    border-color: #ff5555;
+    color: #ff5555;
+}
+
+#compile-btn.error i {
+    color: #ff5555;
+}
+
+/* Component Selector Modal */
+.component-selector-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+}
+
+.component-selector-content {
+    background-color: #2a2a2a;
+    border: 1px solid #111;
+    border-radius: 4px;
+    width: 300px;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    color: #e0e0e0;
+}
+
+.component-selector-title-bar {
+    background: linear-gradient(to bottom, #333, #222);
+    padding: 4px 8px;
+    border-bottom: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.component-selector-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.component-selector-close:hover {
+    color: #fff;
+}
+
+.component-selector-toolbar {
+    padding: 4px;
+    background-color: #222;
+    border-bottom: 1px solid #000;
+    display: flex;
+    gap: 4px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 2px 6px;
+}
+
+.search-box i {
+    color: #666;
+    margin-right: 6px;
+}
+
+.component-search-input {
+    background: none;
+    border: none;
+    color: #fff;
+    width: 100%;
+    font-size: 11px;
+    outline: none;
+}
+
+.component-selector-settings {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.component-selector-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 4px 0;
+    max-height: 400px;
+}
+
+.component-category-header-collapsible {
+    padding: 4px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #ccc;
+    font-weight: bold;
+}
+
+.component-category-header-collapsible:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.component-selector-item {
+    padding: 4px 8px 4px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #ccc;
+}
+
+.component-selector-item:hover {
+    background-color: #0070e0;
+    color: #fff;
+}
+
+.component-selector-item i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Assessment Node Styling */
+.node.assessment-node .node-title {
+    background: linear-gradient(to bottom, #6030a0, #301560);
+    border-color: #6db3ff;
+    background: #222;
+}
+
+/* UE5 Dropdown Pill Style for Details Panel */
+.ue5-dropdown-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.ue5-dropdown-pill:hover {
+    background-color: #252525;
+    border-color: #555;
+}
+
+/* Variable Eye Icon */
+.var-eye-icon {
+    font-size: 10px;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-left: 8px;
+}
+
+.var-eye-icon:hover {
+    color: #aaa;
+}
+
+/* Compile Button States */
+#compile-btn.dirty {
+    background-color: #5a4a00;
+    border-color: #ffaa00;
+    color: #ffaa00;
+}
+
+#compile-btn.dirty i {
+    color: #ffaa00;
+}
+
+#compile-btn.success {
+    background-color: #2e5a2e;
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+#compile-btn.success i {
+    color: #4CAF50;
+}
+
+#compile-btn.error {
+    background-color: #5a2e2e;
+    border-color: #ff5555;
+    color: #ff5555;
+}
+
+#compile-btn.error i {
+    color: #ff5555;
+}
+
+/* Component Selector Modal */
+.component-selector-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+}
+
+.component-selector-content {
+    background-color: #2a2a2a;
+    border: 1px solid #111;
+    border-radius: 4px;
+    width: 300px;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    color: #e0e0e0;
+}
+
+.component-selector-title-bar {
+    background: linear-gradient(to bottom, #333, #222);
+    padding: 4px 8px;
+    border-bottom: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.component-selector-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.component-selector-close:hover {
+    color: #fff;
+}
+
+.component-selector-toolbar {
+    padding: 4px;
+    background-color: #222;
+    border-bottom: 1px solid #000;
+    display: flex;
+    gap: 4px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 2px 6px;
+}
+
+.search-box i {
+    color: #666;
+    margin-right: 6px;
+}
+
+.component-search-input {
+    background: none;
+    border: none;
+    color: #fff;
+    width: 100%;
+    font-size: 11px;
+    outline: none;
+}
+
+.component-selector-settings {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.component-selector-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 4px 0;
+    max-height: 400px;
+}
+
+.component-category-header-collapsible {
+    padding: 4px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #ccc;
+    font-weight: bold;
+}
+
+.component-category-header-collapsible:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.component-selector-item {
+    padding: 4px 8px 4px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #ccc;
+}
+
+.component-selector-item:hover {
+    background-color: #0070e0;
+    color: #fff;
+}
+
+.component-selector-item i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Assessment Node Styling */
+.node.assessment-node .node-title {
+    background: linear-gradient(to bottom, #6030a0, #301560);
+}
+
+.node.assessment-node {
+    border: 1px solid #8e44ad;
+    box-shadow: 0 0 10px rgba(142, 68, 173, 0.5);
+    min-width: 220px;
+}
+

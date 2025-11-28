@@ -1,0 +1,44 @@
+/* --- GLOBAL STYLES & LAYOUT --- */
+:root {
+    /* General Theme */
+    --color-bg-dark: #151515;
+    --color-bg-medium: #262626;
+    --color-bg-light: #333333;
+    --color-text-main: #e0e0e0;
+    --color-accent-blue: #0077D8;
+    --color-border: #111;
+    --color-selection: rgba(255, 165, 0, 0.5);
+    --color-comment: rgba(255, 255, 255, 0.05);
+    --color-reroute: #FFFFFF;
+    --color-breakpoint: #FF4444;
+
+    /* Node Header Gradients */
+    --header-event-start: #8B0000;
+    --header-event-end: #400000;
+    --header-flow-start: #666666;
+    --header-flow-end: #333333;
+    --header-function-start: #005580;
+    --header-function-end: #002a40;
+
+    /* Pin Colors (Full Palette) */
+    --color-exec: #FFFFFF;
+    --color-bool: #8C0202;
+    --color-byte: #00665E;
+    --color-int: #28E897;
+    --color-int64: #76D37E;
+    --color-float: #96EE35;
+    --color-double: #85DD24;
+    /* Slightly darker green than float */
+    --color-name: #CC99FF;
+    --color-string: #FF00FF;
+    --color-text: #E27696;
+    --color-vector: #FFC700;
+    --color-rotator: #99CCFF;
+    --color-transform: #FF7300;
+    --color-object: #00A2E8;
+    --color-enum: #00BB55;
+    /* Forest green for enumerators */
+    --color-dev-yellow: #FFC72C;
+    --color-dev-black: #202020;
+    --color-array-dim: 2px;
+}
