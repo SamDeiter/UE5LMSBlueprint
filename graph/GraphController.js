@@ -29,7 +29,92 @@ class GraphController {
     }
 
     addNode(nodeKey, x, y) {
-        const nodeData = nodeRegistry.get(nodeKey);
+        let nodeData = nodeRegistry.get(nodeKey);
+
+        // Dynamic Function Call Node Generation
+        if (!nodeData && nodeKey.startsWith('Func_')) {
+            const funcName = nodeKey.replace('Func_', '');
+            const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
+
+            if (funcDef) {
+                // Generate a temporary node definition for this function call
+                nodeData = {
+                    title: `Call ${funcName}`,
+                    type: funcDef.isPure ? 'pure-node' : 'function-node',
+                    category: 'Function',
+                    icon: 'f',
+                    pins: []
+                };
+
+                // Add Exec In/Out if not pure
+                if (!funcDef.isPure) {
+                    nodeData.pins.push({ id: 'exec_in', name: 'Exec', type: 'exec', dir: 'in' });
+                }
+
+                // Add Inputs
+                funcDef.inputs.forEach(input => {
+                    nodeData.pins.push({
+                        id: `in_${input.name}`,
+                        name: input.name,
+                        type: input.type,
+                        dir: 'in',
+                        defaultValue: input.defaultValue
+                    });
+                });
+
+                // Add Outputs (Exec Out first if not pure)
+                if (!funcDef.isPure) {
+                    nodeData.pins.push({ id: 'exec_out', name: 'Exec', type: 'exec', dir: 'out' });
+                }
+
+                funcDef.outputs.forEach(output => {
+                    nodeData.pins.push({
+                        id: `out_${output.name}`,
+                        name: output.name,
+                        type: output.type,
+                        dir: 'out'
+                    });
+                });
+            }
+        }
+
+        // Dynamic Macro Node Generation
+        if (!nodeData && nodeKey.startsWith('Macro_')) {
+            const macroName = nodeKey.replace('Macro_', '');
+            const macroDef = this.app.macroRegistry.getAll().find(m => m.name === macroName);
+
+            if (macroDef) {
+                nodeData = {
+                    title: macroName,
+                    type: 'macro-node',
+                    category: 'Macro',
+                    icon: 'm',
+                    pins: []
+                };
+
+                // Add Inputs (Execs and Data)
+                macroDef.inputs.forEach(input => {
+                    nodeData.pins.push({
+                        id: `in_${input.name}`,
+                        name: input.name,
+                        type: input.type,
+                        dir: 'in',
+                        defaultValue: input.defaultValue
+                    });
+                });
+
+                // Add Outputs (Execs and Data)
+                macroDef.outputs.forEach(output => {
+                    nodeData.pins.push({
+                        id: `out_${output.name}`,
+                        name: output.name,
+                        type: output.type,
+                        dir: 'out'
+                    });
+                });
+            }
+        }
+
         if (!nodeData) {
             console.error(`NodeRegistry missing definition for ${nodeKey}`);
             return null;
@@ -41,6 +126,17 @@ class GraphController {
             if (existingNode) {
                 this.selectNode(existingNode.id, false, 'new');
                 console.warn(`Cannot add ${nodeData.title}: Only one instance allowed.`);
+                return null;
+            }
+        }
+
+        // Check for Latent Nodes in Functions
+        if (this.app.activeGraph.startsWith('Func_') || this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph)) {
+            // Latent nodes typically have a 'Latent' category or specific flag.
+            // For now, we'll check for specific types like Timeline or Delay (if added later)
+            if (nodeKey === 'Timeline' || nodeKey === 'Delay') {
+                console.warn(`Cannot add ${nodeData.title}: Latent nodes are not allowed in Functions.`);
+                // Ideally show a UI toast/alert here
                 return null;
             }
         }

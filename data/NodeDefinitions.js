@@ -84,6 +84,36 @@ export const NodeDefinitions = {
             { id: "val_out", name: "", type: "int", dir: "out" }
         ]
     },
+    "Conv_VectorToString": {
+        title: "To String (Vector)",
+        type: "pure-node",
+        category: "String",
+        icon: "●",
+        pins: [
+            { id: "val_in", name: "", type: "vector", dir: "in" },
+            { id: "val_out", name: "", type: "string", dir: "out" }
+        ]
+    },
+    "Conv_RotatorToString": {
+        title: "To String (Rotator)",
+        type: "pure-node",
+        category: "String",
+        icon: "●",
+        pins: [
+            { id: "val_in", name: "", type: "rotator", dir: "in" },
+            { id: "val_out", name: "", type: "string", dir: "out" }
+        ]
+    },
+    "Conv_TransformToString": {
+        title: "To String (Transform)",
+        type: "pure-node",
+        category: "String",
+        icon: "●",
+        pins: [
+            { id: "val_in", name: "", type: "transform", dir: "in" },
+            { id: "val_out", name: "", type: "string", dir: "out" }
+        ]
+    },
 
     // --- EVENTS ---
     "ConstructionScript": {
@@ -213,6 +243,17 @@ export const NodeDefinitions = {
             { id: "n_in", name: "N", type: "int", dir: "in" },
             { id: "exec_counter", name: "Counter", type: "exec", dir: "out" },
             { id: "exit_int", name: "Count", type: "int", dir: "out" }
+        ]
+    },
+    "Delay": {
+        title: "Delay",
+        type: "flow-node",
+        category: "Utilities|Time",
+        icon: "fa-hourglass-half",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "duration_in", name: "Duration", type: "float", dir: "in", defaultValue: 1.0 },
+            { id: "exec_out", name: "Completed", type: "exec", dir: "out" }
         ]
     },
     "FlipFlop": {

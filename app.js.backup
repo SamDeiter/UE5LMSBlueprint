@@ -7,17 +7,19 @@
 // Import all controllers
 import { WiringController, GraphController } from './graph/index.js';
 import { GraphSwitcher } from './graph/GraphSwitcher.js';
-import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal, FunctionsController, MacrosController, LocalVariablesController, DebuggerController } from './ui.js';
+import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
 import { TestRunner, registerTests } from './tests.js?v=4';
 import { BlueprintValidator, SAMPLE_TASK } from './utils/validator.js';
 import { TaskManager } from './services/TaskManager.js';
 import { nodeRegistry } from './registries/NodeRegistry.js';
-import { functionRegistry } from './functions/FunctionRegistry.js';
-import { MacroRegistry } from './macros/MacroRegistry.js';
 import { NodeDefinitions } from './data/NodeDefinitions.js';
-import { DOMElements } from './config/DOMElements.js';
+
+
+/**
+ * Main static application class to initialize and namespace all controllers.
+ */
 class BlueprintApp {
     /**
      * Initializes all controllers and loads the graph.
@@ -26,8 +28,6 @@ class BlueprintApp {
         // Expose for inline events (onclick)
         window.app = BlueprintApp;
         BlueprintApp.nodeRegistry = nodeRegistry;
-        BlueprintApp.functionRegistry = functionRegistry;
-        BlueprintApp.macroRegistry = new MacroRegistry();
 
         // Register static node definitions into the runtime registry
         try {
@@ -37,10 +37,10 @@ class BlueprintApp {
         }
 
         // DOM Elements - Fail early if missing
-        const graphEditorEl = document.getElementById(DOMElements.GRAPH_EDITOR);
-        const nodesContainerEl = document.getElementById(DOMElements.NODES_CONTAINER);
-        const graphSvgEl = document.getElementById(DOMElements.GRAPH_SVG);
-        const graphCanvasEl = document.getElementById(DOMElements.GRAPH_CANVAS);
+        const graphEditorEl = document.getElementById('graph-editor');
+        const nodesContainerEl = document.getElementById('nodes-container');
+        const graphSvgEl = document.getElementById('graph-svg');
+        const graphCanvasEl = document.getElementById('graph-canvas');
 
         if (!graphEditorEl || !nodesContainerEl || !graphSvgEl || !graphCanvasEl) {
             console.error("Critical DOM elements missing. Initialization aborted.");
@@ -76,15 +76,11 @@ class BlueprintApp {
 
         // 6. UI Controllers
         BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
-        BlueprintApp.functionsController = new FunctionsController(BlueprintApp);
-        BlueprintApp.macrosController = new MacrosController(BlueprintApp);
-        BlueprintApp.localVariablesController = new LocalVariablesController(BlueprintApp);
         BlueprintApp.palette = new PaletteController(BlueprintApp);
         BlueprintApp.details = new DetailsController(BlueprintApp);
         BlueprintApp.actionMenu = new ActionMenu(BlueprintApp);
         BlueprintApp.contextMenu = new ContextMenu(BlueprintApp);
         BlueprintApp.needNodeModal = new NeedNodeModal(BlueprintApp);
-        BlueprintApp.debugger = new DebuggerController(BlueprintApp);
 
         // 7. Task System
         BlueprintApp.taskManager = new TaskManager(BlueprintApp);
@@ -112,45 +108,39 @@ class BlueprintApp {
         }
 
         // Trigger full compilation logic instead of just validation
-        const compileBtn = document.getElementById(DOMElements.COMPILE_BTN);
+        const compileBtn = document.getElementById('compile-btn');
         if (compileBtn) compileBtn.addEventListener('click', () => BlueprintApp.compiler.compile());
 
-        const saveBtn = document.getElementById(DOMElements.SAVE_BTN);
+        const saveBtn = document.getElementById('save-btn');
         if (saveBtn) saveBtn.addEventListener('click', () => BlueprintApp.persistence.save(true));
 
         // Bind Undo/Redo Buttons
-        const undoBtn = document.getElementById(DOMElements.UNDO_BTN);
+        const undoBtn = document.getElementById('undo-btn');
         if (undoBtn) undoBtn.addEventListener('click', () => BlueprintApp.history.undo());
 
-        const redoBtn = document.getElementById(DOMElements.REDO_BTN);
+        const redoBtn = document.getElementById('redo-btn');
         if (redoBtn) redoBtn.addEventListener('click', () => BlueprintApp.history.redo());
 
         // Bind Play/Stop Buttons
-        const playBtn = document.getElementById(DOMElements.PLAY_BTN);
+        const playBtn = document.getElementById('play-btn');
         if (playBtn) playBtn.addEventListener('click', () => BlueprintApp.sim.run());
 
-        const stopBtn = document.getElementById(DOMElements.STOP_BTN);
+        const stopBtn = document.getElementById('stop-btn');
         if (stopBtn) stopBtn.addEventListener('click', () => BlueprintApp.sim.stop());
 
-        const stepBtn = document.getElementById(DOMElements.STEP_BTN);
-        if (stepBtn) stepBtn.addEventListener('click', () => BlueprintApp.sim.stepOver());
-
-        const stepIntoBtn = document.getElementById('step-into-btn');
-        if (stepIntoBtn) stepIntoBtn.addEventListener('click', () => BlueprintApp.sim.stepInto());
-
         // Help Modal Events
-        const helpBtn = document.getElementById(DOMElements.HELP_BTN);
+        const helpBtn = document.getElementById('help-btn');
         if (helpBtn) {
             helpBtn.addEventListener('click', () => {
-                const modal = document.getElementById(DOMElements.HELP_MODAL);
+                const modal = document.getElementById('help-modal');
                 if (modal) modal.style.display = 'flex';
             });
         }
 
-        const helpCloseBtn = document.getElementById(DOMElements.HELP_MODAL_CLOSE);
+        const helpCloseBtn = document.getElementById('help-modal-close');
         if (helpCloseBtn) {
             helpCloseBtn.addEventListener('click', () => {
-                const modal = document.getElementById(DOMElements.HELP_MODAL);
+                const modal = document.getElementById('help-modal');
                 if (modal) modal.style.display = 'none';
             });
         }
@@ -171,11 +161,6 @@ class BlueprintApp {
             }
 
             if (e.key === 'Delete' || e.key === 'Backspace') {
-                // If the graph has selected nodes or links, let GraphInteraction handle it.
-                // Do NOT trigger component/variable deletion here.
-                if (BlueprintApp.graph && BlueprintApp.graph.selectedNodes.size > 0) return;
-                if (BlueprintApp.wiring && BlueprintApp.wiring.selectedLinks.size > 0) return;
-
                 e.preventDefault();
                 let varToDelete = BlueprintApp.details.currentVariable;
 
@@ -208,8 +193,6 @@ class BlueprintApp {
                 if (varToDelete) {
                     BlueprintApp.variables.deleteVariable(varToDelete);
                 } else if (hasSelectedComponents) {
-                    // Only delete components if we are NOT interacting with the graph
-                    // (Double check to be safe, though the top check should catch it)
                     BlueprintApp.componentsController.deleteSelectedComponents();
                 } else if (componentToDelete) {
                     BlueprintApp.componentsController.deleteComponent(componentToDelete);
