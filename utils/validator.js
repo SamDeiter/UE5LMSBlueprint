@@ -1,3 +1,10 @@
+/**
+ * BlueprintValidator - Validates blueprint graphs against task requirements.
+ * Provides structural pattern matching to check if student blueprints meet assignment criteria
+ * without executing the code. Supports checking for variable existence, node presence,
+ * connections, and node properties.
+ */
+
 
 import { ASSESSMENT_TASKS } from '../data/AssessmentTasks.js';
 

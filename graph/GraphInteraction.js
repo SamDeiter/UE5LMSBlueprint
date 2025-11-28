@@ -33,7 +33,7 @@ export class GraphInteraction {
     initEvents() {
         this.editor.addEventListener('mousedown', this.handleEditorMouseDown.bind(this));
         this.editor.addEventListener('wheel', this.handleZoom.bind(this));
-        this.editor.addEventListener('contextmenu', this.handleContextMenu.bind(this));
+        this.editor.addEventListener('contextmenu', (e) => { e.preventDefault(); this.handleContextMenu(e); });
         this.nodesContainer.addEventListener('contextmenu', this.handlePinContextMenu.bind(this));
         this.editor.addEventListener('dragover', this.handleDragOver.bind(this));
         this.editor.addEventListener('drop', this.handleDrop.bind(this));
