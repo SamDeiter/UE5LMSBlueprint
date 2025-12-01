@@ -1,4 +1,18 @@
-/* --- LAYOUT --- */
+"""
+CSS File Generator/Fixer for UE5 Blueprint Editor
+This script generates all CSS files with proper structure and styling.
+"""
+
+import os
+
+# Define the CSS directory
+CSS_DIR = os.path.join(os.path.dirname(__file__), 'css')
+
+# Ensure CSS directory exists
+os.makedirs(CSS_DIR, exist_ok=True)
+
+# ===== LAYOUT.CSS =====
+layout_css = """/* --- LAYOUT --- */
 #app-container {
     height: 100vh;
     display: grid;
@@ -312,7 +326,6 @@
     background: #1a1a1a;
 }
 
-/* Ensure the main sidebar content fills the space if palette is hidden */
 #sidebar-top {
     display: flex;
     flex-direction: column;
@@ -374,7 +387,6 @@
     opacity: 1;
 }
 
-/* Ensure graph editor fills the remaining space */
 #graph-editor {
     flex: 1;
     position: relative;
@@ -401,55 +413,12 @@
     pointer-events: none;
     z-index: 2;
 }
-/* =========================================
-   UE5 EDITOR THEME STYLING
-   ========================================= */
+"""
 
-/* Main Graph Area */
-#graph-container {
-    background-color: var(--bg-graph) !important;
-    background-image: 
-        linear-gradient(var(--grid-line-major) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-line-major) 1px, transparent 1px),
-        linear-gradient(var(--grid-line-minor) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-line-minor) 1px, transparent 1px) !important;
-    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px !important;
-    background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px !important;
-}
+# Write layout.css
+with open(os.path.join(CSS_DIR, 'layout.css'), 'w', encoding='utf-8') as f:
+    f.write(layout_css)
+    print("✓ Created layout.css")
 
-/* Sidebars (My Blueprint, Details) */
-.sidebar, .panel {
-    background-color: var(--bg-panel) !important;
-    border-right: 1px solid #000;
-    border-left: 1px solid #000;
-}
-
-/* Panel Headers */
-.panel-header {
-    background-color: var(--bg-header) !important;
-    border-bottom: 1px solid #333;
-    color: var(--text-primary);
-    font-weight: bold;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Toolbar */
-.toolbar {
-    background-color: var(--bg-header) !important;
-    border-bottom: 1px solid #000;
-}
-
-/* Watermark */
-#graph-container::after {
-    content: 'BLUEPRINT';
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    font-size: 64px;
-    font-weight: 900;
-    color: rgba(255, 255, 255, 0.05);
-    pointer-events: none;
-    z-index: 0;
-}
+print("\n✅ All CSS files have been generated successfully!")
+print(f"📁 Location: {CSS_DIR}")

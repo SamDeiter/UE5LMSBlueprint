@@ -1,4 +1,20 @@
-/* --- GLOBAL STYLES & LAYOUT --- */
+"""
+Phase 1 & 2: Update CSS Variables and Node Styling for UE5 Blueprint Nodes
+This script updates both variables.css and nodes.css with the complete UE5 color palette and node styling
+"""
+
+import os
+
+# Get the project root directory
+PROJECT_ROOT = r"c:\Users\Sam Deiter\Desktop\UE5LMSBlueprint-main"
+VARIABLES_CSS = os.path.join(PROJECT_ROOT, "css", "variables.css")
+NODES_CSS = os.path.join(PROJECT_ROOT, "css", "nodes.css")
+
+def update_variables_css():
+    """Update css/variables.css with complete UE5 color palette"""
+    print("Updating variables.css...")
+    
+    content = """/* --- GLOBAL STYLES & LAYOUT --- */
 :root {
     /* General Theme */
     --color-bg-dark: #151515;
@@ -60,21 +76,44 @@
     --color-dev-black: #202020;
     --color-array-dim: 2px;
 }
+"""
+    
+    with open(VARIABLES_CSS, 'w', encoding='utf-8') as f:
+        f.write(content)
+    
+    print(f"✅ Updated {VARIABLES_CSS}")
+    print("   - Added selection outline color (#F0B000)")
+    print("   - Added all header gradients (function-blue, pure-green, flow-gray, SET variants)")
+    print("   - Updated pin colors (rotator, transform, object)")
 
-/* =========================================
-   UE5 EDITOR THEME OVERRIDES
-   ========================================= */
-:root {
-    /* Main Backgrounds */
-    --bg-graph: #262626;
-    --bg-panel: #151515;
-    --bg-header: #0f0f0f;
+def create_backup():
+    """Create backup of nodes.css before modifying"""
+    backup_path = NODES_CSS + ".backup"
+    print(f"\nCreating backup: {backup_path}")
     
-    /* Grid Lines */
-    --grid-line-major: #353535;
-    --grid-line-minor: #2e2e2e;
+    with open(NODES_CSS, 'r', encoding='utf-8') as f:
+        content = f.read()
     
-    /* Text */
-    --text-primary: #e0e0e0;
-    --text-secondary: #a0a0a0;
-}
+    with open(backup_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    
+    print(f"✅ Backup created")
+    return content
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("CSS Update Script - Phase 1 & 2")
+    print("=" * 60)
+    
+    # Phase 1: Update variables.css
+    update_variables_css()
+    
+    # Create backup of nodes.css
+    nodes_css_original = create_backup()
+    
+    print("\n" + "=" * 60)
+    print("✅ Phase 1 Complete: CSS Variables Updated")
+    print("=" * 60)
+    print("\n⚠️  Phase 2 (nodes.css modifications) will be done")
+    print("   in a separate pass to ensure accuracy.")
+    print("\n📝 Backup created at: css/nodes.css.backup")

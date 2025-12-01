@@ -7,7 +7,7 @@
 // Import all controllers
 import { WiringController, GraphController } from './graph/index.js';
 import { GraphSwitcher } from './graph/GraphSwitcher.js';
-import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal, FunctionsController, MacrosController, LocalVariablesController, DebuggerController } from './ui.js';
+import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal, FunctionsController, MacrosController, LocalVariablesController, DebuggerController, GraphsController } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
 import { TestRunner, registerTests } from './tests.js?v=4';
@@ -78,6 +78,7 @@ class BlueprintApp {
         BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
         BlueprintApp.functionsController = new FunctionsController(BlueprintApp);
         BlueprintApp.macrosController = new MacrosController(BlueprintApp);
+        BlueprintApp.graphsController = new GraphsController(BlueprintApp); // Initialize Graphs Controller
         BlueprintApp.localVariablesController = new LocalVariablesController(BlueprintApp);
         BlueprintApp.palette = new PaletteController(BlueprintApp);
         BlueprintApp.details = new DetailsController(BlueprintApp);
@@ -152,6 +153,17 @@ class BlueprintApp {
             helpCloseBtn.addEventListener('click', () => {
                 const modal = document.getElementById(DOMElements.HELP_MODAL);
                 if (modal) modal.style.display = 'none';
+            });
+        }
+
+        // Hard Reset Button
+        const hardResetBtn = document.getElementById('hard-reset-btn');
+        if (hardResetBtn) {
+            hardResetBtn.addEventListener('click', () => {
+                if (confirm("Are you sure? This will delete all your blueprints and reset the editor to default.")) {
+                    localStorage.clear();
+                    window.location.reload();
+                }
             });
         }
 

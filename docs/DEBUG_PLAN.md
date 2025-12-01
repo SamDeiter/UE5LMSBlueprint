@@ -6,69 +6,33 @@
 - Node tests loaded
 - No import path errors
 
-## Issues to Fix
+## Resolved Issues ✅
 
-### 1. **Execution Pins Not Visible** (PRIORITY 1)
-**Diagnosis**: CSS is correct, pins may not be getting the right classes
-**Action**: Check if pins are being created with `exec-pin` class
-**File**: `src/graph/Node.js` - `createPinDot()` method
+### 1. **Execution Pins Not Visible** (RESOLVED)
+**Fix**: 
+- Restored `createPinDot` function in `src/graph/Node.js` (fixed SyntaxError).
+- Added missing `.pin-dot.exec-pin` and `.pin-dot.exec-pin.hollow` styles in `css/nodes.css`.
+- Fixed CSS conflict causing distorted pins in Set nodes.
+- **Fixed Pin Colors**: Added `background-color` to all data pin types in `nodes.css` to ensure connected pins are filled with their respective colors.
 
-### 2. **Palette Not Scrollable** (PRIORITY 2)
-**Diagnosis**: `.panel-content` has `overflow-y: auto` but may need height constraint
-**Action**: Check if palette panel has defined height
-**File**: `css/panels.css` or `css/ui-elements.css`
+### 2. **Palette Not Scrollable** (RESOLVED)
+**Fix**: 
+- Added `display: flex`, `flex-direction: column`, `overflow-y: auto` to `#palette-panel .panel-content` in `css/panels.css`.
 
-### 3. **Cannot Change Graphs** (PRIORITY 3)
-**Diagnosis**: GraphSwitcher may have event binding issues
-**Action**: Check GraphSwitcher initialization and event handlers
-**File**: `src/graph/GraphSwitcher.js`
+### 3. **Cannot Change Graphs** (RESOLVED)
+**Fix**: 
+- Implemented `GraphsController.js` to handle graph list rendering and switching.
+- Integrated `GraphsController` into `app.js` and `ui.js`.
 
-### 4. **Construction Script Missing** (PRIORITY 4)
-**Diagnosis**: Related to graph switching issue
-**Action**: Verify graph list rendering
-**File**: `src/ui/VariableController.js` or graph initialization
-
-## Quick Fixes to Try
-
-### Fix 1: Ensure Palette Has Height
-Add to CSS:
-```css
-#palette-panel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-#palette-panel .panel-content {
-    flex: 1;
-    overflow-y: auto;
-}
-```
-
-### Fix 2: Check Pin Class Assignment
-Verify in browser console:
-```javascript
-// Check if exec pins have the right class
-document.querySelectorAll('.pin-dot').forEach(pin => {
-    console.log(pin.className);
-});
-```
-
-### Fix 3: Test Graph Switching
-In browser console:
-```javascript
-// Try switching graphs manually
-app.switchGraph('EventGraph');
-app.switchGraph('ConstructionScript');
-```
+### 4. **Construction Script Missing** (RESOLVED)
+**Fix**: 
+- `GraphsController` now correctly populates the "Graphs" list with "Event Graph" and "Construction Script".
 
 ## Next Steps
-1. Inspect element in browser to see actual pin HTML
-2. Check computed CSS for palette panel
-3. Test graph switching in console
-4. Fix issues one by one
-5. Commit fixes
+1.  **Verify Node Connections**: Ensure wires can be created between the newly visible pins.
+2.  **Test Graph Persistence**: Verify that changes in one graph are saved when switching to another.
+3.  **Refine UI**: Polish any remaining visual glitches (e.g., "NewVar" node alignment).
 
 ---
-**Time**: 9:35 AM  
-**Commit**: 7eb06ed (Reorganization complete)
+**Time**: 10:21 AM
+**Status**: All critical rendering and navigation bugs fixed. Pin colors restored.

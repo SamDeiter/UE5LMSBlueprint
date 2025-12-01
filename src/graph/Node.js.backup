@@ -605,45 +605,54 @@ class Node {
         return element;
     }
 
-        createPinDot(pin, forceHollow = false) {
+    createPinDot(pin, forceHollow = false) {
         const typeClass = Utils.getPinTypeClass(pin.type);
-        const pinColor = Utils.getPinColor(pin.type);
-        const isConnected = pin.links.length > 0 && !forceHollow;
 
-        // 1. EXECUTION PINS
+        // Special handling for execution pins - render as SVG triangle
         if (pin.type === 'exec') {
-            const wrapper = document.createElement('div');
-            wrapper.className = `pin-icon exec-pin ${typeClass} ${isConnected ? 'connected' : 'hollow'}`;
-            wrapper.style.color = 'white';
-            wrapper.title = `${pin.name} (${pin.type})`;
-            wrapper.style.cursor = 'pointer';
-
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '14');
+            svg.setAttribute('height', '14');
             svg.setAttribute('viewBox', '0 0 14 14');
-            
-            const wedge = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            wedge.setAttribute('d', 'M 1 1 L 10 1 L 13 7 L 10 13 L 1 13 Z');
-            wedge.setAttribute('stroke-linejoin', 'round');
-            
-            svg.appendChild(wedge);
-            wrapper.appendChild(svg);
-            return wrapper;
+            svg.classList.add('pin-dot', 'exec-pin', typeClass);
+            svg.style.cursor = 'pointer';
+            svg.title = `${pin.name} (${pin.type})`;
+
+            // Create hollow triangle pointing right
+            const triangle = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            triangle.setAttribute('points', '3,2 11,7 3,12');
+            triangle.setAttribute('fill', 'none');
+            triangle.setAttribute('stroke', 'white');
+            triangle.setAttribute('stroke-width', '1.5');
+
+            svg.appendChild(triangle);
+            return svg;
         }
 
-        // 2. CONTAINER PINS (Keep existing div-based icons)
+        const pinDot = document.createElement('div');
+        let dotClasses = `pin-dot ${typeClass}`;
+        const isConnected = pin.links.length > 0;
+
+        if (forceHollow || !isConnected) {
+            dotClasses += ' hollow';
+        } else {
+            dotClasses += ' connected';
+        }
+        pinDot.className = dotClasses;
+
+        pinDot.title = `${pin.name} (${pin.type})`;
+
+        // Handle container types with proper icons
+        // Only add container styling if it's not a single value
         if (pin.containerType && pin.containerType !== 'single') {
-            const pinDot = document.createElement('div');
-            let dotClasses = `pin-dot ${typeClass}`;
-            pinDot.className = dotClasses + (isConnected ? ' connected' : ' hollow');
-            pinDot.title = `${pin.name} (${pin.type})`;
-            pinDot.classList.add('container-pin');
+            pinDot.classList.add('container-pin'); // Remove default circle styling
 
             if (pin.containerType === 'array') {
                 pinDot.classList.add('array-pin');
                 const icon = document.createElement('i');
                 icon.className = 'fas fa-th';
                 icon.style.fontSize = '8px';
-                icon.style.color = pinColor;
+                icon.style.color = Utils.getPinColor(pin.type);
                 pinDot.appendChild(icon);
             } else if (pin.containerType === 'set') {
                 pinDot.classList.add('set-pin');
@@ -651,73 +660,19 @@ class Node {
                 icon.textContent = '{}';
                 icon.style.fontSize = '8px';
                 icon.style.fontWeight = 'bold';
-                icon.style.color = pinColor;
+                icon.style.color = Utils.getPinColor(pin.type);
                 pinDot.appendChild(icon);
             } else if (pin.containerType === 'map') {
                 pinDot.classList.add('map-pin');
                 const icon = document.createElement('i');
                 icon.className = 'fas fa-list-ul';
                 icon.style.fontSize = '8px';
-                icon.style.color = pinColor;
+                icon.style.color = Utils.getPinColor(pin.type);
                 pinDot.appendChild(icon);
             }
-            
-            return pinDot;
         }
 
-        // 3. DATA OUTPUT PINS (Circle + Arrow)
-        if (pin.dir === 'out') {
-            const wrapper = document.createElement('div');
-            wrapper.className = `pin-icon data-pin-compound ${typeClass} ${isConnected ? 'connected' : 'hollow'}`;
-            wrapper.style.color = pinColor;
-            wrapper.title = `${pin.name} (${pin.type})`;
-            wrapper.style.cursor = 'pointer';
-
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('viewBox', '0 0 18 12');
-
-            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('class', 'pin-circle');
-            circle.setAttribute('cx', '6');
-            circle.setAttribute('cy', '6');
-            circle.setAttribute('r', '4.5');
-            svg.appendChild(circle);
-
-            const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            arrow.setAttribute('class', 'pin-arrow');
-            arrow.setAttribute('d', 'M 11.5 3 L 17 6 L 11.5 9 Z');
-            svg.appendChild(arrow);
-
-            wrapper.appendChild(svg);
-            return wrapper;
-        }
-
-                        // 4. DATA INPUT PINS (Circle + Arrow)
-        const wrapper = document.createElement('div');
-        wrapper.className = `pin-icon data-pin-compound ${typeClass} ${isConnected ? 'connected' : 'hollow'}`;
-        wrapper.style.color = pinColor;
-        wrapper.title = `${pin.name} (${pin.type})`;
-        wrapper.style.cursor = 'pointer';
-
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('viewBox', '0 0 18 12');
-
-        // Circle (Left side)
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('class', 'pin-circle');
-        circle.setAttribute('cx', '6');
-        circle.setAttribute('cy', '6');
-        circle.setAttribute('r', '4.5');
-        svg.appendChild(circle);
-
-        // Arrow (Right side, pointing right)
-        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        arrow.setAttribute('class', 'pin-arrow');
-        arrow.setAttribute('d', 'M 11.5 3 L 17 6 L 11.5 9 Z');
-        svg.appendChild(arrow);
-
-        wrapper.appendChild(svg);
-        return wrapper;
+        return pinDot;
     }
 
     renderPin(pin, hideLabel = false) {
@@ -781,35 +736,15 @@ class Node {
 
         if (pin.dir === 'in') {
             pinContainer.appendChild(pinDot);
-            if (inputWidget && inputWidget.classList.contains('ue-vector-widget')) {
-                // Complex Layout: Label on top, Widget below
-                pinContainer.classList.add('has-widget');
-                
-                const contentCol = document.createElement('div');
-                contentCol.className = 'pin-content';
-                
-                if (!effectiveHideLabel) {
-                    pinLabel.style.marginBottom = '2px';
-                    contentCol.appendChild(pinLabel);
-                }
-                contentCol.appendChild(inputWidget);
-                
-                // Pin icon is already appended to pinContainer
-                // We append contentCol after it
-                pinContainer.appendChild(contentCol);
-                
-            } else {
-                // Standard Layout: Horizontal
-                const wrapper = document.createElement('div');
-                wrapper.className = 'pin-wrapper';
-                wrapper.style.display = 'flex';
-                wrapper.style.alignItems = 'center';
-                wrapper.style.gap = '5px';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'pin-wrapper';
+            wrapper.style.display = 'flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.gap = '5px';
 
-                if (!effectiveHideLabel) wrapper.appendChild(pinLabel);
-                if (inputWidget) wrapper.appendChild(inputWidget);
-                pinContainer.appendChild(wrapper);
-            }
+            if (!effectiveHideLabel) wrapper.appendChild(pinLabel);
+            if (inputWidget) wrapper.appendChild(inputWidget);
+            pinContainer.appendChild(wrapper);
         } else {
             if (!effectiveHideLabel) {
                 pinContainer.appendChild(pinLabel);
@@ -820,39 +755,6 @@ class Node {
     }
 
     createInputWidget(pin) {
-        // COMPLEX WIDGETS (Vector, Rotator, Transform)
-        if (['vector', 'rotator', 'transform'].includes(pin.type)) {
-            const container = document.createElement('div');
-            container.className = 'ue-vector-widget';
-            
-            const axes = ['X', 'Y', 'Z'];
-            
-            axes.forEach(axis => {
-                const group = document.createElement('div');
-                group.className = 'val-group';
-                
-                const label = document.createElement('span');
-                label.className = 'val-label';
-                label.textContent = axis;
-                
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'small-input';
-                input.value = '0.0'; // Default
-                
-                input.addEventListener('mousedown', (e) => e.stopPropagation());
-                input.addEventListener('focus', () => this.app.graph.isEditingLiteral = true);
-                input.addEventListener('blur', () => this.app.graph.isEditingLiteral = false);
-                
-                group.appendChild(label);
-                group.appendChild(input);
-                container.appendChild(group);
-            });
-            
-            return container;
-        }
-
-        // STANDARD WIDGETS
         let inputEl;
         const pinValue = this.pinLiterals.get(pin.id);
         const updateLiteral = (e) => {
@@ -882,6 +784,7 @@ class Node {
             inputEl.className = 'node-literal-input';
             const wideTypes = ['string', 'text', 'name'];
             inputEl.style.width = wideTypes.includes(pin.type) ? '80px' : '40px';
+            // UE5 Style: Subtle transparent input
             inputEl.style.backgroundColor = 'rgba(0,0,0,0.5)';
             inputEl.style.color = '#eee';
             inputEl.style.border = '1px solid transparent';

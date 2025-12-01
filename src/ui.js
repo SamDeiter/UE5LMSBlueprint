@@ -15,6 +15,7 @@ import { LocalVariablesController } from './ui/LocalVariablesController.js';
 import { MacrosController } from './ui/MacrosController.js';
 import { NeedNodeModal } from './ui/NeedNodeModal.js';
 import { DebuggerController } from './ui/DebuggerController.js';
+import { GraphsController } from './ui/GraphsController.js';
 
 export {
     ActionMenu,
@@ -23,6 +24,7 @@ export {
     DebuggerController,
     DetailsController,
     FunctionsController,
+    GraphsController,
     LayoutController,
     LocalVariablesController,
     MacrosController,

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Connection States Reference</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: #1a1a1a;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        h2 {
+            color: #F0B000;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .pin-examples {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .pin-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: transparent;
+            stroke-width: 2px;
+        }
+
+        .data-pin-output {
+            width: 26px;
+        }
+
+        .data-pin-output svg {
+            overflow: visible;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Pin Connection States - Complete Reference</h1>
+
+    <!-- EXEC PINS -->
+    <div class="demo-section">
+        <h2>1. Execution Pins (White)</h2>
+
+        <div class="pin-examples">
+            <div>
+                <h3>Unconnected (Hollow)</h3>
+                <div class="pin-icon">
+                    <svg viewBox="0 0 14 14">
+                        <path d="M 1 1 L 10 1 L 13 7 L 10 13 L 1 13 Z" fill="none" stroke="white" stroke-width="1.5"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div class="label">fill="none"</div>
+            </div>
+
+            <div style="font-size: 24px; color: #666;">→</div>
+
+            <div>
+                <h3>Connected (Filled)</h3>
+                <div class="pin-icon">
+                    <svg viewBox="0 0 14 14">
+                        <path d="M 1 1 L 10 1 L 13 7 L 10 13 L 1 13 Z" fill="white" stroke="white" stroke-width="1.5"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div class="label">fill="white"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATA INPUT PINS -->
+    <div class="demo-section">
+        <h2>2. Data Input Pins (Circle Only)</h2>
+        <p style="color: #888; font-size: 13px; margin-bottom: 20px;">Example: Boolean (Red #920101)</p>
+
+        <div class="pin-examples">
+            <div>
+                <h3>Unconnected (Hollow)</h3>
+                <div class="pin-icon">
+                    <svg viewBox="0 0 12 12">
+                        <circle cx="6" cy="6" r="4.5" fill="transparent" stroke="#920101" stroke-width="2" />
+                    </svg>
+                </div>
+                <div class="label">fill="transparent"</div>
+            </div>
+
+            <div style="font-size: 24px; color: #666;">→</div>
+
+            <div>
+                <h3>Connected (Filled)</h3>
+                <div class="pin-icon">
+                    <svg viewBox="0 0 12 12">
+                        <circle cx="6" cy="6" r="4.5" fill="#920101" stroke="#920101" stroke-width="2" />
+                    </svg>
+                </div>
+                <div class="label">fill="#920101"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATA OUTPUT PINS -->
+    <div class="demo-section">
+        <h2>3. Data Output Pins (Circle + Arrow)</h2>
+        <p style="color: #888; font-size: 13px; margin-bottom: 20px;">Example: Float (Green #00EA32)</p>
+
+        <div class="pin-examples">
+            <div>
+                <h3>Unconnected (Hollow)</h3>
+                <div class="pin-icon data-pin-output">
+                    <svg viewBox="0 0 18 12">
+                        <!-- Hollow Circle -->
+                        <circle cx="6" cy="6" r="4.5" fill="transparent" stroke="#00EA32" stroke-width="2" />
+                        <!-- Hollow Arrow -->
+                        <path d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="transparent" stroke="#00EA32" stroke-width="1" />
+                    </svg>
+                </div>
+                <div class="label">Circle & Arrow hollow</div>
+            </div>
+
+            <div style="font-size: 24px; color: #666;">→</div>
+
+            <div>
+                <h3>Connected (Filled)</h3>
+                <div class="pin-icon data-pin-output">
+                    <svg viewBox="0 0 18 12">
+                        <!-- Filled Circle -->
+                        <circle cx="6" cy="6" r="4.5" fill="#00EA32" stroke="#00EA32" stroke-width="2" />
+                        <!-- Filled Arrow -->
+                        <path d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="#00EA32" stroke="none" />
+                    </svg>
+                </div>
+                <div class="label">Circle & Arrow filled</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MORE COLORS -->
+    <div class="demo-section">
+        <h2>4. Other Pin Colors (Connected State)</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <!-- Object -->
+            <div>
+                <h3>Object</h3>
+                <div class="pin-icon data-pin-output">
+                    <svg viewBox="0 0 18 12">
+                        <circle cx="6" cy="6" r="4.5" fill="#00A8E8" stroke="#00A8E8" stroke-width="2" />
+                        <path d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="#00A8E8" stroke="none" />
+                    </svg>
+                </div>
+                <div class="label">#00A8E8</div>
+            </div>
+
+            <!-- String -->
+            <div>
+                <h3>String</h3>
+                <div class="pin-icon data-pin-output">
+                    <svg viewBox="0 0 18 12">
+                        <circle cx="6" cy="6" r="4.5" fill="#FF00FF" stroke="#FF00FF" stroke-width="2" />
+                        <path d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="#FF00FF" stroke="none" />
+                    </svg>
+                </div>
+                <div class="label">#FF00FF</div>
+            </div>
+
+            <!-- Vector -->
+            <div>
+                <h3>Vector</h3>
+                <div class="pin-icon data-pin-output">
+                    <svg viewBox="0 0 18 12">
+                        <circle cx="6" cy="6" r="4.5" fill="#FFC700" stroke="#FFC700" stroke-width="2" />
+                        <path d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="#FFC700" stroke="none" />
+                    </svg>
+                </div>
+                <div class="label">#FFC700</div>
+            </div>
+
+            <!-- Transform -->
+            <div>
+                <h3>Transform</h3>
+                <div class="pin-icon data-pin-output">
+                    <svg viewBox="0 0 18 12">
+                        <circle cx="6" cy="6" r="4.5" fill="#FF6600" stroke="#FF6600" stroke-width="2" />
+                        <path d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="#FF6600" stroke="none" />
+                    </svg>
+                </div>
+                <div class="label">#FF6600</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPLEMENTATION CODE -->
+    <div class="demo-section" style="background: rgba(0,0,0,0.3);">
+        <h2>Implementation Code</h2>
+        <pre style="color: #0f0; font-size: 11px; overflow-x: auto;"><code>// Determine if pin is connected
+const isConnected = pin.links && pin.links.length > 0;
+
+// EXEC PINS
+if (pin.type === 'exec') {
+    triangle.setAttribute('fill', isConnected ? 'white' : 'none');
+    triangle.setAttribute('stroke', 'white');
+}
+
+// DATA PINS
+const pinColor = Utils.getPinColor(pin.type);
+
+// Circle (input or output)
+circle.setAttribute('fill', isConnected ? pinColor : 'transparent');
+circle.setAttribute('stroke', pinColor);
+
+// Arrow (output only)
+if (pin.dir === 'out') {
+    arrow.setAttribute('fill', isConnected ? pinColor : 'transparent');
+    arrow.setAttribute('stroke', isConnected ? 'none' : pinColor);
+    arrow.setAttribute('stroke-width', isConnected ? '0' : '1');
+}</code></pre>
+    </div>
+
+    <div style="margin-top: 40px; padding: 20px; background: rgba(255,165,0,0.1); border-left: 4px solid #F0B000;">
+        <strong>Key Rule:</strong> ALL pins (exec and data) change from <strong>hollow → filled</strong> when connected!
+    </div>
+</body>
+
+</html>

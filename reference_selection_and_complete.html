@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE5 Complete Reference with Selection States</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: #1a1a1a;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* --- 1. KEY COLORS & GRADIENTS --- */
+        :root {
+            --node-body: rgba(20, 20, 20, 0.95);
+            --node-border: #000000;
+
+            /* NEW: Selection Color */
+            --node-selection-outline: #F0B000;
+            /* UE5 Orange Highlight */
+
+            /* HEADER GRADIENTS */
+            --header-event-red: linear-gradient(to bottom, #750000 0%, #300000 100%);
+            --header-function-blue: linear-gradient(to bottom, #005075 0%, #002535 100%);
+            /* Impure Functions */
+            --header-pure-green: linear-gradient(to bottom, #407500 0%, #152500 100%);
+            /* Pure Functions */
+            --header-flow-gray: linear-gradient(to bottom, #505050 0%, #1A1A1A 100%);
+            /* Flow Control */
+            --header-float-green: linear-gradient(to bottom, #38E056 0%, #155720 100%);
+            /* For SET Float */
+            --header-object-blue: linear-gradient(to bottom, #005A8E 0%, #00253E 100%);
+            /* For SET Object */
+
+            /* PIN COLORS */
+            --pin-exec: #FFFFFF;
+            --pin-bool: #920101;
+            /* Red */
+            --pin-float: #00EA32;
+            /* Neon Green */
+            --pin-object: #00A8E8;
+            /* Cyan Blue */
+            --pin-string: #FF00FF;
+            /* Magenta */
+            --pin-vector: #FFC700;
+            /* Gold */
+            --pin-rotator: #9999FF;
+            /* Purple */
+            --pin-transform: #FF6600;
+            /* Orange */
+        }
+
+        /* --- 2. NODE CONTAINER --- */
+        .ue-node {
+            position: relative;
+            min-width: 180px;
+            background: var(--node-body);
+            border-radius: 12px;
+            /* Default: 1px Black Border */
+            box-shadow: 0 0 0 1px var(--node-border),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 10px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            font-family: 'Roboto', sans-serif;
+            color: white;
+            overflow: hidden;
+            display: inline-flex;
+            flex-direction: column;
+            user-select: none;
+            margin-bottom: 20px;
+            /* Spacing between nodes */
+            transition: box-shadow 0.1s ease;
+            /* Smooth transition for selection */
+        }
+
+        /* --- NEW: SELECTED STATE --- */
+        .ue-node.selected {
+            /* UE5 uses a 2px Golden Orange outline for selection */
+            box-shadow: 0 0 0 2px var(--node-selection-outline),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 10px 20px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            /* Bring selected node to front */
+        }
+
+        /* --- 3. THE GLASSY HEADER --- */
+        .ue-header {
+            background: var(--header-event-red);
+            /* Default to Event Red */
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 24px;
+            border-bottom: 1px solid black;
+            position: relative;
+        }
+
+        /* The "Gloss" Overlay */
+        .ue-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .node-title {
+            font-weight: 700;
+            font-size: 13px;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        .node-title.italic {
+            font-style: italic;
+        }
+
+        /* Center the SET title */
+        .ue-header.centered {
+            justify-content: center;
+        }
+
+        /* --- 4. ICONS --- */
+        .delegate-icon {
+            width: 10px;
+            height: 10px;
+            background-color: transparent;
+            /* HOLLOW */
+            border: 2px solid #ff4444;
+            /* Red Border */
+            border-radius: 3px;
+            margin-left: auto;
+            /* Pushes to far right */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* --- 5. PIN LAYOUT --- */
+        .ue-body {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0 12px 0;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .column.inputs {
+            padding: 0 12px;
+        }
+
+        /* THE FIX: Adjusted padding to 8px to match the tighter spacing in the reference image */
+        .column.outputs {
+            padding: 0 8px 0 12px;
+            align-items: flex-end;
+        }
+
+        .pin-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 16px;
+        }
+
+        .pin-label {
+            font-size: 11px;
+            color: #eee;
+            font-weight: 500;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        /* --- 6. SVG PIN SHAPES --- */
+        .pin-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: transparent;
+            stroke-width: 2px;
+        }
+
+        /* Header Icon (Diamond Arrow) */
+        .header-icon-svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: white;
+            stroke-width: 1.5;
+        }
+
+        /* Exec Pin (Wedge) */
+        .exec-pin svg {
+            stroke: var(--pin-exec);
+        }
+
+        /* Float Output (Compound Shape) */
+        .data-pin-output {
+            width: 26px;
+        }
+
+        .data-pin-output svg {
+            overflow: visible;
+            stroke: var(--pin-float);
+        }
+
+        .data-pin-output .pin-arrow {
+            fill: var(--pin-float);
+            stroke: none;
+        }
+
+        /* --- 7. SPECIAL STYLES FOR GET NODE (CAPSULE) --- */
+        .ue-node-get {
+            background: linear-gradient(to bottom, #333 0%, #111 100%);
+            border-radius: 50px;
+            /* Capsule Shape */
+            padding: 4px 12px 4px 16px;
+            flex-direction: row;
+            /* Horizontal Layout */
+            align-items: center;
+            min-width: auto;
+            border: 1px solid #000;
+            gap: 8px;
+            box-shadow: 0 0 0 1px #000, 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Gloss for Capsule */
+        .ue-node-get::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
+            border-radius: 50px 50px 20px 20px;
+            pointer-events: none;
+        }
+
+        /* Selected state for Capsule (just outer glow/border color change) */
+        .ue-node-get.selected {
+            box-shadow: 0 0 0 2px var(--node-selection-outline), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            color: white;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .section-note {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="color: white;">UE5 Complete Node Reference</h1>
+    <p style="color: #aaa;">Selection color: <span style="color: #F0B000; font-weight: bold;">#F0B000</span> (Golden
+        Orange)</p>
+
+    <h2>Selected vs Unselected</h2>
+    <p class="section-note">First node shows SELECTED state with golden orange (2px) outline</p>
+
+    <!-- SELECTED Event Node -->
+    <div class="ue-node selected">
+        <div class="ue-header">
+            <svg class="header-icon-svg" viewBox="0 0 24 24">
+                <path d="M12 3 L 21 12 L 12 21 L 3 12 Z" fill="none" stroke="white" stroke-width="2.5"
+                    stroke-linejoin="round" />
+                <path d="M 7.5 10 L 11.5 10 L 11.5 7 L 16.5 12 L 11.5 17 L 11.5 14 L 7.5 14 Z" fill="white"
+                    stroke="none" />
+            </svg>
+            <span class="node-title">Event Tick (SELECTED)</span>
+            <div class="delegate-icon"></div>
+        </div>
+        <div class="ue-body">
+            <div class="column inputs"></div>
+            <div class="column outputs">
+                <div class="pin-row">
+                    <div class="pin-icon exec-pin">
+                        <svg viewBox="0 0 14 14">
+                            <path d="M 1 1 L 10 1 L 13 7 L 10 13 L 1 13 Z" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="pin-row">
+                    <span class="pin-label">Delta Seconds</span>
+                    <div class="pin-icon data-pin-output">
+                        <svg viewBox="0 0 18 12">
+                            <circle cx="6" cy="6" r="4.5" fill="transparent" stroke="#00EA32" stroke-width="2" />
+                            <path class="pin-arrow" d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="#00EA32" stroke="none" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="color: #666; margin: 10px 0;">↓ vs ↓</div>
+
+    <!-- UNSELECTED SET Node -->
+    <div class="ue-node" style="min-width: 150px;">
+        <div class="ue-header centered" style="background: var(--header-object-blue);">
+            <span class="node-title italic">SET (unselected)</span>
+        </div>
+        <div class="ue-body">
+            <div class="column inputs">
+                <div class="pin-row">
+                    <div class="pin-icon exec-pin"><svg viewBox="0 0 14 14">
+                            <path d="M 1 1 L 10 1 L 13 7 L 10 13 L 1 13 Z" stroke-linejoin="round" />
+                        </svg></div>
+                </div>
+                <div class="pin-row">
+                    <div class="pin-icon"><svg viewBox="0 0 12 12">
+                            <circle cx="6" cy="6" r="4.5" stroke="#00A8E8" />
+                        </svg></div>
+                    <span class="pin-label">Cube</span>
+                </div>
+            </div>
+            <div class="column outputs">
+                <div class="pin-row">
+                    <div class="pin-icon exec-pin"><svg viewBox="0 0 14 14">
+                            <path d="M 1 1 L 10 1 L 13 7 L 10 13 L 1 13 Z" stroke-linejoin="round" />
+                        </svg></div>
+                </div>
+                <div class="pin-row">
+                    <div class="pin-icon data-pin-output">
+                        <svg viewBox="0 0 18 12">
+                            <circle cx="6" cy="6" r="4.5" fill="transparent" stroke="#00A8E8" stroke-width="2" />
+                            <path class="pin-arrow" d="M 11.5 3 L 17 6 L 11.5 9 Z" fill="#00A8E8" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 60px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px; color: #ccc;">
+        <h3 style="color: white;">Selection Styling Details</h3>
+        <ul>
+            <li><strong>Color:</strong> #F0B000 (Golden Orange)</li>
+            <li><strong>Border:</strong> 2px solid (not 3px!)</li>
+            <li><strong>Transition:</strong> 0.1s ease on box-shadow</li>
+            <li><strong>Z-Index:</strong> Selected nodes get z-index: 10</li>
+            <li><strong>Capsule Variant:</strong> Separate box-shadow for .ue-node-get.selected</li>
+        </ul>
+    </div>
+</body>
+
+</html>
