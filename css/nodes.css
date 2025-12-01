@@ -1,0 +1,966 @@
+/* --- NODE STYLES --- */
+.node {
+    position: absolute;
+    background-color: rgba(20, 20, 20, 0.95);
+    border: 1px solid #000;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px #000000,
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 10px 20px rgba(0, 0, 0, 0.5);
+    min-width: 180px;
+    z-index: 10;
+    pointer-events: all;
+    backdrop-filter: blur(5px);
+    transition: box-shadow 0.1s ease;
+    /* Smooth selection animation */
+}
+
+/* Selected Node - Golden Orange Outline (UE5 Standard) */
+.node.selected {
+    box-shadow: 0 0 0 2px var(--node-selection-outline),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 10px 20px rgba(0, 0, 0, 0.5);
+    z-index: 100; /* Bring selected nodes to front */
+}
+
+/* --- NODE TITLE --- */
+.node-title {
+    padding: 6px 10px;
+    font-weight: 700;
+    font-size: 12px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0 1px 2px black;
+    position: relative;
+    overflow: hidden;
+    min-height: 22px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.node-title::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    pointer-events: none;
+}
+
+.node-title::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--node-accent-color, rgba(255, 255, 255, 0.2));
+    z-index: 2;
+}
+
+/* The "Gloss" Overlay */
+.node-title::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 20px;
+    padding: 2px 0;
+}
+
+.pin-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pin-column.in {
+    align-items: flex-start;
+}
+
+.pin-column.out {
+    align-items: flex-end;
+}
+
+/* --- PIN CONTAINER --- */
+.pin-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 6px;
+    min-height: 18px;
+}
+
+.pin-container.in {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+/* Output pins: label on LEFT, pin on RIGHT, pushed to right side */
+.pin-container.out {
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-left: auto;
+    padding-right: 10px;
+    /* Right padding for proper alignment */
+}
+
+/* --- PIN WRAPPER (for label + input) --- */
+.pin-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- PIN DOT --- */
+.pin-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    background-color: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    transition: transform 0.1s;
+    position: relative;
+}
+
+.pin-dot:hover {
+    transform: scale(1.2);
+}
+
+/* Connected pins are filled */
+.pin-dot.connected,
+.pin-dot.filled {
+    background-color: currentColor;
+}
+
+/* Arrow indicators for data pins */
+/* Input pins: arrow pointing INTO circle from left */
+
+/* Output pins: arrow pointing OUT from circle to right */
+
+/* Execution pins (SVG triangles) */
+.pin-dot.exec-pin {
+    width: 14px;
+    height: 14px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    flex-shrink: 0;
+}
+
+.pin-dot.exec-pin:hover {
+    transform: scale(1.1);
+}
+
+/* Pin type colors */
+.pin-dot.bool-pin {
+    color: var(--color-bool);
+}
+
+.pin-dot.byte-pin {
+    color: var(--color-byte);
+}
+
+.pin-dot.int-pin {
+    color: var(--color-int);
+}
+
+.pin-dot.int64-pin {
+    color: var(--color-int64);
+}
+
+.pin-dot.float-pin {
+    color: var(--color-float);
+}
+
+.pin-dot.name-pin {
+    color: var(--color-name);
+}
+
+.pin-dot.string-pin {
+    color: var(--color-string);
+}
+
+.pin-dot.text-pin {
+    color: var(--color-text);
+}
+
+.pin-dot.vector-pin {
+    color: var(--color-vector);
+}
+
+.pin-dot.rotator-pin {
+    color: var(--color-rotator);
+}
+
+.pin-dot.transform-pin {
+    color: var(--color-transform);
+}
+
+.pin-dot.object-pin {
+    color: var(--color-object);
+}
+
+.pin-dot.enum-pin {
+    color: var(--color-enum);
+}
+
+/* Container pins */
+.pin-dot.container-pin {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.pin-dot.container-pin i,
+.pin-dot.container-pin span {
+    font-size: 10px !important;
+}
+
+
+/* --- PIN ICON WRAPPER & SVG STATE MANAGEMENT --- */
+.pin-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white; /* Default, overridden by inline style */
+    cursor: pointer;
+}
+
+.pin-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: transparent; /* Default: hollow */
+    stroke-width: 2px;
+    stroke: currentColor; /* Inherits from .pin-icon color */
+}
+
+/* CONNECTED STATE: Fill shapes */
+.pin-icon.connected svg path,
+.pin-icon.connected svg circle {
+    fill: currentColor !important;
+}
+
+/* Exec pins: wedge sizing */
+.pin-icon.exec-pin {
+    width: 14px;
+    height: 14px;
+}
+
+/* Data input pins: circle only */
+.pin-icon:not(.data-pin-compound):not(.exec-pin):not(.container-pin) {
+    width: 12px;
+    height: 12px;
+}
+
+/* Data output pins: circle + arrow compound */
+.pin-icon.data-pin-compound {
+    width: 26px;
+    height: 12px;
+}
+
+.pin-icon.data-pin-compound svg {
+    overflow: visible;
+}
+
+/* Circle in compound shape */
+.pin-icon.data-pin-compound .pin-circle {
+    fill: transparent;
+    stroke: currentColor;
+    stroke-width: 2px;
+}
+
+/* Arrow in compound shape */
+.pin-icon.data-pin-compound .pin-arrow {
+    fill: currentColor;
+    stroke: none;
+}
+
+/* When compound is CONNECTED, fill the circle too */
+.pin-icon.connected .pin-circle {
+    fill: currentColor !important;
+}
+
+/* --- PIN LABELS --- */
+.pin-label-in,
+.pin-label-out {
+    font-size: 11px;
+    color: #ccc;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.pin-label-in {
+    margin-left: 4px;
+}
+
+.pin-label-out {
+    margin-right: 4px;
+}
+
+/* --- COMPACT NODES (Getters, Math) --- */
+.node.compact-node {
+    min-width: auto;
+    border-radius: 20px;
+    padding: 6px 12px;
+}
+
+.node.compact-node.selected {
+    box-shadow: 0 0 0 2px #FFA500;
+}
+
+.compact-node-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.compact-node-label {
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px black;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.compact-node .node-title {
+    display: none;
+}
+
+.compact-node .node-content {
+    padding: 0;
+}
+
+/* --- SET NODE STYLES --- */
+.node.set-node {
+    min-width: 160px;
+}
+
+.node.set-node .node-title {
+    justify-content: center;
+    font-style: italic;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.node.set-node .pin-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.2);
+    margin: 2px 4px;
+    border-radius: 3px;
+}
+
+/* --- EVENT DELEGATE ICON --- */
+
+/* Event Delegate Icon (Hollow Red Square) */
+.event-delegate-icon {
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+    /* HOLLOW */
+    border: 2px solid #ff4444;
+    border-radius: 3px;
+    margin-left: auto;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* --- INPUT WIDGETS --- */
+.ue5-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background-color: #1a1a1a;
+    border: 1px solid #555;
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.ue5-checkbox:checked {
+    background-color: #1a1a1a;
+    border-color: #888;
+}
+
+.ue5-checkbox:checked::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 9px;
+    color: #eee;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ue5-checkbox:hover {
+    border-color: #aaa;
+}
+
+.node-literal-input {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    color: #eee !important;
+    border: 1px solid transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 2px !important;
+    padding: 2px 4px;
+    font-family: inherit;
+    font-size: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+    height: 16px;
+    line-height: 14px;
+}
+
+.node-literal-input:focus {
+    border-bottom-color: #fca50f !important;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* --- SPLIT PINS --- */
+.pin-split-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pin-container.sub-pin {
+    padding-left: 12px;
+    font-size: 10px;
+}
+
+.pin-container.sub-pin .pin-dot {
+    width: 10px;
+    height: 10px;
+}
+
+/* Arrow indicators for data pins (FILLED) */
+
+/* Input pins: Arrow on left, pointing RIGHT (into circle) */
+
+/* Output pins: Arrow on right, pointing LEFT (into circle) */
+
+/* --- DYNAMIC ARROW INDICATORS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+
+/* Connected Input: Filled Triangle pointing Right */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* OUTPUT PINS (Right side) - Arrow points LEFT */
+
+/* Connected Output: Filled Triangle pointing Left */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* --- ROBUST ARROW INDICATORS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect) */
+
+/* Connected Input: Hide inner triangle to make it solid */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points LEFT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect) */
+
+/* Connected Output: Hide inner triangle to make it solid */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- DIRECTIONAL ARROW INDICATORS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT (> O) */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow chevron) */
+
+/* Connected Input: Hide inner triangle -> Solid Triangle */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points RIGHT (O >) */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow chevron) */
+
+/* Connected Output: Hide inner triangle -> Solid Triangle */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- CONSISTENT TRIANGLE ARROWS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect with CLOSED base) */
+
+/* Connected Input: Hide inner triangle -> Solid Triangle */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect with CLOSED base) */
+
+/* Connected Output: Hide inner triangle -> Solid Triangle */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- SUBTLE MERGED ARROWS (UE5 Style) --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - for hollow effect) */
+
+/* Connected Input: Hide inner triangle -> Solid Triangle */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - for hollow effect) */
+
+/* Connected Output: Hide inner triangle -> Solid Triangle */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- UNIFIED RIGHT-SIDE ARROWS --- */
+
+/* COMMON STYLES FOR BOTH INPUT AND OUTPUT */
+/* The arrow is ALWAYS attached to the RIGHT side of the pin dot */
+
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - for hollow effect) */
+
+/* Connected/Filled: Hide inner triangle -> Solid Triangle */
+.pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+
+/* --- DISTINCT RIGHT-SIDE ARROWS --- */
+
+/* COMMON STYLES FOR BOTH INPUT AND OUTPUT */
+/* The arrow is ALWAYS attached to the RIGHT side of the pin dot with a GAP */
+
+/* Outer Triangle (Color) */
+.pin-dot:not(.exec-pin):not(.container-pin)::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    /* Gap from circle (12px width + 2px gap) */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 5px solid currentColor;
+    /* Points RIGHT */
+    z-index: 1;
+}
+
+/* Inner Triangle (Black - for hollow effect) */
+.pin-dot:not(.exec-pin):not(.container-pin)::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    /* Shifted right to cut the base */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 2.5px solid transparent;
+    border-bottom: 2.5px solid transparent;
+    border-left: 3.5px solid #141414;
+    /* Match background */
+    z-index: 2;
+}
+
+/* Connected/Filled: Hide inner triangle -> Solid Triangle */
+.pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+.pin-dot.filled:not(.exec-pin):not(.container-pin)::before {
+    display: none;
+}
+/* --- COMPLEX INPUT WIDGETS (Vector, Rotator, Transform) --- */
+
+/* Container for Label + Widget (Vertical Layout) */
+.pin-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* The Widget Container (Horizontal X, Y, Z) */
+.ue-vector-widget {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+/* Individual Value Group (Label + Input) */
+.val-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Axis Label (X, Y, Z) */
+.val-label {
+    font-size: 10px;
+    color: #aaa;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Small Input Field */
+.small-input {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+    padding: 1px 4px;
+    color: #ddd;
+    font-size: 10px;
+    width: 28px; /* Slightly wider for usability */
+    text-align: right;
+    outline: none;
+}
+
+.small-input:focus {
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(0,0,0,0.8);
+}
+
+/* Adjust pin layout for complex widgets */
+.pin-row.has-widget {
+    height: auto;
+    align-items: flex-start;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.pin-row.has-widget .pin-icon {
+    margin-top: 2px; /* Align with label text */
+}
+
+/* Fix for GET/Compact Node Border */
+.node.compact-node,
+.node.getter-node {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important; /* Remove double border */
+    border: 1px solid #000 !important;
+}
+
+.node.compact-node.selected,
+.node.getter-node.selected {
+    box-shadow: 0 0 0 2px var(--node-selection-outline),
+                0 4px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* =========================================
+   FINAL GET NODE (CAPSULE) STYLING
+   Matches user reference exactly
+   ========================================= */
+.node.compact-node,
+.node.getter-node {
+    position: absolute; /* Kept from .node */
+    display: flex;      /* Changed from inline-flex to flex to work with absolute positioning */
+    align-items: center;
+    
+    /* The Dark Gradient Body */
+    background: linear-gradient(to bottom, #333 0%, #111 100%) !important;
+    
+    /* Capsule Shape */
+    border-radius: 50px !important; 
+    padding: 4px 12px 4px 16px !important;
+    border: 1px solid #000 !important;
+    gap: 8px;
+    
+    /* Drop Shadow */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+    
+    /* Text Styling */
+    font-size: 11px; 
+    font-weight: 500; 
+    color: white;
+    min-width: auto !important;
+}
+
+/* The "Gloss" Reflection (Top Half) */
+.node.compact-node::after,
+.node.getter-node::after {
+    content: ''; 
+    position: absolute; 
+    top: 2px; left: 2px; right: 2px; height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, transparent 100%);
+    border-radius: 50px 50px 20px 20px; 
+    pointer-events: none;
+    z-index: 1; /* Ensure it sits on top */
+}
+
+/* Selected State (Orange Outline) */
+.node.compact-node.selected,
+.node.getter-node.selected {
+     box-shadow: 0 0 0 2px var(--node-selection-outline), 0 4px 10px rgba(0,0,0,0.5) !important;
+}
+
+/* Hide the standard node title bar for these nodes if it exists */
+.node.compact-node .node-title,
+.node.getter-node .node-title {
+    display: none !important;
+}
+
+/* Ensure content flows horizontally */
+.node.compact-node .node-content,
+.node.getter-node .node-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 !important;
+    gap: 8px;
+}
+
+/* =========================================
+   FINAL SET NODE STYLING
+   Matches user reference
+   ========================================= */
+.node.set-node .node-title {
+    justify-content: center !important;
+    font-style: italic !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+    width: 100%;
+    display: flex;
+}
+
+/* Ensure the header itself allows centering */
+.node.set-node .node-header {
+    justify-content: center !important;
+}
+
+/* =========================================
+   NODE TRANSPARENCY
+   Allows wires to be seen behind nodes
+   ========================================= */
+
+/* Standard Nodes */
+.node {
+    /* Make background semi-transparent black */
+    background-color: rgba(10, 10, 10, 0.65) !important;
+    
+    /* Ensure blur is active */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* GET/Compact Nodes */
+.node.compact-node,
+.node.getter-node {
+    /* Slightly more opaque gradient for these, but still transparent */
+    background: linear-gradient(to bottom, rgba(51, 51, 51, 0.8) 0%, rgba(17, 17, 17, 0.8) 100%) !important;
+    backdrop-filter: blur(6px);
+}
+
+/* SET Nodes */
+.node.set-node {
+    background-color: rgba(10, 10, 10, 0.65) !important;
+}
+
+/* Ensure wires are behind nodes (usually canvas is z-index 0 or 1, nodes are higher) */
+/* This is handled by the DOM structure usually, but transparency makes it work visually */
+
+/* =========================================
+   NODE TRANSPARENCY V2 (More see-through)
+   ========================================= */
+
+/* Standard Nodes */
+.node {
+    /* Reduced opacity from 0.65 to 0.45 */
+    background-color: rgba(10, 10, 10, 0.45) !important;
+}
+
+/* GET/Compact Nodes */
+.node.compact-node,
+.node.getter-node {
+    /* Lighter gradient for more transparency */
+    background: linear-gradient(to bottom, rgba(51, 51, 51, 0.5) 0%, rgba(17, 17, 17, 0.5) 100%) !important;
+}
+
+/* SET Nodes */
+.node.set-node {
+    background-color: rgba(10, 10, 10, 0.45) !important;
+}
+
+/* =========================================
+   NODE SIZING UPDATE
+   ========================================= */
+
+/* Standard Nodes */
+.node {
+    min-width: 220px !important; /* Increased from 160px */
+}
+
+/* SET Nodes */
+.node.set-node {
+    min-width: 180px !important; /* Slightly smaller but still substantial */
+}
+
+/* Header Sizing */
+.node-header {
+    height: 32px !important; /* Increased from 24px */
+    padding: 0 12px !important;
+}
+
+.node-title {
+    font-size: 14px !important; /* Larger title text */
+}
+
+/* Body Padding */
+.node-content {
+    padding: 12px 0 14px 0 !important;
+}
+
+/* Pin Row Spacing */
+.pin-wrapper {
+    min-height: 24px !important; /* Taller rows */
+    gap: 10px !important;
+}
+
+.pin-label-in,
+.pin-label-out {
+    font-size: 12px !important; /* Larger labels */
+}
+
+/* GET Nodes - Keep compact but slightly larger */
+.node.compact-node,
+.node.getter-node {
+    padding: 6px 16px 6px 20px !important;
+    font-size: 12px !important;
+}
+
+/* =========================================
+   GET NODE ALIGNMENT FIX
+   ========================================= */
+
+/* Ensure the node content stretches to fill the capsule */
+.node.compact-node .node-content,
+.node.getter-node .node-content {
+    width: 100%;
+    justify-content: space-between !important; /* Push text left, pin right */
+}
+
+/* Target the pin wrapper inside compact nodes */
+.node.compact-node .pin-wrapper,
+.node.getter-node .pin-wrapper {
+    margin-left: auto !important; /* Push pin to the far right */
+    padding-left: 12px; /* Add spacing between text and pin */
+}
+
+/* Ensure the label stays on the left */
+.node.compact-node .compact-node-label,
+.node.getter-node .compact-node-label {
+    margin-right: auto;
+}
+
+/* =========================================
+   GET NODE GLOSS & GRADIENT POLISH
+   ========================================= */
+
+.node.compact-node,
+.node.getter-node {
+    /* Default background (will be overridden by JS for specific colors) */
+    background: linear-gradient(to bottom, #333 0%, #000 100%) !important;
+    position: relative;
+    overflow: hidden; /* Ensure gloss stays inside */
+    border: 1px solid rgba(0,0,0,0.8) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+}
+
+/* Sharper Gloss Overlay */
+.node.compact-node::after,
+.node.getter-node::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, 
+        rgba(255, 255, 255, 0.4) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0.0) 100%) !important;
+    border-radius: 50px 50px 20px 20px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Text Centering */
+.node.compact-node .node-content,
+.node.getter-node .node-content {
+    justify-content: center !important; /* Center content */
+    padding-right: 24px !important; /* Balance the pin width on the right */
+}
+
+/* Pin Positioning */
+.node.compact-node .pin-wrapper,
+.node.getter-node .pin-wrapper {
+    position: absolute;
+    right: 8px;
+}
+
+/* =========================================
+   GET NODE WIDTH FIX
+   ========================================= */
+
+.node.compact-node,
+.node.getter-node {
+    /* Prevent stretching */
+    width: max-content !important;
+    min-width: auto !important;
+    max-width: none !important;
+    
+    /* Ensure flex behavior wraps content tightly */
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+    
+    /* Reset padding to be compact but balanced */
+    padding: 6px 16px 6px 16px !important;
+}
+
+/* Ensure content inside doesn't force expansion */
+.node.compact-node .node-content,
+.node.getter-node .node-content {
+    width: auto !important;
+    min-width: auto !important;
+}

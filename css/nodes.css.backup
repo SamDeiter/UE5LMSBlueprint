@@ -1,0 +1,551 @@
+/* --- NODE STYLES --- */
+.node {
+    position: absolute;
+    background-color: rgba(20, 20, 20, 0.95);
+    border: 1px solid #000;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px #000000,
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 10px 20px rgba(0, 0, 0, 0.5);
+    min-width: 180px;
+    z-index: 10;
+    pointer-events: all;
+    backdrop-filter: blur(5px);
+    transition: box-shadow 0.1s ease;
+    /* Smooth selection animation */
+}
+
+/* Selected Node - Golden Orange Outline (UE5 Standard) */
+.node.selected {
+    box-shadow: 0 0 0 2px var(--node-selection-outline),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 10px 20px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    /* Bring selected nodes to front */
+}
+
+/* --- NODE TITLE --- */
+.node-title {
+    padding: 6px 10px;
+    font-weight: 700;
+    font-size: 12px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0 1px 2px black;
+    position: relative;
+    overflow: hidden;
+    min-height: 22px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.node-title::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    pointer-events: none;
+}
+
+.node-title::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--node-accent-color, rgba(255, 255, 255, 0.2));
+    z-index: 2;
+}
+
+/* The "Gloss" Overlay */
+.node-title::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 20px;
+    padding: 2px 0;
+}
+
+.pin-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pin-column.in {
+    align-items: flex-start;
+}
+
+.pin-column.out {
+    align-items: flex-end;
+}
+
+/* --- PIN CONTAINER --- */
+.pin-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 6px;
+    min-height: 18px;
+}
+
+.pin-container.in {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+/* Output pins: label on LEFT, pin on RIGHT, pushed to right side */
+.pin-container.out {
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-left: auto;
+    padding-right: 10px;
+    /* Right padding for proper alignment */
+}
+
+/* --- PIN WRAPPER (for label + input) --- */
+.pin-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- PIN DOT --- */
+.pin-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    background-color: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    transition: transform 0.1s;
+    position: relative;
+}
+
+.pin-dot:hover {
+    transform: scale(1.2);
+}
+
+/* Connected pins are filled */
+.pin-dot.connected,
+.pin-dot.filled {
+    background-color: currentColor;
+}
+
+/* Arrow indicators for data pins */
+/* Input pins: arrow pointing INTO circle from left */
+
+/* Output pins: arrow pointing OUT from circle to right */
+
+/* Execution pins (SVG triangles) */
+.pin-dot.exec-pin {
+    width: 14px;
+    height: 14px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    flex-shrink: 0;
+}
+
+.pin-dot.exec-pin:hover {
+    transform: scale(1.1);
+}
+
+/* Pin type colors */
+.pin-dot.bool-pin {
+    color: var(--color-bool);
+}
+
+.pin-dot.byte-pin {
+    color: var(--color-byte);
+}
+
+.pin-dot.int-pin {
+    color: var(--color-int);
+}
+
+.pin-dot.int64-pin {
+    color: var(--color-int64);
+}
+
+.pin-dot.float-pin {
+    color: var(--color-float);
+}
+
+.pin-dot.name-pin {
+    color: var(--color-name);
+}
+
+.pin-dot.string-pin {
+    color: var(--color-string);
+}
+
+.pin-dot.text-pin {
+    color: var(--color-text);
+}
+
+.pin-dot.vector-pin {
+    color: var(--color-vector);
+}
+
+.pin-dot.rotator-pin {
+    color: var(--color-rotator);
+}
+
+.pin-dot.transform-pin {
+    color: var(--color-transform);
+}
+
+.pin-dot.object-pin {
+    color: var(--color-object);
+}
+
+.pin-dot.enum-pin {
+    color: var(--color-enum);
+}
+
+/* Container pins */
+.pin-dot.container-pin {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.pin-dot.container-pin i,
+.pin-dot.container-pin span {
+    font-size: 10px !important;
+}
+
+/* --- PIN LABELS --- */
+.pin-label-in,
+.pin-label-out {
+    font-size: 11px;
+    color: #ccc;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.pin-label-in {
+    margin-left: 4px;
+}
+
+.pin-label-out {
+    margin-right: 4px;
+}
+
+/* --- COMPACT NODES (Getters, Math) --- */
+.node.compact-node {
+    min-width: auto;
+    border-radius: 20px;
+    padding: 6px 12px;
+}
+
+.node.compact-node.selected {
+    box-shadow: 0 0 0 2px #FFA500;
+}
+
+.compact-node-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.compact-node-label {
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px black;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.compact-node .node-title {
+    display: none;
+}
+
+.compact-node .node-content {
+    padding: 0;
+}
+
+/* --- SET NODE STYLES --- */
+.node.set-node {
+    min-width: 160px;
+}
+
+.node.set-node .node-title {
+    justify-content: center;
+    font-style: italic;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.node.set-node .pin-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.2);
+    margin: 2px 4px;
+    border-radius: 3px;
+}
+
+/* --- EVENT DELEGATE ICON --- */
+
+/* Event Delegate Icon (Hollow Red Square) */
+.event-delegate-icon {
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+    /* HOLLOW */
+    border: 2px solid #ff4444;
+    border-radius: 3px;
+    margin-left: auto;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* --- INPUT WIDGETS --- */
+.ue5-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background-color: #1a1a1a;
+    border: 1px solid #555;
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.ue5-checkbox:checked {
+    background-color: #1a1a1a;
+    border-color: #888;
+}
+
+.ue5-checkbox:checked::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 9px;
+    color: #eee;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ue5-checkbox:hover {
+    border-color: #aaa;
+}
+
+.node-literal-input {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    color: #eee !important;
+    border: 1px solid transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 2px !important;
+    padding: 2px 4px;
+    font-family: inherit;
+    font-size: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+    height: 16px;
+    line-height: 14px;
+}
+
+.node-literal-input:focus {
+    border-bottom-color: #fca50f !important;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* --- SPLIT PINS --- */
+.pin-split-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pin-container.sub-pin {
+    padding-left: 12px;
+    font-size: 10px;
+}
+
+.pin-container.sub-pin .pin-dot {
+    width: 10px;
+    height: 10px;
+}
+
+/* Arrow indicators for data pins (FILLED) */
+
+/* Input pins: Arrow on left, pointing RIGHT (into circle) */
+
+/* Output pins: Arrow on right, pointing LEFT (into circle) */
+
+/* --- DYNAMIC ARROW INDICATORS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+
+/* Connected Input: Filled Triangle pointing Right */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* OUTPUT PINS (Right side) - Arrow points LEFT */
+
+/* Connected Output: Filled Triangle pointing Left */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* --- ROBUST ARROW INDICATORS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect) */
+
+/* Connected Input: Hide inner triangle to make it solid */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points LEFT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect) */
+
+/* Connected Output: Hide inner triangle to make it solid */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- DIRECTIONAL ARROW INDICATORS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT (> O) */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow chevron) */
+
+/* Connected Input: Hide inner triangle -> Solid Triangle */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points RIGHT (O >) */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow chevron) */
+
+/* Connected Output: Hide inner triangle -> Solid Triangle */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- CONSISTENT TRIANGLE ARROWS --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect with CLOSED base) */
+
+/* Connected Input: Hide inner triangle -> Solid Triangle */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - creates hollow effect with CLOSED base) */
+
+/* Connected Output: Hide inner triangle -> Solid Triangle */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- SUBTLE MERGED ARROWS (UE5 Style) --- */
+
+/* INPUT PINS (Left side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - for hollow effect) */
+
+/* Connected Input: Hide inner triangle -> Solid Triangle */
+.pin-container.in .pin-dot.connected:not(.exec-pin):not(.container-pin)::after,
+
+/* OUTPUT PINS (Right side) - Arrow points RIGHT */
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - for hollow effect) */
+
+/* Connected Output: Hide inner triangle -> Solid Triangle */
+.pin-container.out .pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+/* --- UNIFIED RIGHT-SIDE ARROWS --- */
+
+/* COMMON STYLES FOR BOTH INPUT AND OUTPUT */
+/* The arrow is ALWAYS attached to the RIGHT side of the pin dot */
+
+/* Outer Triangle (Color) */
+
+/* Inner Triangle (Black - for hollow effect) */
+
+/* Connected/Filled: Hide inner triangle -> Solid Triangle */
+.pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+
+
+/* --- DISTINCT RIGHT-SIDE ARROWS --- */
+
+/* COMMON STYLES FOR BOTH INPUT AND OUTPUT */
+/* The arrow is ALWAYS attached to the RIGHT side of the pin dot with a GAP */
+
+/* Outer Triangle (Color) */
+.pin-dot:not(.exec-pin):not(.container-pin)::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    /* Gap from circle (12px width + 2px gap) */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 5px solid currentColor;
+    /* Points RIGHT */
+    z-index: 1;
+}
+
+/* Inner Triangle (Black - for hollow effect) */
+.pin-dot:not(.exec-pin):not(.container-pin)::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    /* Shifted right to cut the base */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 2.5px solid transparent;
+    border-bottom: 2.5px solid transparent;
+    border-left: 3.5px solid #141414;
+    /* Match background */
+    z-index: 2;
+}
+
+/* Connected/Filled: Hide inner triangle -> Solid Triangle */
+.pin-dot.connected:not(.exec-pin):not(.container-pin)::before,
+.pin-dot.filled:not(.exec-pin):not(.container-pin)::before {
+    display: none;
+}
