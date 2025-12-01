@@ -3,7 +3,8 @@
  * This file manages the data model, rendering, and all user interactions 
  * (pan, zoom, drag, selection, wiring).
  */
-import { Utils, NodeLibrary } from './utils.js';
+import { Utils } from './utils.js';
+import { nodeRegistry } from './registries/NodeRegistry.js';
 
 // --- CORE DATA MODEL CLASSES ---
 
@@ -71,7 +72,10 @@ class Node {
 
         this.pinLiterals = new Map();
         this.pins.forEach(p => {
-            this.pinLiterals.set(p.id, p.defaultValue);
+            // Use the pin's default value or the loaded default value if present.
+            // When loading, pinData.defaultValue holds the literal value saved.
+            const literalValue = pinDataArray.find(pd => pd.id === p.id.replace(`${this.id}-`, ''))?.literalValue;
+            this.pinLiterals.set(p.id, literalValue !== undefined ? literalValue : p.defaultValue);
         });
     }
 
@@ -320,6 +324,11 @@ class Node {
         const container = document.createElement('div');
         container.className = 'compact-node-container';
 
+        // Ensure pins are correctly cached before accessing
+        if (!this.pinsIn || !this.pinsOut) {
+            this.refreshPinCache();
+        }
+
         const pinIn = this.pinsIn[0];
         const pinOut = this.pinsOut[0];
 
@@ -344,11 +353,6 @@ class Node {
 
             container.appendChild(pinContainer);
         }
-
-        // 2. Separator Dot (The grey dot in the middle)
-        const sep = document.createElement('div');
-        sep.className = 'compact-node-separator';
-        container.appendChild(sep);
 
         // --- INSERT LABEL ---
         const labelSpan = document.createElement('span');
@@ -391,31 +395,33 @@ class Node {
         pinDot.title = `${pin.name} (${pin.type})`;
 
         // Handle container types with proper icons
-        if (pin.containerType === 'array') {
-            pinDot.classList.add('array-pin');
-            // Add array icon inside the pin dot
-            const icon = document.createElement('i');
-            icon.className = 'fas fa-th';
-            icon.style.fontSize = '8px';
-            icon.style.color = Utils.getPinColor(pin.type);
-            pinDot.appendChild(icon);
-        } else if (pin.containerType === 'set') {
-            pinDot.classList.add('set-pin');
-            // Add set icon (curly braces) inside the pin dot
-            const icon = document.createElement('span');
-            icon.textContent = '{}';
-            icon.style.fontSize = '8px';
-            icon.style.fontWeight = 'bold';
-            icon.style.color = Utils.getPinColor(pin.type);
-            pinDot.appendChild(icon);
-        } else if (pin.containerType === 'map') {
-            pinDot.classList.add('map-pin');
-            // Add map icon inside the pin dot
-            const icon = document.createElement('i');
-            icon.className = 'fas fa-list-ul';
-            icon.style.fontSize = '8px';
-            icon.style.color = Utils.getPinColor(pin.type);
-            pinDot.appendChild(icon);
+        // Only add container styling if it's not a single value
+        if (pin.containerType && pin.containerType !== 'single') {
+            pinDot.classList.add('container-pin'); // Remove default circle styling
+
+            if (pin.containerType === 'array') {
+                pinDot.classList.add('array-pin');
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-th';
+                icon.style.fontSize = '8px';
+                icon.style.color = Utils.getPinColor(pin.type);
+                pinDot.appendChild(icon);
+            } else if (pin.containerType === 'set') {
+                pinDot.classList.add('set-pin');
+                const icon = document.createElement('span');
+                icon.textContent = '{}';
+                icon.style.fontSize = '8px';
+                icon.style.fontWeight = 'bold';
+                icon.style.color = Utils.getPinColor(pin.type);
+                pinDot.appendChild(icon);
+            } else if (pin.containerType === 'map') {
+                pinDot.classList.add('map-pin');
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-list-ul';
+                icon.style.fontSize = '8px';
+                icon.style.color = Utils.getPinColor(pin.type);
+                pinDot.appendChild(icon);
+            }
         }
 
         return pinDot;
@@ -457,6 +463,7 @@ class Node {
             wrapper.className = 'pin-wrapper'; // Class added here
             wrapper.style.display = 'flex';
             wrapper.style.alignItems = 'center';
+            wrapper.style.gap = '5px'; // Added gap for spacing label and widget
 
             if (!effectiveHideLabel) wrapper.appendChild(pinLabel);
             if (inputWidget) wrapper.appendChild(inputWidget);
@@ -490,6 +497,7 @@ class Node {
             inputEl.className = 'ue5-checkbox';
             inputEl.checked = pinValue;
             inputEl.addEventListener('change', updateLiteral);
+            inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
         } else {
             inputEl = document.createElement('input');
             inputEl.type = 'text';
@@ -503,6 +511,11 @@ class Node {
             inputEl.style.borderRadius = '2px';
             inputEl.style.marginLeft = '5px';
             inputEl.addEventListener('change', updateLiteral);
+            inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
+
+            // Add focus/blur listeners to prevent graph interaction while editing
+            inputEl.addEventListener('focus', () => this.app.graph.isEditingLiteral = true);
+            inputEl.addEventListener('blur', () => this.app.graph.isEditingLiteral = false);
         }
         return inputEl;
     }
@@ -514,6 +527,7 @@ class Node {
             type: p.type,
             dir: p.dir,
             containerType: p.containerType,
+            // Only save literal value if it's the default or it's not connected
             literalValue: this.pinLiterals.get(p.id),
             isCustom: p.isCustom
         }));
@@ -554,6 +568,15 @@ class WiringController {
         if (!pinA || !pinB) return;
         const startPin = pinA.dir === 'out' ? pinA : pinB;
         const endPin = pinA.dir === 'in' ? pinA : pinB;
+
+        // Prevent connection if already exists
+        const linkExists = startPin.links.some(linkId => {
+            const link = this.links.get(linkId);
+            return link && link.endPin.id === endPin.id;
+        });
+        if (linkExists) return;
+
+        // Break existing connection if input pin is single-link
         if (endPin.getMaxLinks() === 1 && endPin.isConnected()) {
             this.breakPinLinks(endPin.id);
         }
@@ -568,6 +591,11 @@ class WiringController {
                 const midY = (startPos.y + endPos.y) / 2;
                 const convNode = this.app.graph.addNode(convKey, midX - 40, midY - 15);
                 if (convNode) {
+                    // Update node key to reflect variable name if applicable (e.g. for custom Get_Variable type conversion)
+                    if (startPin.node.variableId || endPin.node.variableId) {
+                        convNode.title = `Convert ${startPin.type.toUpperCase()} to ${endPin.type.toUpperCase()}`;
+                    }
+
                     const convIn = convNode.findPinById(`${convNode.id}-val_in`);
                     const convOut = convNode.findPinById(`${convNode.id}-val_out`);
                     if (convIn && convOut) {
@@ -582,6 +610,7 @@ class WiringController {
                             this.app.graph.redrawNodeWires(endPin.node.id);
                         });
                         this.app.persistence.autoSave();
+                        this.app.compiler.markDirty();
                         return;
                     } else {
                         convNode.element.remove();
@@ -598,6 +627,7 @@ class WiringController {
             this.app.graph.redrawNodeWires(startPin.node.id);
         });
         this.app.persistence.autoSave();
+        this.app.compiler.markDirty();
     }
     _addLink(startPin, endPin) {
         const link = {
@@ -613,6 +643,12 @@ class WiringController {
         if (!node || !node.element || !node.element.parentNode) return;
         const isSelected = node.element.classList.contains('selected');
         const oldEl = node.element;
+        // Check if the old element is attached to the DOM before rendering new
+        if (!oldEl.isConnected) {
+            console.warn(`Attempted to update visuals for detached node ${node.id}`);
+            return;
+        }
+
         const newEl = node.render();
         oldEl.replaceWith(newEl);
         if (isSelected) {
@@ -624,34 +660,49 @@ class WiringController {
         const link = this.links.get(linkId);
         if (!link) return;
         const { startPin, endPin } = link;
-        startPin.links = startPin.links.filter(id => id !== linkId);
-        endPin.links = endPin.links.filter(id => id !== linkId);
+
+        // Remove link ID from pins' link lists
+        if (startPin && startPin.links) {
+            startPin.links = startPin.links.filter(id => id !== linkId);
+        }
+        if (endPin && endPin.links) {
+            endPin.links = endPin.links.filter(id => id !== linkId);
+        }
+
         this.links.delete(linkId);
         this.selectedLinks.delete(linkId);
         const wireEl = document.getElementById(link.id);
         if (wireEl && wireEl.parentNode) {
             wireEl.remove();
         }
-        this.updateVisuals(endPin.node);
-        this.updateVisuals(startPin.node);
+
+        // Re-render nodes to update pin dot appearance (full vs. hollow)
+        if (endPin) this.updateVisuals(endPin.node);
+        if (startPin) this.updateVisuals(startPin.node);
+
         requestAnimationFrame(() => {
-            this.app.graph.redrawNodeWires(endPin.node.id);
-            this.app.graph.redrawNodeWires(startPin.node.id);
+            if (endPin) this.app.graph.redrawNodeWires(endPin.node.id);
+            if (startPin) this.app.graph.redrawNodeWires(startPin.node.id);
             this.app.persistence.autoSave();
+            this.app.compiler.markDirty();
         });
     }
     breakPinLinks(pinId) {
         const linksToBreak = this.findLinksByPinId(pinId);
-        linksToBreak.forEach(link => this.breakLinkById(link.id));
+        // Important: use link IDs to break, as breaking modifies the list
+        linksToBreak.map(l => l.id).forEach(linkId => this.breakLinkById(linkId));
     }
     drawWire(link) {
         const { startPin, endPin } = link;
+
+        // Guard against pins or nodes that might have been deleted but still linked
         if (!startPin.element || !endPin.element || !startPin.element.isConnected || !endPin.element.isConnected) {
             if (this.links.has(link.id)) {
                 this.breakLinkById(link.id);
             }
             return;
         }
+
         let wireEl = document.getElementById(link.id);
         if (!wireEl) {
             wireEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -661,11 +712,14 @@ class WiringController {
                 e.stopPropagation();
                 this.toggleLinkSelection(link.id);
             });
-            const pinColor = Utils.getPinColor(startPin.type);
-            wireEl.setAttribute('stroke', pinColor);
         } else {
             wireEl.style.display = '';
         }
+
+        // Always update wire color based on current pin type
+        const pinColor = Utils.getPinColor(startPin.type);
+        wireEl.setAttribute('stroke', pinColor);
+
         const typeClass = Utils.getPinTypeClass(startPin.type);
         wireEl.setAttribute('class', `wire ${typeClass} ${this.selectedLinks.has(link.id) ? 'link-selected' : ''}`);
         const p1 = Utils.getPinPosition(startPin.element, this.app);
@@ -695,6 +749,15 @@ class WiringController {
         const endY = startPin.dir === 'out' ? p2.y : p1.y;
         this.ghostWire.setAttribute('d', Utils.getWirePath(startX, startY, endX, endY));
     }
+    deleteSelectedLinks() {
+        if (this.selectedLinks.size === 0) return;
+        const linksToDelete = Array.from(this.selectedLinks);
+        linksToDelete.forEach(linkId => {
+            this.breakLinkById(linkId);
+        });
+        this.clearLinkSelection();
+        this.app.persistence.autoSave();
+    }
 }
 
 class GraphController {
@@ -712,6 +775,7 @@ class GraphController {
         this.isWiring = false;
         this.isRmbDown = false;
         this.isMarqueeing = false;
+        this.isEditingLiteral = false; // New flag to prevent graph interaction
         this.hasDragged = false;
         this.activePin = null;
         this.selectedNodes = new Set();
@@ -723,6 +787,7 @@ class GraphController {
         this.handleGlobalMouseUp = this.handleGlobalMouseUp.bind(this);
     }
 
+
     initEvents() {
         this.editor.addEventListener('mousedown', this.handleEditorMouseDown.bind(this));
         this.editor.addEventListener('wheel', this.handleZoom.bind(this));
@@ -730,6 +795,26 @@ class GraphController {
         this.nodesContainer.addEventListener('contextmenu', this.handlePinContextMenu.bind(this));
         this.editor.addEventListener('dragover', this.handleDragOver.bind(this));
         this.editor.addEventListener('drop', this.handleDrop.bind(this));
+        // Add delete listener
+        document.addEventListener('keydown', this.handleKeyDown.bind(this));
+    }
+
+    handleKeyDown(e) {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            if (this.selectedNodes.size > 0) {
+                e.preventDefault();
+                this.deleteSelectedNodes();
+            } else if (this.app.wiring.selectedLinks.size > 0) {
+                e.preventDefault();
+                this.app.wiring.deleteSelectedLinks();
+            }
+        }
+        if (e.key === 'd' && (e.ctrlKey || e.metaKey)) {
+            if (this.selectedNodes.size > 0) {
+                e.preventDefault();
+                this.duplicateSelectedNodes();
+            }
+        }
     }
 
     handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
@@ -756,40 +841,61 @@ class GraphController {
         }
     }
     handleEditorMouseDown(e) {
+        // If user is editing a text input, ignore mousedown on the graph background
+        if (this.isEditingLiteral) {
+            return;
+        }
+
         this.hasDragged = false;
         this.app.wiring.clearLinkSelection();
         if (this.isMarqueeing) {
             this.isMarqueeing = false;
             this.marqueeEl.style.display = 'none';
         }
+
         const pinElement = e.target.closest('.pin-container');
         const nodeElement = e.target.closest('.node');
-        if (e.target.classList.contains('wire')) { return; }
+
+        // 1. Wiring Start
         if (pinElement && e.button === 0) {
             e.stopPropagation();
             e.preventDefault();
             this.isWiring = true;
             const pinId = pinElement.dataset.pinId;
             this.activePin = this.findPinById(pinId);
+
             if (e.altKey && this.activePin && this.activePin.isConnected()) {
                 this.app.wiring.breakPinLinks(this.activePin.id);
             }
+
+            // If the pin is connected and we are starting to drag *from* it, break the link automatically if it's an input pin (to avoid creating a loop/invalid state)
+            if (this.activePin && this.activePin.dir === 'in' && this.activePin.isConnected()) {
+                this.app.wiring.breakPinLinks(this.activePin.id);
+                // After breaking, the activePin is now free to start a new connection, but we flip it to act as an output for the drag.
+                // This is a common UE-style behavior, but for simplicity we treat it as an output pin starting a drag.
+            }
+
             if (this.activePin) {
                 this.app.wiring.updateGhostWire(e, this.activePin);
             }
+
             document.addEventListener('mousemove', this.handleGlobalMouseMove);
             document.addEventListener('mouseup', this.handleGlobalMouseUp);
             return;
         }
+
+        // 2. Node Dragging/Selection
         if (nodeElement && e.button === 0) {
             e.stopPropagation();
             this.isDraggingNode = true;
             const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
+
             if (mode === 'new' && !this.selectedNodes.has(nodeElement.id)) {
                 this.selectNode(nodeElement.id, false, 'new');
             } else if (mode !== 'new') {
                 this.selectNode(nodeElement.id, true, mode);
             }
+
             const mouseGraphCoords = this.getGraphCoords(e.clientX, e.clientY);
             this.nodeDragOffsets.clear();
             for (const nodeId of this.selectedNodes) {
@@ -801,28 +907,25 @@ class GraphController {
                     });
                 }
             }
+
             document.addEventListener('mousemove', this.handleGlobalMouseMove);
             document.addEventListener('mouseup', this.handleGlobalMouseUp);
             return;
         }
-        if (e.button === 1 || (e.button === 0 && e.code === 'Space')) {
-            this.isPanning = true;
-            this.editor.classList.add('dragging');
-            this.dragStart.x = e.clientX;
-            this.dragStart.y = e.clientY;
-            e.preventDefault();
-            document.addEventListener('mousemove', this.handleGlobalMouseMove);
-            document.addEventListener('mouseup', this.handleGlobalMouseUp);
-            return;
-        }
-        if (e.button === 2) {
+
+        // 3. Panning
+        if (e.button === 2) { // Right mouse button
+            e.preventDefault(); // Prevents context menu popup on initial mousedown
             this.isRmbDown = true;
             this.dragStart.x = e.clientX;
             this.dragStart.y = e.clientY;
+            this.editor.classList.add('dragging');
             document.addEventListener('mousemove', this.handleGlobalMouseMove);
             document.addEventListener('mouseup', this.handleGlobalMouseUp);
             return;
         }
+
+        // 4. Marqueeing (Click on background)
         if (e.button === 0) {
             this.isMarqueeing = true;
             this.marqueeStart.x = e.clientX;
@@ -832,17 +935,21 @@ class GraphController {
             this.marqueeEl.style.top = `${e.clientY}px`;
             this.marqueeEl.style.width = '0px';
             this.marqueeEl.style.height = '0px';
+
             if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
                 this.clearSelection();
             }
+
             document.addEventListener('mousemove', this.handleGlobalMouseMove);
             document.addEventListener('mouseup', this.handleGlobalMouseUp);
         }
     }
+
     handleGlobalMouseMove(e) {
         if (e.movementX !== 0 || e.movementY !== 0) { this.hasDragged = true; }
         e.preventDefault();
-        if (this.isPanning || this.isRmbDown) {
+
+        if (this.isRmbDown) { // Panning
             const dx = e.clientX - this.dragStart.x;
             const dy = e.clientY - this.dragStart.y;
             this.pan.x += dx;
@@ -851,7 +958,7 @@ class GraphController {
             this.dragStart.x = e.clientX;
             this.dragStart.y = e.clientY;
         }
-        else if (this.isDraggingNode) {
+        else if (this.isDraggingNode) { // Node Dragging
             const mouseGraphCoords = this.getGraphCoords(e.clientX, e.clientY);
             for (const nodeId of this.selectedNodes) {
                 const node = this.nodes.get(nodeId);
@@ -865,12 +972,12 @@ class GraphController {
                 }
             }
         }
-        else if (this.isWiring) {
+        else if (this.isWiring) { // Wiring
             if (this.activePin) {
                 this.app.wiring.updateGhostWire(e, this.activePin);
             }
         }
-        else if (this.isMarqueeing) {
+        else if (this.isMarqueeing) { // Marqueeing
             const rect = this.editor.getBoundingClientRect();
             const left = Math.min(e.clientX, this.marqueeStart.x) - rect.left;
             const top = Math.min(e.clientY, this.marqueeStart.y) - rect.top;
@@ -882,70 +989,121 @@ class GraphController {
             this.marqueeEl.style.height = `${height}px`;
         }
     }
+
     handleGlobalMouseUp(e) {
         document.removeEventListener('mousemove', this.handleGlobalMouseMove);
         document.removeEventListener('mouseup', this.handleGlobalMouseUp);
+
         if (this.isWiring) {
             const targetPinEl = e.target.closest('.pin-container');
             if (targetPinEl && this.activePin) {
                 const endPinId = targetPinEl.dataset.pinId;
                 const endPin = this.findPinById(endPinId);
+
                 if (endPin && this.canConnect(this.activePin, endPin)) {
                     this.app.wiring.createConnection(this.activePin, endPin);
+                } else if (endPin && !this.canConnect(this.activePin, endPin)) {
+                    // Fail to connect, open action menu only if user dragged a lot
+                    if (this.hasDragged) {
+                        this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
+                    }
+                } else if (!endPin && this.hasDragged) {
+                    // Drop on canvas, open action menu
+                    this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
+                    this.isWiring = false;
+                    this.activePin = null;
+                    this.app.wiring.updateGhostWire(null, null);
+                    return;
                 }
-            } else if (this.activePin) {
+            } else if (this.activePin && this.hasDragged) {
+                // Drop on canvas, open action menu
                 this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
                 this.isWiring = false;
+                this.activePin = null;
+                this.app.wiring.updateGhostWire(null, null);
                 return;
+            } else if (this.activePin && !this.hasDragged) {
+                // Simple click on pin - just clear wiring mode
             }
+
             this.isWiring = false;
             this.activePin = null;
             this.app.wiring.updateGhostWire(null, null);
         }
+
         if (this.isDraggingNode) {
             this.isDraggingNode = false;
             this.snapSelectedNodesToGrid();
             this.nodeDragOffsets.clear();
             this.app.persistence.autoSave();
+            this.app.compiler.markDirty();
         }
+
         if (this.isMarqueeing) {
             this.isMarqueeing = false;
             const marqueeRect = this.marqueeEl.getBoundingClientRect();
             this.marqueeEl.style.display = 'none';
-            let mode = 'new';
-            if (e.shiftKey) mode = 'add';
-            else if (e.ctrlKey) mode = 'toggle';
-            else if (e.altKey) mode = 'remove';
-            this.selectNodesInRect(marqueeRect, mode);
+
+            // Only select if there was movement
+            if (this.hasDragged) {
+                let mode = 'new';
+                if (e.shiftKey) mode = 'add';
+                else if (e.ctrlKey) mode = 'toggle';
+                else if (e.altKey) mode = 'remove';
+                this.selectNodesInRect(marqueeRect, mode);
+            } else {
+                // Simple click on background clears selection unless modifier key is held
+                if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
+                    this.clearSelection();
+                }
+            }
         }
+
         if (this.isRmbDown) { this.isRmbDown = false; }
         this.isPanning = false;
         this.editor.classList.remove('dragging');
         this.hasDragged = false;
         this.dragStart = { x: 0, y: 0 };
     }
+
     handleZoom(e) {
         e.preventDefault();
+
+        // Prevent zoom if user is trying to scroll a node literal input field
+        if (e.target.closest('.node-literal-input')) {
+            return;
+        }
+
         const scaleAmount = 1.1;
         const rect = this.editor.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
+
         const mouseGraphX_before = (mouseX - this.pan.x) / this.zoom;
         const mouseGraphY_before = (mouseY - this.pan.y) / this.zoom;
+
         if (e.deltaY < 0) this.zoom *= scaleAmount;
         else this.zoom /= scaleAmount;
+
         this.zoom = Math.max(0.2, Math.min(this.zoom, 1.5));
+
         this.pan.x = mouseX - mouseGraphX_before * this.zoom;
         this.pan.y = mouseY - mouseGraphY_before * this.zoom;
+
         this.updateTransform();
         this.app.grid.draw();
         this.zoomReadout.textContent = `${Math.round(this.zoom * 100)}%`;
+
+        // Redraw all wires after zoom/pan
+        this.drawAllWires();
     }
+
     handleContextMenu(e) {
         e.preventDefault();
         if (e.target.closest('.node')) { return; }
         this.app.actionMenu.show(e.clientX, e.clientY, null);
     }
+
     handlePinContextMenu(e) {
         const pinContainerEl = e.target.closest('.pin-container');
         if (pinContainerEl) {
@@ -953,231 +1111,425 @@ class GraphController {
             e.stopPropagation();
             const pinId = pinContainerEl.dataset.pinId;
             const pin = this.findPinById(pinId);
+
             if (!pin || pin.type === 'exec') return;
+
             const items = [
                 { label: `Promote to Variable`, callback: () => this.promotePinToVariable(pin) }
             ];
+
+            // Add custom event options if applicable
+            const node = pin.node;
+            if (node.nodeKey === 'CustomEvent' && pin.isCustom) {
+                items.push({ label: '---', callback: () => { } });
+                items.push({ label: `Remove Pin: ${pin.name}`, callback: () => this.removeCustomPin(node.id, pin.id) });
+            }
+
             this.app.contextMenu.show(e.clientX, e.clientY, items);
         }
     }
+
     addNode(nodeKey, x, y) {
-        const nodeData = NodeLibrary[nodeKey];
+        const nodeData = nodeRegistry.get(nodeKey);
         if (!nodeData) return null;
+
+        // Check for Singleton
+        if (nodeData.isSingleton) {
+            const existingNode = [...this.nodes.values()].find(n => n.nodeKey === nodeKey);
+            if (existingNode) {
+                this.selectNode(existingNode.id, false, 'new');
+                console.warn(`Cannot add ${nodeData.title}: Only one instance allowed.`);
+                return null;
+            }
+        }
+
         const id = Utils.uniqueId('node');
         const node = new Node(id, nodeData, x, y, nodeKey, this.app);
         this.nodes.set(id, node);
         const nodeEl = node.render();
         this.nodesContainer.appendChild(nodeEl);
+        this.app.compiler.markDirty();
         return node;
     }
-    // ... (duplicate, select, delete, etc. remain standard) ...
+
+    removeCustomPin(nodeId, pinId) {
+        const node = this.nodes.get(nodeId);
+        if (!node || node.nodeKey !== 'CustomEvent') return;
+
+        const pinToRemove = node.findPinById(pinId);
+        if (!pinToRemove || !pinToRemove.isCustom) return;
+
+        // 1. Break all links to the pin
+        this.app.wiring.breakPinLinks(pinId);
+
+        // 2. Remove pin from node's array and literals map
+        node.pins = node.pins.filter(p => p.id !== pinId);
+        node.pinLiterals.delete(pinId);
+
+        // 3. Refresh caches and visuals
+        node.refreshPinCache();
+        this.app.wiring.updateVisuals(node);
+
+        // 4. Update details panel if this node is selected
+        if (this.selectedNodes.has(nodeId) && this.app.details) {
+            this.app.details.showNodeDetails(node);
+        }
+
+        this.app.persistence.autoSave();
+        this.app.compiler.markDirty();
+    }
+
     duplicateSelectedNodes() {
         if (this.selectedNodes.size === 0) {
             this.app.wiring.deleteSelectedLinks();
             return;
         }
+
         const oldToNewPinIds = new Map();
         const newSelection = [];
         const offset = 20;
-        for (const nodeId of this.selectedNodes) {
-            const oldNode = this.nodes.get(nodeId);
-            if (oldNode) {
-                const newNode = this.addNode(oldNode.nodeKey, oldNode.x + offset, oldNode.y + offset);
-                newSelection.push(newNode.id);
-                oldNode.pins.forEach((oldPin, index) => {
-                    const newPin = newNode.pins[index];
+        const originalNodes = Array.from(this.selectedNodes).map(id => this.nodes.get(id)).filter(n => n);
+
+        for (const oldNode of originalNodes) {
+            // Re-create nodeData structure to ensure all properties (like title/type) are included
+            const nodeData = nodeRegistry.get(oldNode.nodeKey);
+            if (!nodeData) continue;
+
+            // Handle custom pin data for dynamic nodes (like CustomEvent)
+            const pinsToUse = oldNode.nodeKey === 'CustomEvent' ? oldNode.getPinsData().map(p => ({
+                id: p.id, name: p.name, type: p.type, dir: p.dir, containerType: p.containerType, isCustom: p.isCustom
+            })) : nodeData.pins;
+
+            const newNodeData = {
+                ...nodeData,
+                title: oldNode.title,
+                variableType: oldNode.variableType,
+                variableId: oldNode.variableId,
+                customData: { ...oldNode.customData },
+                pins: pinsToUse // Use the determined pin structure
+            };
+
+            const id = Utils.uniqueId('node');
+            const newNode = new Node(id, newNodeData, oldNode.x + offset, oldNode.y + offset, oldNode.nodeKey, this.app);
+
+            // Transfer pin literal values
+            oldNode.pinLiterals.forEach((value, pinId) => {
+                const oldPinIdRelative = pinId.replace(`${oldNode.id}-`, '');
+                const newPin = newNode.pins.find(p => p.id.endsWith(oldPinIdRelative));
+                if (newPin) {
+                    newNode.pinLiterals.set(newPin.id, value);
+                }
+            });
+
+            this.nodes.set(id, newNode);
+            this.nodesContainer.appendChild(newNode.render());
+            newSelection.push(newNode.id);
+
+            oldNode.pins.forEach((oldPin, index) => {
+                const newPin = newNode.pins.find(p => p.name === oldPin.name && p.dir === oldPin.dir); // Find by name/dir in case pin order changed
+                if (newPin) {
                     oldToNewPinIds.set(oldPin.id, newPin.id);
-                });
-            }
+                }
+            });
         }
+
+        // Duplicate internal connections
         for (const link of this.app.wiring.links.values()) {
             const startNodeIsSelected = this.selectedNodes.has(link.startPin.node.id);
             const endNodeIsSelected = this.selectedNodes.has(link.endPin.node.id);
+
             if (startNodeIsSelected && endNodeIsSelected) {
-                const newStartPin = this.findPinById(oldToNewPinIds.get(link.startPin.id));
-                const newEndPin = this.findPinById(oldToNewPinIds.get(link.endPin.id));
-                if (newStartPin && newEndPin) {
-                    this.app.wiring.createConnection(newStartPin, newEndPin);
+                const newStartPinId = oldToNewPinIds.get(link.startPin.id);
+                const newEndPinId = oldToNewPinIds.get(link.endPin.id);
+
+                if (newStartPinId && newEndPinId) {
+                    const newStartPin = this.findPinById(newStartPinId);
+                    const newEndPin = this.findPinById(newEndPinId);
+
+                    if (newStartPin && newEndPin && this.canConnect(newStartPin, newEndPin)) {
+                        this.app.wiring.createConnection(newStartPin, newEndPin);
+                    }
                 }
             }
         }
+
         this.app.wiring.clearLinkSelection();
         this.clearSelection();
         newSelection.forEach(nodeId => this.selectNode(nodeId, true, 'add'));
         this.app.persistence.autoSave();
+        this.app.compiler.markDirty();
     }
+
     findPinById(pinId) {
         if (!pinId) return null;
+        // The format is usually 'node-id-part1-pinName'
         const parts = pinId.split('-');
         if (parts.length < 2) return null;
-        const nodeId = `${parts[0]}-${parts[1]}`;
+
+        // Find the node ID part, which could be 'node-XXXX' or similar
+        // We try to reconstruct the Node ID by iterating from the end
+        let nodeId = parts[0];
+        let pinName = parts.slice(1).join('-');
+
+        // Assuming node IDs are 'node-UUID' where UUID is 8 characters (or just UUID if the 'node-' prefix is removed)
+        // More robust: search for a node ID that is a prefix of pinId
+        const nodeIds = Array.from(this.nodes.keys());
+
+        for (const id of nodeIds) {
+            if (pinId.startsWith(id)) {
+                nodeId = id;
+                break;
+            }
+        }
+
         const node = this.nodes.get(nodeId);
         return node ? node.findPinById(pinId) : null;
     }
+
     canConnect(pinA, pinB) {
         if (!pinA || !pinB || !pinA.node || !pinB.node) return false;
         if (pinA.node.id === pinB.node.id) return false;
         if (pinA.dir === pinB.dir) return false;
+
         const startPin = pinA.dir === 'out' ? pinA : pinB;
         const endPin = pinA.dir === 'in' ? pinA : pinB;
+
+        // If the end pin already has max links, prevent connection
+        if (endPin.links.length >= endPin.getMaxLinks()) return false;
+
+        // Check container type match (single, array, set, map)
         if (startPin.containerType !== endPin.containerType) return false;
+
+        // Check type match or executable type
         if (startPin.type === endPin.type) return true;
         if (startPin.type === 'exec' && endPin.type === 'exec') return true;
+
+        // Check for implicit conversion
         const conversionKey = Utils.getConversionNodeKey(startPin.type, endPin.type);
         if (conversionKey) return true;
+
         return false;
     }
+
     promotePinToVariable(pin) {
         const newVariable = this.app.variables.createVariableFromPin(pin);
+
         let nodeToSpawnKey;
-        const pinToConnectName = pin.id.split('-').pop();
         if (pin.dir === 'in') {
             nodeToSpawnKey = `Get_${newVariable.name}`;
         } else {
             nodeToSpawnKey = `Set_${newVariable.name}`;
         }
-        const x = pin.node.x - 200;
-        const y = pin.node.y + 50;
+
+        // Calculate position offset relative to the pin's center
+        const pinPos = Utils.getPinPosition(pin.element, this.app);
+        const x = pinPos.x - 10;
+        const y = pinPos.y - 15;
+
         const newNode = this.app.graph.addNode(nodeToSpawnKey, x, y);
+
         if (newNode) {
             const targetPinName = (pin.dir === 'in') ? 'val_out' : 'val_in';
             const newPin = newNode.pins.find(p => p.id.endsWith(targetPinName));
-            if (newPin) this.app.wiring.createConnection(pin, newPin);
+
+            // Connect the pin being promoted to the new variable node
+            if (newPin) {
+                // If the pin being promoted is an input pin, the Get node output connects to it (newPin is the output)
+                // If the pin being promoted is an output pin, the Set node input connects to it (newPin is the input)
+                if (pin.dir === 'in') {
+                    this.app.wiring.createConnection(newPin, pin); // newPin (out) -> pin (in)
+                } else {
+                    this.app.wiring.createConnection(pin, newPin); // pin (out) -> newPin (in)
+                }
+            }
         }
+
         this.app.persistence.autoSave();
     }
+
     updateVariableNodes(oldName, newName) {
         const getKey = `Get_${oldName}`;
         const setKey = `Set_${oldName}`;
+
         for (const node of this.nodes.values()) {
             if (node.nodeKey === getKey || node.nodeKey === setKey) {
                 const newKey = node.nodeKey === getKey ? `Get_${newName}` : `Set_${newName}`;
                 node.nodeKey = newKey;
-
-                // Use the robust sync method to update visual and data state
                 this.synchronizeNodeWithTemplate(node);
             }
         }
     }
 
-    // ADDED: Helper to fully refresh a node's pins and title from the NodeLibrary
+    /**
+     * Synchronizes a node instance with its template definition from the NodeRegistry.
+     * Updates the node's title, pins, and preserves existing connections and literal values.
+     * @param {Node} node - The node instance to synchronize.
+     */
     synchronizeNodeWithTemplate(node) {
-        const template = NodeLibrary[node.nodeKey];
+        const template = nodeRegistry.get(node.nodeKey);
         if (!template) return;
 
         node.title = template.title;
+        node.type = template.type || 'pure-node';
+        node.icon = template.icon;
+        node.devWarning = template.devWarning;
+        node.variableType = template.variableType;
+        node.variableId = template.variableId;
+        node.customData = template.customData || {};
 
-        // Preserve old pins to keep connections valid
         const oldPinsMap = new Map(node.pins.map(p => [p.id, p]));
+        const oldLiterals = new Map(node.pinLiterals);
 
-        node.pins = template.pins.map(p => {
-            const newPin = new Pin(node, p);
-            const fullPinId = `${node.id}-${p.id}`;
+        const newPins = [];
+        const newLiterals = new Map();
+
+        // 1. Create new pins based on template, transferring links and literals if the pin ID matches
+        template.pins.forEach(pData => {
+            const newPin = new Pin(node, pData);
+            const fullPinId = newPin.id;
             const oldPin = oldPinsMap.get(fullPinId);
+
             if (oldPin) {
+                // Transfer links, default value, and literal value
                 newPin.links = oldPin.links;
-                newPin.defaultValue = oldPin.defaultValue;
-                node.pinLiterals.set(newPin.id, node.pinLiterals.get(oldPin.id));
+                // Preserve the runtime literal value
+                newLiterals.set(fullPinId, oldLiterals.get(fullPinId));
+
+                // Update links to point to the new Pin instance
                 newPin.links.forEach(linkId => {
                     const link = this.app.wiring.links.get(linkId);
                     if (link) {
-                        if (link.startPin === oldPin) link.startPin = newPin;
-                        if (link.endPin === oldPin) link.endPin = newPin;
+                        if (link.startPin.id === fullPinId) link.startPin = newPin;
+                        if (link.endPin.id === fullPinId) link.endPin = newPin;
                     }
                 });
+            } else {
+                // Use default literal value for new pins
+                newLiterals.set(fullPinId, newPin.defaultValue);
             }
-            return newPin;
+            newPins.push(newPin);
         });
+
+        // 2. Cleanup pins/literals/links for pins that no longer exist (e.g., when changing variable type and pins change)
+        oldPinsMap.forEach((oldPin, oldId) => {
+            if (!newPins.some(p => p.id === oldId)) {
+                // Pin was removed: break its links
+                this.app.wiring.breakPinLinks(oldId);
+            }
+        });
+
+
+        node.pins = newPins;
+        node.pinLiterals = newLiterals;
 
         node.refreshPinCache();
         this.app.wiring.updateVisuals(node);
         this.redrawNodeWires(node.id);
     }
 
-    selectNode(nodeId, multiSelect = false, mode = 'new') {
-        this.app.wiring.clearLinkSelection();
-        this.app.details.currentVariable = null;
-        if (!multiSelect || mode === 'new') {
-            this.clearSelection();
-            mode = 'add';
-        }
+    selectNode(nodeId, addToSelection = false, mode = 'toggle') {
         const node = this.nodes.get(nodeId);
-        if (!node || !node.element) return;
-        const isSelected = this.selectedNodes.has(nodeId);
-        if (mode === 'add') {
-            node.element.classList.add('selected');
-            this.selectedNodes.add(nodeId);
-        } else if (mode === 'remove') {
-            node.element.classList.remove('selected');
-            this.selectedNodes.delete(nodeId);
-        } else if (mode === 'toggle') {
-            if (isSelected) {
-                node.element.classList.remove('selected');
-                this.selectedNodes.delete(nodeId);
-            } else {
-                node.element.classList.add('selected');
-                this.selectedNodes.add(nodeId);
-            }
+        if (!node) return;
+
+        // If initiating a *new* selection, clear existing
+        if (!addToSelection || mode === 'new') {
+            this.clearSelection();
         }
+
+        let shouldSelect = false;
+        if (mode === 'add') {
+            shouldSelect = true;
+        } else if (mode === 'remove') {
+            shouldSelect = false;
+        } else if (mode === 'toggle') {
+            shouldSelect = !this.selectedNodes.has(nodeId);
+        } else if (mode === 'new') {
+            shouldSelect = true;
+        }
+
+        if (shouldSelect) {
+            this.selectedNodes.add(nodeId);
+            node.element.classList.add('selected');
+        } else {
+            this.selectedNodes.delete(nodeId);
+            node.element.classList.remove('selected');
+        }
+
+        // Handle details panel display
         if (this.selectedNodes.size === 1) {
-            this.app.details.showNodeDetails(this.nodes.get(nodeId));
+            const selectedNode = this.nodes.get([...this.selectedNodes][0]);
+            this.app.details.showNodeDetails(selectedNode);
         } else {
             this.app.details.clear();
         }
     }
-    selectNodesInRect(rect, mode = 'new') {
-        let selectionMode = mode;
-        if (mode === 'new') {
-            this.clearSelection();
-            selectionMode = 'add';
-        }
+
+    clearSelection() {
+        this.selectedNodes.forEach(nodeId => {
+            const node = this.nodes.get(nodeId);
+            if (node) node.element.classList.remove('selected');
+        });
+        this.selectedNodes.clear();
+        this.app.details.clear();
+    }
+
+    selectNodesInRect(rect, mode) {
         for (const node of this.nodes.values()) {
-            if (!node.element) continue;
             const nodeRect = node.element.getBoundingClientRect();
+            // Check if node rect intersects with selection rect
             const intersects = (
                 nodeRect.left < rect.right &&
                 nodeRect.right > rect.left &&
                 nodeRect.top < rect.bottom &&
                 nodeRect.bottom > rect.top
             );
+
             if (intersects) {
-                this.selectNode(node.id, true, selectionMode);
-            }
-        }
-    }
-    clearSelection() {
-        this.selectedNodes.forEach(nodeId => {
-            const node = this.nodes.get(nodeId);
-            if (node && node.element) {
+                // Marquee selects the node
+                this.selectNode(node.id, true, mode);
+            } else if (mode === 'new') {
+                // In 'new' mode, if it doesn't intersect, ensure it's unselected
+                this.selectedNodes.delete(node.id);
                 node.element.classList.remove('selected');
             }
-        });
-        this.selectedNodes.clear();
-        this.app.details.clear();
+        }
+
+        // Re-run selectNode logic for the final set to ensure details panel is updated correctly
+        if (this.selectedNodes.size === 1) {
+            this.app.details.showNodeDetails(this.nodes.get([...this.selectedNodes][0]));
+        } else {
+            this.app.details.clear();
+        }
     }
+
     deleteSelectedNodes() {
-        this.app.wiring.clearLinkSelection();
-        for (const nodeId of this.selectedNodes) {
-            this.app.wiring.findLinksByNodeId(nodeId).forEach(link => this.app.wiring.breakLinkById(link.id));
+        if (this.selectedNodes.size === 0) return;
+
+        // Convert to array to allow deletion while iterating
+        const nodesToDelete = Array.from(this.selectedNodes);
+
+        for (const nodeId of nodesToDelete) {
             const node = this.nodes.get(nodeId);
-            if (node && node.element) {
-                node.element.remove();
-            }
+            if (!node) continue;
+
+            // 1. Break all associated wires
+            node.pins.forEach(pin => {
+                this.app.wiring.breakPinLinks(pin.id);
+            });
+
+            // 2. Remove node element from DOM
+            node.element.remove();
+
+            // 3. Remove node from graph map
             this.nodes.delete(nodeId);
         }
+
         this.selectedNodes.clear();
         this.app.details.clear();
         this.app.persistence.autoSave();
+        this.app.compiler.markDirty();
     }
-    deleteSelectedLinks() {
-        if (this.app.wiring.selectedLinks.size === 0) return;
-        const linksToDelete = Array.from(this.app.wiring.selectedLinks);
-        linksToDelete.forEach(linkId => {
-            this.app.wiring.breakLinkById(linkId);
-        });
-        this.app.wiring.clearLinkSelection();
-        this.app.persistence.autoSave();
-    }
+
     snapSelectedNodesToGrid() {
         const gridSize = 10;
         for (const nodeId of this.selectedNodes) {
@@ -1191,90 +1543,123 @@ class GraphController {
             }
         }
     }
+
     updateTransform() {
         const transform = `translate(${this.pan.x}px, ${this.pan.y}px) scale(${this.zoom})`;
         this.nodesContainer.style.transform = transform;
         const svgTransform = `translate(${this.pan.x}, ${this.pan.y}) scale(${this.zoom})`;
         this.app.wiring.svgGroup.setAttribute('transform', svgTransform);
         this.app.grid.draw();
+        // Redraw wires on transform update to ensure ghost wire is correctly positioned during pan/zoom
+        this.drawAllWires();
     }
+
     redrawNodeWires(nodeId) {
         this.app.wiring.findLinksByNodeId(nodeId).forEach(link => this.app.wiring.drawWire(link));
     }
+
     drawAllWires() {
+        // Find all wires and ensure they are redrawn
         for (const link of this.app.wiring.links.values()) {
             this.app.wiring.drawWire(link);
         }
     }
+
     renderAllNodes() {
         this.nodesContainer.innerHTML = '';
         for (const node of this.nodes.values()) {
             this.nodesContainer.appendChild(node.render());
         }
     }
+
     getGraphCoords(clientX, clientY) {
         const rect = this.editor.getBoundingClientRect();
         const x = (clientX - rect.left - this.pan.x) / this.zoom;
         const y = (clientY - rect.top - this.pan.y) / this.zoom;
         return { x, y };
     }
+
     loadState(state) {
+        // Ensure state is an object, or default to an empty object
+        const safeState = state || {};
+        const safeNodes = safeState.nodes || [];
+        const safeLinks = safeState.links || [];
+
+        // Clear existing state
         this.nodes.clear();
         this.app.wiring.links.clear();
-        state.nodes.forEach(nodeData => {
-            const template = NodeLibrary[nodeData.nodeKey];
+        this.clearSelection();
+        this.app.wiring.clearLinkSelection();
+
+        // 1. Load Nodes
+        safeNodes.forEach((nodeData) => {
+            const template = nodeRegistry.get(nodeData.nodeKey);
             if (!template) {
-                console.warn(`Skipping node during load: Key '${nodeData.nodeKey}' not found in NodeLibrary.`);
+                console.warn(`Skipping node during load: Key '${nodeData.nodeKey}' not found in NodeRegistry.`);
                 return;
             }
 
-            // CRITICAL FIX: Restore dynamic pins properly
+            // Determine the final pin definition to use: saved pins (for dynamic nodes) or template pins (for static nodes)
             let pinsToLoad = template.pins;
 
+            // If the node is a Custom Event (or other dynamic node) AND saved pins exist
             if (nodeData.nodeKey === 'CustomEvent') {
-                // Filter out legacy delegate pin from saved data if present
-                if (nodeData.pins) {
-                    nodeData.pins = nodeData.pins.filter(p => p.id !== 'delegate_out' && p.name !== 'Output Delegate');
-                }
-
-                // Logic to determine if we use saved pins (for dynamic params) or template
-                if (nodeData.pins && nodeData.pins.length > template.pins.length) {
+                // Check if saved pins contains custom pins (more than the base exec/delegate pins)
+                const hasCustomPins = nodeData.pins && nodeData.pins.some(p => p.isCustom);
+                if (hasCustomPins) {
                     pinsToLoad = nodeData.pins;
                 }
-            } else {
-                const isCustomNode = (nodeData.nodeKey === 'CustomEvent');
-                if (isCustomNode && nodeData.pins && nodeData.pins.length > template.pins.length) {
-                    pinsToLoad = nodeData.pins;
-                }
+            } else if (nodeData.nodeKey.startsWith('Func_') && nodeData.pins) {
+                // Function call pins may change. We should handle merging the template and saved pins if needed, 
+                // but for simplicity here, we assume if we have saved pins, we use them to restore literal values/structure if dynamic.
             }
 
             const fullNodeData = { ...template, ...nodeData, pins: pinsToLoad };
             const node = new Node(nodeData.id, fullNodeData, nodeData.x, nodeData.y, nodeData.nodeKey, this.app);
             this.nodes.set(node.id, node);
 
+            // Restore literal values
             if (nodeData.pins) {
                 nodeData.pins.forEach(savedPin => {
+                    // Normalize saved pin ID to match the runtime Pin ID format
                     const fullPinId = savedPin.id.includes(node.id) ? savedPin.id : `${node.id}-${savedPin.id}`;
                     const pin = node.findPinById(fullPinId);
 
                     if (pin && savedPin.literalValue !== undefined) {
                         node.pinLiterals.set(pin.id, savedPin.literalValue);
                     } else if (pin) {
+                        // Ensure a default is set if literalValue was missing or undefined
                         node.pinLiterals.set(pin.id, pin.defaultValue);
                     }
                 });
             }
         });
-        state.links.forEach(linkData => {
+
+        // 2. Load Links
+        safeLinks.forEach(linkData => {
             const startPin = this.findPinById(linkData.startPinId);
             const endPin = this.findPinById(linkData.endPinId);
+
             if (startPin && endPin) {
                 const link = { id: linkData.id, startPin, endPin };
                 this.app.wiring.links.set(link.id, link);
                 startPin.links.push(link.id);
                 endPin.links.push(link.id);
+            } else {
+                console.warn(`Skipping link during load due to missing pin: ${linkData.id}`);
             }
         });
+
+        // 3. Render and Redraw
+        // The second CRITICAL APP INITIALIZATION ERROR trace points to a failure related to 'renderAllNodes'.
+        // This is where the graph should be re-rendered after loading data.
+        this.renderAllNodes();
+        this.drawAllWires();
+
+        // 4. Restore Pan/Zoom
+        if (safeState.pan) this.pan = safeState.pan;
+        if (safeState.zoom) this.zoom = safeState.zoom;
+        this.updateTransform();
     }
 }
 
