@@ -228,15 +228,16 @@
 /* The Hollow Exec Pin (Unconnected) */
 .pin-dot.exec-pin.hollow {
     background-color: transparent !important;
-    /* Border-based triangle for hollow state */
-    width: 0;
-    height: 0;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 10px solid var(--color-exec);
-    clip-path: none;
-    padding: 0;
-    display: block;
+    width: 0 !important;
+    height: 0 !important;
+    border-top: 6px solid transparent !important;
+    border-bottom: 6px solid transparent !important;
+    border-left: 10px solid white !important; /* Fallback */
+    border-left: 10px solid var(--color-exec) !important;
+    clip-path: unset !important;
+    padding: 0 !important;
+    display: block !important;
+    z-index: 100;
 }
 
 .pin-dot.exec-pin.hollow::after {
