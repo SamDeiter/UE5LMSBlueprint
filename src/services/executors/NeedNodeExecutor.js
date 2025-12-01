@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { BaseExecutor } from './BaseExecutor.js';
 import { GraphValidator } from '../GraphValidator.js';
 import { scormClient } from '../ScormClient.js';
