@@ -32,11 +32,11 @@ export class GridController {
         const { pan, zoom } = this.app.graph;
         const { width, height } = this.canvas;
 
-        this.ctx.fillStyle = '#222222'; // Dark background
+        this.ctx.fillStyle = '#151515'; // Authentic UE5 Dark Background
         this.ctx.fillRect(0, 0, width, height);
 
-        const gridSizeSmall = 10 * zoom;
-        const gridSizeLarge = 100 * zoom;
+        const gridSizeSmall = 16 * zoom; // UE5 uses 16/128 typically
+        const gridSizeLarge = 128 * zoom;
 
         // Calculate offsets for pan
         const transX = pan.x % gridSizeSmall;
@@ -45,23 +45,27 @@ export class GridController {
         const transYLarge = pan.y % gridSizeLarge;
 
         // Draw small grid lines
-        this.ctx.strokeStyle = '#333333';
+        this.ctx.strokeStyle = '#262626'; // Subtle minor lines
         this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
         for (let x = transX; x < width; x += gridSizeSmall) {
-            this.ctx.beginPath(); this.ctx.moveTo(x, 0); this.ctx.lineTo(x, height); this.ctx.stroke();
+            this.ctx.moveTo(x, 0); this.ctx.lineTo(x, height);
         }
         for (let y = transY; y < height; y += gridSizeSmall) {
-            this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
+            this.ctx.moveTo(0, y); this.ctx.lineTo(width, y);
         }
+        this.ctx.stroke();
 
         // Draw large grid lines
-        this.ctx.strokeStyle = '#404040';
-        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = '#353535'; // Visible major lines
+        this.ctx.lineWidth = 1; // Keep thin but distinct color
+        this.ctx.beginPath();
         for (let x = transXLarge; x < width; x += gridSizeLarge) {
-            this.ctx.beginPath(); this.ctx.moveTo(x, 0); this.ctx.lineTo(x, height); this.ctx.stroke();
+            this.ctx.moveTo(x, 0); this.ctx.lineTo(x, height);
         }
         for (let y = transYLarge; y < height; y += gridSizeLarge) {
-            this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(width, y); this.ctx.stroke();
+            this.ctx.moveTo(0, y); this.ctx.lineTo(width, y);
         }
+        this.ctx.stroke();
     }
 }

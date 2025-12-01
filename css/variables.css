@@ -12,32 +12,34 @@
     --color-reroute: #FFFFFF;
     --color-breakpoint: #FF4444;
 
-    /* Node Header Gradients */
-    --header-event-start: #8B0000;
-    --header-event-end: #400000;
-    --header-flow-start: #666666;
-    --header-flow-end: #333333;
-    --header-function-start: #005580;
-    --header-function-end: #002a40;
+    /* Node Header Gradients - Darker & More Subtle */
+    --header-event-start: #500000;
+    --header-event-end: #280000;
+    --header-flow-start: #404040;
+    --header-flow-end: #202020;
+    --header-function-start: #004060;
+    --header-function-end: #002030;
+    --header-macro-start: #505050;
+    --header-macro-end: #282828;
 
-    /* Pin Colors (Full Palette) */
+    /* Pin Colors (Authentic UE5 Palette) */
     --color-exec: #FFFFFF;
-    --color-bool: #8C0202;
-    --color-byte: #00665E;
-    --color-int: #28E897;
+    --color-bool: #920101; /* Dark Red */
+    --color-byte: #0065CA; /* Deep Blue (often used for objects/interfaces too, but byte is distinct) */
+    --color-int: #18E1A6; /* Cyan/Teal */
     --color-int64: #76D37E;
-    --color-float: #96EE35;
-    --color-double: #85DD24;
-    /* Slightly darker green than float */
-    --color-name: #CC99FF;
-    --color-string: #FF00FF;
-    --color-text: #E27696;
-    --color-vector: #FFC700;
-    --color-rotator: #99CCFF;
-    --color-transform: #FF7300;
-    --color-object: #00A2E8;
-    --color-enum: #00BB55;
-    /* Forest green for enumerators */
+    --color-float: #99FF22; /* Bright Lime Green */
+    --color-double: #4A90E2;
+    --color-name: #C966E3; /* Lavender */
+    --color-string: #FF00FF; /* Magenta */
+    --color-text: #E27696; /* Pinkish */
+    --color-vector: #FFC700; /* Gold */
+    --color-rotator: #99CCFF; /* Light Blue */
+    --color-transform: #FF7300; /* Orange */
+    --color-object: #0065CA; /* Blue */
+    --color-class: #5800A0; /* Purple */
+    --color-enum: #0065CA; /* Enum is often byte-colored or dark green depending on context */
+    
     --color-dev-yellow: #FFC72C;
     --color-dev-black: #202020;
     --color-array-dim: 2px;

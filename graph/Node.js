@@ -61,22 +61,32 @@ class Node {
 
     getHeaderColor() {
         if (this.variableType) {
-            return Utils.getVariableHeaderColor(this.variableType);
+            const c = Utils.getVariableHeaderColor(this.variableType);
+            return {
+                background: `linear-gradient(to bottom, ${c.start}, ${c.end})`,
+                accent: c.start
+            };
         }
         if (this.nodeKey === 'ConstructionScript') {
-            return { start: '#B54E05', end: '#8A3B04' };
+            return { background: 'linear-gradient(to bottom, #503010, #281808)', accent: '#FF8800' };
         }
         if (this.type === 'event-node') {
-            return { start: '#8B0000', end: '#400000' }; // Red
+            return { background: 'linear-gradient(to bottom, var(--header-event-start), var(--header-event-end))', accent: '#FF2222' };
         }
         if (this.type === 'function-node') {
-            return { start: '#005580', end: '#002a40' }; // Blue
+            return { background: 'linear-gradient(to bottom, var(--header-function-start), var(--header-function-end))', accent: '#44AAFF' };
+        }
+        if (this.type === 'pure-node') {
+            return { background: 'linear-gradient(to bottom, #305030, #152815)', accent: '#66FF66' };
+        }
+        if (this.type === 'flow-node') {
+            return { background: 'linear-gradient(to bottom, var(--header-flow-start), var(--header-flow-end))', accent: '#AAAAAA' };
         }
         if (this.type === 'assessment-node') {
-            return { start: '#6030a0', end: '#301560' }; // Purple
+            return { background: 'linear-gradient(to bottom, #402060, #201030)', accent: '#AA55FF' };
         }
         // Default
-        return { start: '#333', end: '#111' };
+        return { background: 'linear-gradient(to bottom, #333, #111)', accent: '#888' };
     }
 
     render() {
@@ -86,7 +96,9 @@ class Node {
             this.nodeKey = 'INVALID_NODE';
         }
 
-        if (this.nodeKey.startsWith('Get_') || this.nodeKey.startsWith('Conv_') || this.nodeKey.startsWith('GetComponent_')) {
+        // Check for Compact Nodes (Getters, Converters, Math Operators)
+        const isMathOperator = /^(Add|Subtract|Multiply|Divide|Greater|Less|Equal|NotEqual|AND|OR|NOT)/.test(this.nodeKey);
+        if (this.nodeKey.startsWith('Get_') || this.nodeKey.startsWith('Conv_') || this.nodeKey.startsWith('GetComponent_') || isMathOperator) {
             return this.renderCompactNode();
         }
         if (this.nodeKey.startsWith('Set_') || this.nodeKey.startsWith('SetComponent_')) {
@@ -103,8 +115,9 @@ class Node {
         const header = document.createElement('div');
         header.className = 'node-title';
 
-        const gradient = this.getHeaderColor();
-        header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
+        const style = this.getHeaderColor();
+        header.style.background = style.background;
+        header.style.setProperty('--node-accent-color', style.accent);
         header.style.borderBottomColor = 'rgba(0,0,0,0.5)';
 
         if (this.icon) {
@@ -277,6 +290,7 @@ class Node {
         if (this.variableType) {
             const gradient = Utils.getVariableHeaderColor(this.variableType);
             header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
+            header.style.setProperty('--node-accent-color', gradient.start);
             header.style.borderBottomColor = 'rgba(0,0,0,0.5)';
         }
 
@@ -343,27 +357,55 @@ class Node {
             this.refreshPinCache();
         }
 
-        const pinIn = this.pinsIn[0];
-        const pinOut = this.pinsOut[0];
+        // 1. Inputs Column
+        if (this.pinsIn.length > 0) {
+            const inputCol = document.createElement('div');
+            inputCol.style.display = 'flex';
+            inputCol.style.flexDirection = 'column';
+            inputCol.style.gap = '2px';
+            inputCol.style.marginRight = '6px';
 
-        // 1. Left Pin (Input) - Use renderPin to support split pins
-        if (pinIn) {
-            const pinEl = this.renderPin(pinIn);
-            // Add compact styling if not split
-            if (!pinIn.isSplit && !pinIn.isConnected()) {
-                const inputWidget = pinEl.querySelector('.node-literal-input, .ue5-checkbox');
-                if (inputWidget) {
-                    inputWidget.classList.add('compact-input-widget');
+            this.pinsIn.forEach(pinIn => {
+                const pinEl = this.renderPin(pinIn);
+                // Add compact styling if not split
+                if (!pinIn.isSplit && !pinIn.isConnected()) {
+                    const inputWidget = pinEl.querySelector('.node-literal-input, .ue5-checkbox');
+                    if (inputWidget) {
+                        inputWidget.classList.add('compact-input-widget');
+                    }
                 }
-            }
-            container.appendChild(pinEl);
+                // For compact nodes, we often hide the pin label to save space, 
+                // but for Math nodes with multiple inputs (like A/B), we might want to keep them or rely on order.
+                // UE5 usually hides A/B labels on compact math nodes.
+                const label = pinEl.querySelector('.pin-label-in');
+                if (label) label.style.display = 'none';
+
+                inputCol.appendChild(pinEl);
+            });
+            container.appendChild(inputCol);
         }
 
-        // --- INSERT LABEL ---
+        // 2. Label
         const labelSpan = document.createElement('span');
         labelSpan.className = 'compact-node-label';
-        // Clean up "Get_" prefix for display to match standard UI
-        if (this.nodeKey.startsWith('Get_')) {
+
+        // Map common math names to symbols for authentic look
+        const symbolMap = {
+            'Add (Float)': '+', 'Add (Integer)': '+',
+            'Subtract (Float)': '-', 'Subtract (Integer)': '-',
+            'Multiply (Float)': '×', 'Multiply (Integer)': '×',
+            'Divide (Float)': '÷', 'Divide (Integer)': '÷',
+            'Greater': '>', 'Less': '<',
+            'GreaterEqual': '>=', 'LessEqual': '<=',
+            'EqualEqual': '==', 'NotEqual': '!=',
+            'AND': 'AND', 'OR': 'OR', 'NOT': 'NOT'
+        };
+
+        if (symbolMap[this.title]) {
+            labelSpan.textContent = symbolMap[this.title];
+            labelSpan.style.fontSize = '16px';
+            labelSpan.style.fontWeight = '800';
+        } else if (this.nodeKey.startsWith('Get_')) {
             labelSpan.textContent = this.nodeKey.substring(4);
         } else if (this.nodeKey.startsWith('GetComponent_')) {
             labelSpan.textContent = this.title.replace('Get ', '');
@@ -372,10 +414,21 @@ class Node {
         }
         container.appendChild(labelSpan);
 
-        // 3. Right Pin (Output) - Use renderPin to support split pins
-        if (pinOut) {
-            const pinEl = this.renderPin(pinOut);
-            container.appendChild(pinEl);
+        // 3. Outputs Column
+        if (this.pinsOut.length > 0) {
+            const outputCol = document.createElement('div');
+            outputCol.style.display = 'flex';
+            outputCol.style.flexDirection = 'column';
+            outputCol.style.gap = '2px';
+            outputCol.style.marginLeft = '6px';
+
+            this.pinsOut.forEach(pinOut => {
+                const pinEl = this.renderPin(pinOut);
+                const label = pinEl.querySelector('.pin-label-out');
+                if (label) label.style.display = 'none';
+                outputCol.appendChild(pinEl);
+            });
+            container.appendChild(outputCol);
         }
 
         element.appendChild(container);
@@ -465,7 +518,8 @@ class Node {
         pin.element = pinDot;
 
         let effectiveHideLabel = hideLabel;
-        if (this.type === 'function-node' && pin.type === 'exec') {
+        // UE5 Style: Hide "Exec" labels, but keep descriptive exec labels like "Cast Failed"
+        if (pin.type === 'exec' && (pin.name === 'Exec' || pin.name === 'Then')) {
             effectiveHideLabel = true;
         }
 
@@ -532,9 +586,11 @@ class Node {
             inputEl.className = 'node-literal-input';
             const wideTypes = ['string', 'text', 'name'];
             inputEl.style.width = wideTypes.includes(pin.type) ? '80px' : '40px';
-            inputEl.style.backgroundColor = '#111';
-            inputEl.style.color = 'white';
-            inputEl.style.border = '1px solid #444';
+            // UE5 Style: Subtle transparent input
+            inputEl.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            inputEl.style.color = '#eee';
+            inputEl.style.border = '1px solid transparent';
+            inputEl.style.borderBottom = '1px solid rgba(255,255,255,0.2)';
             inputEl.style.borderRadius = '2px';
             inputEl.style.marginLeft = '5px';
             inputEl.addEventListener('change', updateLiteral);
