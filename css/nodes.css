@@ -200,7 +200,7 @@
     transform: scale(1.2);
 }
 
-.pin-dot.hollow {
+.pin-dot.hollow:not(.exec-pin) {
     background-color: transparent !important;
     border: 2px solid currentColor;
     width: 10px;
