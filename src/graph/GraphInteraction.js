@@ -268,6 +268,74 @@ export class GraphInteraction {
         }
     }
 
+    handleGlobalMouseMove(e) {
+        if (this.rafId) return;
+
+        this.rafId = requestAnimationFrame(() => {
+            if (this.isPanning) {
+                const dx = e.clientX - this.dragStart.x;
+                const dy = e.clientY - this.dragStart.y;
+
+                this.controller.pan.x += dx;
+                this.controller.pan.y += dy;
+
+                this.controller.updateTransform();
+
+                this.dragStart.x = e.clientX;
+                this.dragStart.y = e.clientY;
+            } else if (this.isDraggingNode) {
+                this.hasDragged = true;
+                const zoom = this.controller.zoom;
+
+                this.controller.selectedNodes.forEach(nodeId => {
+                    const node = this.controller.nodes.get(nodeId);
+                    const offset = this.nodeDragOffsets.get(nodeId);
+
+                    if (node && offset) {
+                        const mouseGraphX = (e.clientX - this.controller.pan.x) / zoom;
+                        const mouseGraphY = (e.clientY - this.controller.pan.y) / zoom;
+
+                        node.x = mouseGraphX - offset.x;
+                        node.y = mouseGraphY - offset.y;
+
+                        node.updatePosition();
+                    }
+                });
+
+                this.app.wiring.updateConnectedLinks(this.controller.selectedNodes);
+            } else if (this.isWiring) {
+                const graphPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.app.wiring.updateGhostWire(graphPos.x, graphPos.y);
+            } else if (this.isMarqueeing) {
+                const currentX = e.clientX;
+                const currentY = e.clientY;
+
+                const x = Math.min(this.marqueeStart.x, currentX);
+                const y = Math.min(this.marqueeStart.y, currentY);
+                const width = Math.abs(currentX - this.marqueeStart.x);
+                const height = Math.abs(currentY - this.marqueeStart.y);
+
+                this.marqueeEl.style.left = `${x}px`;
+                this.marqueeEl.style.top = `${y}px`;
+                this.marqueeEl.style.width = `${width}px`;
+                this.marqueeEl.style.height = `${height}px`;
+
+                const graphStart = this.controller.getGraphCoords(Math.min(this.marqueeStart.x, currentX), Math.min(this.marqueeStart.y, currentY));
+                const graphEnd = this.controller.getGraphCoords(Math.max(this.marqueeStart.x, currentX), Math.max(this.marqueeStart.y, currentY));
+                const selectionRect = {
+                    left: graphStart.x,
+                    top: graphStart.y,
+                    right: graphEnd.x,
+                    bottom: graphEnd.y
+                };
+
+                const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
+                this.controller.selectNodesInRect(selectionRect, mode);
+            }
+            this.rafId = null;
+        });
+    }
+
     handleGlobalMouseUp(e) {
         document.removeEventListener('mousemove', this.handleGlobalMouseMove);
         document.removeEventListener('mouseup', this.handleGlobalMouseUp);
