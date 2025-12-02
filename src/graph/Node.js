@@ -79,7 +79,7 @@ class Node {
         return { start: '#333', end: '#111' };
     }
 
-    
+
     toggleBreakpoint() {
         this.isBreakpoint = !this.isBreakpoint;
         if (this.element) {
@@ -258,7 +258,9 @@ class Node {
                 }
 
                 if (pinOut) {
-                    row.appendChild(this.renderPin(pinOut));
+                    // For SET nodes, hide the label on data output pins (not exec pins)
+                    const shouldHideLabel = this.nodeKey.startsWith('Set_') && pinOut.type !== 'exec';
+                    row.appendChild(this.renderPin(pinOut, shouldHideLabel));
                 } else {
                     const spacer = document.createElement('div');
                     spacer.minWidth = '10px';
@@ -342,22 +344,26 @@ class Node {
             container.appendChild(pinEl);
         }
 
-        // --- INSERT LABEL ---
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'compact-node-label';
-        // Clean up "Get_" prefix for display to match standard UI
-        if (this.nodeKey.startsWith('Get_')) {
-            labelSpan.textContent = this.nodeKey.substring(4);
-        } else if (this.nodeKey.startsWith('GetComponent_')) {
-            labelSpan.textContent = this.title.replace('Get ', '');
-        } else {
-            labelSpan.textContent = this.title;
+        // --- INSERT LABEL (only for Get/GetComponent nodes, not Conv nodes) ---
+        if (!this.nodeKey.startsWith('Conv_')) {
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'compact-node-label';
+            // Clean up "Get_" prefix for display to match standard UI
+            if (this.nodeKey.startsWith('Get_')) {
+                labelSpan.textContent = this.nodeKey.substring(4);
+            } else if (this.nodeKey.startsWith('GetComponent_')) {
+                labelSpan.textContent = this.title.replace('Get ', '');
+            } else {
+                labelSpan.textContent = this.title;
+            }
+            container.appendChild(labelSpan);
         }
-        container.appendChild(labelSpan);
 
         // 3. Right Pin (Output) - Use renderPin to support split pins
         if (pinOut) {
-            const pinEl = this.renderPin(pinOut);
+            // Hide pin label for Get/GetComponent nodes since central label shows the name
+            const hideLabel = this.nodeKey.startsWith('Get_') || this.nodeKey.startsWith('GetComponent_');
+            const pinEl = this.renderPin(pinOut, hideLabel);
             container.appendChild(pinEl);
         }
 

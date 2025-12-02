@@ -266,10 +266,12 @@ export class DetailsRenderer {
         }
         if (type === 'int' || type === 'int64' || type === 'byte' || type === 'float' || type === 'double' || type === 'enum') {
             const step = (type === 'float' || type === 'double') ? '0.01' : '1';
-            return `<input type="number" class="details-input" value="${value}" step="${step}" data-prop="defaultValue" ${extraAttrs}>`;
+            const safeValue = (value !== undefined && value !== null && value !== "") ? value : 0;
+            return `<input type="number" class="details-input" value="${safeValue}" step="${step}" data-prop="defaultValue" ${extraAttrs}>`;
         }
         if (type === 'string' || type === 'name' || type === 'text') {
-            return `<input type="text" class="details-input" value="${value}" data-prop="defaultValue" ${extraAttrs}>`;
+            const safeValue = (value !== undefined && value !== null) ? value : "";
+            return `<input type="text" class="details-input" value="${safeValue}" data-prop="defaultValue" ${extraAttrs}>`;
         }
         if (type === 'vector' || type === 'rotator') {
             const parsed = this.parseVectorValue(value);

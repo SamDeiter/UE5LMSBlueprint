@@ -17,9 +17,10 @@
 /* Selected Node - Golden Orange Outline (UE5 Standard) */
 .node.selected {
     box-shadow: 0 0 0 2px var(--node-selection-outline),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-                0 10px 20px rgba(0, 0, 0, 0.5);
-    z-index: 100; /* Bring selected nodes to front */
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 10px 20px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    /* Bring selected nodes to front */
 }
 
 /* --- NODE TITLE --- */
@@ -139,7 +140,8 @@
     height: 12px;
     border-radius: 50%;
     border: 2px solid currentColor;
-    background-color: currentColor; /* Default to filled */
+    background-color: currentColor;
+    /* Default to filled */
     cursor: pointer;
     flex-shrink: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
@@ -174,13 +176,15 @@
 
 /* The Hollow Exec Pin (Unconnected) */
 .pin-dot.exec-pin.hollow {
-    background-color: #FFFFFF !important; /* Outer color (border) */
+    background-color: #FFFFFF !important;
+    /* Outer color (border) */
     display: grid;
     place-items: center;
     border: none;
     box-shadow: none;
     clip-path: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%);
-    padding: 1.5px; /* Thickness of the "border" */
+    padding: 1.5px;
+    /* Thickness of the "border" */
 }
 
 .pin-dot.exec-pin.hollow::after {
@@ -188,7 +192,8 @@
     display: block;
     width: 100%;
     height: 100%;
-    background-color: #151515; /* Inner match background */
+    background-color: #151515;
+    /* Inner match background */
     clip-path: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%);
 }
 
@@ -224,20 +229,61 @@
 }
 
 /* Pin Colors */
-.pin-dot.bool-pin { color: var(--color-bool); }
-.pin-dot.byte-pin { color: var(--color-byte); }
-.pin-dot.int-pin { color: var(--color-int); }
-.pin-dot.int64-pin { color: var(--color-int64); }
-.pin-dot.float-pin { color: var(--color-float); }
-.pin-dot.double-pin { color: var(--color-double); }
-.pin-dot.name-pin { color: var(--color-name); }
-.pin-dot.string-pin { color: var(--color-string); }
-.pin-dot.text-pin { color: var(--color-text); }
-.pin-dot.vector-pin { color: var(--color-vector); }
-.pin-dot.rotator-pin { color: var(--color-rotator); }
-.pin-dot.transform-pin { color: var(--color-transform); }
-.pin-dot.object-pin { color: var(--color-object); }
-.pin-dot.enum-pin { color: var(--color-enum); }
+.pin-dot.bool-pin {
+    color: var(--color-bool);
+}
+
+.pin-dot.byte-pin {
+    color: var(--color-byte);
+}
+
+.pin-dot.int-pin {
+    color: var(--color-int);
+}
+
+.pin-dot.int64-pin {
+    color: var(--color-int64);
+}
+
+.pin-dot.float-pin {
+    color: var(--color-float);
+}
+
+.pin-dot.double-pin {
+    color: var(--color-double);
+}
+
+.pin-dot.name-pin {
+    color: var(--color-name);
+}
+
+.pin-dot.string-pin {
+    color: var(--color-string);
+}
+
+.pin-dot.text-pin {
+    color: var(--color-text);
+}
+
+.pin-dot.vector-pin {
+    color: var(--color-vector);
+}
+
+.pin-dot.rotator-pin {
+    color: var(--color-rotator);
+}
+
+.pin-dot.transform-pin {
+    color: var(--color-transform);
+}
+
+.pin-dot.object-pin {
+    color: var(--color-object);
+}
+
+.pin-dot.enum-pin {
+    color: var(--color-enum);
+}
 
 .pin-dot.array-pin {
     border: none;
@@ -274,8 +320,13 @@
     text-shadow: 0 1px 1px black;
 }
 
-.pin-label-in { margin-left: 4px; }
-.pin-label-out { margin-right: 4px; }
+.pin-label-in {
+    margin-left: 4px;
+}
+
+.pin-label-out {
+    margin-right: 4px;
+}
 
 /* --- COMPACT NODES (Getters, Math) --- */
 .node.compact-node,
@@ -285,11 +336,11 @@
     align-items: center;
     background: linear-gradient(to bottom, #333 0%, #111 100%) !important;
     border-radius: 50px !important;
-    padding: 4px 12px 4px 16px !important;
+    padding: 8px 16px 8px 20px !important;
     border: 1px solid #000 !important;
-    gap: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
-    font-size: 11px;
+    gap: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+    font-size: 13px;
     font-weight: 500;
     color: white;
     min-width: auto !important;
@@ -300,8 +351,11 @@
 .node.getter-node::after {
     content: '';
     position: absolute;
-    top: 2px; left: 2px; right: 2px; height: 45%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, transparent 100%);
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
     border-radius: 50px 50px 20px 20px;
     pointer-events: none;
     z-index: 1;
@@ -309,7 +363,7 @@
 
 .node.compact-node.selected,
 .node.getter-node.selected {
-    box-shadow: 0 0 0 2px var(--node-selection-outline), 0 4px 10px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 0 0 2px var(--node-selection-outline), 0 4px 10px rgba(0, 0, 0, 0.5) !important;
 }
 
 .node.compact-node .node-title,
@@ -423,13 +477,13 @@
     border: 1px solid transparent !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 2px !important;
-    padding: 2px 4px;
+    padding: 1px 3px;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 9px;
     outline: none;
     transition: border-color 0.2s;
-    height: 16px;
-    line-height: 14px;
+    height: 14px;
+    line-height: 12px;
 }
 
 .node-literal-input:focus {
@@ -482,8 +536,8 @@
 }
 
 .small-input {
-    background: rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 2px;
     padding: 1px 4px;
     color: #ddd;
@@ -494,8 +548,19 @@
 }
 
 .small-input:focus {
-    border-color: rgba(255,255,255,0.5);
-    background: rgba(0,0,0,0.8);
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.8);
+}
+
+/* Pin Row Layout - ensures proper alignment of execution pins */
+.pin-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-height: 22px;
+    padding: 2px 0;
 }
 
 .pin-row.has-widget {

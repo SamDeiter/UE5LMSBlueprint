@@ -18,6 +18,7 @@ import { functionRegistry } from './functions/FunctionRegistry.js';
 import { MacroRegistry } from './macros/MacroRegistry.js';
 import { NodeDefinitions } from './data/NodeDefinitions.js';
 import { DOMElements } from './config/DOMElements.js';
+import { DirtyStateTracker } from './services/DirtyStateTracker.js';
 class BlueprintApp {
     /**
      * Initializes all controllers and loads the graph.
@@ -73,6 +74,7 @@ class BlueprintApp {
         BlueprintApp.persistence = new Persistence(BlueprintApp);
         BlueprintApp.compiler = new Compiler(BlueprintApp);
         BlueprintApp.sim = new SimulationEngine(BlueprintApp);
+        BlueprintApp.dirtyState = new DirtyStateTracker(BlueprintApp);
 
         // 6. UI Controllers
         BlueprintApp.componentsController = new ComponentsController(BlueprintApp);

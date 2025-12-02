@@ -42,20 +42,17 @@ export class Compiler {
     /** Marks the graph as needing compilation. */
     markDirty() {
         this.isDirty = true;
+        if (this.app.dirtyState) {
+            this.app.dirtyState.markDirty();
+        }
         if (this.statusElement) {
             this.statusElement.textContent = "Status: Dirty (Needs Compile)";
             this.statusElement.style.color = "#ffaa00";
         }
-        if (this.compileBtn) {
-            const icon = this.compileBtn.querySelector('i');
-            if (icon) {
-                icon.className = 'fas fa-question';
-            }
-            this.compileBtn.classList.add('dirty');
-        }
     }
 
-    /** * Compiles the graph: Applies pending changes (renames) and runs validation.
+    /**
+     * Compiles the graph: Applies pending changes (renames) and runs validation.
      */
     compile() {
         this.log("Compiling...", "log");
@@ -79,16 +76,17 @@ export class Compiler {
             this.log("Compile Complete!", "success");
             // Clear any persistent dirty state
             this.app.persistence.autoSave();
+            
+            if (this.app.dirtyState) {
+                this.app.dirtyState.markClean();
+            }
+
             if (this.compileBtn) {
-                const icon = this.compileBtn.querySelector('i');
-                if (icon) icon.className = 'fas fa-check';
                 this.compileBtn.classList.remove('dirty');
                 this.compileBtn.classList.add('success');
+                // Remove success class after a delay, but KEEP the check icon
                 setTimeout(() => {
-                    if (this.compileBtn) {
-                        this.compileBtn.classList.remove('success');
-                        if (icon) icon.className = 'fas fa-hammer';
-                    }
+                    this.compileBtn.classList.remove('success');
                 }, 2000);
             }
         } else {

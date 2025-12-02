@@ -338,6 +338,7 @@ handleGlobalMouseUp(e) {
     if (this.isDraggingNode) {
         this.isDraggingNode = false;
         this.controller.snapSelectedNodesToGrid();
+        this.app.dirtyState?.markDirty();
         this.app.persistence.autoSave();
     }
 

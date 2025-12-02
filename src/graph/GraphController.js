@@ -501,6 +501,12 @@ class GraphController {
         }
     }
 
+    clearActiveWires() {
+        // Remove 'active-wire' class from all wires
+        const activeWires = this.svg.querySelectorAll('.active-wire');
+        activeWires.forEach(wire => wire.classList.remove('active-wire'));
+    }
+
     clearSelection() {
         this.selectedNodes.forEach(nodeId => {
             const node = this.nodes.get(nodeId);
