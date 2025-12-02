@@ -392,7 +392,9 @@ export class GraphInteraction {
         this.controller.pan.y = mouseY - graphY * this.controller.zoom;
 
         this.controller.updateTransform();
-        this.controller.zoomReadout.textContent = `${Math.round(this.controller.zoom * 100)}%`;
+        if (this.controller.zoomReadout) {
+            this.controller.zoomReadout.textContent = `${Math.round(this.controller.zoom * 100)}%`;
+        }
     }
 
     handleContextMenu(e) {

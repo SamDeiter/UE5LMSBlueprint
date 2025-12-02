@@ -4,6 +4,7 @@
 import { Utils } from '../utils.js';
 import { generateGUID } from '../utils/guid.js';
 import { nodeRegistry } from '../registries/NodeRegistry.js';
+import { DOMElements } from '../config/DOMElements.js';
 import { Pin } from './Pin.js';
 import { Node } from './Node.js';
 import { GraphInteraction } from './GraphInteraction.js';
@@ -15,7 +16,7 @@ class GraphController {
         this.nodesContainer = nodesContainer;
         this.app = app;
         this.nodes = new Map();
-        this.zoomReadout = document.getElementById('zoom-readout');
+        this.zoomReadout = document.getElementById(DOMElements.ZOOM_READOUT);
         this.pan = { x: 0, y: 0 };
         this.zoom = 1;
         this.selectedNodes = new Set();

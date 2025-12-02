@@ -14,5 +14,6 @@ export const DOMElements = {
     STEP_OUT_BTN: 'step-out-btn',
     HELP_BTN: 'help-btn',
     HELP_MODAL: 'help-modal',
-    HELP_MODAL_CLOSE: 'help-modal-close'
+    HELP_MODAL_CLOSE: 'help-modal-close',
+    ZOOM_READOUT: 'zoom-readout'
 };
