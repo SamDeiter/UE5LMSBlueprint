@@ -16,14 +16,14 @@ This document tracks the detailed progress of the current development session, i
 ## 🚧 Track 1: Debugging System
 
 ### Phase 1A: Step Out Logic
-**Status**: In Progress
+**Status**: Complete
 **Changes**:
 - [x] Implement `stepOut()` in `SimulationEngine.js`
 - [x] Update `DebuggerController.js` to handle step out button
-- [ ] Verify execution pauses correctly after returning from function/macro
+- [x] Verify execution pauses correctly after returning from function/macro
 
 ### Phase 1B: Breakpoint Management
-**Status**: Pending
+**Status**: Complete
 **Changes**:
 - [x] Add `isBreakpoint` property to `Node` class
 - [x] Add toggle logic in `GraphController` (or `Node.js`)
@@ -31,7 +31,7 @@ This document tracks the detailed progress of the current development session, i
 - [x] Visual indicator for breakpoints
 
 ### Phase 1C: Variable Watch Panel
-**Status**: Pending
+**Status**: Complete
 **Changes**:
 - [x] Update `DebuggerController` to render watch values
 - [x] Fetch local variables from current stack frame
