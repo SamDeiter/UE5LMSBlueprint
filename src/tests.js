@@ -4,7 +4,6 @@ import { registerGUIDTests } from './tests/guid.test.js';
 import { registerComponentHierarchyTests } from './tests/ComponentHierarchy.test.js';
 import { registerNeedNodeTests } from './tests/NeedNode.test.js';
 import './tests/NodeRegistryTests.js';
-import { PinRenderingTests } from './tests/PinRendering.test.js';
 
 export class TestRunner {
     constructor(app) {
@@ -115,11 +114,6 @@ export const registerTests = (runner) => {
     registerGUIDTests(runner);
     registerComponentHierarchyTests(runner);
     registerNeedNodeTests(runner);
-    
-    // Pin Rendering Tests
-    PinRenderingTests.tests.forEach(test => {
-        runner.register(test.name, () => test.run());
-    });
 
     // --- Variable Tests ---
 

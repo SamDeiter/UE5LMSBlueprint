@@ -34,7 +34,9 @@ export class HistoryManager {
             links: this.app.persistence.serializeLinks()
         };
 
-        const variablesArray = (this.app.variables && this.app.variables.variables) ? [...this.app.variables.variables.values()] : [];
+                const variablesArray = (this.app.variables && this.app.variables.variables) ? [...this.app.variables.variables.values()] : [];
+        const functionsArray = (this.app.functionRegistry) ? this.app.functionRegistry.getAll().map(f => f.toJSON()) : [];
+        const macrosArray = (this.app.macroRegistry) ? this.app.macroRegistry.getAll().map(m => m.toJSON()) : [];
         const componentsArray = (this.app.components) ? [...this.app.components.values()] : [];
 
         const state = {
@@ -42,6 +44,8 @@ export class HistoryManager {
             graphs: this.app.graphs,
             variables: variablesArray,
             components: componentsArray,
+            functions: functionsArray,
+            macros: macrosArray,
             // Persist pending renames so they aren't lost on reload
             pendingRenames: this.app.compiler ? this.app.compiler.pendingRenames : []
         };
@@ -93,6 +97,37 @@ export class HistoryManager {
 
             // 2. Load the state. Must ensure variables load first to populate NodeLibrary
             if (this.app.variables) this.app.variables.loadState(state); // Loads variables & updates NodeLibrary
+
+            // Restore Functions
+            if (state.functions && this.app.functionRegistry) {
+                this.app.functionRegistry.clear();
+                state.functions.forEach(fData => {
+                    // We need to import FunctionDefinition class or have a static helper, 
+                    // but we can't import here easily if not already imported.
+                    // However, FunctionRegistry stores FunctionDefinition objects.
+                    // Let's assume we can reconstruct them or just store the data if Registry handles it.
+                    // Actually, we should use FunctionDefinition.fromJSON if available, or just pass data if registry handles it.
+                    // Let's check FunctionRegistry.register. It expects a FunctionDefinition object.
+                    // We need to reconstruct it.
+                    // Since we can't easily import FunctionDefinition here without changing imports at top,
+                    // let's check if we can access it via app? No.
+                    // But wait, FunctionRegistry is imported in app.js.
+                    // Maybe we can add a loadState method to FunctionsController?
+                    // Or just manually reconstruct if it's simple data.
+                    // FunctionDefinition has methods like addInput.
+                    // If we just store raw JSON, we lose methods.
+                    // Ideally, FunctionsController should handle loading.
+                });
+                // Better approach: Delegate to FunctionsController
+                if (this.app.functionsController) {
+                    this.app.functionsController.loadState(state.functions);
+                }
+            }
+
+            // Restore Macros
+            if (state.macros && this.app.macrosController) {
+                this.app.macrosController.loadState(state.macros);
+            }
 
             // Restore Components
             if (state.components && this.app.components) {

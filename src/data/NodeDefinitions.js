@@ -3,28 +3,6 @@
  * Includes detailed pin definitions to ensure proper rendering.
  */
 export const NodeDefinitions = {
-    // --- EVENTS ---
-    "EventTick": {
-        title: "Event Tick",
-        type: "event-node",
-        category: "Events",
-        icon: "fa-clock",
-        pins: [
-            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-            { id: "delta_out", name: "Delta Seconds", type: "float", dir: "out" }
-        ]
-    },
-    "EventActorBeginOverlap": {
-        title: "Event ActorBeginOverlap",
-        type: "event-node",
-        category: "Events",
-        icon: "fa-box-open",
-        pins: [
-            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-            { id: "other_actor", name: "Other Actor", type: "object", dir: "out" }
-        ]
-    },
-
     // --- CONVERSION NODES (Compact Style) ---
     "Conv_FloatToString": {
         title: "To String (Float)",
@@ -153,7 +131,7 @@ export const NodeDefinitions = {
         title: "Event BeginPlay",
         type: "event-node",
         category: "Events",
-        icon: "fa-location-arrow",
+        icon: "fa-play",
         isSingleton: true, // Marks this node as unique in the graph
         pins: [
             { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
@@ -1106,4 +1084,23 @@ export const NodeDefinitions = {
         ]
     }
 
-};
+,
+    "MacroEntry": {
+        title: "Inputs",
+        type: "event-node",
+        category: "Macro",
+        icon: "fa-sign-in-alt",
+        isSingleton: true,
+        pins: [
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "MacroResult": {
+        title: "Outputs",
+        type: "flow-node",
+        category: "Macro",
+        icon: "fa-sign-out-alt",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" }
+        ]
+    }};

@@ -9,7 +9,7 @@ class Pin {
         this.node = node;
         this.name = pinData.name;
         this.type = (pinData.type || '').toLowerCase(); // Safe lowercasing
-        this.dir = (pinData.dir || '').toLowerCase();
+        this.dir = pinData.dir;
         this.element = null;
         this.links = [];
         this.containerType = pinData.containerType || 'single';

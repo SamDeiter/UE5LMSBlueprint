@@ -78,7 +78,7 @@ class BlueprintApp {
         BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
         BlueprintApp.functionsController = new FunctionsController(BlueprintApp);
         BlueprintApp.macrosController = new MacrosController(BlueprintApp);
-        BlueprintApp.graphsController = new GraphsController(BlueprintApp); // Initialize Graphs Controller
+        BlueprintApp.graphsController = new GraphsController(BlueprintApp);
         BlueprintApp.localVariablesController = new LocalVariablesController(BlueprintApp);
         BlueprintApp.palette = new PaletteController(BlueprintApp);
         BlueprintApp.details = new DetailsController(BlueprintApp);
@@ -153,17 +153,6 @@ class BlueprintApp {
             helpCloseBtn.addEventListener('click', () => {
                 const modal = document.getElementById(DOMElements.HELP_MODAL);
                 if (modal) modal.style.display = 'none';
-            });
-        }
-
-        // Hard Reset Button
-        const hardResetBtn = document.getElementById('hard-reset-btn');
-        if (hardResetBtn) {
-            hardResetBtn.addEventListener('click', () => {
-                if (confirm("Are you sure? This will delete all your blueprints and reset the editor to default.")) {
-                    localStorage.clear();
-                    window.location.reload();
-                }
             });
         }
 

@@ -192,4 +192,15 @@ export class FunctionsController {
         input.click();
         document.body.removeChild(input);
     }
+
+    loadState(functionsData) {
+        this.app.functionRegistry.clear();
+        if (functionsData) {
+            functionsData.forEach(data => {
+                const func = FunctionDefinition.fromJSON(data);
+                this.app.functionRegistry.register(func);
+            });
+        }
+        this.render();
+    }
 }
