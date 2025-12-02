@@ -11,7 +11,9 @@ Refactor the codebase to improve performance, modularity, and maintainability, w
 - **Phase**: Implementation / Bug Fixing
 - **Progress**:
     - [x] Fix UI Initialization bugs (missing DOM elements).
+    - [x] Fix Pin initialization error in FunctionsController.
     - [x] Fix `GraphInteraction` binding errors.
+    - [x] Clean up code (lint fixes).
     - [x] Restore Event Graph / Construction Script tabs.
     - [x] Initial Performance Optimization (rAF, DocumentFragment).
     - [x] Extract hard-coded values to Constants.

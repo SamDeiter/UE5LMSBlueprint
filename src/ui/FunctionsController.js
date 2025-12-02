@@ -223,6 +223,9 @@ export class FunctionsController {
                 // Ensure name is synced
                 pin.name = def.name;
             } else {
+                if (!def.id) {
+                    def.id = generateGUID();
+                }
                 pin = new Pin(node, def);
             }
             newPins.push(pin);
@@ -349,13 +352,13 @@ export class FunctionsController {
     }
 
     deleteFunction(func) {
-        if (!confirm(`Delete function '${func.name}'? This will remove all CallFunction nodes.`)) {
+        if (!window.confirm(`Delete function '${func.name}'? This will remove all CallFunction nodes.`)) {
             return;
         }
 
         // 1. Remove all CallFunction nodes from all graphs
         const callNodeKey = `Func_${func.name}`;
-        
+
         // Remove from active graph
         if (this.app.graph && this.app.graph.nodes) {
             const nodesToRemove = [];
@@ -391,7 +394,7 @@ export class FunctionsController {
         this.app.persistence.autoSave();
     }
 
-        showContextMenu(e, func) {
+    showContextMenu(e, func) {
         const items = [
             { label: 'Open', callback: () => this.app.switchGraph(func.name) },
             { label: 'Rename', callback: () => { /* TODO */ } },
@@ -433,7 +436,7 @@ export class FunctionsController {
                     const funcDef = JSON.parse(event.target.result);
                     // Basic validation
                     if (!funcDef.name || !funcDef.graph) {
-                        alert('Invalid function definition file.');
+                        window.alert('Invalid function definition file.');
                         return;
                     }
 
@@ -449,10 +452,10 @@ export class FunctionsController {
                     // but currently it's likely a POJO.
                     this.app.functionRegistry.register(funcDef);
                     this.render();
-                    alert(`Function '${funcDef.name}' imported successfully.`);
+                    window.alert(`Function '${funcDef.name}' imported successfully.`);
                 } catch (err) {
                     console.error('Import failed:', err);
-                    alert('Failed to import function: ' + err.message);
+                    window.alert('Failed to import function: ' + err.message);
                 }
             };
             reader.readAsText(file);

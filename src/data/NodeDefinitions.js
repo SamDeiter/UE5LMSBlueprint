@@ -1364,32 +1364,7 @@ export const NodeDefinitions = {
     },
 
     // --- ACTOR NODES ---
-    "SpawnActorFromClass": {
-        title: "Spawn Actor from Class",
-        type: "function-node",
-        category: "Actor",
-        icon: "fa-cube",
-        pins: [
-            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-            { id: "class_in", name: "Class", type: "class", dir: "in" },
-            { id: "transform_in", name: "Spawn Transform", type: "transform", dir: "in" },
-            { id: "collision_in", name: "Collision Handling Override", type: "enum", dir: "in", defaultValue: "AlwaysSpawn" },
-            { id: "owner_in", name: "Owner", type: "object", dir: "in" },
-            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-            { id: "return_out", name: "Return Value", type: "object", dir: "out" }
-        ]
-    },
-    "DestroyActor": {
-        title: "Destroy Actor",
-        type: "function-node",
-        category: "Actor",
-        icon: "fa-bomb",
-        pins: [
-            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-            { id: "target_in", name: "Target", type: "object", dir: "in" },
-            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
-        ]
-    },
+    // Duplicates removed (moved to Game|Actor section)
 
     // --- MATH: BASIC ---
     "Lerp": {

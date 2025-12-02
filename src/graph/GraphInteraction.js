@@ -136,7 +136,7 @@ export class GraphInteraction {
                 // Also check for any node starting with 'Event' except CustomEvent?
                 // For now, specific list is safer + 'Event' prefix check if needed.
                 if (forbiddenNodes.includes(nodeType) || (nodeType.startsWith('Event') && nodeType !== 'CustomEvent' && nodeType !== 'EventGraph')) {
-                    alert(`Cannot place ${nodeType} in Construction Script.`);
+                    window.alert(`Cannot place ${nodeType} in Construction Script.`);
                     return;
                 }
             }
@@ -144,7 +144,7 @@ export class GraphInteraction {
             // RESTRICTION: Event Graph cannot have Construction Script node
             if (this.app.activeGraph === 'EventGraph') {
                 if (nodeType === 'ConstructionScript') {
-                    alert('Cannot place Construction Script node in Event Graph.');
+                    window.alert('Cannot place Construction Script node in Event Graph.');
                     return;
                 }
             }

@@ -122,13 +122,13 @@ export class MacrosController {
     }
 
     deleteMacro(macro) {
-        if (!confirm(`Delete macro '${macro.name}'? This will remove all CallMacro nodes.`)) {
+        if (!window.confirm(`Delete macro '${macro.name}'? This will remove all CallMacro nodes.`)) {
             return;
         }
 
         // 1. Remove all CallMacro nodes from all graphs
         const callNodeKey = `Macro_${macro.name}`;
-        
+
         // Remove from active graph
         if (this.app.graph && this.app.graph.nodes) {
             const nodesToRemove = [];
@@ -164,12 +164,12 @@ export class MacrosController {
         this.app.persistence.autoSave();
     }
 
-        showContextMenu(e, macro) {
+    showContextMenu(e, macro) {
         const items = [
             { label: 'Open', callback: () => this.app.switchGraph(macro.name) },
             { label: 'Rename', callback: () => { /* TODO */ } },
             { label: 'Duplicate', callback: () => { /* TODO */ } },
-            { label: 'Delete', callback: () => this.deleteMacro(func) },
+            { label: 'Delete', callback: () => this.deleteMacro(macro) },
             { label: '---', callback: () => { } },
             { label: 'Export to JSON', callback: () => this.exportMacro(macro) }
         ];
@@ -206,7 +206,7 @@ export class MacrosController {
                     const macroDef = JSON.parse(event.target.result);
                     // Basic validation
                     if (!macroDef.name || !macroDef.graph) {
-                        alert('Invalid macro definition file.');
+                        window.alert('Invalid macro definition file.');
                         return;
                     }
 
@@ -215,10 +215,10 @@ export class MacrosController {
 
                     this.app.macroRegistry.register(macroDef);
                     this.render();
-                    alert(`Macro '${macroDef.name}' imported successfully.`);
+                    window.alert(`Macro '${macroDef.name}' imported successfully.`);
                 } catch (err) {
                     console.error('Import failed:', err);
-                    alert('Failed to import macro: ' + err.message);
+                    window.alert('Failed to import macro: ' + err.message);
                 }
             };
             reader.readAsText(file);
