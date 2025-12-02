@@ -235,6 +235,7 @@ export class GraphInteraction {
         if (e.button === 2) { // Right mouse button
             e.preventDefault();
             this.isRmbDown = true;
+            this.isPanning = true;
             this.dragStart.x = e.clientX;
             this.dragStart.y = e.clientY;
             this.editor.classList.add('dragging');
@@ -305,6 +306,7 @@ export class GraphInteraction {
             } else if (this.isWiring) {
                 this.app.wiring.updateGhostWire(e, this.activePin);
             } else if (this.isMarqueeing) {
+                const rect = this.editor.getBoundingClientRect();
                 const currentX = e.clientX;
                 const currentY = e.clientY;
 
@@ -313,8 +315,8 @@ export class GraphInteraction {
                 const width = Math.abs(currentX - this.marqueeStart.x);
                 const height = Math.abs(currentY - this.marqueeStart.y);
 
-                this.marqueeEl.style.left = `${x}px`;
-                this.marqueeEl.style.top = `${y}px`;
+                this.marqueeEl.style.left = `${x - rect.left}px`;
+                this.marqueeEl.style.top = `${y - rect.top}px`;
                 this.marqueeEl.style.width = `${width}px`;
                 this.marqueeEl.style.height = `${height}px`;
 
@@ -340,6 +342,7 @@ export class GraphInteraction {
 
         if (this.isRmbDown) {
             this.isRmbDown = false;
+            this.isPanning = false;
             this.editor.classList.remove('dragging');
         }
 
