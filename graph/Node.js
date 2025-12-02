@@ -89,9 +89,7 @@ class Node {
         if (this.nodeKey.startsWith('Get_') || this.nodeKey.startsWith('Conv_') || this.nodeKey.startsWith('GetComponent_')) {
             return this.renderCompactNode();
         }
-        if (this.nodeKey.startsWith('Set_') || this.nodeKey.startsWith('SetComponent_')) {
-            return this.renderSetNode();
-        }
+
 
 
         const element = document.createElement('div');
@@ -123,8 +121,20 @@ class Node {
         }
 
         const titleSpan = document.createElement('span');
-        titleSpan.textContent = this.title;
+        if (this.nodeKey.startsWith('Set_') || this.nodeKey.startsWith('SetComponent_')) {
+            titleSpan.textContent = "SET";
+        } else {
+            titleSpan.textContent = this.title;
+        }
         header.appendChild(titleSpan);
+        if (this.nodeKey === 'PrintString' || this.devWarning) {
+            const devBadge = document.createElement('span');
+            devBadge.className = 'dev-badge';
+            devBadge.textContent = 'Development Only';
+            devBadge.style.cssText = 'font-size: 8px; color: #aaa; margin-left: auto; padding-right: 4px; font-style: italic;';
+            header.appendChild(devBadge);
+        }
+
 
         if (this.type === 'event-node') {
             const delegateIcon = document.createElement('div');
@@ -226,6 +236,10 @@ class Node {
             }
         }
 
+        element.appendChild(content);
+
+
+
         // NeedNode Visualization: Show criteria checklist
         if (this.nodeKey === 'NeedNode' && this.customData && this.customData.needNodeData) {
             const needData = this.customData.needNodeData;
@@ -261,69 +275,6 @@ class Node {
             element.appendChild(devBar);
         }
 
-        this.element = element;
-        return element;
-    }
-
-    renderSetNode() {
-        const element = document.createElement('div');
-        element.id = this.id;
-        element.className = `node ${this.type} set-node`;
-        element.style.left = `${this.x}px`;
-        element.style.top = `${this.y}px`;
-
-        const header = document.createElement('div');
-        header.className = 'node-title';
-        if (this.variableType) {
-            const gradient = Utils.getVariableHeaderColor(this.variableType);
-            header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
-            header.style.borderBottomColor = 'rgba(0,0,0,0.5)';
-        }
-
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = "SET";
-        header.appendChild(titleSpan);
-        element.appendChild(header);
-
-        const content = document.createElement('div');
-        content.className = 'node-content';
-
-        // Defensive check: ensure pin arrays exist
-        if (!this.pinsIn || !this.pinsOut) {
-            this.refreshPinCache();
-        }
-
-        const execIn = this.pinsIn ? this.pinsIn.find(p => p.type === 'exec') : null;
-        const execOut = this.pinsOut ? this.pinsOut.find(p => p.type === 'exec') : null;
-        const dataIn = this.pinsIn ? this.pinsIn.find(p => p.type !== 'exec') : null;
-        const dataOut = this.pinsOut ? this.pinsOut.find(p => p.type !== 'exec') : null;
-
-        const execRow = document.createElement('div');
-        execRow.className = 'pin-row';
-        if (execIn) execRow.appendChild(this.renderPin(execIn, true));
-        else execRow.appendChild(document.createElement('div'));
-
-        if (execOut) execRow.appendChild(this.renderPin(execOut, true));
-        else execRow.appendChild(document.createElement('div'));
-        content.appendChild(execRow);
-
-        const dataRow = document.createElement('div');
-        dataRow.className = 'pin-row';
-
-        if (dataIn) {
-            dataRow.appendChild(this.renderPin(dataIn));
-        } else {
-            dataRow.appendChild(document.createElement('div'));
-        }
-
-        if (dataOut) {
-            dataRow.appendChild(this.renderPin(dataOut, true));
-        } else {
-            dataRow.appendChild(document.createElement('div'));
-        }
-        content.appendChild(dataRow);
-
-        element.appendChild(content);
         this.element = element;
         return element;
     }

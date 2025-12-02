@@ -38,6 +38,10 @@ export class SimulationEngine {
         this.callStack = [];
         this.functionReturnValues = null;
 
+        // Executor Registry
+        this.executorRegistry = new ExecutorRegistry(this);
+        this.initializeExecutors();
+
         // Debugging State
         this.isPaused = false;
         this.pausedNode = null;

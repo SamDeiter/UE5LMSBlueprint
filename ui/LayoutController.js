@@ -23,6 +23,7 @@ export class LayoutController {
 
         this.initResizers();
         this.initDetailsResizer();
+        this.initTabs();
     }
 
     initResizers() {
@@ -132,6 +133,37 @@ export class LayoutController {
                 isResizing = false;
                 document.body.style.cursor = '';
             }
+        });
+    }
+
+    initTabs() {
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                // Determine graph name
+                let graphName = tab.dataset.graph;
+                
+                if (!graphName) {
+                    // Fallback to text content if data attribute missing
+                    const text = tab.querySelector('span').textContent.trim();
+                    if (text === 'Construction Script') {
+                        graphName = 'ConstructionScript';
+                    } else if (text === 'Event Graph') {
+                        graphName = 'EventGraph';
+                    } else {
+                        graphName = 'EventGraph';
+                    }
+                }
+                
+                // Switch graph (GraphSwitcher handles UI update if we use it)
+                if (this.app.switchGraph) {
+                    this.app.switchGraph(graphName);
+                } else {
+                    // Manual UI update fallback
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                }
+            });
         });
     }
 }

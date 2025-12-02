@@ -169,15 +169,7 @@
     margin-left: 0 !important;
 }
 
-.node.set-node .pin-dot {
-    width: 14px;
-    height: 14px;
-}
 
-.node.set-node .pin-dot.exec-pin {
-    width: 18px;
-    height: 17px;
-}
 
 /* --- PIN STYLES (Base for Data Pins) --- */
 .pin-dot {
@@ -245,17 +237,21 @@
     clip-path: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%);
 }
 
-.pin-container:not(.exec-pin) .pin-dot::after {
+/* Output Pin Triangle Arrow (for non-exec pins) */
+/* Pin Triangle Arrow (Output pins + Input pins) */
+.pin-container.out .pin-dot:not(.exec-pin)::after,
+.pin-container.in .pin-dot:not(.exec-pin)::after {
     content: '';
     position: absolute;
-    right: -6px;
+    right: -7px; /* Adjusted for better visibility */
     top: 50%;
     transform: translateY(-50%);
     width: 0;
     height: 0;
-    border-top: 3px solid transparent;
-    box-shadow: none;
-    background-color: transparent;
+    border-left: 5px solid currentColor; /* Slightly larger to match image */
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    pointer-events: none;
 }
 
 

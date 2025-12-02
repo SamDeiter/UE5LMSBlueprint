@@ -51,7 +51,7 @@ export function createCollapsibleHeader(container, title, content, options = {})
         const actionGroup = document.createElement('div');
         actionGroup.className = 'action-group';
         const addBtn = document.createElement('i');
-        addBtn.className = 'fas fa-plus add-btn';
+        addBtn.className = 'fas fa-plus section-add-icon add-btn';
         addBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             onAdd();

@@ -185,4 +185,15 @@ export class MacrosController {
         input.click();
         document.body.removeChild(input);
     }
+
+    loadState(macrosData) {
+        this.app.macroRegistry.clear();
+        if (macrosData) {
+            macrosData.forEach(data => {
+                const macro = MacroDefinition.fromJSON(data);
+                this.app.macroRegistry.register(macro);
+            });
+        }
+        this.render();
+    }
 }
