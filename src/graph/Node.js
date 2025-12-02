@@ -102,7 +102,7 @@ class Node {
                     if (!header.querySelector('.breakpoint-icon')) {
                         const bpIcon = document.createElement('div');
                         bpIcon.className = 'breakpoint-icon';
-                        bpIcon.style.cssText = 'width: 12px; height: 12px; background: #d32f2f; border-radius: 50%; position: absolute; top: -6px; left: -6px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;';
+                        bpIcon.style.cssText = 'width: 14px; height: 14px; background: #d32f2f; border-radius: 50%; position: absolute; top: 4px; left: 4px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;';
                         header.appendChild(bpIcon);
                     }
                 } else {
