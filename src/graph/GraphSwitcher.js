@@ -176,3 +176,4 @@ export class GraphSwitcher {
             tab.classList.add('active');
         }
     }
+}
