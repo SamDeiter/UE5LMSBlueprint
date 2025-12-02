@@ -12,33 +12,73 @@
     --color-reroute: #FFFFFF;
     --color-breakpoint: #FF4444;
 
-    /* Node Header Gradients */
-    --header-event-start: #8B0000;
-    --header-event-end: #400000;
-    --header-flow-start: #666666;
-    --header-flow-end: #333333;
-    --header-function-start: #005580;
-    --header-function-end: #002a40;
 
-    /* Pin Colors (Full Palette) */
+    /* Selection Outline (UE5 Golden Orange) */
+    --node-selection-outline: #F0B000;
+
+    /* Node Header Gradients - Event & Flow Control */
+    --header-event-start: #750000;
+    --header-event-end: #300000;
+    --header-flow-start: #404040;
+    --header-flow-end: #202020;
+    --header-function-start: #004060;
+    --header-function-end: #002030;
+    --header-macro-start: #505050;
+    --header-macro-end: #282828;
+
+    /* Additional Header Gradients - Function Types */
+    --header-function-blue: linear-gradient(to bottom, #005075 0%, #002535 100%); /* Impure Functions */
+    --header-pure-green: linear-gradient(to bottom, #407500 0%, #152500 100%);    /* Pure Functions */
+    --header-flow-gray: linear-gradient(to bottom, #505050 0%, #1A1A1A 100%);     /* Flow Control */
+
+    /* Header Gradients for SET Nodes (Variable Type-Based) */
+    --header-float-green: linear-gradient(to bottom, #38E056 0%, #155720 100%);
+    --header-object-blue: linear-gradient(to bottom, #005A8E 0%, #00253E 100%);
+    --header-int-green: linear-gradient(to bottom, #38E056 0%, #155720 100%);
+    --header-string-magenta: linear-gradient(to bottom, #E030E0 0%, #600060 100%);
+    --header-vector-gold: linear-gradient(to bottom, #FFC700 0%, #6B5400 100%);
+    --header-transform-orange: linear-gradient(to bottom, #FF6600 0%, #662900 100%);
+
+    /* Pin Colors (Authentic UE5 Palette) */
     --color-exec: #FFFFFF;
-    --color-bool: #8C0202;
-    --color-byte: #00665E;
-    --color-int: #28E897;
+    --color-bool: #920101; /* Dark Red */
+    --color-byte: #0065CA; /* Deep Blue */
+    --color-int: #18E1A6; /* Cyan/Teal */
     --color-int64: #76D37E;
-    --color-float: #96EE35;
-    --color-double: #85DD24;
-    /* Slightly darker green than float */
-    --color-name: #CC99FF;
-    --color-string: #FF00FF;
-    --color-text: #E27696;
-    --color-vector: #FFC700;
-    --color-rotator: #99CCFF;
-    --color-transform: #FF7300;
-    --color-object: #00A2E8;
-    --color-enum: #00BB55;
-    /* Forest green for enumerators */
+    --color-float: #00EA32; /* Vibrant Neon Green (UE5 Standard) */
+    --color-double: #4A90E2;
+    --color-name: #C966E3; /* Lavender */
+    --color-string: #FF00FF; /* Magenta */
+    --color-text: #E27696; /* Pinkish */
+    --color-vector: #FFC700; /* Gold */
+    --color-rotator: #9999FF; /* Purple */
+    --color-transform: #FF6600; /* Orange */
+    --color-object: #00A8E8; /* Cyan Blue */
+    --color-class: #5800A0; /* Purple */
+    --color-enum: #0065CA;
+    
+
     --color-dev-yellow: #FFC72C;
     --color-dev-black: #202020;
     --color-array-dim: 2px;
 }
+
+
+/* =========================================
+   UE5 EDITOR THEME OVERRIDES
+   ========================================= */
+:root {
+    /* Main Backgrounds */
+    --bg-graph: #262626;
+    --bg-panel: #151515;
+    --bg-header: #0f0f0f;
+    
+    /* Grid Lines */
+    --grid-line-major: #353535;
+    --grid-line-minor: #2e2e2e;
+    
+    /* Text */
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+}
+

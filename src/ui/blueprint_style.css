@@ -1,0 +1,92 @@
+/* Blueprint Editor UI Tokens */
+:root {
+    /* Colors */
+    --bp-primary: #2c3e50;
+    /* dark slate */
+    --bp-secondary: #34495e;
+    /* slightly lighter */
+    --bp-accent: #e67e22;
+    /* orange accent for buttons */
+    --bp-bg: #1e1e1e;
+    /* dark background */
+    --bp-node-bg: #2b2b2b;
+    --bp-node-border: #3c3c3c;
+    --bp-node-selected: #4caf50;
+    /* green glow */
+    --bp-pin-fill: #9ca3af;
+    --bp-pin-outline: #ffffff;
+    --bp-text-primary: #ecf0f1;
+    --bp-text-secondary: #bdc3c7;
+    /* Typography */
+    --bp-font-family: 'Inter', sans-serif;
+    --bp-font-size-base: 14px;
+    --bp-font-size-large: 16px;
+    --bp-font-weight-normal: 400;
+    --bp-font-weight-bold: 600;
+    /* Spacing */
+    --bp-spacing-xs: 4px;
+    --bp-spacing-sm: 8px;
+    --bp-spacing-md: 12px;
+    --bp-spacing-lg: 16px;
+    /* Shadows */
+    --bp-node-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+    --bp-node-selected-shadow: 0 0 8px var(--bp-node-selected);
+}
+
+/* Apply tokens */
+body {
+    font-family: var(--bp-font-family);
+    font-size: var(--bp-font-size-base);
+    color: var(--bp-text-primary);
+    background-color: var(--bp-bg);
+}
+
+.node {
+    background-color: var(--bp-node-bg);
+    border: 1px solid var(--bp-node-border);
+    box-shadow: var(--bp-node-shadow);
+    border-radius: 4px;
+    padding: var(--bp-spacing-md);
+    margin: var(--bp-spacing-sm);
+}
+
+.node.selected {
+    box-shadow: var(--bp-node-selected-shadow);
+    border-color: var(--bp-node-selected);
+}
+
+.pin {
+    fill: var(--bp-pin-fill);
+    stroke: var(--bp-pin-outline);
+}
+
+.button {
+    background-color: var(--bp-accent);
+    color: var(--bp-text-primary);
+    border: none;
+    padding: var(--bp-spacing-sm) var(--bp-spacing-md);
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: var(--bp-font-weight-bold);
+}
+
+.button:hover {
+    opacity: 0.9;
+}
+
+/* Generic button styling */
+button {
+    background-color: var(--bp-accent);
+    color: var(--bp-text-primary);
+    border: none;
+    padding: var(--bp-spacing-sm) var(--bp-spacing-md);
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: var(--bp-font-weight-bold);
+    font-family: var(--bp-font-family);
+    font-size: var(--bp-font-size-base);
+}
+
+button:hover {
+    opacity: 0.9;
+}

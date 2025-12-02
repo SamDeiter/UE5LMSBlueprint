@@ -1,0 +1,4 @@
+/* Assessment Node Styling */
+.node.assessment-node .node-title {
+    background: linear-gradient(to bottom, #6030a0, #301560);
+}

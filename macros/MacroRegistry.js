@@ -43,4 +43,8 @@ export class MacroRegistry {
         }
         return name;
     }
+
+    clear() {
+        this.macros.clear();
+    }
 }

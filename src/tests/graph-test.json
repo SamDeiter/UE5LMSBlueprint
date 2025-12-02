@@ -1,0 +1,37 @@
+{
+    "graphName": "TestGraph",
+    "nodes": [
+        {
+            "nodeKey": "EventBeginPlay",
+            "x": 200,
+            "y": 200
+        },
+        {
+            "nodeKey": "EventTick",
+            "x": 200,
+            "y": 400
+        },
+        {
+            "nodeKey": "CustomEvent",
+            "x": 200,
+            "y": 600,
+            "customName": "MyCustomEvent"
+        },
+        {
+            "nodeKey": "PrintString",
+            "x": 400,
+            "y": 200
+        },
+        {
+            "nodeKey": "GetComponent_1",
+            "x": 400,
+            "y": 400
+        },
+        {
+            "nodeKey": "SetComponent_1",
+            "x": 400,
+            "y": 600
+        }
+    ],
+    "links": []
+}

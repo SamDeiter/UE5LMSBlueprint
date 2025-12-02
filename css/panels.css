@@ -248,71 +248,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-    height: 22px;
-    box-sizing: border-box;
-}
 
-.ue5-dropdown-pill:hover {
-    background-color: #1a1a1a;
-    border-color: #555;
-}
-
-/* --- NEW: UE5 TOP BAR STYLES --- */
-
-/* Menubar */
-.menubar {
-    grid-area: menubar;
-    height: 32px;
-    background-color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    font-size: 11px;
-    color: #ccc;
-    border-bottom: 1px solid #222;
-}
-
-.menubar .menu-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.ue-logo-icon {
-    height: 20px;
-    width: 20px;
-    opacity: 0.8;
-    cursor: pointer;
-}
-
-.menubar .menu-item {
-    cursor: pointer;
-    padding: 4px 6px;
-    border-radius: 3px;
-}
-
-.menubar .menu-item:hover {
-    background-color: #333;
-    color: white;
-}
-
-.menubar .menu-right .window-controls {
-    display: flex;
-    gap: 15px;
-    color: #888;
-    font-size: 10px;
-}
-
-.menubar .menu-right .window-controls i:hover {
-    color: white;
-    cursor: pointer;
-}
-
-/* Tab Bar */
-.tabbar {
-    grid-area: tabbar;
     background-color: #111;
     height: 28px;
     display: flex;
@@ -1218,6 +1154,7 @@
     border: 1px solid #8e44ad;
     box-shadow: 0 0 10px rgba(142, 68, 173, 0.5);
     min-width: 220px;
+<<<<<<< HEAD
 }
 
 
@@ -1239,3 +1176,6 @@
     flex: 1;
     padding-bottom: 20px; /* Extra space at bottom */
 }
+=======
+}
+>>>>>>> main
