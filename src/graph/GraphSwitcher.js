@@ -97,78 +97,82 @@ export class GraphSwitcher {
         this.app.graph.drawAllWires();
 
         // 6. Update active tab styling and create tab if needed
-        const tabBar = document.getElementById('tabbar');
-        if (!tabBar) {
-            console.warn('Tab bar not found');
-        } else {
-            // Check if tab exists
-            let tab = document.querySelector(`.graph-tab[data-graph="${graphName}"]`);
-
-            // Create tab if it doesn't exist
-            if (!tab) {
-                tab = document.createElement('div');
-                tab.className = 'tab graph-tab';
-                tab.dataset.graph = graphName;
-
-                // Determine icon and color based on type
-                let icon = 'fas fa-cube';
-                let color = '#a8b';
-
-                if (graphName === 'EventGraph') {
-                    icon = 'fas fa-file-code';
-                    color = '#4a90e2';
-                } else if (graphName === 'ConstructionScript') {
-                    icon = 'fas fa-tools';
-                    color = '#8A3B04'; // Match header color
-                } else if (this.app.macroRegistry && this.app.macroRegistry.getByName(graphName)) {
-                    icon = 'fas fa-project-diagram';
-                    color = '#4ae2a8';
-                } else if (this.app.functionRegistry && this.app.functionRegistry.getByName(graphName)) {
-                    icon = 'fas fa-cube';
-                    color = '#a8b';
-                }
-
-                tab.innerHTML = `
-                    <i class="${icon}" style="color: ${color}; margin-right: 6px;"></i>
-                    <span>${graphName === 'ConstructionScript' ? 'Construction Script' : (graphName === 'EventGraph' ? 'Event Graph' : graphName)}</span>
-                    <i class="fas fa-times tab-close"></i>
-                `;
-
-                // Add click handler to switch to this graph
-                tab.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('tab-close')) {
-                        this.app.switchGraph(graphName);
-                    }
-                });
-
-                // Add close handler
-                const closeBtn = tab.querySelector('.tab-close');
-                closeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    tab.remove();
-                    // Switch to EventGraph when closing a tab
-                    this.app.switchGraph('EventGraph');
-                });
-
-                // Insert before the tab-spacer
-                const spacer = tabBar.querySelector('.tab-spacer');
-                if (spacer) {
-                    tabBar.insertBefore(tab, spacer);
-                } else {
-                    tabBar.appendChild(tab);
-                }
-            }
-
-            // Update active state
-            document.querySelectorAll('.graph-tab').forEach(t => t.classList.remove('active'));
-            if (tab) {
-                tab.classList.add('active');
-            }
-        }
+        this.updateTabs(graphName);
 
         // 7. Update Local Variables Panel
         if (this.app.localVariablesController) {
             this.app.localVariablesController.render();
         }
     }
-}
+
+    updateTabs(graphName) {
+        const tabBar = document.getElementById('tabbar');
+        if (!tabBar) {
+            console.warn('Tab bar not found');
+            return;
+        }
+
+        // Check if tab exists
+        let tab = document.querySelector(`.graph-tab[data-graph="${graphName}"]`);
+
+        // Create tab if it doesn't exist
+        if (!tab) {
+            tab = document.createElement('div');
+            tab.className = 'tab graph-tab';
+            tab.dataset.graph = graphName;
+
+            // Determine icon and color based on type
+            let icon = 'fas fa-cube';
+            let color = '#a8b';
+
+            if (graphName === 'EventGraph') {
+                icon = 'fas fa-file-code';
+                color = '#4a90e2';
+            } else if (graphName === 'ConstructionScript') {
+                icon = 'fas fa-tools';
+                color = '#8A3B04'; // Match header color
+            } else if (this.app.macroRegistry && this.app.macroRegistry.getByName(graphName)) {
+                icon = 'fas fa-project-diagram';
+                color = '#4ae2a8';
+            } else if (this.app.functionRegistry && this.app.functionRegistry.getByName(graphName)) {
+                icon = 'fas fa-cube';
+                color = '#a8b';
+            }
+
+            tab.innerHTML = `
+                <i class="${icon}" style="color: ${color}; margin-right: 6px;"></i>
+                <span>${graphName === 'ConstructionScript' ? 'Construction Script' : (graphName === 'EventGraph' ? 'Event Graph' : graphName)}</span>
+                <i class="fas fa-times tab-close"></i>
+            `;
+
+            // Add click handler to switch to this graph
+            tab.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('tab-close')) {
+                    this.app.switchGraph(graphName);
+                }
+            });
+
+            // Add close handler
+            const closeBtn = tab.querySelector('.tab-close');
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tab.remove();
+                // Switch to EventGraph when closing a tab
+                this.app.switchGraph('EventGraph');
+            });
+
+            // Insert before the tab-spacer
+            const spacer = tabBar.querySelector('.tab-spacer');
+            if (spacer) {
+                tabBar.insertBefore(tab, spacer);
+            } else {
+                tabBar.appendChild(tab);
+            }
+        }
+
+        // Update active state
+        document.querySelectorAll('.graph-tab').forEach(t => t.classList.remove('active'));
+        if (tab) {
+            tab.classList.add('active');
+        }
+    }

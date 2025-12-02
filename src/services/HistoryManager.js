@@ -177,6 +177,11 @@ export class HistoryManager {
             if (this.app.details) this.app.details.clear();
             if (this.app.compiler) this.app.compiler.validate();
             if (this.app.graph) this.app.graph.clearSelection();
+
+            // Update tabs to reflect the active graph
+            if (this.app.graphSwitcher) {
+                this.app.graphSwitcher.updateTabs(this.app.activeGraph);
+            }
         } catch (e) {
             this.app.compiler.log(`Error performing history action: ${e.message}`, 'error');
             console.error("History Application Error:", e);
