@@ -8,6 +8,7 @@ import { DOMElements } from '../config/DOMElements.js';
 import { Pin } from './Pin.js';
 import { Node } from './Node.js';
 import { GraphInteraction } from './GraphInteraction.js';
+import { GraphRenderer } from './GraphRenderer.js';
 import { GRAPH_CONSTANTS, LATENT_NODE_TYPES } from '../config/Constants.js';
 
 class GraphController {
@@ -22,12 +23,37 @@ class GraphController {
         this.zoom = 1;
         this.selectedNodes = new Set();
 
+        // Initialize Renderer
+        this.renderer = new GraphRenderer(this, nodesContainer, svg, app);
+
         // Initialize Interaction Handler
         this.interaction = new GraphInteraction(this);
     }
 
     initEvents() {
         this.interaction.initEvents();
+    }
+
+    // ... addNode and other methods remain ...
+
+    updateTransform() {
+        this.renderer.updateTransform();
+    }
+
+    redrawNodeWires(nodeId) {
+        this.renderer.redrawNodeWires(nodeId);
+    }
+
+    drawAllWires() {
+        this.renderer.drawAllWires();
+    }
+
+    renderAllNodes() {
+        this.renderer.renderAllNodes();
+    }
+
+    clearActiveWires() {
+        this.renderer.clearActiveWires();
     }
 
     addNode(nodeKey, x, y) {
@@ -136,7 +162,6 @@ class GraphController {
         if (this.app.activeGraph && (this.app.activeGraph.startsWith('Func_') || this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph))) {
             // Latent nodes typically have a 'Latent' category or specific flag.
             // For now, we'll check for specific types like Timeline or Delay (if added later)
-            // For now, we'll check for specific types like Timeline or Delay (if added later)
             if (LATENT_NODE_TYPES.includes(nodeKey)) {
                 console.warn(`Cannot add ${nodeData.title}: Latent nodes are not allowed in Functions.`);
                 // Ideally show a UI toast/alert here
@@ -183,33 +208,6 @@ class GraphController {
         this.app.wiring.updateVisuals(node);
     }
 
-    updateTransform() {
-        const transform = `translate(${this.pan.x}px, ${this.pan.y}px) scale(${this.zoom})`;
-        this.nodesContainer.style.transform = transform;
-        const svgTransform = `translate(${this.pan.x}, ${this.pan.y}) scale(${this.zoom})`;
-        this.app.wiring.svgGroup.setAttribute('transform', svgTransform);
-        this.app.grid.draw();
-        // Redraw wires on transform update to ensure ghost wire is correctly positioned during pan/zoom
-        this.drawAllWires();
-    }
-
-    redrawNodeWires(nodeId) {
-        this.app.wiring.findLinksByNodeId(nodeId).forEach(link => this.app.wiring.drawWire(link));
-    }
-
-    drawAllWires() {
-        // Find all wires and ensure they are redrawn
-        for (const link of this.app.wiring.links.values()) {
-            this.app.wiring.drawWire(link);
-        }
-    }
-
-    renderAllNodes() {
-        this.nodesContainer.innerHTML = '';
-        for (const node of this.nodes.values()) {
-            this.nodesContainer.appendChild(node.render());
-        }
-    }
 
     getGraphCoords(clientX, clientY) {
         const rect = this.editor.getBoundingClientRect();
@@ -559,11 +557,6 @@ class GraphController {
         }
     }
 
-    clearActiveWires() {
-        // Remove 'active-wire' class from all wires
-        const activeWires = this.svg.querySelectorAll('.active-wire');
-        activeWires.forEach(wire => wire.classList.remove('active-wire'));
-    }
 
     clearSelection() {
         this.selectedNodes.forEach(nodeId => {

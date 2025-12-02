@@ -83,60 +83,7 @@ export class MathExecutor extends BaseExecutor {
                 return Math.abs(a);
             }
 
-            // --- VECTOR MATH ---
-            case 'AddVector': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
-                return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
-            }
-            case 'SubtractVector': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
-                return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
-            }
-            case 'MultiplyVectorFloat': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const b = parseFloat(this.evaluateInput(node, 'b_in'));
-                return { x: a.x * b, y: a.y * b, z: a.z * b };
-            }
-            case 'DivideVectorFloat': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const b = parseFloat(this.evaluateInput(node, 'b_in'));
-                const div = b !== 0 ? b : 1; // Prevent divide by zero
-                return { x: a.x / div, y: a.y / div, z: a.z / div };
-            }
-            case 'DotProduct': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
-                return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
-            }
-            case 'CrossProduct': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
-                return {
-                    x: a.y * b.z - a.z * b.y,
-                    y: a.z * b.x - a.x * b.z,
-                    z: a.x * b.y - a.y * b.x
-                };
-            }
-            case 'VectorLength': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                return Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-            }
-            case 'VectorDistance': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
-                const dx = a.x - b.x;
-                const dy = a.y - b.y;
-                const dz = a.z - b.z;
-                return Math.sqrt(dx * dx + dy * dy + dz * dz);
-            }
-            case 'NormalizeVector': {
-                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
-                const len = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-                const div = len !== 0 ? len : 1;
-                return { x: a.x / div, y: a.y / div, z: a.z / div };
-            }
+
 
             // --- TRIGONOMETRY (Degrees) ---
             case 'Sin': {

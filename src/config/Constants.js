@@ -97,3 +97,19 @@ export const DRAG_DATA_PREFIXES = {
     COMPONENT_REPARENT: 'COMPONENT_REPARENT:',
     COMPONENT: 'COMPONENT:'
 };
+
+export const GRAPH_CONSTANTS = {
+    GRID_SIZE: 10,
+    DUPLICATE_OFFSET: 20,
+    WIRE_STROKE_WIDTH: 3
+};
+
+export const LATENT_NODE_TYPES = ['Timeline', 'Delay'];
+
+export const STRUCT_TYPES = ['vector', 'rotator', 'transform'];
+
+export const BREAK_NODE_KEYS = {
+    vector: 'BreakVector',
+    rotator: 'BreakRotator',
+    transform: 'BreakTransform'
+};

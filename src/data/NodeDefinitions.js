@@ -8,6 +8,7 @@ export const NodeDefinitions = {
         title: "To String (Float)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "float", dir: "in" },
@@ -18,6 +19,7 @@ export const NodeDefinitions = {
         title: "To String (Int)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "int", dir: "in" },
@@ -28,6 +30,7 @@ export const NodeDefinitions = {
         title: "To String (Bool)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "bool", dir: "in" },
@@ -38,6 +41,7 @@ export const NodeDefinitions = {
         title: "To String (Byte)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "byte", dir: "in" },
@@ -48,6 +52,7 @@ export const NodeDefinitions = {
         title: "To String (Name)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "name", dir: "in" },
@@ -58,6 +63,7 @@ export const NodeDefinitions = {
         title: "To String (Text)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "text", dir: "in" },
@@ -68,6 +74,7 @@ export const NodeDefinitions = {
         title: "To Float (Int)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "int", dir: "in" },
@@ -78,6 +85,7 @@ export const NodeDefinitions = {
         title: "To Int (Byte)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "byte", dir: "in" },
@@ -88,6 +96,7 @@ export const NodeDefinitions = {
         title: "To String (Vector)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "vector", dir: "in" },
@@ -98,6 +107,7 @@ export const NodeDefinitions = {
         title: "To String (Rotator)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "rotator", dir: "in" },
@@ -108,6 +118,7 @@ export const NodeDefinitions = {
         title: "To String (Transform)",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "●",
         pins: [
             { id: "val_in", name: "", type: "transform", dir: "in" },
@@ -120,6 +131,7 @@ export const NodeDefinitions = {
         title: "Construction Script",
         type: "event-node",
         category: "Events",
+        executor: "Event",
         icon: "fa-tools",
         isSingleton: true,
         hidden: false,
@@ -131,6 +143,7 @@ export const NodeDefinitions = {
         title: "Event BeginPlay",
         type: "event-node",
         category: "Events",
+        executor: "Event",
         icon: "fa-play",
         isSingleton: true, // Marks this node as unique in the graph
         pins: [
@@ -141,6 +154,7 @@ export const NodeDefinitions = {
         title: "Event Tick",
         type: "event-node",
         category: "Events",
+        executor: "Event",
         icon: "fa-clock",
         isSingleton: true, // Marks this node as unique in the graph
         pins: [
@@ -152,6 +166,7 @@ export const NodeDefinitions = {
         title: "Custom Event",
         type: "event-node",
         category: "Events",
+        executor: "Event",
         icon: "fa-bolt",
         pins: [
             { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
@@ -162,6 +177,7 @@ export const NodeDefinitions = {
         title: "Call Custom Event",
         type: "function-node",
         category: "Events",
+        executor: "Event",
         icon: "f",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -172,6 +188,7 @@ export const NodeDefinitions = {
         title: "Timeline",
         type: "flow-node",
         category: "Utilities|Time",
+        executor: "Timeline",
         icon: "fa-clock",
         pins: [
             { id: "play", name: "Play", type: "exec", dir: "in" },
@@ -192,6 +209,7 @@ export const NodeDefinitions = {
         title: "Event ActorBeginOverlap",
         type: "event-node",
         category: "Events",
+        executor: "Event",
         icon: "fa-door-open",
         pins: [
             { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
@@ -202,6 +220,7 @@ export const NodeDefinitions = {
         title: "Event OnClicked",
         type: "event-node",
         category: "Events",
+        executor: "Event",
         icon: "fa-mouse-pointer",
         pins: [
             { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
@@ -212,6 +231,7 @@ export const NodeDefinitions = {
         title: "Branch",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-code-branch",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -224,6 +244,7 @@ export const NodeDefinitions = {
         title: "Sequence",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-list-ol",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -235,6 +256,7 @@ export const NodeDefinitions = {
         title: "DoOnce",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-step-forward",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -246,6 +268,7 @@ export const NodeDefinitions = {
         title: "Do N",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-redo-alt",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -259,6 +282,7 @@ export const NodeDefinitions = {
         title: "Delay",
         type: "flow-node",
         category: "Utilities|Time",
+        executor: "Timeline",
         icon: "fa-hourglass-half",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -270,6 +294,7 @@ export const NodeDefinitions = {
         title: "FlipFlop",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-toggle-on",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -282,6 +307,7 @@ export const NodeDefinitions = {
         title: "ForLoop",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-sync-alt",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -296,6 +322,7 @@ export const NodeDefinitions = {
         title: "ForEachLoop",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-sync-alt",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -310,6 +337,7 @@ export const NodeDefinitions = {
         title: "Gate",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-dungeon",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -325,6 +353,7 @@ export const NodeDefinitions = {
         title: "Function Entry",
         type: "event-node",
         category: "Function",
+        executor: "Function",
         icon: "f",
         isSingleton: true,
         pins: [
@@ -335,6 +364,7 @@ export const NodeDefinitions = {
         title: "Return Node",
         type: "flow-node",
         category: "Function",
+        executor: "Function",
         icon: "fa-sign-out-alt",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" }
@@ -344,6 +374,7 @@ export const NodeDefinitions = {
         title: "Print String",
         type: "function-node",
         category: "String",
+        executor: "String",
         icon: "f",
         devWarning: "Development Only",
         pins: [
@@ -357,6 +388,7 @@ export const NodeDefinitions = {
         title: "Add (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "fa-plus",
         pins: [
             { id: "a_in", name: "A", type: "int", dir: "in" },
@@ -368,6 +400,7 @@ export const NodeDefinitions = {
         title: "Subtract (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "-",
         pins: [
             { id: "a_in", name: "A", type: "int", dir: "in" },
@@ -379,6 +412,7 @@ export const NodeDefinitions = {
         title: "Multiply (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "×",
         pins: [
             { id: "a_in", name: "A", type: "int", dir: "in" },
@@ -390,6 +424,7 @@ export const NodeDefinitions = {
         title: "Divide (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "÷",
         pins: [
             { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 1 },
@@ -401,6 +436,7 @@ export const NodeDefinitions = {
         title: "Add (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "+",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -412,6 +448,7 @@ export const NodeDefinitions = {
         title: "Subtract (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "-",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -423,6 +460,7 @@ export const NodeDefinitions = {
         title: "Multiply (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "×",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 1.0 },
@@ -434,6 +472,7 @@ export const NodeDefinitions = {
         title: "Divide (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "÷",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 1.0 },
@@ -446,6 +485,7 @@ export const NodeDefinitions = {
         title: "OR",
         type: "pure-node",
         category: "Math|Boolean",
+        executor: "Math",
         icon: "∨",
         pins: [
             { id: "a_in", name: "A", type: "bool", dir: "in", defaultValue: false },
@@ -457,6 +497,7 @@ export const NodeDefinitions = {
         title: "AND",
         type: "pure-node",
         category: "Math|Boolean",
+        executor: "Math",
         icon: "∧",
         pins: [
             { id: "a_in", name: "A", type: "bool", dir: "in", defaultValue: false },
@@ -468,6 +509,7 @@ export const NodeDefinitions = {
         title: "NOT",
         type: "pure-node",
         category: "Math|Boolean",
+        executor: "Math",
         icon: "¬",
         pins: [
             { id: "a_in", name: "A", type: "bool", dir: "in", defaultValue: false },
@@ -479,6 +521,7 @@ export const NodeDefinitions = {
         title: "> (Greater)",
         type: "pure-node",
         category: "Math|Comparison",
+        executor: "Math",
         icon: "\u003e",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -490,6 +533,7 @@ export const NodeDefinitions = {
         title: ">= (Greater or Equal)",
         type: "pure-node",
         category: "Math|Comparison",
+        executor: "Math",
         icon: "≥",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -501,6 +545,7 @@ export const NodeDefinitions = {
         title: "< (Less)",
         type: "pure-node",
         category: "Math|Comparison",
+        executor: "Math",
         icon: "\u003c",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -512,6 +557,7 @@ export const NodeDefinitions = {
         title: "<= (Less or Equal)",
         type: "pure-node",
         category: "Math|Comparison",
+        executor: "Math",
         icon: "≤",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -523,6 +569,7 @@ export const NodeDefinitions = {
         title: "== (Equal)",
         type: "pure-node",
         category: "Math|Comparison",
+        executor: "Math",
         icon: "=",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -534,6 +581,7 @@ export const NodeDefinitions = {
         title: "!= (Not Equal)",
         type: "pure-node",
         category: "Math|Comparison",
+        executor: "Math",
         icon: "≠",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -545,6 +593,7 @@ export const NodeDefinitions = {
     "MakeVector": {
         title: "Make Vector",
         category: "Math|Vector",
+        executor: "Vector",
         type: "pure-node",
         icon: "fa-plus",
         pins: [
@@ -557,6 +606,7 @@ export const NodeDefinitions = {
     "BreakVector": {
         title: "Break Vector",
         category: "Math|Vector",
+        executor: "Vector",
         type: "pure-node",
         icon: "fa-minus",
         pins: [
@@ -571,6 +621,7 @@ export const NodeDefinitions = {
     "MakeRotator": {
         title: "Make Rotator",
         category: "Math|Rotator",
+        executor: "Vector",
         type: "pure-node",
         icon: "fa-sync",
         pins: [
@@ -583,6 +634,7 @@ export const NodeDefinitions = {
     "BreakRotator": {
         title: "Break Rotator",
         category: "Math|Rotator",
+        executor: "Vector",
         type: "pure-node",
         icon: "fa-sync",
         pins: [
@@ -597,6 +649,7 @@ export const NodeDefinitions = {
     "MakeTransform": {
         title: "Make Transform",
         category: "Math|Transform",
+        executor: "Vector",
         type: "pure-node",
         icon: "fa-cube",
         pins: [
@@ -609,6 +662,7 @@ export const NodeDefinitions = {
     "BreakTransform": {
         title: "Break Transform",
         category: "Math|Transform",
+        executor: "Vector",
         type: "pure-node",
         icon: "fa-cube",
         pins: [
@@ -624,6 +678,7 @@ export const NodeDefinitions = {
         title: "Append",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "+",
         pins: [
             { id: "a_in", name: "A", type: "string", dir: "in", defaultValue: "" },
@@ -635,6 +690,7 @@ export const NodeDefinitions = {
         title: "Split",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "fa-cut",
         pins: [
             { id: "str_in", name: "Source String", type: "string", dir: "in" },
@@ -648,6 +704,7 @@ export const NodeDefinitions = {
         title: "Replace",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "fa-exchange-alt",
         pins: [
             { id: "source_in", name: "Source String", type: "string", dir: "in" },
@@ -661,6 +718,7 @@ export const NodeDefinitions = {
         title: "To Upper",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "f",
         pins: [
             { id: "str_in", name: "Source String", type: "string", dir: "in" },
@@ -671,6 +729,7 @@ export const NodeDefinitions = {
         title: "To Lower",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "f",
         pins: [
             { id: "str_in", name: "Source String", type: "string", dir: "in" },
@@ -682,6 +741,7 @@ export const NodeDefinitions = {
         title: "New Comment",
         type: "comment-node",
         category: "Development",
+        executor: "Print",
         icon: "fa-comment-dots",
         pins: []
     },
@@ -1165,6 +1225,7 @@ export const NodeDefinitions = {
         title: "Len",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "f",
         pins: [
             { id: "str_in", name: "S", type: "string", dir: "in", defaultValue: "" },
@@ -1175,6 +1236,7 @@ export const NodeDefinitions = {
         title: "Contains",
         type: "pure-node",
         category: "String",
+        executor: "String",
         icon: "f",
         pins: [
             { id: "str_in", name: "Search In", type: "string", dir: "in", defaultValue: "" },
@@ -1189,6 +1251,7 @@ export const NodeDefinitions = {
         title: "Clamp (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "val_in", name: "Value", type: "int", dir: "in", defaultValue: 0 },
@@ -1201,6 +1264,7 @@ export const NodeDefinitions = {
         title: "Clamp (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "val_in", name: "Value", type: "float", dir: "in", defaultValue: 0.0 },
@@ -1213,6 +1277,7 @@ export const NodeDefinitions = {
         title: "Min (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
@@ -1224,6 +1289,7 @@ export const NodeDefinitions = {
         title: "Max (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
@@ -1235,6 +1301,7 @@ export const NodeDefinitions = {
         title: "Min (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -1246,6 +1313,7 @@ export const NodeDefinitions = {
         title: "Max (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -1257,6 +1325,7 @@ export const NodeDefinitions = {
         title: "Abs (Integer)",
         type: "pure-node",
         category: "Math|Integer",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
@@ -1267,6 +1336,7 @@ export const NodeDefinitions = {
         title: "Abs (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -1279,6 +1349,7 @@ export const NodeDefinitions = {
         title: "MultiGate",
         type: "flow-node",
         category: "Flow Control",
+        executor: "FlowControl",
         icon: "fa-random",
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -1325,6 +1396,7 @@ export const NodeDefinitions = {
         title: "Lerp (Float)",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
@@ -1390,6 +1462,7 @@ export const NodeDefinitions = {
         title: "Add (Vector)",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-plus",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1401,6 +1474,7 @@ export const NodeDefinitions = {
         title: "Subtract (Vector)",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-minus",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1412,6 +1486,7 @@ export const NodeDefinitions = {
         title: "Multiply (Vector * Float)",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-times",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1423,6 +1498,7 @@ export const NodeDefinitions = {
         title: "Divide (Vector / Float)",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-divide",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1434,6 +1510,7 @@ export const NodeDefinitions = {
         title: "Dot Product",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-circle",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1445,6 +1522,7 @@ export const NodeDefinitions = {
         title: "Cross Product",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-times",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1456,6 +1534,7 @@ export const NodeDefinitions = {
         title: "Vector Length",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-ruler-horizontal",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1466,6 +1545,7 @@ export const NodeDefinitions = {
         title: "Vector Distance",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-ruler",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1477,6 +1557,7 @@ export const NodeDefinitions = {
         title: "Normalize",
         type: "pure-node",
         category: "Math|Vector",
+        executor: "Vector",
         icon: "fa-arrow-right",
         pins: [
             { id: "a_in", name: "A", type: "vector", dir: "in" },
@@ -1562,6 +1643,7 @@ export const NodeDefinitions = {
         title: "Sqrt",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "√",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in" },
@@ -1572,6 +1654,7 @@ export const NodeDefinitions = {
         title: "Power",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "^",
         pins: [
             { id: "base_in", name: "Base", type: "float", dir: "in" },
@@ -1583,6 +1666,7 @@ export const NodeDefinitions = {
         title: "Round",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in" },
@@ -1593,6 +1677,7 @@ export const NodeDefinitions = {
         title: "Floor",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in" },
@@ -1603,6 +1688,7 @@ export const NodeDefinitions = {
         title: "Ceil",
         type: "pure-node",
         category: "Math|Float",
+        executor: "Math",
         icon: "f",
         pins: [
             { id: "a_in", name: "A", type: "float", dir: "in" },
