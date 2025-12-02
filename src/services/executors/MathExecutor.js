@@ -1,4 +1,5 @@
 import { BaseExecutor } from './BaseExecutor.js';
+import { Utils } from '../../utils.js';
 
 /**
  * Handles mathematical operation nodes (AddInt, AddFloat, SubtractFloat, etc.)
@@ -47,7 +48,7 @@ export class MathExecutor extends BaseExecutor {
                 return divisor !== 0 ? parseFloat(a) / divisor : 0;
             }
 
-            
+
             case 'ClampInt': {
                 const val = Number(this.evaluateInput(node, 'val_in'));
                 const min = Number(this.evaluateInput(node, 'min_in'));
@@ -81,7 +82,116 @@ export class MathExecutor extends BaseExecutor {
                 const a = parseFloat(this.evaluateInput(node, 'a_in'));
                 return Math.abs(a);
             }
-default:
+
+            // --- VECTOR MATH ---
+            case 'AddVector': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
+                return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
+            }
+            case 'SubtractVector': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
+                return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
+            }
+            case 'MultiplyVectorFloat': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const b = parseFloat(this.evaluateInput(node, 'b_in'));
+                return { x: a.x * b, y: a.y * b, z: a.z * b };
+            }
+            case 'DivideVectorFloat': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const b = parseFloat(this.evaluateInput(node, 'b_in'));
+                const div = b !== 0 ? b : 1; // Prevent divide by zero
+                return { x: a.x / div, y: a.y / div, z: a.z / div };
+            }
+            case 'DotProduct': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
+                return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+            }
+            case 'CrossProduct': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
+                return {
+                    x: a.y * b.z - a.z * b.y,
+                    y: a.z * b.x - a.x * b.z,
+                    z: a.x * b.y - a.y * b.x
+                };
+            }
+            case 'VectorLength': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                return Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+            }
+            case 'VectorDistance': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const b = Utils.parseVector(this.evaluateInput(node, 'b_in'));
+                const dx = a.x - b.x;
+                const dy = a.y - b.y;
+                const dz = a.z - b.z;
+                return Math.sqrt(dx * dx + dy * dy + dz * dz);
+            }
+            case 'NormalizeVector': {
+                const a = Utils.parseVector(this.evaluateInput(node, 'a_in'));
+                const len = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+                const div = len !== 0 ? len : 1;
+                return { x: a.x / div, y: a.y / div, z: a.z / div };
+            }
+
+            // --- TRIGONOMETRY (Degrees) ---
+            case 'Sin': {
+                const deg = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.sin(deg * (Math.PI / 180));
+            }
+            case 'Cos': {
+                const deg = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.cos(deg * (Math.PI / 180));
+            }
+            case 'Tan': {
+                const deg = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.tan(deg * (Math.PI / 180));
+            }
+            case 'Asin': {
+                const val = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.asin(val) * (180 / Math.PI);
+            }
+            case 'Acos': {
+                const val = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.acos(val) * (180 / Math.PI);
+            }
+            case 'Atan': {
+                const val = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.atan(val) * (180 / Math.PI);
+            }
+            case 'Atan2': {
+                const y = parseFloat(this.evaluateInput(node, 'y_in'));
+                const x = parseFloat(this.evaluateInput(node, 'x_in'));
+                return Math.atan2(y, x) * (180 / Math.PI);
+            }
+
+            // --- MATH UTILS ---
+            case 'Sqrt': {
+                const a = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.sqrt(a);
+            }
+            case 'Power': {
+                const base = parseFloat(this.evaluateInput(node, 'base_in'));
+                const exp = parseFloat(this.evaluateInput(node, 'exp_in'));
+                return Math.pow(base, exp);
+            }
+            case 'Round': {
+                const a = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.round(a);
+            }
+            case 'Floor': {
+                const a = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.floor(a);
+            }
+            case 'Ceil': {
+                const a = parseFloat(this.evaluateInput(node, 'a_in'));
+                return Math.ceil(a);
+            }
+            default:
                 return null;
         }
     }

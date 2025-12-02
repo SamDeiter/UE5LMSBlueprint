@@ -631,6 +631,52 @@ export const NodeDefinitions = {
             { id: "ret_out", name: "Return Value", type: "string", dir: "out" }
         ]
     },
+    "Split": {
+        title: "Split",
+        type: "pure-node",
+        category: "String",
+        icon: "fa-cut",
+        pins: [
+            { id: "str_in", name: "Source String", type: "string", dir: "in" },
+            { id: "delimiter_in", name: "Delimiter", type: "string", dir: "in", defaultValue: " " },
+            { id: "left_out", name: "LeftS", type: "string", dir: "out" },
+            { id: "right_out", name: "RightS", type: "string", dir: "out" },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    "Replace": {
+        title: "Replace",
+        type: "pure-node",
+        category: "String",
+        icon: "fa-exchange-alt",
+        pins: [
+            { id: "source_in", name: "Source String", type: "string", dir: "in" },
+            { id: "from_in", name: "From", type: "string", dir: "in" },
+            { id: "to_in", name: "To", type: "string", dir: "in" },
+            { id: "ignore_case_in", name: "Ignore Case", type: "bool", dir: "in", defaultValue: true },
+            { id: "ret_out", name: "Return Value", type: "string", dir: "out" }
+        ]
+    },
+    "ToUpper": {
+        title: "To Upper",
+        type: "pure-node",
+        category: "String",
+        icon: "f",
+        pins: [
+            { id: "str_in", name: "Source String", type: "string", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "string", dir: "out" }
+        ]
+    },
+    "ToLower": {
+        title: "To Lower",
+        type: "pure-node",
+        category: "String",
+        icon: "f",
+        pins: [
+            { id: "str_in", name: "Source String", type: "string", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "string", dir: "out" }
+        ]
+    },
     // --- UTILITY ---
     "Comment": {
         title: "New Comment",
@@ -1336,6 +1382,307 @@ export const NodeDefinitions = {
         pins: [
             { id: "weight_in", name: "True Weight", type: "float", dir: "in", defaultValue: 0.5 },
             { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    // --- ADVANCED MATH ---
+    // Vector
+    "AddVector": {
+        title: "Add (Vector)",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-plus",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "b_in", name: "B", type: "vector", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "vector", dir: "out" }
+        ]
+    },
+    "SubtractVector": {
+        title: "Subtract (Vector)",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-minus",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "b_in", name: "B", type: "vector", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "vector", dir: "out" }
+        ]
+    },
+    "MultiplyVectorFloat": {
+        title: "Multiply (Vector * Float)",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-times",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
+            { id: "ret_out", name: "Return Value", type: "vector", dir: "out" }
+        ]
+    },
+    "DivideVectorFloat": {
+        title: "Divide (Vector / Float)",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-divide",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
+            { id: "ret_out", name: "Return Value", type: "vector", dir: "out" }
+        ]
+    },
+    "DotProduct": {
+        title: "Dot Product",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-circle",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "b_in", name: "B", type: "vector", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "CrossProduct": {
+        title: "Cross Product",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-times",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "b_in", name: "B", type: "vector", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "vector", dir: "out" }
+        ]
+    },
+    "VectorLength": {
+        title: "Vector Length",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-ruler-horizontal",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "VectorDistance": {
+        title: "Vector Distance",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-ruler",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "b_in", name: "B", type: "vector", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "NormalizeVector": {
+        title: "Normalize",
+        type: "pure-node",
+        category: "Math|Vector",
+        icon: "fa-arrow-right",
+        pins: [
+            { id: "a_in", name: "A", type: "vector", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "vector", dir: "out" }
+        ]
+    },
+
+    // Trig
+    "Sin": {
+        title: "Sin (Degrees)",
+        type: "pure-node",
+        category: "Math|Trig",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Cos": {
+        title: "Cos (Degrees)",
+        type: "pure-node",
+        category: "Math|Trig",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Tan": {
+        title: "Tan (Degrees)",
+        type: "pure-node",
+        category: "Math|Trig",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Asin": {
+        title: "Asin (Degrees)",
+        type: "pure-node",
+        category: "Math|Trig",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Acos": {
+        title: "Acos (Degrees)",
+        type: "pure-node",
+        category: "Math|Trig",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Atan": {
+        title: "Atan (Degrees)",
+        type: "pure-node",
+        category: "Math|Trig",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Atan2": {
+        title: "Atan2 (Degrees)",
+        type: "pure-node",
+        category: "Math|Trig",
+        icon: "f",
+        pins: [
+            { id: "y_in", name: "Y", type: "float", dir: "in" },
+            { id: "x_in", name: "X", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+
+    // Utils
+    "Sqrt": {
+        title: "Sqrt",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "√",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Power": {
+        title: "Power",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "^",
+        pins: [
+            { id: "base_in", name: "Base", type: "float", dir: "in" },
+            { id: "exp_in", name: "Exp", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "Round": {
+        title: "Round",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "Floor": {
+        title: "Floor",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "Ceil": {
+        title: "Ceil",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in" },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+
+    // --- ACTOR / GAMEPLAY ---
+    "SpawnActorFromClass": {
+        title: "Spawn Actor from Class",
+        type: "function-node",
+        category: "Game|Actor",
+        icon: "fa-cube",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "class", name: "Class", type: "class", dir: "in" },
+            { id: "spawn_transform", name: "Spawn Transform", type: "transform", dir: "in" },
+            { id: "collision_handling", name: "Collision Handling Override", type: "enum", dir: "in", defaultValue: "AlwaysSpawn" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "return_value", name: "Return Value", type: "object", dir: "out" }
+        ]
+    },
+    "DestroyActor": {
+        title: "Destroy Actor",
+        type: "function-node",
+        category: "Game|Actor",
+        icon: "fa-bomb",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "target", name: "Target", type: "object", dir: "in", defaultValue: "Self" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+    "GetActorLocation": {
+        title: "Get Actor Location",
+        type: "pure-node",
+        category: "Game|Actor",
+        icon: "fa-map-marker-alt",
+        pins: [
+            { id: "target", name: "Target", type: "object", dir: "in", defaultValue: "Self" },
+            { id: "return_value", name: "Return Value", type: "vector", dir: "out" }
+        ]
+    },
+    "SetActorLocation": {
+        title: "Set Actor Location",
+        type: "function-node",
+        category: "Game|Actor",
+        icon: "fa-map-marker-alt",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "target", name: "Target", type: "object", dir: "in", defaultValue: "Self" },
+            { id: "new_location", name: "New Location", type: "vector", dir: "in" },
+            { id: "sweep", name: "Sweep", type: "bool", dir: "in", defaultValue: false },
+            { id: "teleport", name: "Teleport", type: "bool", dir: "in", defaultValue: false },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "return_value", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+    "GetActorRotation": {
+        title: "Get Actor Rotation",
+        type: "pure-node",
+        category: "Game|Actor",
+        icon: "fa-sync",
+        pins: [
+            { id: "target", name: "Target", type: "object", dir: "in", defaultValue: "Self" },
+            { id: "return_value", name: "Return Value", type: "rotator", dir: "out" }
+        ]
+    },
+    "SetActorRotation": {
+        title: "Set Actor Rotation",
+        type: "function-node",
+        category: "Game|Actor",
+        icon: "fa-sync",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "target", name: "Target", type: "object", dir: "in", defaultValue: "Self" },
+            { id: "new_rotation", name: "New Rotation", type: "rotator", dir: "in" },
+            { id: "teleport", name: "Teleport", type: "bool", dir: "in", defaultValue: false },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "return_value", name: "Return Value", type: "bool", dir: "out" }
         ]
     },
 };

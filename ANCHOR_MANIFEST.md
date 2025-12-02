@@ -299,6 +299,42 @@ This manifest tracks all code anchors across the UE5LMSBlueprint project. Anchor
 
 ---
 
+## New Node Implementations (Phase A)
+
+### <!-- actor-executor-logic -->
+**File:** `src/services/executors/ActorExecutor.js`
+**Class:** `ActorExecutor`
+**Lines:** 1-end
+**What:** Handles execution of Actor lifecycle and transform nodes
+**How:** Manages `this.engine.actors` map, handles Spawn/Destroy/Get/Set logic
+**Connects to:** `executor-registry-pattern`, `actor-node-definitions`
+
+### <!-- actor-node-definitions -->
+**File:** `src/data/NodeDefinitions.js`
+**Section:** `// --- ACTOR / GAMEPLAY ---`
+**Lines:** ~1340+
+**What:** Definitions for SpawnActor, DestroyActor, Get/Set Location/Rotation
+**How:** Standard node definitions with specific pins for actor operations
+**Connects to:** `actor-executor-logic`, `node-registry-pattern`
+
+### <!-- advanced-math-logic -->
+**File:** `src/services/executors/MathExecutor.js`
+**Function:** `evaluateValue` (extended)
+**Lines:** ~80+
+**What:** Implementation of Vector, Trig, and Math Utils
+**How:** Uses `Utils.parseVector` and standard Math functions
+**Connects to:** `math-node-definitions`, `executor-registry-pattern`
+
+### <!-- string-manipulation-logic -->
+**File:** `src/services/executors/StringExecutor.js`
+**Function:** `evaluateValue` (extended)
+**Lines:** ~40+
+**What:** Implementation of Split, Replace, ToUpper, ToLower
+**How:** Standard JS string methods adapted to UE5 node behavior
+**Connects to:** `string-node-definitions`, `executor-registry-pattern`
+
+---
+
 ## Documentation & Guidance
 
 ### <!-- agents-documentation -->
@@ -414,5 +450,5 @@ git grep "modal-" | grep "<!--"
 ---
 
 **Last Updated:** December 2, 2025  
-**Total Anchors:** 42  
+**Total Anchors:** 46  
 **Maintained By:** AI Agents & SamDeiter

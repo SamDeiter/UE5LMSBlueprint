@@ -88,12 +88,17 @@ export class TaskController {
             }
         });
 
+
         this.compileBtn = document.getElementById('compile-btn');
         this.playBtn = document.getElementById('play-btn');
 
-        // Hook into Compile and Play for Validation
-        this.compileBtn.addEventListener('click', () => this.runValidation());
-        this.playBtn.addEventListener('click', () => this.runValidation());
+        // Hook into Compile and Play for Validation (only if buttons exist)
+        if (this.compileBtn) {
+            this.compileBtn.addEventListener('click', () => this.runValidation());
+        }
+        if (this.playBtn) {
+            this.playBtn.addEventListener('click', () => this.runValidation());
+        }
         // Tab Switching Logic (handling the new tab)
         document.querySelectorAll('.bottom-tab').forEach(tab => {
             tab.addEventListener('click', () => {

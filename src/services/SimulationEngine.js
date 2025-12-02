@@ -17,6 +17,7 @@ import { FunctionExecutor } from './executors/FunctionExecutor.js';
 import { MacroExecutor } from './executors/MacroExecutor.js';
 import { NeedNodeExecutor } from './executors/NeedNodeExecutor.js';
 import { StringExecutor } from './executors/StringExecutor.js';
+import { ActorExecutor } from './executors/ActorExecutor.js';
 
 /**
  * Handles the runtime execution of the Blueprint graph.
@@ -37,7 +38,12 @@ export class SimulationEngine {
         this.lastTickTime = 0;
         this.tickFrame = null;
         this.callStack = [];
+
         this.functionReturnValues = null;
+
+        // Actor Storage (for Phase A: Actor Nodes)
+        this.actors = new Map();
+        this.nextActorId = 1;
 
         // Executor Registry
         this.executorRegistry = new ExecutorRegistry(this);
@@ -70,7 +76,9 @@ export class SimulationEngine {
         const functionExecutor = new FunctionExecutor(this);
         const macroExecutor = new MacroExecutor(this);
         const needNodeExecutor = new NeedNodeExecutor(this);
+
         const stringExecutor = new StringExecutor(this);
+        const actorExecutor = new ActorExecutor(this);
 
         // Register exact match executors
         this.executorRegistry.register('EventBeginPlay', eventExecutor);
@@ -90,6 +98,10 @@ export class SimulationEngine {
         this.executorRegistry.register('Append', stringExecutor);
         this.executorRegistry.register('Len', stringExecutor);
         this.executorRegistry.register('Contains', stringExecutor);
+        this.executorRegistry.register('Split', stringExecutor);
+        this.executorRegistry.register('Replace', stringExecutor);
+        this.executorRegistry.register('ToUpper', stringExecutor);
+        this.executorRegistry.register('ToLower', stringExecutor);
 
         // Math Nodes
         this.executorRegistry.register('ClampInt', mathExecutor);
@@ -116,6 +128,41 @@ export class SimulationEngine {
         this.executorRegistry.register('SubtractFloat', mathExecutor);
         this.executorRegistry.register('MultiplyFloat', mathExecutor);
         this.executorRegistry.register('DivideFloat', mathExecutor);
+
+        // Vector Math
+        this.executorRegistry.register('AddVector', mathExecutor);
+        this.executorRegistry.register('SubtractVector', mathExecutor);
+        this.executorRegistry.register('MultiplyVectorFloat', mathExecutor);
+        this.executorRegistry.register('DivideVectorFloat', mathExecutor);
+        this.executorRegistry.register('DotProduct', mathExecutor);
+        this.executorRegistry.register('CrossProduct', mathExecutor);
+        this.executorRegistry.register('VectorLength', mathExecutor);
+        this.executorRegistry.register('VectorDistance', mathExecutor);
+        this.executorRegistry.register('NormalizeVector', mathExecutor);
+
+        // Trig
+        this.executorRegistry.register('Sin', mathExecutor);
+        this.executorRegistry.register('Cos', mathExecutor);
+        this.executorRegistry.register('Tan', mathExecutor);
+        this.executorRegistry.register('Asin', mathExecutor);
+        this.executorRegistry.register('Acos', mathExecutor);
+        this.executorRegistry.register('Atan', mathExecutor);
+        this.executorRegistry.register('Atan2', mathExecutor);
+
+        // Math Utils
+        this.executorRegistry.register('Sqrt', mathExecutor);
+        this.executorRegistry.register('Power', mathExecutor);
+        this.executorRegistry.register('Round', mathExecutor);
+        this.executorRegistry.register('Floor', mathExecutor);
+        this.executorRegistry.register('Ceil', mathExecutor);
+
+        // Actor Nodes
+        this.executorRegistry.register('SpawnActorFromClass', actorExecutor);
+        this.executorRegistry.register('DestroyActor', actorExecutor);
+        this.executorRegistry.register('GetActorLocation', actorExecutor);
+        this.executorRegistry.register('SetActorLocation', actorExecutor);
+        this.executorRegistry.register('GetActorRotation', actorExecutor);
+        this.executorRegistry.register('SetActorRotation', actorExecutor);
 
         // Register pattern-based executors
         this.executorRegistry.registerPattern(/^Get_/, variableExecutor);

@@ -34,7 +34,7 @@ export class HistoryManager {
             links: this.app.persistence.serializeLinks()
         };
 
-                const variablesArray = (this.app.variables && this.app.variables.variables) ? [...this.app.variables.variables.values()] : [];
+        const variablesArray = (this.app.variables && this.app.variables.variables) ? [...this.app.variables.variables.values()] : [];
         const functionsArray = (this.app.functionRegistry) ? this.app.functionRegistry.getAll().map(f => f.toJSON()) : [];
         const macrosArray = (this.app.macroRegistry) ? this.app.macroRegistry.getAll().map(m => m.toJSON()) : [];
         const componentsArray = (this.app.components) ? [...this.app.components.values()] : [];
@@ -46,6 +46,7 @@ export class HistoryManager {
             components: componentsArray,
             functions: functionsArray,
             macros: macrosArray,
+            classDefaults: this.app.classDefaults,
             // Persist pending renames so they aren't lost on reload
             pendingRenames: this.app.compiler ? this.app.compiler.pendingRenames : []
         };
@@ -137,6 +138,14 @@ export class HistoryManager {
                     this.app.componentsController.updateNodeLibrary();
                 }
             }
+
+            // Restore Class Defaults
+            this.app.classDefaults = state.classDefaults || {
+                parentClass: 'Actor',
+                tickInterval: 0.0,
+                replicates: false,
+                autoReceiveInput: 'Disabled'
+            };
 
             // Restore graphs map and active graph
             this.app.graphs = state.graphs || { 'EventGraph': { nodes: [], links: [] } };

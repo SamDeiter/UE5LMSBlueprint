@@ -120,19 +120,47 @@ export class ParentClassModal {
 
         // For now, we'll manually reset and set the parent class label
         if (this.app.persistence) {
-            // Clear current graph
+            // 1. Clear Graph Nodes & Links
             this.app.graph.nodes.clear();
             this.app.graph.nodesContainer.innerHTML = '';
             this.app.wiring.links.clear();
             this.app.wiring.svgGroup.innerHTML = '<path id="ghost-wire" class="wire" style="pointer-events: none;"></path>';
 
-            // Add default nodes based on class
+            // 2. Clear Variables
+            if (this.app.variables) {
+                this.app.variables.variables.clear();
+                this.app.variables.renderPanel();
+            }
+
+            // 3. Clear Components
+            if (this.app.components) {
+                this.app.components.clear();
+                if (this.app.componentsController) {
+                    this.app.componentsController.render();
+                }
+            }
+
+            // 4. Clear Functions & Macros
+            if (this.app.functionRegistry) this.app.functionRegistry.clear();
+            if (this.app.macroRegistry) this.app.macroRegistry.clear();
+            if (this.app.functionsController) this.app.functionsController.render();
+            if (this.app.macrosController) this.app.macrosController.render();
+
+            // 5. Reset Graphs
+            this.app.graphs = {
+                'EventGraph': { nodes: [], links: [] },
+                'ConstructionScript': { nodes: [], links: [] }
+            };
+            this.app.activeGraph = 'EventGraph';
+            if (this.app.graphSwitcher) this.app.graphSwitcher.updateTabs();
+
+            // 6. Add default nodes based on class
             // For now, just standard Actor defaults
             this.app.graph.addNode("EventBeginPlay", 200, 200);
             this.app.graph.addNode("EventTick", 200, 400);
             this.app.graph.addNode("EventActorBeginOverlap", 200, 600);
 
-            // Save state
+            // 7. Save state
             this.app.history.saveState(`New Blueprint: ${className}`);
         }
 

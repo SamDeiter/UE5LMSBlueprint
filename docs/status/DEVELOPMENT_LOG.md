@@ -70,3 +70,24 @@ All planned tracks for this session have been successfully implemented and verif
 
 ## 🐛 Fixes
 - [x] Fixed Details Panel input focus loss by preventing re-render on `input` events for default values.
+
+---
+
+## 📅 Session: December 2, 2025 (Part 2)
+
+### 🎯 Goal: Phase A - Critical Node Library Expansion
+
+**Status**: Complete
+**Changes**:
+- [x] **Actor Lifecycle Nodes**: `SpawnActorFromClass`, `DestroyActor`
+- [x] **Actor Transform Nodes**: `GetActorLocation`, `SetActorLocation`, `GetActorRotation`, `SetActorRotation`
+- [x] **Advanced Math Nodes**:
+    - Vector: `Add`, `Subtract`, `Multiply`, `Divide`, `DotProduct`, `CrossProduct`, `Length`, `Distance`, `Normalize`
+    - Trig: `Sin`, `Cos`, `Tan`, `Asin`, `Acos`, `Atan`, `Atan2` (Degrees)
+    - Utils: `Sqrt`, `Power`, `Round`, `Floor`, `Ceil`
+- [x] **String Nodes**: `Split`, `Replace`, `ToUpper`, `ToLower`
+- [x] **Executors**:
+    - Created `ActorExecutor.js`
+    - Updated `MathExecutor.js` with vector/trig logic
+    - Updated `StringExecutor.js` with new string logic
+    - Registered all new nodes in `SimulationEngine.js`

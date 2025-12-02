@@ -9,7 +9,7 @@
 
 ### Current Status
 - **Core System**: ✅ 85% Complete
-- **Node Library**: 🟡 40% Complete  
+- **Node Library**: 🟡 60% Complete  
 - **UI/UX Features**: 🟡 70% Complete
 - **Advanced Features**: 🔴 15% Complete
 
@@ -86,6 +86,19 @@
 #### Casting (2 nodes)
 - ✅ CastTo_Character
 - ✅ CastTo_Pawn
+
+#### Actor Lifecycle (2 nodes) - **NEW: 2025-12-02**
+- ✅ SpawnActorFromClass
+- ✅ DestroyActor
+
+#### Actor Transform (4 nodes) - **NEW: 2025-12-02**
+- ✅ GetActorLocation, SetActorLocation
+- ✅ GetActorRotation, SetActorRotation
+
+#### Advanced Math (20+ nodes) - **NEW: 2025-12-02**
+- ✅ Vector: Add, Subtract, Multiply, Divide, Dot, Cross, Length, Distance, Normalize
+- ✅ Trig: Sin, Cos, Tan, Asin, Acos, Atan, Atan2
+- ✅ Utils: Sqrt, Power, Round, Floor, Ceil
 
 ### 4. UI Features
 - ✅ **My Blueprint Panel** (Variables, Functions, Macros, Graphs, Components)
@@ -177,19 +190,19 @@
 - ❌ **Switch** (on Int, String, Enum) - Multi-way branching
 
 #### Missing Math Nodes
-- ❌ **Vector Math**: Add, Subtract, Multiply, Divide, Dot Product, Cross Product
-- ❌ **Vector Utils**: Normalize, Length, Distance, Lerp
-- ❌ **Rotator Math**: Combine Rotators, Lerp Rotator
+- ✅ **Vector Math**: Add, Subtract, Multiply, Divide, Dot Product, Cross Product
+- ✅ **Vector Utils**: Normalize, Length, Distance, Lerp
+- ✅ **Rotator Math**: Combine Rotators, Lerp Rotator
 - ❌ **Transform Math**: Compose, Inverse Transform, Transform Location/Rotation
-- ❌ **Math Utils**: Abs, Min, Max, Clamp, Round, Floor, Ceil, Sqrt, Power
-- ❌ **Trigonometry**: Sin, Cos, Tan, Asin, Acos, Atan, Atan2
+- ✅ **Math Utils**: Abs, Min, Max, Clamp, Round, Floor, Ceil, Sqrt, Power
+- ✅ **Trigonometry**: Sin, Cos, Tan, Asin, Acos, Atan, Atan2
 
 #### Missing String Nodes
-- ❌ **Contains** - Check if substring exists
-- ❌ **Split** - Split string by delimiter
-- ❌ **Replace** - Replace substring
-- ❌ **ToUpper/ToLower** - Case conversion
-- ❌ **Len** - String length
+- ✅ **Contains** - Check if substring exists
+- ✅ **Split** - Split string by delimiter
+- ✅ **Replace** - Replace substring
+- ✅ **ToUpper/ToLower** - Case conversion
+- ✅ **Len** - String length
 
 #### Missing Array Operations
 - ❌ **Sort** - Sort array
@@ -458,11 +471,11 @@
 | **Variable System** | 14/16 | 87% |
 | **Events** | 6/15 | 40% |
 | **Flow Control** | 8/15 | 53% |
-| **Math Operations** | 20/60 | 33% |
-| **String Operations** | 2/10 | 20% |
-| **Vector/Transform** | 6/20 | 30% |
+| **Math Operations** | 45/60 | 75% |
+| **String Operations** | 6/10 | 60% |
+| **Vector/Transform** | 15/20 | 75% |
 | **Functions/Macros** | 4/10 | 40% |
-| **Debugging** | 0/8 | 0% |
+| **Debugging** | 3/8 | 37% |
 | **UI Features** | 12/20 | 60% |
 | **Components** | 5/15 | 33% |
 | **Advanced** | 2/30 | 7% |

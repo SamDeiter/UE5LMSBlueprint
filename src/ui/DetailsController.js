@@ -634,7 +634,7 @@ export class DetailsController {
                     func[prop] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
                     this.app.functionsController.render(); // Refresh list
                     this.app.persistence.autoSave();
-                    
+
                     // Sync nodes if properties affect them (e.g. Pure)
                     if (prop === 'isPure') {
                         this.app.functionsController.syncFunctionNodes(func);
@@ -759,6 +759,73 @@ export class DetailsController {
         this.app.wiring.updateVisuals(node);
         this.renderCustomParameters(node);
         this.app.persistence.autoSave();
+    }
+
+    showClassDefaults() {
+        this.currentVariable = null;
+        this.app.wiring.clearLinkSelection();
+        this.app.graph.clearSelection();
+
+        // Ensure defaults exist
+        if (!this.app.classDefaults) {
+            this.app.classDefaults = {
+                parentClass: 'Actor',
+                tickInterval: 0.0,
+                replicates: false,
+                autoReceiveInput: 'Disabled'
+            };
+        }
+        const defaults = this.app.classDefaults;
+
+        this.panel.innerHTML = `
+            <div class="details-group">
+                <h4>Class Defaults</h4>
+                <div class="detail-row">
+                    <label>Parent Class</label>
+                    <span class="detail-value-static" style="color: #4a90e2; cursor: pointer;">${defaults.parentClass}</span>
+                </div>
+            </div>
+            <div class="details-group">
+                <h4>Actor</h4>
+                <div class="detail-row">
+                    <label>Tick Interval (secs)</label>
+                    <input type="number" id="tick-interval-input" class="details-input" value="${defaults.tickInterval || 0.0}" step="0.01">
+                </div>
+                 <div class="detail-row">
+                    <label>Replicates</label>
+                    <div style="width: 60%;">
+                         <input type="checkbox" id="replicates-checkbox" class="ue5-checkbox" ${defaults.replicates ? 'checked' : ''}>
+                    </div>
+                </div>
+            </div>
+             <div class="details-group">
+                <h4>Input</h4>
+                <div class="detail-row">
+                    <label>Auto Receive Input</label>
+                    <select id="auto-input-select" class="details-select">
+                        <option value="Disabled" ${defaults.autoReceiveInput === 'Disabled' ? 'selected' : ''}>Disabled</option>
+                        <option value="Player0" ${defaults.autoReceiveInput === 'Player0' ? 'selected' : ''}>Player 0</option>
+                    </select>
+                </div>
+            </div>
+        `;
+
+        // Bind events
+        const bindInput = (id, prop, isCheckbox = false) => {
+            const el = this.panel.querySelector(id);
+            if (el) {
+                el.addEventListener('change', (e) => {
+                    let val = isCheckbox ? e.target.checked : e.target.value;
+                    if (e.target.type === 'number') val = parseFloat(val);
+                    this.app.classDefaults[prop] = val;
+                    this.app.persistence.autoSave();
+                });
+            }
+        };
+
+        bindInput('#tick-interval-input', 'tickInterval');
+        bindInput('#replicates-checkbox', 'replicates', true);
+        bindInput('#auto-input-select', 'autoReceiveInput');
     }
 
     removeCustomParameter(node, pinId) {
