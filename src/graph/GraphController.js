@@ -230,7 +230,7 @@ class GraphController {
         // 1. Load Nodes
         safeNodes.forEach((nodeData) => {
             const template = nodeRegistry.get(nodeData.nodeKey);
-            
+
             // Dynamic Node Handling (Functions/Macros) if template is missing
             let dynamicTemplate = null;
             if (!template) {
@@ -326,7 +326,7 @@ class GraphController {
                 this.app.localVariables.clearContext();
             }
         }
-        
+
         // 6. Sync Function Nodes (Entry/Result) if in a function graph
         const func = this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph);
         if (func && this.app.functionsController) {
@@ -341,7 +341,7 @@ class GraphController {
                 funcsToSync.add(funcName);
             }
         }
-        
+
         funcsToSync.forEach(funcName => {
             const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
             if (funcDef && this.app.functionsController) {
@@ -748,6 +748,29 @@ class GraphController {
         newSelection.forEach(nodeId => this.selectNode(nodeId, true, 'add'));
         this.app.persistence.autoSave();
         this.app.compiler.markDirty();
+    }
+
+    exportGraph() {
+        const nodes = this.app.persistence.serializeNodes();
+        const links = this.app.persistence.serializeLinks();
+        const exportData = {
+            graphName: this.app.activeGraph,
+            nodes: nodes,
+            links: links,
+            timestamp: new Date().toISOString()
+        };
+
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `graph_export_${this.app.activeGraph}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 }
 

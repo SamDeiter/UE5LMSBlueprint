@@ -253,6 +253,32 @@ export class ActionMenu {
             contextHeader = true;
         }
 
+        // --- DEBUG: Export Graph Option ---
+        if (!this.sourcePin && !this.droppedVarName && !this.droppedComponent && filter === '') {
+            const debugHeader = document.createElement('div');
+            debugHeader.className = 'menu-item menu-header';
+            debugHeader.style.fontWeight = 'bold';
+            debugHeader.style.color = '#888';
+            debugHeader.style.fontSize = '10px';
+            debugHeader.textContent = 'Debug';
+            this.list.appendChild(debugHeader);
+
+            const exportItem = document.createElement('div');
+            exportItem.className = 'menu-item';
+            exportItem.style.paddingLeft = '20px';
+            exportItem.textContent = 'Export Graph (JSON)';
+            exportItem.addEventListener('click', () => {
+                this.app.graph.exportGraph();
+                this.hide();
+            });
+            this.list.appendChild(exportItem);
+
+            const sep = document.createElement('div');
+            sep.className = 'menu-separator';
+            this.list.appendChild(sep);
+        }
+        // ----------------------------------
+
         // Add Break [Struct] suggestion for Vector/Rotator/Transform pins
         if (this.sourcePin && ['vector', 'rotator', 'transform'].includes(this.sourcePin.type)) {
             const breakNodeKey = this.sourcePin.type === 'vector' ? 'BreakVector' :
