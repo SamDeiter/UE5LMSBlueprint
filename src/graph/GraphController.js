@@ -8,6 +8,7 @@ import { DOMElements } from '../config/DOMElements.js';
 import { Pin } from './Pin.js';
 import { Node } from './Node.js';
 import { GraphInteraction } from './GraphInteraction.js';
+import { GRAPH_CONSTANTS, LATENT_NODE_TYPES } from '../config/Constants.js';
 
 class GraphController {
     constructor(editor, svg, nodesContainer, app) {
