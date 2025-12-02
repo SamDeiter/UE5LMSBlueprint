@@ -115,6 +115,7 @@ class BlueprintApp {
         // 8. Graph Switcher
         BlueprintApp.graphSwitcher = new GraphSwitcher(BlueprintApp);
         BlueprintApp.switchGraph = (graphName) => BlueprintApp.graphSwitcher.switchGraph(graphName);
+        BlueprintApp.graphSwitcher.ensureDefaultTabs();
 
         // 9. Validators & Runners
         BlueprintApp.testRunner = new TestRunner(BlueprintApp);

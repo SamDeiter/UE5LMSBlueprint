@@ -105,7 +105,25 @@ export class GraphSwitcher {
         }
     }
 
+    ensureDefaultTabs() {
+        this.createTab('EventGraph');
+        this.createTab('ConstructionScript');
+        this.updateActiveTab(this.app.activeGraph);
+    }
+
     updateTabs(graphName) {
+        this.createTab(graphName);
+        this.updateActiveTab(graphName);
+    }
+
+    updateActiveTab(activeGraphName) {
+        document.querySelectorAll('.graph-tab').forEach(t => {
+            if (t.dataset.graph === activeGraphName) t.classList.add('active');
+            else t.classList.remove('active');
+        });
+    }
+
+    createTab(graphName) {
         const tabBar = document.getElementById('tabbar');
         if (!tabBar) {
             console.warn('Tab bar not found');
@@ -168,12 +186,6 @@ export class GraphSwitcher {
             } else {
                 tabBar.appendChild(tab);
             }
-        }
-
-        // Update active state
-        document.querySelectorAll('.graph-tab').forEach(t => t.classList.remove('active'));
-        if (tab) {
-            tab.classList.add('active');
         }
     }
 }
