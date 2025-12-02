@@ -91,3 +91,9 @@ export const PIN_TYPE_CLASSES = {
 };
 
 export const APP_VERSION = '1.0.0';
+
+export const DRAG_DATA_PREFIXES = {
+    COMPONENT_GET: 'COMPONENT_GET:',
+    COMPONENT_REPARENT: 'COMPONENT_REPARENT:',
+    COMPONENT: 'COMPONENT:'
+};

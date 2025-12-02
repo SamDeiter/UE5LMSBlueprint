@@ -3,6 +3,8 @@
  */
 
 
+import { DRAG_DATA_PREFIXES } from '../config/Constants.js';
+
 export class GraphInteraction {
     constructor(controller) {
         this.controller = controller;
@@ -24,6 +26,7 @@ export class GraphInteraction {
         this.nodeDragOffsets = new Map();
         this.marqueeStart = { x: 0, y: 0 };
         this.marqueeEl = document.getElementById('selection-marquee');
+        this.rafId = null;
 
         // Bind methods
         this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
@@ -74,8 +77,8 @@ export class GraphInteraction {
         const graphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
 
         // COMPONENT_GET or COMPONENT_REPARENT - From Components panel
-        if (data.startsWith('COMPONENT_GET:') || data.startsWith('COMPONENT_REPARENT:')) {
-            const prefix = data.startsWith('COMPONENT_GET:') ? 'COMPONENT_GET:' : 'COMPONENT_REPARENT:';
+        if (data.startsWith(DRAG_DATA_PREFIXES.COMPONENT_GET) || data.startsWith(DRAG_DATA_PREFIXES.COMPONENT_REPARENT)) {
+            const prefix = data.startsWith(DRAG_DATA_PREFIXES.COMPONENT_GET) ? DRAG_DATA_PREFIXES.COMPONENT_GET : DRAG_DATA_PREFIXES.COMPONENT_REPARENT;
             const compId = data.substring(prefix.length);
             const nodeKey = `GetComponent_${compId}`;
             this.controller.addNode(nodeKey, graphCoords.x, graphCoords.y);
@@ -84,7 +87,7 @@ export class GraphInteraction {
         }
 
         // COMPONENT - From Variables panel, shows Get/Set menu
-        if (data.startsWith('COMPONENT:')) {
+        if (data.startsWith(DRAG_DATA_PREFIXES.COMPONENT)) {
             const compId = data.split(':')[1];
             const comp = this.app.components.get(compId);
             if (!comp) return;
@@ -262,73 +265,6 @@ export class GraphInteraction {
 
             document.addEventListener('mousemove', this.handleGlobalMouseMove);
             document.addEventListener('mouseup', this.handleGlobalMouseUp);
-        }
-    }
-
-    handleGlobalMouseMove(e) {
-        if (e.movementX !== 0 || e.movementY !== 0) { this.hasDragged = true; }
-        e.preventDefault();
-
-        if (this.isRmbDown) { // Panning
-            const dx = e.clientX - this.dragStart.x;
-            const dy = e.clientY - this.dragStart.y;
-            this.controller.pan.x += dx;
-            this.controller.pan.y += dy;
-            this.dragStart.x = e.clientX;
-            this.dragStart.y = e.clientY;
-            this.controller.updateTransform();
-            return;
-        }
-
-        if (this.isDraggingNode) {
-            const mouseGraphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
-            for (const nodeId of this.controller.selectedNodes) {
-                const node = this.controller.nodes.get(nodeId);
-                const offset = this.nodeDragOffsets.get(nodeId);
-                if (node && offset) {
-                    node.x = mouseGraphCoords.x - offset.x;
-                    node.y = mouseGraphCoords.y - offset.y;
-                    node.element.style.left = `${node.x}px`;
-                    node.element.style.top = `${node.y}px`;
-                    this.controller.redrawNodeWires(node.id);
-                }
-            }
-            return;
-        }
-
-        if (this.isWiring && this.activePin) {
-            this.app.wiring.updateGhostWire(e, this.activePin);
-            return;
-        }
-
-        if (this.isMarqueeing) {
-            const rect = this.editor.getBoundingClientRect();
-            const currentX = e.clientX;
-            const currentY = e.clientY;
-            const startX = this.marqueeStart.x;
-            const startY = this.marqueeStart.y;
-
-            const left = Math.min(startX, currentX) - rect.left;
-            const top = Math.min(startY, currentY) - rect.top;
-            const width = Math.abs(currentX - startX);
-            const height = Math.abs(currentY - startY);
-
-            this.marqueeEl.style.left = `${left}px`;
-            this.marqueeEl.style.top = `${top}px`;
-            this.marqueeEl.style.width = `${width}px`;
-            this.marqueeEl.style.height = `${height}px`;
-
-            const graphStart = this.controller.getGraphCoords(Math.min(startX, currentX), Math.min(startY, currentY));
-            const graphEnd = this.controller.getGraphCoords(Math.max(startX, currentX), Math.max(startY, currentY));
-            const selectionRect = {
-                left: graphStart.x,
-                top: graphStart.y,
-                right: graphEnd.x,
-                bottom: graphEnd.y
-            };
-
-            const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
-            this.controller.selectNodesInRect(selectionRect, mode);
         }
     }
 

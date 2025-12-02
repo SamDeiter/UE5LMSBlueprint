@@ -33,6 +33,7 @@ export class DetailsController {
 
         // --- NEW: UE5-Style Panel Layout ---
         this.panel.innerHTML = ''; // Force DOM clear for refresh
+        const fragment = document.createDocumentFragment();
 
         // Generate property flags HTML before template
         const propertyFlagsHTML = `
@@ -48,11 +49,14 @@ export class DetailsController {
         // Compose the full panel using helper methods
         const defaultValueHTML = DetailsRenderer.renderDefaultValueInput(variable);
 
-        this.panel.innerHTML = `
+        const contentWrapper = document.createElement('div');
+        contentWrapper.innerHTML = `
             ${DetailsRenderer.renderVariableSection(variable)}
             ${DetailsRenderer.renderAdvancedSection(variable, propertyFlagsHTML)}
             ${DetailsRenderer.renderDefaultValueSection(variable, defaultValueHTML)}
         `;
+        fragment.appendChild(contentWrapper);
+        this.panel.appendChild(fragment);
 
         // Setup Toggles using shared helper
         setupToggle('variable-toggle', 'variable-content', 'variable-icon', true, this.panel); // Variable: Expanded
