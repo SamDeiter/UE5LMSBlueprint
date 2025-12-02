@@ -41,6 +41,14 @@ export class GraphInteraction {
     }
 
     handleKeyDown(e) {
+        if (e.key === 'F9') {
+            e.preventDefault();
+            this.controller.selectedNodes.forEach(nodeId => {
+                const node = this.controller.nodes.get(nodeId);
+                if (node) node.toggleBreakpoint();
+            });
+        }
+
         if (e.key === 'Delete' || e.key === 'Backspace') {
             if (this.controller.selectedNodes.size > 0) {
                 e.preventDefault();

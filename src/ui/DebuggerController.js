@@ -3,7 +3,10 @@ export class DebuggerController {
     constructor(app) {
         this.app = app;
         this.panel = null;
+        this.watchPanel = null;
+        this.watchedPins = new Set();
         this.createPanel();
+        this.createWatchPanel();
     }
 
     createPanel() {
@@ -33,6 +36,7 @@ export class DebuggerController {
     }
 
     update() {
+        this.updateWatchPanel();
         const list = this.panel.querySelector('#call-stack-list');
         if (!list) return;
 
@@ -81,6 +85,79 @@ export class DebuggerController {
                 }
             });
             list.appendChild(el);
+        }
+    }
+
+
+    createWatchPanel() {
+        this.watchPanel = document.createElement('div');
+        this.watchPanel.id = 'watch-panel';
+        this.watchPanel.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            display: none;
+            z-index: 100;
+            min-width: 200px;
+        `;
+        this.watchPanel.innerHTML = '<div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px;">Watched Values</div><div id="watch-list"></div>';
+        
+        const editor = document.getElementById('graph-editor');
+        if (editor) {
+            editor.appendChild(this.watchPanel);
+        }
+    }
+
+    addWatch(pin) {
+        this.watchedPins.add(pin.id);
+        this.updateWatchPanel();
+        this.watchPanel.style.display = 'block';
+    }
+
+    updateWatchPanel() {
+        const list = this.watchPanel.querySelector('#watch-list');
+        if (!list) return;
+        list.innerHTML = '';
+
+        if (this.watchedPins.size === 0) {
+            this.watchPanel.style.display = 'none';
+            return;
+        }
+
+        this.watchedPins.forEach(pinId => {
+            let pin = null;
+            // Search in all nodes
+            for (const node of this.app.graph.nodes.values()) {
+                pin = node.findPinById(pinId);
+                if (pin) break;
+            }
+
+            if (pin) {
+                const row = document.createElement('div');
+                row.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 2px;';
+                
+                // Get value from node's tempValues or literals
+                let val = 'N/A';
+                if (pin.node.tempValues && pin.node.tempValues[pin.name] !== undefined) {
+                    val = pin.node.tempValues[pin.name];
+                } else if (pin.node.pinLiterals.has(pin.id)) {
+                    val = pin.node.pinLiterals.get(pin.id);
+                }
+
+                row.innerHTML = `<span style="color: #aaa;">${pin.node.title}.${pin.name}:</span> <span style="color: #4CAF50;">${val}</span>`;
+                list.appendChild(row);
+            }
+        });
+        
+        if (this.watchedPins.size > 0) {
+             this.watchPanel.style.display = 'block';
         }
     }
 }

@@ -136,8 +136,11 @@ class BlueprintApp {
         const stepBtn = document.getElementById(DOMElements.STEP_BTN);
         if (stepBtn) stepBtn.addEventListener('click', () => BlueprintApp.sim.stepOver());
 
-        const stepIntoBtn = document.getElementById('step-into-btn');
+        const stepIntoBtn = document.getElementById(DOMElements.STEP_INTO_BTN);
         if (stepIntoBtn) stepIntoBtn.addEventListener('click', () => BlueprintApp.sim.stepInto());
+
+        const stepOutBtn = document.getElementById(DOMElements.STEP_OUT_BTN);
+        if (stepOutBtn) stepOutBtn.addEventListener('click', () => BlueprintApp.sim.stepOut());
 
         // Help Modal Events
         const helpBtn = document.getElementById(DOMElements.HELP_BTN);

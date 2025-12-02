@@ -4,10 +4,10 @@ import { BaseExecutor } from './BaseExecutor.js';
  * Handles macro nodes (Macro_*, MacroEntry, MacroResult)
  */
 export class MacroExecutor extends BaseExecutor {
-    async execute(node) {
+    async execute(node, inputPin) {
         // Handle Macro Call Nodes (Macro_*)
         if (node.nodeKey.startsWith('Macro_')) {
-            return await this.executeMacroCall(node);
+            return await this.executeMacroCall(node, inputPin);
         }
 
         // Handle MacroEntry (pass-through)
@@ -17,7 +17,7 @@ export class MacroExecutor extends BaseExecutor {
 
         // Handle MacroResult
         if (node.nodeKey === 'MacroResult') {
-            return await this.executeMacroResult(node);
+            return await this.executeMacroResult(node, inputPin);
         }
 
         return null;
@@ -26,7 +26,7 @@ export class MacroExecutor extends BaseExecutor {
     /**
      * Execute a macro call node
      */
-    async executeMacroCall(node) {
+    async executeMacroCall(node, inputPin) {
         const macroName = node.nodeKey.replace('Macro_', '');
         const macroDef = this.app.macroRegistry.getAll().find(m => m.name === macroName);
 
@@ -37,21 +37,19 @@ export class MacroExecutor extends BaseExecutor {
 
         // 1. Evaluate Inputs
         const inputValues = {};
-        let execInputName = null;
+        
+        // Determine entry point from inputPin
+        // Input pin on call node is named like the input (e.g. "Exec", "Reset")
+        const execInputName = inputPin ? inputPin.name : (macroDef.inputs.find(i => i.type === 'exec')?.name || 'Exec');
 
-        // We need to know WHICH exec pin triggered this macro to know where to start inside.
-        // But executeNodeLogic doesn't know the entry pin.
-        // Assumption: For MVP, we assume the first Exec input is the entry point.
-        // TODO: Support multiple exec inputs by passing entryPinId to executeNodeLogic.
-
+        // Evaluate Data Inputs
         macroDef.inputs.forEach(input => {
-            if (input.type === 'exec') {
-                if (!execInputName) execInputName = input.name;
-            } else {
+            if (input.type !== 'exec') {
                 const val = this.evaluateInput(node, `in_${input.name}`);
                 inputValues[input.name] = val;
             }
         });
+
 
         // 2. Switch Context (Virtual)
         // Macros don't push a new call stack frame in the same way functions do (no local vars).
@@ -111,7 +109,7 @@ export class MacroExecutor extends BaseExecutor {
     /**
      * Execute a macro result node (exit from macro)
      */
-    async executeMacroResult(node) {
+    async executeMacroResult(node, inputPin) {
         // Determine which Exec input was triggered?
         // Again, we don't know which input pin triggered us.
         // We assume the first connected one or we need that entryPinId.
@@ -129,12 +127,13 @@ export class MacroExecutor extends BaseExecutor {
 
         if (macroDef) {
             const outputs = {};
-            let exitPinName = 'Then'; // Default
+            
+            // Determine exit point from inputPin
+            // MacroResult inputs match Macro Outputs.
+            const exitPinName = inputPin ? inputPin.name : (macroDef.outputs.find(o => o.type === 'exec')?.name || 'Then');
 
             macroDef.outputs.forEach(output => {
-                if (output.type === 'exec') {
-                    exitPinName = output.name; // Take the last one? No, we need the triggered one.
-                } else {
+                if (output.type !== 'exec') {
                     // Evaluate data inputs
                     const pin = node.pins.find(p => p.name === output.name && p.dir === 'in');
                     if (pin) {
@@ -142,6 +141,7 @@ export class MacroExecutor extends BaseExecutor {
                     }
                 }
             });
+
 
             this.engine.macroResult = {
                 exitPinName: exitPinName,

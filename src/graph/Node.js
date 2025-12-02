@@ -18,7 +18,7 @@ class Node {
         this.nodeKey = nodeKey;
         this.x = x;
         this.y = y;
-        this.isBreakpoint = false;
+        this.isBreakpoint = nodeData.isBreakpoint || false;
         this.element = null;
 
         this.customData = nodeData.customData || {};
@@ -79,6 +79,31 @@ class Node {
         return { start: '#333', end: '#111' };
     }
 
+    
+    toggleBreakpoint() {
+        this.isBreakpoint = !this.isBreakpoint;
+        if (this.element) {
+            const header = this.element.querySelector('.node-title');
+            if (header) {
+                if (this.isBreakpoint) {
+                    header.classList.add('has-breakpoint');
+                    if (!header.querySelector('.breakpoint-icon')) {
+                        const bpIcon = document.createElement('div');
+                        bpIcon.className = 'breakpoint-icon';
+                        bpIcon.style.cssText = 'width: 12px; height: 12px; background: #d32f2f; border-radius: 50%; position: absolute; top: -6px; left: -6px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;';
+                        header.appendChild(bpIcon);
+                    }
+                } else {
+                    header.classList.remove('has-breakpoint');
+                    const bpIcon = header.querySelector('.breakpoint-icon');
+                    if (bpIcon) bpIcon.remove();
+                }
+            }
+        }
+        // Save state
+        this.app.persistence.autoSave();
+    }
+
     render() {
 
         if (!this.nodeKey) {
@@ -104,6 +129,13 @@ class Node {
         const gradient = this.getHeaderColor();
         header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
         header.style.borderBottomColor = 'rgba(0,0,0,0.5)';
+        if (this.isBreakpoint) {
+            header.classList.add('has-breakpoint');
+            const bpIcon = document.createElement('div');
+            bpIcon.className = 'breakpoint-icon';
+            bpIcon.style.cssText = 'width: 12px; height: 12px; background: #d32f2f; border-radius: 50%; position: absolute; top: -6px; left: -6px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;';
+            header.appendChild(bpIcon);
+        }
 
         if (this.icon) {
             const iconEl = document.createElement('span');

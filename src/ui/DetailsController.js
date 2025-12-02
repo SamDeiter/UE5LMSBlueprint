@@ -165,29 +165,29 @@ export class DetailsController {
                         const parsed = DetailsRenderer.parseVectorValue(variable.defaultValue);
                         parsed[vectorComponent] = parseFloat(e.target.value) || 0;
                         const newValue = `(${parsed.x},${parsed.y},${parsed.z})`;
-                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newValue);
+                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newValue, true);
                     } else if (transformComponent) {
                         // Handle Transform component update
                         const [section, axis] = transformComponent.split('-');
                         const parsed = DetailsRenderer.parseTransformValue(variable.defaultValue);
                         parsed[section][axis] = parseFloat(e.target.value) || 0;
                         const newValue = `(${parsed.location.x},${parsed.location.y},${parsed.location.z}|${parsed.rotation.x},${parsed.rotation.y},${parsed.rotation.z}|${parsed.scale.x},${parsed.scale.y},${parsed.scale.z})`;
-                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newValue);
+                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newValue, true);
                     } else if (mapIndex !== undefined && mapField !== undefined) {
                         // Handle Map Update
                         const index = parseInt(mapIndex);
                         const newMap = [...variable.defaultValue];
                         if (!newMap[index]) newMap[index] = {};
                         newMap[index][mapField] = value;
-                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newMap);
+                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newMap, true);
                     } else if (arrayIndex !== undefined) {
                         // Handle Array Update (Debounced or immediate? Immediate for now)
                         const index = parseInt(arrayIndex);
                         const newArray = [...variable.defaultValue];
                         newArray[index] = value;
-                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newArray);
+                        this.app.variables.updateVariableProperty(variable, 'defaultValue', newArray, true);
                     } else {
-                        this.app.variables.updateVariableProperty(variable, prop, value);
+                        this.app.variables.updateVariableProperty(variable, prop, value, true);
                     }
                 });
             }

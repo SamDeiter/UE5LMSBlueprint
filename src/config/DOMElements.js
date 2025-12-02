@@ -10,6 +10,8 @@ export const DOMElements = {
     PLAY_BTN: 'play-btn',
     STOP_BTN: 'stop-btn',
     STEP_BTN: 'step-btn',
+    STEP_INTO_BTN: 'step-into-btn',
+    STEP_OUT_BTN: 'step-out-btn',
     HELP_BTN: 'help-btn',
     HELP_MODAL: 'help-modal',
     HELP_MODAL_CLOSE: 'help-modal-close'

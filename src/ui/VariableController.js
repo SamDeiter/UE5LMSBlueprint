@@ -221,7 +221,7 @@ export class VariableController {
         this.app.compiler.log(`Variable '${name}' deleted.`);
     }
 
-    updateVariableProperty(variable, property, newValue) {
+    updateVariableProperty(variable, property, newValue, skipRender = false) {
         const oldValue = variable[property];
         let needsFullRender = false;
         let needsNodeLibraryUpdate = false;
@@ -264,7 +264,10 @@ export class VariableController {
         } else if (property === 'defaultValue') {
             variable[property] = newValue;
             // Re-render the details panel to show updated array/map elements
-            needsFullRender = true;
+            // Only if NOT skipping render (e.g. during typing)
+            if (!skipRender) {
+                needsFullRender = true;
+            }
         } else {
             variable[property] = newValue;
         }
@@ -315,7 +318,7 @@ export class VariableController {
         this.app.persistence.autoSave();
 
         // Refresh UI
-        if (needsFullRender || property === 'name') {
+        if ((needsFullRender || property === 'name') && !skipRender) {
             this.renderPanel();
 
             // Optimized: Only redraw wires for affected nodes instead of all wires

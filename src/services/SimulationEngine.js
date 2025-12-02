@@ -16,6 +16,7 @@ import { TimelineExecutor } from './executors/TimelineExecutor.js';
 import { FunctionExecutor } from './executors/FunctionExecutor.js';
 import { MacroExecutor } from './executors/MacroExecutor.js';
 import { NeedNodeExecutor } from './executors/NeedNodeExecutor.js';
+import { StringExecutor } from './executors/StringExecutor.js';
 
 /**
  * Handles the runtime execution of the Blueprint graph.
@@ -48,8 +49,8 @@ export class SimulationEngine {
         this.isStepping = false;
         this.resolveStep = null; // Promise resolver for stepping
 
-        this.watchedPins = new Set();
-        this.createWatchPanel();
+
+
     }
 
 
@@ -69,6 +70,7 @@ export class SimulationEngine {
         const functionExecutor = new FunctionExecutor(this);
         const macroExecutor = new MacroExecutor(this);
         const needNodeExecutor = new NeedNodeExecutor(this);
+        const stringExecutor = new StringExecutor(this);
 
         // Register exact match executors
         this.executorRegistry.register('EventBeginPlay', eventExecutor);
@@ -80,8 +82,33 @@ export class SimulationEngine {
         this.executorRegistry.register('Branch', flowControlExecutor);
         this.executorRegistry.register('PrintString', printExecutor);
         this.executorRegistry.register('Timeline', timelineExecutor);
+
         this.executorRegistry.register('NeedNode', needNodeExecutor);
-        
+
+        // String Nodes
+        this.executorRegistry.register('Append', stringExecutor);
+        this.executorRegistry.register('Len', stringExecutor);
+        this.executorRegistry.register('Contains', stringExecutor);
+
+        // Math Nodes
+        this.executorRegistry.register('ClampInt', mathExecutor);
+        this.executorRegistry.register('ClampFloat', mathExecutor);
+        this.executorRegistry.register('MinInt', mathExecutor);
+        this.executorRegistry.register('MinFloat', mathExecutor);
+        this.executorRegistry.register('MaxInt', mathExecutor);
+        this.executorRegistry.register('MaxFloat', mathExecutor);
+        this.executorRegistry.register('AbsInt', mathExecutor);
+        this.executorRegistry.register('AbsFloat', mathExecutor);
+
+        // Flow Control Nodes
+        this.executorRegistry.register('DoN', flowControlExecutor);
+        this.executorRegistry.register('DoOnce', flowControlExecutor);
+        this.executorRegistry.register('Gate', flowControlExecutor);
+        this.executorRegistry.register('MultiGate', flowControlExecutor);
+        this.executorRegistry.register('FlipFlop', flowControlExecutor);
+        this.executorRegistry.register('Sequence', flowControlExecutor);
+
+
         // Math nodes
         this.executorRegistry.register('AddInt', mathExecutor);
         this.executorRegistry.register('AddFloat', mathExecutor);
@@ -98,70 +125,13 @@ export class SimulationEngine {
         this.executorRegistry.registerPattern(/^Macro_/, macroExecutor);
     }
 
-        createWatchPanel() {
-        this.watchPanel = document.createElement('div');
-        this.watchPanel.id = 'watch-panel';
-        this.watchPanel.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #444;
-            border-radius: 4px;
-            padding: 10px;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            display: none;
-            z-index: 100;
-            min-width: 200px;
-        `;
-        this.watchPanel.innerHTML = '<div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px;">Watched Values</div><div id="watch-list"></div>';
-        document.getElementById('graph-editor').appendChild(this.watchPanel);
-    }
+
 
     addWatch(pin) {
-        this.watchedPins.add(pin.id);
-        this.log(`Watching pin: ${pin.name}`, 'success');
-        this.updateWatchPanel();
-        this.watchPanel.style.display = 'block';
-    }
-
-    updateWatchPanel() {
-        const list = this.watchPanel.querySelector('#watch-list');
-        list.innerHTML = '';
-
-        if (this.watchedPins.size === 0) {
-            this.watchPanel.style.display = 'none';
-            return;
+        if (this.app.debugger) {
+            this.app.debugger.addWatch(pin);
+            this.log(`Watching pin: ${pin.name}`, 'success');
         }
-
-        this.watchedPins.forEach(pinId => {
-            // Find pin (it might be on a different graph, so this is tricky if we switch graphs)
-            // For MVP, we'll just look in the active graph or try to find it.
-            // Actually, pin objects persist, but we need their current value.
-
-            // We need to find the node and get its value.
-            // Since we don't have a global pin registry, we have to search.
-            let pin = null;
-            for (const node of this.app.graph.nodes.values()) {
-                pin = node.findPinById(pinId);
-                if (pin) break;
-            }
-
-            if (pin) {
-                const row = document.createElement('div');
-                row.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 2px;';
-
-                // Get value - this is the hard part. 
-                // We need to capture values during execution.
-                // For now, we'll just show "Pending..." or the last known value if we store it.
-                const val = pin.node.tempValues ? (pin.node.tempValues[pin.name] !== undefined ? pin.node.tempValues[pin.name] : 'N/A') : 'N/A';
-
-                row.innerHTML = `<span style="color: #aaa;">${pin.node.title}.${pin.name}:</span> <span style="color: #4CAF50;">${val}</span>`;
-                list.appendChild(row);
-            }
-        });
     }
 
     /** Starts the simulation. */
@@ -222,7 +192,7 @@ export class SimulationEngine {
         this.isPaused = true;
         this.isStepping = false; // Clear stepping flag as we have now paused
         this.pausedNode = node;
-        this.log(`Paused at: ${node.title}`, 'warning');
+        this.log(`Paused at: ${node.title} `, 'warning');
         this.updateUI();
 
         // Highlight paused node
@@ -269,6 +239,14 @@ export class SimulationEngine {
         this.resume();
     }
 
+    stepOut() {
+        if (!this.isPaused) return;
+        this.isStepping = true;
+        this.stepMode = 'out';
+        this.stepOutStackDepth = this.callStack.length;
+        this.resume();
+    }
+
     /** Updates Play/Stop button state and UI visual cues. */
     updateUI() {
         if (this.playBtn) {
@@ -283,6 +261,9 @@ export class SimulationEngine {
         const stepIntoBtn = document.getElementById('step-into-btn');
         if (stepIntoBtn) stepIntoBtn.disabled = !this.isPaused;
 
+        const stepOutBtn = document.getElementById('step-out-btn');
+        if (stepOutBtn) stepOutBtn.disabled = !this.isPaused;
+
         if (this.isPaused) {
             this.app.graph.editor.style.boxShadow = 'inset 0 0 0 4px #FFC107'; // Amber border for pause
         } else if (this.isRunning) {
@@ -295,7 +276,7 @@ export class SimulationEngine {
     /** Logs runtime messages to the output panel. */
     log(msg, type = 'log') {
         const div = document.createElement('div');
-        div.textContent = `[Runtime] ${msg}`;
+        div.textContent = `[Runtime] ${msg} `;
         if (type === 'error') div.className = 'compiler-issue';
         else if (type === 'success') div.className = 'compiler-success';
         else div.className = 'compiler-log';
@@ -382,6 +363,7 @@ export class SimulationEngine {
      * @param {string} [startPinId] - Optional specific output pin ID to start from (e.g. 'update').
      */
     async executeFlow(startNode, startPinId = null) {
+        let currentInputPin = null;
         let currentNode = startNode;
 
         // Safety limiter to prevent infinite loops crashing the browser in this phase
@@ -403,7 +385,15 @@ export class SimulationEngine {
                     if (this.callStack.length <= this.stepOverStackDepth) {
                         shouldPause = true;
                     }
+                } else if (this.stepMode === 'out') {
+                    // Step Out: Pause only if we are at a lower stack depth
+                    if (this.callStack.length < this.stepOutStackDepth) {
+                        shouldPause = true;
+                    }
                 }
+            } else if (currentNode.isBreakpoint) {
+                shouldPause = true;
+                this.log(`Breakpoint hit at: ${currentNode.title} `, 'warning');
             } else if (this.isPaused) {
                 // Manual pause triggered externally
                 shouldPause = true;
@@ -420,12 +410,12 @@ export class SimulationEngine {
 
             // Execute Logic
             // Note: executeNodeLogic is async and might switch graphs!
-            const nextPinId = await this.executeNodeLogic(currentNode);
+            const nextPinId = await this.executeNodeLogic(currentNode, currentInputPin);
 
             let outPin = null;
 
             if (nextPinId) {
-                outPin = currentNode.findPinById(`${currentNode.id}-${nextPinId}`);
+                outPin = currentNode.findPinById(`${currentNode.id} -${nextPinId} `);
             } else {
                 // Default: look for the first execution output pin
                 outPin = currentNode.pinsOut.find(p => p.type === 'exec');
@@ -443,6 +433,7 @@ export class SimulationEngine {
 
             if (link) {
                 currentNode = link.endPin.node;
+                currentInputPin = link.endPin;
                 // Small delay to visualize flow could go here
             } else {
                 currentNode = null;
@@ -456,13 +447,13 @@ export class SimulationEngine {
     }
 
     /** Executes the core logic of a specific node. */
-    async executeNodeLogic(node) {
+    async executeNodeLogic(node, inputPin) {
         const executor = this.executorRegistry.getExecutor(node.nodeKey);
         if (executor) {
-            return await executor.execute(node);
+            return await executor.execute(node, inputPin);
         }
-        
-        this.log(`Unknown node type: ${node.nodeKey}`, 'error');
+
+        this.log(`Unknown node type: ${node.nodeKey} `, 'error');
         return null;
     }
 
@@ -471,7 +462,7 @@ export class SimulationEngine {
      * @param {string} pinLocalId - The local ID of the input pin (e.g., 'a_in').
      */
     evaluateInput(node, pinLocalId) {
-        const fullPinId = `${node.id}-${pinLocalId}`;
+        const fullPinId = `${node.id} -${pinLocalId} `;
         const pin = node.findPinById(fullPinId);
 
         if (!pin) return null;
@@ -485,17 +476,17 @@ export class SimulationEngine {
                 const x = this.evaluatePin(pin.subPins[0]) || 0;
                 const y = this.evaluatePin(pin.subPins[1]) || 0;
                 const z = this.evaluatePin(pin.subPins[2]) || 0;
-                return `(${x},${y},${z})`;
+                return `(${x}, ${y}, ${z})`;
             } else if (pin.type === 'rotator') {
                 const r = this.evaluatePin(pin.subPins[0]) || 0;
                 const p = this.evaluatePin(pin.subPins[1]) || 0;
                 const y = this.evaluatePin(pin.subPins[2]) || 0;
-                return `(R=${r},P=${p},Y=${y})`;
+                return `(R = ${r}, P = ${p}, Y = ${y})`;
             } else if (pin.type === 'transform') {
                 const loc = this.evaluatePin(pin.subPins[0]) || '(0,0,0)';
                 const rot = this.evaluatePin(pin.subPins[1]) || '(R=0,P=0,Y=0)';
                 const scale = this.evaluatePin(pin.subPins[2]) || '(1,1,1)';
-                return `(${loc}|${rot}|${scale})`;
+                return `(${loc} | ${rot} | ${scale})`;
             }
         }
 
@@ -558,7 +549,7 @@ export class SimulationEngine {
             return;
         }
 
-        this.log(`\n--- Assessment Results ---`, "success");
+        this.log(`\n-- - Assessment Results-- - `, "success");
 
         let totalScore = 0;
         let totalWeight = 0;
@@ -586,10 +577,10 @@ export class SimulationEngine {
             // Log results
             this.log(`\nNeedNode: "${needData.title}"`);
             this.log(`  Score: ${nodeScore}% (Threshold: ${needData.passThreshold}%)`);
-            this.log(`  Status: ${isPassing ? '✅ PASSED' : '❌ FAILED'}`, isPassing ? 'success' : 'error');
+            this.log(`  Status: ${isPassing ? '✅ PASSED' : '❌ FAILED'} `, isPassing ? 'success' : 'error');
 
             validatedCriteria.forEach(c => {
-                this.log(`    ${c.passed ? '✅' : '❌'} ${c.description}`);
+                this.log(`    ${c.passed ? '✅' : '❌'} ${c.description} `);
             });
 
             // Accumulate for overall score
@@ -617,9 +608,9 @@ export class SimulationEngine {
         const overallScore = totalWeight > 0 ? Math.round(totalScore / needNodes.length) : 0;
         const allPassed = results.every(r => r.passed);
 
-        this.log(`\n--- Overall Assessment ---`, "success");
-        this.log(`Overall Score: ${overallScore}%`);
-        this.log(`Status: ${allPassed ? '✅ ALL REQUIREMENTS MET' : '❌ SOME REQUIREMENTS NOT MET'}`,
+        this.log(`\n-- - Overall Assessment-- - `, "success");
+        this.log(`Overall Score: ${overallScore}% `);
+        this.log(`Status: ${allPassed ? '✅ ALL REQUIREMENTS MET' : '❌ SOME REQUIREMENTS NOT MET'} `,
             allPassed ? 'success' : 'error');
 
         // Report to SCORM LMS
@@ -637,7 +628,7 @@ export class SimulationEngine {
             const initialized = scormClient.initialize();
             if (!initialized) {
                 this.log("\n[SCORM] API not available (local development mode)");
-                this.log(`[SCORM] Would report: Score=${score}%, Status=${passed ? 'passed' : 'failed'}`);
+                this.log(`[SCORM] Would report: Score = ${score}%, Status = ${passed ? 'passed' : 'failed'} `);
                 return;
             }
         }
@@ -657,6 +648,6 @@ export class SimulationEngine {
 
         // scormClient.commit() is called inside setScore and setPassed
 
-        this.log(`\n[SCORM] ✅ Reported to LMS: Score=${score}%, Status=${passed ? 'passed' : 'failed'}`, "success");
+        this.log(`\n[SCORM] ✅ Reported to LMS: Score = ${score}%, Status = ${passed ? 'passed' : 'failed'} `, "success");
     }
 }

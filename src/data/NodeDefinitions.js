@@ -1084,7 +1084,7 @@ export const NodeDefinitions = {
         ]
     }
 
-,
+    ,
     "MacroEntry": {
         title: "Inputs",
         type: "event-node",
@@ -1103,4 +1103,136 @@ export const NodeDefinitions = {
         pins: [
             { id: "exec_in", name: "Exec", type: "exec", dir: "in" }
         ]
-    }};
+    },
+    // --- STRING UTILS ---
+    "Len": {
+        title: "Len",
+        type: "pure-node",
+        category: "String",
+        icon: "f",
+        pins: [
+            { id: "str_in", name: "S", type: "string", dir: "in", defaultValue: "" },
+            { id: "len_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "Contains": {
+        title: "Contains",
+        type: "pure-node",
+        category: "String",
+        icon: "f",
+        pins: [
+            { id: "str_in", name: "Search In", type: "string", dir: "in", defaultValue: "" },
+            { id: "sub_in", name: "Substring", type: "string", dir: "in", defaultValue: "" },
+            { id: "use_case_in", name: "Use Case", type: "bool", dir: "in", defaultValue: false },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
+    },
+
+    // --- MATH UTILS ---
+    "ClampInt": {
+        title: "Clamp (Integer)",
+        type: "pure-node",
+        category: "Math|Integer",
+        icon: "f",
+        pins: [
+            { id: "val_in", name: "Value", type: "int", dir: "in", defaultValue: 0 },
+            { id: "min_in", name: "Min", type: "int", dir: "in", defaultValue: 0 },
+            { id: "max_in", name: "Max", type: "int", dir: "in", defaultValue: 10 },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "ClampFloat": {
+        title: "Clamp (Float)",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "val_in", name: "Value", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "min_in", name: "Min", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "max_in", name: "Max", type: "float", dir: "in", defaultValue: 1.0 },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "MinInt": {
+        title: "Min (Integer)",
+        type: "pure-node",
+        category: "Math|Integer",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
+            { id: "b_in", name: "B", type: "int", dir: "in", defaultValue: 0 },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "MaxInt": {
+        title: "Max (Integer)",
+        type: "pure-node",
+        category: "Math|Integer",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
+            { id: "b_in", name: "B", type: "int", dir: "in", defaultValue: 0 },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "MinFloat": {
+        title: "Min (Float)",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "MaxFloat": {
+        title: "Max (Float)",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "AbsInt": {
+        title: "Abs (Integer)",
+        type: "pure-node",
+        category: "Math|Integer",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "AbsFloat": {
+        title: "Abs (Float)",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+
+    // --- FLOW CONTROL ---
+    "MultiGate": {
+        title: "MultiGate",
+        type: "flow-node",
+        category: "Flow Control",
+        icon: "fa-random",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "reset_in", name: "Reset", type: "exec", dir: "in" },
+            { id: "loop_in", name: "IsRandom", type: "bool", dir: "in", defaultValue: false },
+            { id: "exec_out_0", name: "Out 0", type: "exec", dir: "out" },
+            { id: "exec_out_1", name: "Out 1", type: "exec", dir: "out" }
+        ],
+        customData: {
+            startIndex: 0
+        }
+    },
+};
