@@ -292,11 +292,10 @@ export class GraphInteraction {
                     const offset = this.nodeDragOffsets.get(nodeId);
 
                     if (node && offset) {
-                        const mouseGraphX = (e.clientX - this.controller.pan.x) / zoom;
-                        const mouseGraphY = (e.clientY - this.controller.pan.y) / zoom;
+                        const mouseGraphPos = this.controller.getGraphCoords(e.clientX, e.clientY);
 
-                        node.x = mouseGraphX - offset.x;
-                        node.y = mouseGraphY - offset.y;
+                        node.x = mouseGraphPos.x - offset.x;
+                        node.y = mouseGraphPos.y - offset.y;
 
                         node.updatePosition();
                     }

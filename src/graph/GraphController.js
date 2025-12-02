@@ -135,7 +135,8 @@ class GraphController {
         if (this.app.activeGraph && (this.app.activeGraph.startsWith('Func_') || this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph))) {
             // Latent nodes typically have a 'Latent' category or specific flag.
             // For now, we'll check for specific types like Timeline or Delay (if added later)
-            if (nodeKey === 'Timeline' || nodeKey === 'Delay') {
+            // For now, we'll check for specific types like Timeline or Delay (if added later)
+            if (LATENT_NODE_TYPES.includes(nodeKey)) {
                 console.warn(`Cannot add ${nodeData.title}: Latent nodes are not allowed in Functions.`);
                 // Ideally show a UI toast/alert here
                 return null;
@@ -657,7 +658,7 @@ class GraphController {
     }
 
     snapSelectedNodesToGrid() {
-        const gridSize = 10;
+        const gridSize = GRAPH_CONSTANTS.GRID_SIZE;
         for (const nodeId of this.selectedNodes) {
             const node = this.nodes.get(nodeId);
             if (node) {
@@ -678,7 +679,7 @@ class GraphController {
 
         const oldToNewPinIds = new Map();
         const newSelection = [];
-        const offset = 20;
+        const offset = GRAPH_CONSTANTS.DUPLICATE_OFFSET;
         const originalNodes = Array.from(this.selectedNodes).map(id => this.nodes.get(id)).filter(n => n);
 
         for (const oldNode of originalNodes) {
