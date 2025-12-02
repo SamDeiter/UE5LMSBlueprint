@@ -10,7 +10,7 @@ class Node {
     constructor(id, nodeData, x, y, nodeKey, app) {
         this.id = id;
         this.title = nodeData.title || "Unknown Node";
-        this.type = nodeData.type || "pure-node";
+        this.type = nodeData.type || NODE_TYPES.PURE;
         this.icon = nodeData.icon;
         this.devWarning = nodeData.devWarning;
         this.variableType = nodeData.variableType;
@@ -42,7 +42,7 @@ class Node {
 
         // Safeguard: For pure nodes, ensure no exec pins are exposed in the cache
         // This prevents them from being rendered even if they exist in the data
-        if (this.type === 'pure-node') {
+        if (this.type === NODE_TYPES.PURE) {
             this.pinsIn = this.pins.filter(p => p.dir === 'in' && p.type !== 'exec');
             this.pinsOut = this.pins.filter(p => p.dir === 'out' && p.type !== 'exec');
         } else {
@@ -95,7 +95,7 @@ class Node {
     toggleBreakpoint() {
         this.isBreakpoint = !this.isBreakpoint;
         if (this.element) {
-            const header = this.element.querySelector('.node-title');
+            const header = this.headerElement || this.element.querySelector('.node-title');
             if (header) {
                 if (this.isBreakpoint) {
                     header.classList.add('has-breakpoint');
@@ -136,6 +136,7 @@ class Node {
         element.style.top = `${this.y}px`;
 
         const header = document.createElement('div');
+        this.headerElement = header;
         header.className = 'node-title';
 
         const gradient = this.getHeaderColor();
@@ -180,7 +181,7 @@ class Node {
         }
 
 
-        if (this.type === 'event-node') {
+        if (this.type === NODE_TYPES.EVENT) {
             const delegateIcon = document.createElement('div');
             delegateIcon.className = 'event-delegate-icon';
             delegateIcon.title = "Output Delegate";
@@ -237,22 +238,27 @@ class Node {
         const content = document.createElement('div');
         content.className = 'node-content';
 
-        if (this.type === 'pure-node') {
+        if (this.type === NODE_TYPES.PURE) {
             content.classList.add('pure-node-content');
             const inCol = document.createElement('div');
             inCol.className = 'pin-column in';
-            this.pinsIn.forEach(pinIn => inCol.appendChild(this.renderPin(pinIn)));
+            const inFragment = document.createDocumentFragment();
+            this.pinsIn.forEach(pinIn => inFragment.appendChild(this.renderPin(pinIn)));
+            inCol.appendChild(inFragment);
             content.appendChild(inCol);
 
             const outCol = document.createElement('div');
             outCol.className = 'pin-column out';
-            this.pinsOut.forEach(pinOut => outCol.appendChild(this.renderPin(pinOut)));
+            const outFragment = document.createDocumentFragment();
+            this.pinsOut.forEach(pinOut => outFragment.appendChild(this.renderPin(pinOut)));
+            outCol.appendChild(outFragment);
             content.appendChild(outCol);
         } else {
             // SAFEGUARD: Ensure pins arrays exist and have length before checking
             const inLen = this.pinsIn ? this.pinsIn.length : 0;
             const outLen = this.pinsOut ? this.pinsOut.length : 0;
             const maxRows = Math.max(inLen, outLen);
+            const fragment = document.createDocumentFragment();
 
             for (let i = 0; i < maxRows; i++) {
                 const row = document.createElement('div');
@@ -278,8 +284,9 @@ class Node {
                     spacer.minWidth = '10px';
                     row.appendChild(spacer);
                 }
-                content.appendChild(row);
+                fragment.appendChild(row);
             }
+            content.appendChild(fragment);
         }
 
         element.appendChild(content);

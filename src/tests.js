@@ -4,6 +4,7 @@ import { registerGUIDTests } from './tests/guid.test.js';
 import { registerComponentHierarchyTests } from './tests/ComponentHierarchy.test.js';
 import { registerNeedNodeTests } from './tests/NeedNode.test.js';
 import './tests/NodeRegistryTests.js';
+import { registerRefactorTests } from './tests/test_refactor.js';
 
 export class TestRunner {
     constructor(app) {
@@ -114,6 +115,7 @@ export const registerTests = (runner) => {
     registerGUIDTests(runner);
     registerComponentHierarchyTests(runner);
     registerNeedNodeTests(runner);
+    registerRefactorTests(runner);
 
     // --- Variable Tests ---
 

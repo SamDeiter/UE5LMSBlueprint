@@ -348,12 +348,55 @@ export class FunctionsController {
         return `${pin.dir}_${name}`;
     }
 
-    showContextMenu(e, func) {
+    deleteFunction(func) {
+        if (!confirm(`Delete function '${func.name}'? This will remove all CallFunction nodes.`)) {
+            return;
+        }
+
+        // 1. Remove all CallFunction nodes from all graphs
+        const callNodeKey = `Func_${func.name}`;
+        
+        // Remove from active graph
+        if (this.app.graph && this.app.graph.nodes) {
+            const nodesToRemove = [];
+            for (const node of this.app.graph.nodes.values()) {
+                if (node.nodeKey === callNodeKey) {
+                    nodesToRemove.push(node.id);
+                }
+            }
+            nodesToRemove.forEach(nodeId => this.app.graph.removeNode(nodeId));
+        }
+
+        // Remove from stored graphs
+        const allGraphs = [];
+        if (this.app.graphs) Object.values(this.app.graphs).forEach(g => allGraphs.push(g));
+        if (this.app.functionRegistry) this.app.functionRegistry.getAll().forEach(f => allGraphs.push(f.graph));
+        if (this.app.macroRegistry) this.app.macroRegistry.getAll().forEach(m => allGraphs.push(m.graph));
+
+        allGraphs.forEach(graphData => {
+            if (!graphData || !graphData.nodes) return;
+            graphData.nodes = graphData.nodes.filter(n => n.nodeKey !== callNodeKey);
+        });
+
+        // 2. Unregister the function
+        this.app.functionRegistry.unregister(func.id);
+
+        // 3. Switch to EventGraph if we're currently viewing this function
+        if (this.app.activeGraph === func.name) {
+            this.app.switchGraph('EventGraph');
+        }
+
+        // 4. Update UI
+        this.render();
+        this.app.persistence.autoSave();
+    }
+
+        showContextMenu(e, func) {
         const items = [
             { label: 'Open', callback: () => this.app.switchGraph(func.name) },
             { label: 'Rename', callback: () => { /* TODO */ } },
             { label: 'Duplicate', callback: () => { /* TODO */ } },
-            { label: 'Delete', callback: () => { /* TODO */ } },
+            { label: 'Delete', callback: () => this.deleteFunction(func) },
             { label: '---', callback: () => { } },
             { label: 'Export to JSON', callback: () => this.exportFunction(func) }
         ];

@@ -37,8 +37,10 @@ export class GraphRenderer {
     /** Render all nodes from the controller's node map */
     renderAllNodes() {
         this.controller.nodesContainer.innerHTML = '';
+        const fragment = document.createDocumentFragment();
         for (const node of this.controller.nodes.values()) {
-            this.controller.nodesContainer.appendChild(node.render());
+            fragment.appendChild(node.render());
         }
+        this.controller.nodesContainer.appendChild(fragment);
     }
 }

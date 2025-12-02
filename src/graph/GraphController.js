@@ -131,7 +131,7 @@ class GraphController {
         }
 
         // Check for Latent Nodes in Functions
-        if (this.app.activeGraph.startsWith('Func_') || this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph)) {
+        if (this.app.activeGraph && (this.app.activeGraph.startsWith('Func_') || this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph))) {
             // Latent nodes typically have a 'Latent' category or specific flag.
             // For now, we'll check for specific types like Timeline or Delay (if added later)
             if (nodeKey === 'Timeline' || nodeKey === 'Delay') {

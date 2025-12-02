@@ -441,9 +441,13 @@ export class ComponentsController {
 
                 const isMulti = e.ctrlKey || e.shiftKey || e.metaKey;
 
+                // If clicking an already-selected item with Ctrl, deselect it
                 if (this.selectedComponentIds.has(comp.id) && isMulti) {
-                    this.selectComponent(comp.id, true);
-                    e.target.blur();
+                    this.selectedComponentIds.delete(comp.id);
+                    this.selectComponent(null); // Trigger UI update
+                    // Re-add remaining selections
+                    this.selectedComponentIds.forEach(id => this.selectedComponentIds.add(id));
+                    this.selectComponent(Array.from(this.selectedComponentIds).pop(), false);
                 } else {
                     this.selectComponent(comp.id, isMulti);
                 }
