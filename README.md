@@ -92,6 +92,36 @@ import { BlueprintValidator } from '../utils/validator.js';
 - **Pre-commit hook** validates syntax and linting before commits
 - **Git tag** `v1.0-stable` marks stable baseline
 
+
+## 🤖 For AI Agents
+
+**Important:** Before working on this project, please read:
+
+1. **[AGENTS.md](AGENTS.md)** - Complete developer guide
+   - Project structure and patterns
+   - Development workflows
+   - Token optimization strategies
+   - Common issues and solutions
+   - User preferences (Python, Git, SCORM)
+
+2. **[ANCHOR_MANIFEST.md](ANCHOR_MANIFEST.md)** - Code reference system
+   - 42 searchable code anchors
+   - Quick reference to implementations
+   - Function locations and connections
+   - Search with: `git grep "anchor-name"`
+
+**Quick Start for Agents:**
+```bash
+# Find implementation details
+git grep "custom-event-execution-logic"  # From ANCHOR_MANIFEST.md
+
+# Reference in prompts
+"Check AGENTS.md for the development patterns"
+"Use anchor manifest to find parent-class-selection-logic"
+```
+
+---
+
 ## 📝 Next Steps
 
 See `docs/CODE_QUALITY_PLAN.md` for the complete quality improvement roadmap.

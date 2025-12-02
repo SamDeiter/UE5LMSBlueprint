@@ -369,6 +369,50 @@ git grep "modal-" | grep "<!--"
 
 ---
 
+
+---
+
+## Meta-Documentation
+
+### <!-- token-optimization-guidelines -->
+**File:** `AGENTS.md`  
+**Section:** "⚡ Token Optimization"  
+**Lines:** (inserted dynamically)  
+**What:** Guidelines for AI agents to minimize token usage  
+**How:** File viewing strategies, search-first approach, context awareness, anchor references  
+**Connects to:** `anchor-manifest-system`, `agents-documentation`
+
+### <!-- anchor-manifest-system -->
+**File:** `ANCHOR_MANIFEST.md`  
+**Lines:** 1-end  
+**What:** Central registry of all code anchors for searchable documentation  
+**How:** Each anchor marks implementation point with file/function/lines/connections  
+**Connects to:** `token-optimization-guidelines`, `agents-documentation`
+
+### <!-- file-viewing-strategy -->
+**File:** `AGENTS.md`  
+**Section:** "Token Optimization > File Viewing Strategy"  
+**What:** Best practices for efficient file access  
+**How:** Use line ranges, search first, target functions, check sizes, use manifest  
+**Connects to:** `token-optimization-guidelines`, `anchor-usage-pattern`
+
+### <!-- anchor-usage-pattern -->
+**File:** `ANCHOR_MANIFEST.md`  
+**Section:** "Usage Examples"  
+**Lines:** ~380-400  
+**What:** How to search and reference anchors in codebase  
+**How:** Git grep for anchor names, reference in documentation  
+**Connects to:** `anchor-manifest-system`, `file-viewing-strategy`
+
+### <!-- python-script-efficiency -->
+**File:** `AGENTS.md`  
+**Section:** "Token Optimization > Python Script Efficiency"  
+**What:** Guidelines for efficient Python automation scripts  
+**How:** Single script for multiple related changes, avoid redundant operations  
+**Connects to:** `python-ui-exports-updater`, `python-app-imports-updater`
+
+---
+
 **Last Updated:** December 2, 2025  
-**Total Anchors:** 37  
+**Total Anchors:** 42  
 **Maintained By:** AI Agents & SamDeiter
