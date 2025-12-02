@@ -116,6 +116,13 @@ class Node {
         this.app.persistence.autoSave();
     }
 
+    updatePosition() {
+        if (this.element) {
+            this.element.style.left = `${this.x}px`;
+            this.element.style.top = `${this.y}px`;
+        }
+    }
+
     render() {
 
         if (!this.nodeKey) {
