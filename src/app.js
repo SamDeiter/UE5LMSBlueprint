@@ -52,6 +52,12 @@ class BlueprintApp {
 
         // 1. Core Data Structures
         BlueprintApp.components = new Map();
+        BlueprintApp.classDefaults = {
+            parentClass: 'Actor',
+            tickInterval: 0.0,
+            replicates: false,
+            autoReceiveInput: 'Disabled'
+        };
 
         // 2. Low-Level Controllers (Layout, Wiring, Grid)
         BlueprintApp.layout = new LayoutController(BlueprintApp);
@@ -169,6 +175,16 @@ class BlueprintApp {
             newBlueprintMenuItem.addEventListener('click', () => {
                 if (BlueprintApp.parentClassModal) {
                     BlueprintApp.parentClassModal.open();
+                }
+            });
+        }
+
+        // Class Defaults Button
+        const classDefaultsBtn = document.getElementById('class-defaults-btn');
+        if (classDefaultsBtn) {
+            classDefaultsBtn.addEventListener('click', () => {
+                if (BlueprintApp.details) {
+                    BlueprintApp.details.showClassDefaults();
                 }
             });
         }
