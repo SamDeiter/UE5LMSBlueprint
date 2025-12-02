@@ -311,6 +311,7 @@ export class GraphInteraction {
 
                 this.app.wiring.updateConnectedLinks(this.controller.selectedNodes);
             } else if (this.isWiring) {
+                this.hasDragged = true;
                 this.app.wiring.updateGhostWire(e, this.activePin);
             } else if (this.isMarqueeing) {
                 const rect = this.editor.getBoundingClientRect();
