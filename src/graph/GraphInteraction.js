@@ -304,8 +304,7 @@ export class GraphInteraction {
 
                 this.app.wiring.updateConnectedLinks(this.controller.selectedNodes);
             } else if (this.isWiring) {
-                const graphPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-                this.app.wiring.updateGhostWire(graphPos.x, graphPos.y);
+                this.app.wiring.updateGhostWire(e, this.activePin);
             } else if (this.isMarqueeing) {
                 const currentX = e.clientX;
                 const currentY = e.clientY;

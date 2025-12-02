@@ -3,6 +3,7 @@
  */
 import { Utils } from '../utils.js';
 import { generateGUID } from '../utils/guid.js';
+import { GRAPH_CONSTANTS, STRUCT_TYPES, BREAK_NODE_KEYS } from '../config/Constants.js';
 
 class WiringController {
     constructor(svg, app) {
@@ -17,6 +18,14 @@ class WiringController {
     findLink(linkId) { return this.links.get(linkId); }
     findLinksByNodeId(nodeId) { return [...this.links.values()].filter(l => l.startPin.node.id === nodeId || l.endPin.node.id === nodeId); }
     findLinksByPinId(pinId) { return [...this.links.values()].filter(l => l.startPin.id === pinId || l.endPin.id === pinId); }
+
+    updateConnectedLinks(nodeIds) {
+        nodeIds.forEach(nodeId => {
+            const links = this.findLinksByNodeId(nodeId);
+            links.forEach(link => this.drawWire(link));
+        });
+    }
+
     toggleLinkSelection(linkId) {
         const wireEl = document.getElementById(linkId);
         this.app.graph.clearSelection();
@@ -318,12 +327,12 @@ class WiringController {
 
         // Attribute approach
         this.ghostWire.setAttribute('stroke', pinColor);
-        this.ghostWire.setAttribute('stroke-width', '3');
+        this.ghostWire.setAttribute('stroke-width', GRAPH_CONSTANTS.WIRE_STROKE_WIDTH);
         this.ghostWire.setAttribute('fill', 'none'); // Critical!
 
         // Style approach (backup for CSS variables)
         this.ghostWire.style.stroke = pinColor;
-        this.ghostWire.style.strokeWidth = '3px';
+        this.ghostWire.style.strokeWidth = `${GRAPH_CONSTANTS.WIRE_STROKE_WIDTH}px`;
         this.ghostWire.style.fill = 'none';
         this.ghostWire.style.opacity = '1';
 
@@ -347,12 +356,11 @@ class WiringController {
         const wireType = link.startPin.type;
 
         // Only insert Break nodes for Vector/Rotator/Transform
-        if (!['vector', 'rotator', 'transform'].includes(wireType)) {
+        if (!STRUCT_TYPES.includes(wireType)) {
             return;
         }
 
-        const breakNodeKey = wireType === 'vector' ? 'BreakVector' :
-            wireType === 'rotator' ? 'BreakRotator' : 'BreakTransform';
+        const breakNodeKey = BREAK_NODE_KEYS[wireType];
 
         // Get click position in graph coordinates
         const graphPos = this.app.graph.getGraphCoords(e.clientX, e.clientY);
