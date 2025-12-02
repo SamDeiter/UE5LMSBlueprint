@@ -233,9 +233,9 @@ export class GraphInteraction {
 
         // 3. Panning
         if (e.button === 2) { // Right mouse button
-            e.preventDefault();
+            // Do not prevent default here to allow contextmenu event to fire
             this.isRmbDown = true;
-            this.isPanning = true;
+            this.isPanning = false; // Reset panning state
             this.dragStart.x = e.clientX;
             this.dragStart.y = e.clientY;
             this.editor.classList.add('dragging');
@@ -273,17 +273,24 @@ export class GraphInteraction {
         if (this.rafId) return;
 
         this.rafId = requestAnimationFrame(() => {
-            if (this.isPanning) {
+            if (this.isRmbDown) {
                 const dx = e.clientX - this.dragStart.x;
                 const dy = e.clientY - this.dragStart.y;
 
-                this.controller.pan.x += dx;
-                this.controller.pan.y += dy;
+                // Threshold for panning to avoid accidental drags preventing context menu
+                if (!this.isPanning && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+                    this.isPanning = true;
+                }
 
-                this.controller.updateTransform();
+                if (this.isPanning) {
+                    this.controller.pan.x += dx;
+                    this.controller.pan.y += dy;
 
-                this.dragStart.x = e.clientX;
-                this.dragStart.y = e.clientY;
+                    this.controller.updateTransform();
+
+                    this.dragStart.x = e.clientX;
+                    this.dragStart.y = e.clientY;
+                }
             } else if (this.isDraggingNode) {
                 this.hasDragged = true;
                 const zoom = this.controller.zoom;
@@ -342,7 +349,12 @@ export class GraphInteraction {
 
         if (this.isRmbDown) {
             this.isRmbDown = false;
-            this.isPanning = false;
+            // Do NOT reset isPanning here immediately, so handleContextMenu can check it.
+            // It will be reset on next mousedown or we can reset it after a short delay?
+            // Actually, handleContextMenu fires usually right after mouseup or before.
+            // Let's reset it in handleContextMenu or next mousedown.
+            // But if contextmenu doesn't fire (e.g. shift-right-click?), we might be stuck?
+            // Safe to reset on next mousedown.
             this.editor.classList.remove('dragging');
         }
 
@@ -404,6 +416,12 @@ export class GraphInteraction {
 
     handleContextMenu(e) {
         e.preventDefault();
+
+        // If we were panning, don't show the menu
+        if (this.isPanning) {
+            this.isPanning = false; // Reset for next time
+            return;
+        }
         const nodeEl = e.target.closest('.node');
 
         if (nodeEl) {
