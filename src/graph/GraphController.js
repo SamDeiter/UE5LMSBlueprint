@@ -230,13 +230,34 @@ class GraphController {
         // 1. Load Nodes
         safeNodes.forEach((nodeData) => {
             const template = nodeRegistry.get(nodeData.nodeKey);
+            
+            // Dynamic Node Handling (Functions/Macros) if template is missing
+            let dynamicTemplate = null;
             if (!template) {
+                if (nodeData.nodeKey.startsWith('Func_')) {
+                    const funcName = nodeData.nodeKey.replace('Func_', '');
+                    const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
+                    if (funcDef) {
+                        dynamicTemplate = {
+                            title: `Call ${funcName}`,
+                            type: funcDef.isPure ? 'pure-node' : 'function-node',
+                            category: 'Function',
+                            icon: 'f',
+                            pins: [] // Pins will be handled by sync or saved data
+                        };
+                    }
+                }
+            }
+
+            const effectiveTemplate = template || dynamicTemplate;
+
+            if (!effectiveTemplate) {
                 console.warn(`Skipping node during load: Key '${nodeData.nodeKey}' not found in NodeRegistry.`);
                 return;
             }
 
             // Determine the final pin definition to use: saved pins (for dynamic nodes) or template pins (for static nodes)
-            let pinsToLoad = template.pins;
+            let pinsToLoad = effectiveTemplate.pins || [];
 
             // If the node is a Custom Event (or other dynamic node) AND saved pins exist
             if (nodeData.nodeKey === 'CustomEvent') {
@@ -248,9 +269,10 @@ class GraphController {
             } else if (nodeData.nodeKey.startsWith('Func_') && nodeData.pins) {
                 // Function call pins may change. We should handle merging the template and saved pins if needed, 
                 // but for simplicity here, we assume if we have saved pins, we use them to restore literal values/structure if dynamic.
+                pinsToLoad = nodeData.pins;
             }
 
-            const fullNodeData = { ...template, ...nodeData, pins: pinsToLoad };
+            const fullNodeData = { ...effectiveTemplate, ...nodeData, pins: pinsToLoad };
             const node = new Node(nodeData.id, fullNodeData, nodeData.x, nodeData.y, nodeData.nodeKey, this.app);
             this.nodes.set(node.id, node);
 
@@ -294,7 +316,40 @@ class GraphController {
         if (safeState.pan) this.pan = safeState.pan;
         if (safeState.zoom) this.zoom = safeState.zoom;
         this.updateTransform();
+
+        // 5. Update Local Variables Context
+        if (this.app.localVariables) {
+            const func = this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph);
+            if (func) {
+                this.app.localVariables.setContext(func);
+            } else {
+                this.app.localVariables.clearContext();
+            }
+        }
+        
+        // 6. Sync Function Nodes (Entry/Result) if in a function graph
+        const func = this.app.functionRegistry.getAll().find(f => f.name === this.app.activeGraph);
+        if (func && this.app.functionsController) {
+            this.app.functionsController.syncFunctionNodes(func);
+        }
+
+        // 7. Sync CallFunction nodes
+        const funcsToSync = new Set();
+        for (const node of this.nodes.values()) {
+            if (node.nodeKey.startsWith('Func_')) {
+                const funcName = node.nodeKey.replace('Func_', '');
+                funcsToSync.add(funcName);
+            }
+        }
+        
+        funcsToSync.forEach(funcName => {
+            const funcDef = this.app.functionRegistry.getAll().find(f => f.name === funcName);
+            if (funcDef && this.app.functionsController) {
+                this.app.functionsController.syncFunctionNodes(funcDef);
+            }
+        });
     }
+
 
     findPinById(pinId) {
         if (!pinId) return null;

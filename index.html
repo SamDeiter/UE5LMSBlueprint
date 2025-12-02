@@ -74,15 +74,19 @@
         <!-- TOP TOOLBAR -->
         <div id="toolbar" class="panel">
             <div class="group">
-                <button id="compile-btn" title="Compile (F7)"><i id="compile-status-icon" class="fas fa-check" style="color: #4CAF50; margin-right: 6px;"></i>Compile</button>
+                <button id="compile-btn" title="Compile (F7)"><i id="compile-status-icon" class="fas fa-check"
+                        style="color: #4CAF50; margin-right: 6px;"></i>Compile</button>
                 <button id="save-btn" title="Save (Ctrl+S)"><i class="fas fa-save"></i> Save</button>
             </div>
             <div id="play-controls" class="group">
                 <button id="play-btn" title="Play (Simulate)"><i class="fas fa-play"></i> Play</button>
                 <button id="stop-btn" title="Stop Simulation" disabled><i class="fas fa-stop"></i> Stop</button>
-                <button id="step-btn" title="Step Over (F10)" disabled><i class="fas fa-step-forward"></i> Step Over</button>
-                <button id="step-into-btn" title="Step Into (F11)" disabled><i class="fas fa-sign-in-alt"></i> Step Into</button>
-                <button id="step-out-btn" title="Step Out (Shift+F11)" disabled><i class="fas fa-sign-out-alt"></i> Step Out</button>
+                <button id="step-btn" title="Step Over (F10)" disabled><i class="fas fa-step-forward"></i> Step
+                    Over</button>
+                <button id="step-into-btn" title="Step Into (F11)" disabled><i class="fas fa-sign-in-alt"></i> Step
+                    Into</button>
+                <button id="step-out-btn" title="Step Out (Shift+F11)" disabled><i class="fas fa-sign-out-alt"></i> Step
+                    Out</button>
             </div>
             <div class="group">
                 <button id="undo-btn" title="Undo (Ctrl+Z)"><i class="fas fa-undo"></i></button>
@@ -106,8 +110,7 @@
             <div id="left-sidebar-tabs">
                 <div id="components-panel">
                     <div class="panel-header">
-                        <i class="fas fa-cube"
-                            style="margin-right: 6px; font-size: 10px; opacity: 0.7;"></i>
+                        <i class="fas fa-cube" style="margin-right: 6px; font-size: 10px; opacity: 0.7;"></i>
                         <span>Components</span>
                         <i class="fas fa-times"
                             style="margin-left: auto; font-size: 10px; color: #666; cursor: pointer;"></i>
@@ -136,8 +139,7 @@
                 <!-- MY BLUEPRINT -->
                 <div id="my-blueprint">
                     <div class="panel-header">
-                        <i class="fas fa-book"
-                            style="margin-right: 6px; font-size: 10px; opacity: 0.7;"></i>
+                        <i class="fas fa-book" style="margin-right: 6px; font-size: 10px; opacity: 0.7;"></i>
                         <span>My Blueprint</span>
                         <i class="fas fa-times"
                             style="margin-left: auto; font-size: 10px; color: #666; cursor: pointer;"></i>
@@ -165,6 +167,7 @@
                         <div id="graphs-list"></div>
                         <div id="functions-list"></div>
                         <div id="macros-list"></div>
+                        <div id="local-variables-list"></div>
                         <div id="variables-list"></div>
                         <div id="event-dispatchers-list"></div>
                     </div>
@@ -172,8 +175,7 @@
                 <!-- PALETTE -->
                 <div id="palette-panel">
                     <div class="panel-header">
-                        <i class="fas fa-list"
-                            style="margin-right: 6px; font-size: 10px; opacity: 0.7;"></i>
+                        <i class="fas fa-list" style="margin-right: 6px; font-size: 10px; opacity: 0.7;"></i>
                         <span>Palette</span>
                         <i class="fas fa-times"
                             style="margin-left: auto; font-size: 10px; color: #666; cursor: pointer;"></i>
@@ -189,7 +191,7 @@
         </div>
         <!-- RESIZER LEFT -->
         <div id="resizer-left" class="resizer-vertical"></div>
-        
+
         <!-- CENTER AREA -->
         <div id="center-area">
             <!-- CENTER GRAPH EDITOR -->
@@ -206,7 +208,7 @@
             </div>
             <div id="selection-marquee" style="display: none;"></div>
         </div>
-        
+
         <!-- RESIZER RIGHT -->
         <div id="resizer-right" class="resizer-vertical"></div>
         <!-- RIGHT COLUMN (Details Panel) -->
@@ -222,8 +224,7 @@
         <!-- BOTTOM COMPILER STRIP -->
         <div id="bottom-strip" class="panel">
             <div class="bottom-tabs">
-                <div class="bottom-tab active" data-tab="compiler">Compiler Results (<span
-                        id="compiler-count">0</span>)
+                <div class="bottom-tab active" data-tab="compiler">Compiler Results (<span id="compiler-count">0</span>)
                 </div>
                 <div class="bottom-tab" data-tab="find">Find Results</div>
                 <div class="bottom-tab" data-tab="task-status">Task Status</div>
@@ -308,4 +309,5 @@
     <script type="module" src="src/app.js?v=20251125114000"></script>
 
 </body>
+
 </html>

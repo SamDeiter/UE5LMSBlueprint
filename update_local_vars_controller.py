@@ -1,4 +1,18 @@
-import { Utils } from '../utils.js';
+
+import os
+
+file_path = r'c:\Users\Sam Deiter\Documents\GitHub\UE5LMSBlueprint\src\ui\LocalVariablesController.js'
+
+# Read the existing file content
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# We need to add setContext and clearContext methods.
+# And update render to use the context if set, or fallback to activeGraph lookup.
+
+# Let's rewrite the class to include these methods.
+
+new_content = """import { Utils } from '../utils.js';
 import { generateGUID } from '../utils/guid.js';
 import { createCollapsibleHeader } from './ui-helpers.js';
 import { nodeRegistry } from '../registries/NodeRegistry.js';
@@ -104,3 +118,9 @@ export class LocalVariablesController {
         this.render();
     }
 }
+"""
+
+with open(file_path, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+
+print(f"Successfully updated {file_path}")

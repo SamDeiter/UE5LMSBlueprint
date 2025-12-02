@@ -1,7 +1,11 @@
-import { FunctionDefinition } from '../functions/FunctionDefinition.js';
+
+import os
+
+file_path = r'c:\Users\Sam Deiter\Documents\GitHub\UE5LMSBlueprint\src\ui\FunctionsController.js'
+
+new_content = """import { FunctionDefinition } from '../functions/FunctionDefinition.js';
 import { Pin } from '../graph/Pin.js';
 import { createCollapsibleHeader } from './ui-helpers.js';
-import { generateGUID } from '../utils/guid.js';
 
 export class FunctionsController {
     constructor(app) {
@@ -135,217 +139,104 @@ export class FunctionsController {
         if (this.app.activeGraph === func.name) {
             const entryNode = [...this.app.graph.nodes.values()].find(n => n.nodeKey === 'FunctionEntry');
             const resultNode = [...this.app.graph.nodes.values()].find(n => n.nodeKey === 'FunctionResult');
-
+            
             if (entryNode) {
                 // Entry Node always has Exec Out, No Exec In
-                this.updateNodePins(entryNode, func.inputs, 'out', false, true);
+                this.updateNodePins(entryNode, func.inputs, 'out', false, true); 
             }
             if (resultNode) {
                 // Result Node always has Exec In, No Exec Out
                 this.updateNodePins(resultNode, func.outputs, 'in', true, false);
             }
         }
-
+        
         // 2. Update CallFunction nodes in the ACTIVE graph
         const callNodes = [...this.app.graph.nodes.values()].filter(n => n.nodeKey === `Func_${func.name}`);
         callNodes.forEach(node => {
             // Update Type
             node.type = func.isPure ? 'pure-node' : 'function-node';
-
-            // Prepare pin definitions based on function signature
-            const newPinDefs = this.getFunctionPinDefs(func);
-            this.applyPinSync(node, newPinDefs);
+            
+            // Update Pins
+            const hasExec = !func.isPure;
+            const newPins = [];
+            
+            // 1. Exec In
+            if (hasExec) {
+                let execIn = node.pins.find(p => p.type === 'exec' && p.dir === 'in');
+                if (!execIn) {
+                    execIn = new Pin(node, { name: 'execute', type: 'exec', dir: 'in' });
+                }
+                newPins.push(execIn);
+            }
+            
+            // 2. Data Inputs (from func.inputs)
+            func.inputs.forEach(param => {
+                let pin = node.pins.find(p => p.name === param.name && p.dir === 'in');
+                if (!pin) {
+                    pin = new Pin(node, { name: param.name, type: param.type, dir: 'in' });
+                } else if (pin.type !== param.type) {
+                    pin.type = param.type;
+                }
+                newPins.push(pin);
+            });
+            
+            // 3. Exec Out
+            if (hasExec) {
+                let execOut = node.pins.find(p => p.type === 'exec' && p.dir === 'out');
+                if (!execOut) {
+                    execOut = new Pin(node, { name: 'then', type: 'exec', dir: 'out' });
+                }
+                newPins.push(execOut);
+            }
+            
+            // 4. Data Outputs (from func.outputs)
+            func.outputs.forEach(param => {
+                let pin = node.pins.find(p => p.name === param.name && p.dir === 'out');
+                if (!pin) {
+                    pin = new Pin(node, { name: param.name, type: param.type, dir: 'out' });
+                } else if (pin.type !== param.type) {
+                    pin.type = param.type;
+                }
+                newPins.push(pin);
+            });
+            
+            node.pins = newPins;
+            node.refreshPinCache();
+            this.app.wiring.updateVisuals(node);
         });
-
-        // 3. Update nodes in ALL other graphs (Inactive)
-        this.syncAllGraphs(func);
-    }
-
-    getFunctionPinDefs(func) {
-        const newPinDefs = [];
-
-        // 1. Exec In (if not pure)
-        if (!func.isPure) {
-            newPinDefs.push({ name: 'Exec', type: 'exec', dir: 'in' });
-        }
-
-        // 2. Data Inputs
-        func.inputs.forEach(param => {
-            newPinDefs.push({ name: param.name, type: param.type, dir: 'in' });
-        });
-
-        // 3. Exec Out (if not pure)
-        if (!func.isPure) {
-            newPinDefs.push({ name: 'Exec', type: 'exec', dir: 'out' });
-        }
-
-        // 4. Data Outputs
-        func.outputs.forEach(param => {
-            newPinDefs.push({ name: param.name, type: param.type, dir: 'out' });
-        });
-
-        return newPinDefs;
     }
 
     updateNodePins(node, params, dir, hasExecIn, hasExecOut) {
-        const newPinDefs = [];
-
-        if (hasExecIn) {
-            newPinDefs.push({ name: 'Exec', type: 'exec', dir: 'in' });
-        }
-
-        params.forEach(param => {
-            newPinDefs.push({ name: param.name, type: param.type, dir: dir });
-        });
-
-        if (hasExecOut) {
-            newPinDefs.push({ name: 'Exec', type: 'exec', dir: 'out' });
-        }
-
-        this.applyPinSync(node, newPinDefs);
-    }
-
-    applyPinSync(node, newPinDefs) {
-        const oldPinsMap = new Map(node.pins.map(p => [this.getPinKey(p), p]));
         const newPins = [];
-
-        newPinDefs.forEach(def => {
-            const key = this.getPinKey(def);
-            const oldPin = oldPinsMap.get(key);
-
-            let pin;
-            if (oldPin) {
-                pin = oldPin;
-                // Update type if changed
-                if (pin.type !== def.type) {
-                    pin.type = def.type;
-                }
-                // Ensure name is synced
-                pin.name = def.name;
-            } else {
-                pin = new Pin(node, def);
-            }
-            newPins.push(pin);
+        
+        // Exec In
+        if (hasExecIn) {
+             let execIn = node.pins.find(p => p.type === 'exec' && p.dir === 'in');
+             if (!execIn) execIn = new Pin(node, { name: 'execute', type: 'exec', dir: 'in' });
+             newPins.push(execIn);
+        }
+        
+        // Data Pins
+        params.forEach(param => {
+             let pin = node.pins.find(p => p.name === param.name && p.dir === dir);
+             if (!pin) {
+                 pin = new Pin(node, { name: param.name, type: param.type, dir: dir });
+             } else if (pin.type !== param.type) {
+                 pin.type = param.type;
+             }
+             newPins.push(pin);
         });
-
-        // Handle removed pins (break their links)
-        node.pins.forEach(p => {
-            if (!newPins.includes(p)) {
-                this.app.wiring.breakPinLinks(p.id);
-            }
-        });
-
+        
+        // Exec Out
+        if (hasExecOut) {
+             let execOut = node.pins.find(p => p.type === 'exec' && p.dir === 'out');
+             if (!execOut) execOut = new Pin(node, { name: 'then', type: 'exec', dir: 'out' });
+             newPins.push(execOut);
+        }
+        
         node.pins = newPins;
         node.refreshPinCache();
         this.app.wiring.updateVisuals(node);
-    }
-
-    syncAllGraphs(func) {
-        const allGraphs = [];
-        if (this.app.graphs) Object.values(this.app.graphs).forEach(g => allGraphs.push(g));
-        if (this.app.functionRegistry) this.app.functionRegistry.getAll().forEach(f => allGraphs.push(f.graph));
-        if (this.app.macroRegistry) this.app.macroRegistry.getAll().forEach(m => allGraphs.push(m.graph));
-
-        allGraphs.forEach(graphData => {
-            if (!graphData || !graphData.nodes) return;
-
-            // Check if this is the active graph storage
-            let isActive = false;
-            if (this.app.graphs && this.app.graphs[this.app.activeGraph] === graphData) isActive = true;
-            if (this.app.functionRegistry) {
-                const activeFunc = this.app.functionRegistry.getByName(this.app.activeGraph);
-                if (activeFunc && activeFunc.graph === graphData) isActive = true;
-            }
-            if (this.app.macroRegistry) {
-                const activeMacro = this.app.macroRegistry.getByName(this.app.activeGraph);
-                if (activeMacro && activeMacro.graph === graphData) isActive = true;
-            }
-
-            if (isActive) return;
-
-            // Update CallFunction nodes
-            graphData.nodes.forEach(node => {
-                if (node.nodeKey === `Func_${func.name}`) {
-                    this.syncNodeData(node, func, graphData);
-                }
-            });
-
-            // Update Entry/Result if this is the function's own graph
-            if (func.graph === graphData) {
-                const entry = graphData.nodes.find(n => n.nodeKey === 'FunctionEntry');
-                const result = graphData.nodes.find(n => n.nodeKey === 'FunctionResult');
-                if (entry) this.updateNodeDataPins(entry, func.inputs, 'out', false, true, graphData);
-                if (result) this.updateNodeDataPins(result, func.outputs, 'in', true, false, graphData);
-            }
-        });
-    }
-
-    syncNodeData(nodeData, func, graphData) {
-        nodeData.type = func.isPure ? 'pure-node' : 'function-node';
-        const newPinDefs = this.getFunctionPinDefs(func);
-        this.applyPinSyncToData(nodeData, newPinDefs, graphData);
-    }
-
-    updateNodeDataPins(nodeData, params, dir, hasExecIn, hasExecOut, graphData) {
-        const newPinDefs = [];
-        if (hasExecIn) newPinDefs.push({ name: 'Exec', type: 'exec', dir: 'in' });
-        params.forEach(param => newPinDefs.push({ name: param.name, type: param.type, dir: dir }));
-        if (hasExecOut) newPinDefs.push({ name: 'Exec', type: 'exec', dir: 'out' });
-        this.applyPinSyncToData(nodeData, newPinDefs, graphData);
-    }
-
-    applyPinSyncToData(nodeData, newPinDefs, graphData) {
-        if (!nodeData.pins) nodeData.pins = [];
-        const oldPinsMap = new Map(nodeData.pins.map(p => [this.getPinKey(p), p]));
-        const newPins = [];
-
-        newPinDefs.forEach(def => {
-            const key = this.getPinKey(def);
-            const oldPin = oldPinsMap.get(key);
-
-            let pin;
-            if (oldPin) {
-                pin = oldPin;
-                if (pin.type !== def.type) pin.type = def.type;
-                pin.name = def.name;
-            } else {
-                // Create new pin object (POJO)
-                pin = {
-                    id: `${nodeData.id}-${generateGUID()}`, // Generate unique ID
-                    name: def.name,
-                    type: def.type,
-                    dir: def.dir,
-                    // Default values for new pins
-                    literalValue: undefined,
-                    isCustom: false
-                };
-            }
-            newPins.push(pin);
-        });
-
-        // Handle removed pins: Remove links
-        const newPinIds = new Set(newPins.map(p => p.id));
-        const removedPins = nodeData.pins.filter(p => !newPinIds.has(p.id));
-
-        if (removedPins.length > 0 && graphData.links) {
-            const removedPinIds = new Set(removedPins.map(p => p.id));
-            graphData.links = graphData.links.filter(link =>
-                !removedPinIds.has(link.startPinId) && !removedPinIds.has(link.endPinId)
-            );
-        }
-
-        nodeData.pins = newPins;
-    }
-
-    getPinKey(pin) {
-        // Helper to match pins by direction and name
-        // For Exec pins, we treat 'execute', 'then', 'Exec' as equivalent for matching purposes
-        // to handle legacy/inconsistent naming.
-        let name = pin.name;
-        if (pin.type === 'exec') {
-            return `${pin.dir}_EXEC`;
-        }
-        return `${pin.dir}_${name}`;
     }
 
     showContextMenu(e, func) {
@@ -431,3 +322,9 @@ export class FunctionsController {
         this.render();
     }
 }
+"""
+
+with open(file_path, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+
+print(f"Successfully rewrote {file_path}")

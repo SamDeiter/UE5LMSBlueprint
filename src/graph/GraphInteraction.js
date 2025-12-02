@@ -153,412 +153,503 @@ export class GraphInteraction {
     }
 
 
-handleEditorMouseDown(e) {
-    if (this.isEditingLiteral) return;
+    handleEditorMouseDown(e) {
+        if (this.isEditingLiteral) return;
 
-    this.hasDragged = false;
-    this.app.wiring.clearLinkSelection();
-    if (this.isMarqueeing) {
-        this.isMarqueeing = false;
-        this.marqueeEl.style.display = 'none';
-    }
-
-    const pinElement = e.target.closest('.pin-container');
-    const nodeElement = e.target.closest('.node');
-
-    // 1. Wiring Start
-    if (pinElement && e.button === 0) {
-        e.stopPropagation();
-        e.preventDefault();
-        this.isWiring = true;
-        const pinId = pinElement.dataset.pinId;
-        this.activePin = this.controller.findPinById(pinId);
-
-        if (e.altKey && this.activePin) {
-            if (this.activePin.isConnected()) {
-                this.app.wiring.breakPinLinks(this.activePin.id);
-            }
+        this.hasDragged = false;
+        this.app.wiring.clearLinkSelection();
+        if (this.isMarqueeing) {
+            this.isMarqueeing = false;
+            this.marqueeEl.style.display = 'none';
         }
-
-        if (this.activePin && this.activePin.dir === 'in' && this.activePin.isConnected()) {
-            this.app.wiring.breakPinLinks(this.activePin.id);
-        }
-
-        if (this.activePin) {
-            this.app.wiring.updateGhostWire(e, this.activePin);
-        }
-
-        document.addEventListener('mousemove', this.handleGlobalMouseMove);
-        document.addEventListener('mouseup', this.handleGlobalMouseUp);
-        return;
-    }
-
-    // 2. Node Dragging/Selection
-    if (nodeElement && e.button === 0) {
-        e.stopPropagation();
-        this.isDraggingNode = true;
-        const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
-
-        if (mode === 'new' && !this.controller.selectedNodes.has(nodeElement.id)) {
-            this.controller.selectNode(nodeElement.id, false, 'new');
-        } else if (mode !== 'new') {
-            this.controller.selectNode(nodeElement.id, true, mode);
-        }
-
-        const mouseGraphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
-        this.nodeDragOffsets.clear();
-        for (const nodeId of this.controller.selectedNodes) {
-            const node = this.controller.nodes.get(nodeId);
-            if (node) {
-                this.nodeDragOffsets.set(nodeId, {
-                    x: mouseGraphCoords.x - node.x,
-                    y: mouseGraphCoords.y - node.y
-                });
-            }
-        }
-
-        document.addEventListener('mousemove', this.handleGlobalMouseMove);
-        document.addEventListener('mouseup', this.handleGlobalMouseUp);
-        return;
-    }
-
-    // 3. Panning
-    if (e.button === 2) { // Right mouse button
-        e.preventDefault();
-        this.isRmbDown = true;
-        this.dragStart.x = e.clientX;
-        this.dragStart.y = e.clientY;
-        this.editor.classList.add('dragging');
-        document.addEventListener('mousemove', this.handleGlobalMouseMove);
-        document.addEventListener('mouseup', this.handleGlobalMouseUp);
-        return;
-    }
-
-    // 4. Marqueeing
-    if (e.button === 0) {
-        this.isMarqueeing = true;
-        this.marqueeStart.x = e.clientX;
-        this.marqueeStart.y = e.clientY;
-        const rect = this.editor.getBoundingClientRect();
-        this.marqueeEl.style.display = 'block';
-        this.marqueeEl.style.left = `${e.clientX - rect.left}px`;
-        this.marqueeEl.style.top = `${e.clientY - rect.top}px`;
-        this.marqueeEl.style.width = '0px';
-        this.marqueeEl.style.height = '0px';
-
-        if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
-            this.controller.clearSelection();
-            // Deselect component if one is selected
-            if (this.app.componentsController && this.app.componentsController.selectedComponentId) {
-                this.app.componentsController.selectComponent(null);
-            }
-        }
-
-        document.addEventListener('mousemove', this.handleGlobalMouseMove);
-        document.addEventListener('mouseup', this.handleGlobalMouseUp);
-    }
-}
-
-handleGlobalMouseMove(e) {
-    if (e.movementX !== 0 || e.movementY !== 0) { this.hasDragged = true; }
-    e.preventDefault();
-
-    if (this.isRmbDown) { // Panning
-        const dx = e.clientX - this.dragStart.x;
-        const dy = e.clientY - this.dragStart.y;
-        this.controller.pan.x += dx;
-        this.controller.pan.y += dy;
-        this.dragStart.x = e.clientX;
-        this.dragStart.y = e.clientY;
-        this.controller.updateTransform();
-        return;
-    }
-
-    if (this.isDraggingNode) {
-        const mouseGraphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
-        for (const nodeId of this.controller.selectedNodes) {
-            const node = this.controller.nodes.get(nodeId);
-            const offset = this.nodeDragOffsets.get(nodeId);
-            if (node && offset) {
-                node.x = mouseGraphCoords.x - offset.x;
-                node.y = mouseGraphCoords.y - offset.y;
-                node.element.style.left = `${node.x}px`;
-                node.element.style.top = `${node.y}px`;
-                this.controller.redrawNodeWires(node.id);
-            }
-        }
-        return;
-    }
-
-    if (this.isWiring && this.activePin) {
-        this.app.wiring.updateGhostWire(e, this.activePin);
-        return;
-    }
-
-    if (this.isMarqueeing) {
-        const rect = this.editor.getBoundingClientRect();
-        const currentX = e.clientX;
-        const currentY = e.clientY;
-        const startX = this.marqueeStart.x;
-        const startY = this.marqueeStart.y;
-
-        const left = Math.min(startX, currentX) - rect.left;
-        const top = Math.min(startY, currentY) - rect.top;
-        const width = Math.abs(currentX - startX);
-        const height = Math.abs(currentY - startY);
-
-        this.marqueeEl.style.left = `${left}px`;
-        this.marqueeEl.style.top = `${top}px`;
-        this.marqueeEl.style.width = `${width}px`;
-        this.marqueeEl.style.height = `${height}px`;
-
-        const graphStart = this.controller.getGraphCoords(Math.min(startX, currentX), Math.min(startY, currentY));
-        const graphEnd = this.controller.getGraphCoords(Math.max(startX, currentX), Math.max(startY, currentY));
-        const selectionRect = {
-            left: graphStart.x,
-            top: graphStart.y,
-            right: graphEnd.x,
-            bottom: graphEnd.y
-        };
-
-        const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
-        this.controller.selectNodesInRect(selectionRect, mode);
-    }
-}
-
-handleGlobalMouseUp(e) {
-    document.removeEventListener('mousemove', this.handleGlobalMouseMove);
-    document.removeEventListener('mouseup', this.handleGlobalMouseUp);
-
-    if (this.isRmbDown) {
-        this.isRmbDown = false;
-        this.editor.classList.remove('dragging');
-    }
-
-    if (this.isDraggingNode) {
-        this.isDraggingNode = false;
-        this.controller.snapSelectedNodesToGrid();
-        this.app.dirtyState?.markDirty();
-        this.app.persistence.autoSave();
-    }
-
-    if (this.isWiring) {
-        this.isWiring = false;
-        this.app.wiring.ghostWire.style.display = 'none';
 
         const pinElement = e.target.closest('.pin-container');
-        if (pinElement) {
+        const nodeElement = e.target.closest('.node');
+
+        // 1. Wiring Start
+        if (pinElement && e.button === 0) {
+            e.stopPropagation();
+            e.preventDefault();
+            this.isWiring = true;
             const pinId = pinElement.dataset.pinId;
-            const targetPin = this.controller.findPinById(pinId);
-            if (targetPin && this.activePin && targetPin.id !== this.activePin.id) {
-                this.app.wiring.createConnection(this.activePin, targetPin);
+            this.activePin = this.controller.findPinById(pinId);
+
+            if (e.altKey && this.activePin) {
+                if (this.activePin.isConnected()) {
+                    this.app.wiring.breakPinLinks(this.activePin.id);
+                }
             }
-        } else {
-            if (this.hasDragged && this.activePin) {
-                this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
+
+            if (this.activePin && this.activePin.dir === 'in' && this.activePin.isConnected()) {
+                this.app.wiring.breakPinLinks(this.activePin.id);
             }
+
+            if (this.activePin) {
+                this.app.wiring.updateGhostWire(e, this.activePin);
+            }
+
+            document.addEventListener('mousemove', this.handleGlobalMouseMove);
+            document.addEventListener('mouseup', this.handleGlobalMouseUp);
+            return;
         }
-        this.activePin = null;
+
+        // 2. Node Dragging/Selection
+        if (nodeElement && e.button === 0) {
+            e.stopPropagation();
+            this.isDraggingNode = true;
+            const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
+
+            if (mode === 'new' && !this.controller.selectedNodes.has(nodeElement.id)) {
+                this.controller.selectNode(nodeElement.id, false, 'new');
+            } else if (mode !== 'new') {
+                this.controller.selectNode(nodeElement.id, true, mode);
+            }
+
+            const mouseGraphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
+            this.nodeDragOffsets.clear();
+            for (const nodeId of this.controller.selectedNodes) {
+                const node = this.controller.nodes.get(nodeId);
+                if (node) {
+                    this.nodeDragOffsets.set(nodeId, {
+                        x: mouseGraphCoords.x - node.x,
+                        y: mouseGraphCoords.y - node.y
+                    });
+                }
+            }
+
+            document.addEventListener('mousemove', this.handleGlobalMouseMove);
+            document.addEventListener('mouseup', this.handleGlobalMouseUp);
+            return;
+        }
+
+        // 3. Panning
+        if (e.button === 2) { // Right mouse button
+            e.preventDefault();
+            this.isRmbDown = true;
+            this.dragStart.x = e.clientX;
+            this.dragStart.y = e.clientY;
+            this.editor.classList.add('dragging');
+            document.addEventListener('mousemove', this.handleGlobalMouseMove);
+            document.addEventListener('mouseup', this.handleGlobalMouseUp);
+            return;
+        }
+
+        // 4. Marqueeing
+        if (e.button === 0) {
+            this.isMarqueeing = true;
+            this.marqueeStart.x = e.clientX;
+            this.marqueeStart.y = e.clientY;
+            const rect = this.editor.getBoundingClientRect();
+            this.marqueeEl.style.display = 'block';
+            this.marqueeEl.style.left = `${e.clientX - rect.left}px`;
+            this.marqueeEl.style.top = `${e.clientY - rect.top}px`;
+            this.marqueeEl.style.width = '0px';
+            this.marqueeEl.style.height = '0px';
+
+            if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
+                this.controller.clearSelection();
+                // Deselect component if one is selected
+                if (this.app.componentsController && this.app.componentsController.selectedComponentId) {
+                    this.app.componentsController.selectComponent(null);
+                }
+            }
+
+            document.addEventListener('mousemove', this.handleGlobalMouseMove);
+            document.addEventListener('mouseup', this.handleGlobalMouseUp);
+        }
     }
 
-    if (this.isMarqueeing) {
-        this.isMarqueeing = false;
-        this.marqueeEl.style.display = 'none';
+    handleGlobalMouseMove(e) {
+        if (e.movementX !== 0 || e.movementY !== 0) { this.hasDragged = true; }
+        e.preventDefault();
+
+        if (this.isRmbDown) { // Panning
+            const dx = e.clientX - this.dragStart.x;
+            const dy = e.clientY - this.dragStart.y;
+            this.controller.pan.x += dx;
+            this.controller.pan.y += dy;
+            this.dragStart.x = e.clientX;
+            this.dragStart.y = e.clientY;
+            this.controller.updateTransform();
+            return;
+        }
+
+        if (this.isDraggingNode) {
+            const mouseGraphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
+            for (const nodeId of this.controller.selectedNodes) {
+                const node = this.controller.nodes.get(nodeId);
+                const offset = this.nodeDragOffsets.get(nodeId);
+                if (node && offset) {
+                    node.x = mouseGraphCoords.x - offset.x;
+                    node.y = mouseGraphCoords.y - offset.y;
+                    node.element.style.left = `${node.x}px`;
+                    node.element.style.top = `${node.y}px`;
+                    this.controller.redrawNodeWires(node.id);
+                }
+            }
+            return;
+        }
+
+        if (this.isWiring && this.activePin) {
+            this.app.wiring.updateGhostWire(e, this.activePin);
+            return;
+        }
+
+        if (this.isMarqueeing) {
+            const rect = this.editor.getBoundingClientRect();
+            const currentX = e.clientX;
+            const currentY = e.clientY;
+            const startX = this.marqueeStart.x;
+            const startY = this.marqueeStart.y;
+
+            const left = Math.min(startX, currentX) - rect.left;
+            const top = Math.min(startY, currentY) - rect.top;
+            const width = Math.abs(currentX - startX);
+            const height = Math.abs(currentY - startY);
+
+            this.marqueeEl.style.left = `${left}px`;
+            this.marqueeEl.style.top = `${top}px`;
+            this.marqueeEl.style.width = `${width}px`;
+            this.marqueeEl.style.height = `${height}px`;
+
+            const graphStart = this.controller.getGraphCoords(Math.min(startX, currentX), Math.min(startY, currentY));
+            const graphEnd = this.controller.getGraphCoords(Math.max(startX, currentX), Math.max(startY, currentY));
+            const selectionRect = {
+                left: graphStart.x,
+                top: graphStart.y,
+                right: graphEnd.x,
+                bottom: graphEnd.y
+            };
+
+            const mode = e.ctrlKey ? 'toggle' : (e.shiftKey ? 'add' : 'new');
+            this.controller.selectNodesInRect(selectionRect, mode);
+        }
     }
-}
 
-handleZoom(e) {
-    e.preventDefault();
-    const zoomSensitivity = 0.001;
-    const delta = -e.deltaY * zoomSensitivity;
-    const oldZoom = this.controller.zoom;
-    this.controller.zoom += delta;
-    this.controller.zoom = Math.min(Math.max(0.1, this.controller.zoom), 5);
+    handleGlobalMouseUp(e) {
+        document.removeEventListener('mousemove', this.handleGlobalMouseMove);
+        document.removeEventListener('mouseup', this.handleGlobalMouseUp);
 
-    const rect = this.editor.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+        if (this.isRmbDown) {
+            this.isRmbDown = false;
+            this.editor.classList.remove('dragging');
+        }
 
-    const graphX = (mouseX - this.controller.pan.x) / oldZoom;
-    const graphY = (mouseY - this.controller.pan.y) / oldZoom;
+        if (this.isDraggingNode) {
+            this.isDraggingNode = false;
+            this.controller.snapSelectedNodesToGrid();
+            this.app.dirtyState?.markDirty();
+            this.app.persistence.autoSave();
+        }
 
-    this.controller.pan.x = mouseX - graphX * this.controller.zoom;
-    this.controller.pan.y = mouseY - graphY * this.controller.zoom;
+        if (this.isWiring) {
+            this.isWiring = false;
+            this.app.wiring.ghostWire.style.display = 'none';
 
-    this.controller.updateTransform();
-    this.controller.zoomReadout.textContent = `${Math.round(this.controller.zoom * 100)}%`;
-}
+            const pinElement = e.target.closest('.pin-container');
+            if (pinElement) {
+                const pinId = pinElement.dataset.pinId;
+                const targetPin = this.controller.findPinById(pinId);
+                if (targetPin && this.activePin && targetPin.id !== this.activePin.id) {
+                    this.app.wiring.createConnection(this.activePin, targetPin);
+                }
+            } else {
+                if (this.hasDragged && this.activePin) {
+                    this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
+                }
+            }
+            this.activePin = null;
+        }
 
-handleContextMenu(e) {
-    e.preventDefault();
-    const nodeEl = e.target.closest('.node');
+        if (this.isMarqueeing) {
+            this.isMarqueeing = false;
+            this.marqueeEl.style.display = 'none';
+        }
+    }
 
-    if (nodeEl) {
-        const node = this.controller.nodes.get(nodeEl.id);
-        if (node && (node.nodeKey.startsWith('Get_') || node.nodeKey.startsWith('Set_'))) {
-            // Check if it's a Vector/Rotator/Transform variable
-            const varName = node.nodeKey.replace(/^(Get_|Set_)/, '');
-            const variable = this.app.variables.variables.get(varName);
+    handleZoom(e) {
+        e.preventDefault();
+        const zoomSensitivity = 0.001;
+        const delta = -e.deltaY * zoomSensitivity;
+        const oldZoom = this.controller.zoom;
+        this.controller.zoom += delta;
+        this.controller.zoom = Math.min(Math.max(0.1, this.controller.zoom), 5);
 
-            if (variable && ['vector', 'rotator', 'transform'].includes(variable.type)) {
-                this.showNodeContextMenu(e, node, variable);
+        const rect = this.editor.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const graphX = (mouseX - this.controller.pan.x) / oldZoom;
+        const graphY = (mouseY - this.controller.pan.y) / oldZoom;
+
+        this.controller.pan.x = mouseX - graphX * this.controller.zoom;
+        this.controller.pan.y = mouseY - graphY * this.controller.zoom;
+
+        this.controller.updateTransform();
+        this.controller.zoomReadout.textContent = `${Math.round(this.controller.zoom * 100)}%`;
+    }
+
+    handleContextMenu(e) {
+        e.preventDefault();
+        const nodeEl = e.target.closest('.node');
+
+        if (nodeEl) {
+            const node = this.controller.nodes.get(nodeEl.id);
+            if (node) {
+                const items = [];
+
+                // 1. Toggle Breakpoint
+                items.push({
+                    label: node.isBreakpoint ? 'Disable Breakpoint' : 'Toggle Breakpoint',
+                    icon: node.isBreakpoint ? 'fas fa-circle' : 'far fa-circle',
+                    callback: () => {
+                        node.toggleBreakpoint();
+                        this.app.persistence.autoSave();
+                    }
+                });
+
+                items.push({ separator: true });
+
+                // 2. Make/Break Struct Options (Existing Logic)
+                if (node.nodeKey.startsWith('Get_') || node.nodeKey.startsWith('Set_')) {
+                    const varName = node.nodeKey.replace(/^(Get_|Set_)/, '');
+                    const variable = this.app.variables.variables.get(varName);
+
+                    if (variable) {
+                        if (variable.type === 'vector') {
+                            items.push({
+                                label: 'Make Vector',
+                                icon: 'fas fa-plus',
+                                callback: () => {
+                                    const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                                    this.controller.addNode('MakeVector', worldPos.x + 50, worldPos.y);
+                                }
+                            });
+                            items.push({
+                                label: 'Break Vector',
+                                icon: 'fas fa-minus',
+                                callback: () => {
+                                    const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                                    this.controller.addNode('BreakVector', worldPos.x + 50, worldPos.y);
+                                }
+                            });
+                            items.push({ separator: true });
+                        } else if (variable.type === 'rotator') {
+                            items.push({
+                                label: 'Make Rotator',
+                                icon: 'fas fa-sync',
+                                callback: () => {
+                                    const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                                    this.controller.addNode('MakeRotator', worldPos.x + 50, worldPos.y);
+                                }
+                            });
+                            items.push({
+                                label: 'Break Rotator',
+                                icon: 'fas fa-sync',
+                                callback: () => {
+                                    const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                                    this.controller.addNode('BreakRotator', worldPos.x + 50, worldPos.y);
+                                }
+                            });
+                            items.push({ separator: true });
+                        } else if (variable.type === 'transform') {
+                            items.push({
+                                label: 'Make Transform',
+                                icon: 'fas fa-cube',
+                                callback: () => {
+                                    const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                                    this.controller.addNode('MakeTransform', worldPos.x + 50, worldPos.y);
+                                }
+                            });
+                            items.push({
+                                label: 'Break Transform',
+                                icon: 'fas fa-cube',
+                                callback: () => {
+                                    const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                                    this.controller.addNode('BreakTransform', worldPos.x + 50, worldPos.y);
+                                }
+                            });
+                            items.push({ separator: true });
+                        }
+                    }
+                }
+
+                // 3. Standard Actions
+                items.push({
+                    label: 'Duplicate',
+                    icon: 'fas fa-clone',
+                    callback: () => {
+                        this.controller.selectNode(node.id, false, 'new');
+                        this.controller.duplicateSelectedNodes();
+                    }
+                });
+
+                items.push({
+                    label: 'Delete',
+                    icon: 'fas fa-trash',
+                    callback: () => {
+                        this.controller.selectNode(node.id, false, 'new');
+                        this.controller.deleteSelectedNodes();
+                    }
+                });
+
+                this.app.contextMenu.show(e.clientX, e.clientY, items);
                 return;
             }
         }
+
+        this.app.actionMenu.show(e.clientX, e.clientY, null);
     }
 
-    this.app.actionMenu.show(e.clientX, e.clientY, null);
-}
+    showNodeContextMenu(e, node, variable) {
+        const menu = document.createElement('div');
+        menu.className = 'context-menu';
+        menu.style.position = 'fixed';
+        menu.style.left = `${e.clientX}px`;
+        menu.style.top = `${e.clientY}px`;
+        menu.style.zIndex = '10000';
 
-showNodeContextMenu(e, node, variable) {
-    const menu = document.createElement('div');
-    menu.className = 'context-menu';
-    menu.style.position = 'fixed';
-    menu.style.left = `${e.clientX}px`;
-    menu.style.top = `${e.clientY}px`;
-    menu.style.zIndex = '10000';
+        const createMenuItem = (label, icon, onClick) => {
+            const item = document.createElement('div');
+            item.className = 'menu-item';
+            item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
+            item.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                document.body.removeChild(menu);
+                onClick();
+            });
+            return item;
+        };
 
-    const createMenuItem = (label, icon, onClick) => {
-        const item = document.createElement('div');
-        item.className = 'menu-item';
-        item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
-        item.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            document.body.removeChild(menu);
-            onClick();
-        });
-        return item;
-    };
+        // Add Make/Break options based on type
+        if (variable.type === 'vector') {
+            menu.appendChild(createMenuItem('Make Vector', 'fas fa-plus', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('MakeVector', worldPos.x + 50, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Vector', 'fas fa-minus', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('BreakVector', worldPos.x + 50, worldPos.y);
+            }));
+        } else if (variable.type === 'rotator') {
+            menu.appendChild(createMenuItem('Make Rotator', 'fas fa-sync', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('MakeRotator', worldPos.x + 50, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Rotator', 'fas fa-sync', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('BreakRotator', worldPos.x + 50, worldPos.y);
+            }));
+        } else if (variable.type === 'transform') {
+            menu.appendChild(createMenuItem('Make Transform', 'fas fa-cube', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('MakeTransform', worldPos.x + 50, worldPos.y);
+            }));
+            menu.appendChild(createMenuItem('Break Transform', 'fas fa-cube', () => {
+                const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode('BreakTransform', worldPos.x + 50, worldPos.y);
+            }));
+        }
 
-    // Add Make/Break options based on type
-    if (variable.type === 'vector') {
-        menu.appendChild(createMenuItem('Make Vector', 'fas fa-plus', () => {
-            const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-            this.controller.addNode('MakeVector', worldPos.x + 50, worldPos.y);
-        }));
-        menu.appendChild(createMenuItem('Break Vector', 'fas fa-minus', () => {
-            const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-            this.controller.addNode('BreakVector', worldPos.x + 50, worldPos.y);
-        }));
-    } else if (variable.type === 'rotator') {
-        menu.appendChild(createMenuItem('Make Rotator', 'fas fa-sync', () => {
-            const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-            this.controller.addNode('MakeRotator', worldPos.x + 50, worldPos.y);
-        }));
-        menu.appendChild(createMenuItem('Break Rotator', 'fas fa-sync', () => {
-            const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-            this.controller.addNode('BreakRotator', worldPos.x + 50, worldPos.y);
-        }));
-    } else if (variable.type === 'transform') {
-        menu.appendChild(createMenuItem('Make Transform', 'fas fa-cube', () => {
-            const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-            this.controller.addNode('MakeTransform', worldPos.x + 50, worldPos.y);
-        }));
-        menu.appendChild(createMenuItem('Break Transform', 'fas fa-cube', () => {
-            const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-            this.controller.addNode('BreakTransform', worldPos.x + 50, worldPos.y);
-        }));
+        // Close menu on click outside
+        const closeMenu = () => {
+            if (document.body.contains(menu)) {
+                document.body.removeChild(menu);
+            }
+            document.removeEventListener('click', closeMenu);
+        };
+        setTimeout(() => document.addEventListener('click', closeMenu), 0);
+
+        document.body.appendChild(menu);
     }
 
-    // Close menu on click outside
-    const closeMenu = () => {
-        if (document.body.contains(menu)) {
-            document.body.removeChild(menu);
-        }
-        document.removeEventListener('click', closeMenu);
-    };
-    setTimeout(() => document.addEventListener('click', closeMenu), 0);
+    handlePinContextMenu(e) {
+        const pinContainerEl = e.target.closest('.pin-container');
+        if (pinContainerEl) {
+            e.preventDefault();
+            e.stopPropagation();
+            const pinId = pinContainerEl.dataset.pinId;
+            let pin = this.controller.findPinById(pinId);
 
-    document.body.appendChild(menu);
-}
+            if (!pin) return;
 
-handlePinContextMenu(e) {
-    const pinContainerEl = e.target.closest('.pin-container');
-    if (pinContainerEl) {
-        e.preventDefault();
-        e.stopPropagation();
-        const pinId = pinContainerEl.dataset.pinId;
-        let pin = this.controller.findPinById(pinId);
+            // Check if this is a sub-pin - if so, find the parent
+            const parentPinId = pinContainerEl.dataset.parentPinId;
+            let parentPin = null;
+            if (parentPinId) {
+                parentPin = this.controller.findPinById(parentPinId);
+            }
 
-        if (!pin) return;
+            const items = [];
 
-        // Check if this is a sub-pin - if so, find the parent
-        const parentPinId = pinContainerEl.dataset.parentPinId;
-        let parentPin = null;
-        if (parentPinId) {
-            parentPin = this.controller.findPinById(parentPinId);
-        }
-
-        const items = [];
-
-        // Watch Value
-        if (pin.type !== 'exec') {
-            items.push({
-                label: 'Watch this value',
-                callback: () => {
-                    this.app.sim.addWatch(pin);
-                }
-            });
-            items.push({ label: '---', callback: () => { } });
-        }
-
-        items.push({ label: `Promote to Variable`, callback: () => this.controller.promotePinToVariable(pin) });
-
-        // Add Split/Recombine options
-        if (pin.canSplit()) {
-            items.push({
-                label: 'Split Struct Pin', callback: () => {
-                    if (pin.isConnected()) {
-                        this.app.wiring.breakPinLinks(pin.id);
+            // Watch Value
+            if (pin.type !== 'exec') {
+                items.push({
+                    label: 'Watch this value',
+                    callback: () => {
+                        this.app.sim.addWatch(pin);
                     }
-                    pin.split();
-                    this.app.wiring.updateVisuals(pin.node);
-                    this.app.persistence.autoSave();
-                }
-            });
-        }
+                });
+                items.push({ label: '---', callback: () => { } });
+            }
 
-        if (pin.isSplit) {
-            items.push({
-                label: 'Recombine Struct Pin', callback: () => {
-                    if (pin.subPins) {
-                        pin.subPins.forEach(sub => {
-                            if (sub.isConnected()) {
-                                this.app.wiring.breakPinLinks(sub.id);
-                            }
-                        });
+            items.push({ label: `Promote to Variable`, callback: () => this.controller.promotePinToVariable(pin) });
+
+            // Add Split/Recombine options
+            if (pin.canSplit()) {
+                items.push({
+                    label: 'Split Struct Pin', callback: () => {
+                        if (pin.isConnected()) {
+                            this.app.wiring.breakPinLinks(pin.id);
+                        }
+                        pin.split();
+                        this.app.wiring.updateVisuals(pin.node);
+                        this.app.persistence.autoSave();
                     }
-                    pin.recombine();
-                    this.app.wiring.updateVisuals(pin.node);
-                    this.app.persistence.autoSave();
-                }
-            });
-        }
+                });
+            }
 
-        if (parentPin && parentPin.isSplit) {
-            items.push({
-                label: 'Recombine Parent Pin', callback: () => {
-                    if (parentPin.subPins) {
-                        parentPin.subPins.forEach(sub => {
-                            if (sub.isConnected()) {
-                                this.app.wiring.breakPinLinks(sub.id);
-                            }
-                        });
+            if (pin.isSplit) {
+                items.push({
+                    label: 'Recombine Struct Pin', callback: () => {
+                        if (pin.subPins) {
+                            pin.subPins.forEach(sub => {
+                                if (sub.isConnected()) {
+                                    this.app.wiring.breakPinLinks(sub.id);
+                                }
+                            });
+                        }
+                        pin.recombine();
+                        this.app.wiring.updateVisuals(pin.node);
+                        this.app.persistence.autoSave();
                     }
-                    parentPin.recombine();
-                    this.app.wiring.updateVisuals(parentPin.node);
-                    this.app.persistence.autoSave();
-                }
-            });
-        }
+                });
+            }
 
-        const node = pin.node;
-        if (node.nodeKey === 'CustomEvent' && pin.isCustom) {
-            items.push({ label: '---', callback: () => { } });
-            items.push({ label: `Remove Pin: ${pin.name}`, callback: () => this.controller.removeCustomPin(node.id, pin.id) });
-        }
+            if (parentPin && parentPin.isSplit) {
+                items.push({
+                    label: 'Recombine Parent Pin', callback: () => {
+                        if (parentPin.subPins) {
+                            parentPin.subPins.forEach(sub => {
+                                if (sub.isConnected()) {
+                                    this.app.wiring.breakPinLinks(sub.id);
+                                }
+                            });
+                        }
+                        parentPin.recombine();
+                        this.app.wiring.updateVisuals(parentPin.node);
+                        this.app.persistence.autoSave();
+                    }
+                });
+            }
 
-        this.app.contextMenu.show(e.clientX, e.clientY, items);
+            const node = pin.node;
+            if (node.nodeKey === 'CustomEvent' && pin.isCustom) {
+                items.push({ label: '---', callback: () => { } });
+                items.push({ label: `Remove Pin: ${pin.name}`, callback: () => this.controller.removeCustomPin(node.id, pin.id) });
+            }
+
+            this.app.contextMenu.show(e.clientX, e.clientY, items);
+        }
     }
-}
 }

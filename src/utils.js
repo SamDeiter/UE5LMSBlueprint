@@ -2,6 +2,8 @@
  * Utility class for helper functions and constants.
  * Contains the NodeLibrary definition and styling helpers.
  */
+import { PIN_TYPES, PIN_COLORS, VARIABLE_HEADER_COLORS, PIN_TYPE_CLASSES } from '../config/Constants.js';
+
 class Utils {
     /**
      * Generates a unique ID string.
@@ -18,24 +20,7 @@ class Utils {
      * @returns {string} The corresponding CSS class.
      */
     static getPinTypeClass(type) {
-        const typeMap = {
-            'exec': 'exec-pin',
-            'bool': 'bool-pin',
-            'byte': 'byte-pin',
-            'int': 'int-pin',
-            'int64': 'int64-pin',
-            'float': 'float-pin',
-            'double': 'double-pin',
-            'name': 'name-pin',
-            'string': 'string-pin',
-            'text': 'text-pin',
-            'vector': 'vector-pin',
-            'rotator': 'rotator-pin',
-            'transform': 'transform-pin',
-            'object': 'object-pin',
-            'enum': 'enum-pin',
-        };
-        return typeMap[type.toLowerCase()] || 'default-pin';
+        return PIN_TYPE_CLASSES[type.toLowerCase()] || PIN_TYPE_CLASSES.DEFAULT;
     }
 
     /**
@@ -44,24 +29,7 @@ class Utils {
      * @returns {string} The CSS color variable string.
      */
     static getPinColor(type) {
-        const colorMap = {
-            'exec': 'var(--color-exec)',
-            'bool': 'var(--color-bool)',
-            'byte': 'var(--color-byte)',
-            'int': 'var(--color-int)',
-            'int64': 'var(--color-int64)',
-            'float': 'var(--color-float)',
-            'double': 'var(--color-double)',
-            'name': 'var(--color-name)',
-            'string': 'var(--color-string)',
-            'text': 'var(--color-text)',
-            'vector': 'var(--color-vector)',
-            'rotator': 'var(--color-rotator)',
-            'transform': 'var(--color-transform)',
-            'object': 'var(--color-object)',
-            'enum': 'var(--color-enum)',
-        };
-        return colorMap[type.toLowerCase()] || '#888888';
+        return PIN_COLORS[type.toLowerCase()] || PIN_COLORS.DEFAULT;
     }
 
     /**
@@ -70,23 +38,7 @@ class Utils {
      * @returns {{start: string, end: string}} The gradient start and end colors.
      */
     static getVariableHeaderColor(type) {
-        const colors = {
-            'bool': { start: '#8F0000', end: '#450000' },
-            'byte': { start: '#00525E', end: '#002B30' },
-            'int': { start: '#1E855E', end: '#0F422F' },
-            'int64': { start: '#668044', end: '#334022' },
-            'float': { start: '#6AA826', end: '#355413' },
-            'double': { start: '#5FA826', end: '#2F5413' },
-            'name': { start: '#8F5E99', end: '#472F4C' },
-            'string': { start: '#BF00BF', end: '#600060' },
-            'text': { start: '#BF7885', end: '#603C42' },
-            'vector': { start: '#BF9800', end: '#604C00' },
-            'rotator': { start: '#5E7AA8', end: '#2F3D54' },
-            'transform': { start: '#BF6600', end: '#603300' },
-            'object': { start: '#005580', end: '#002A40' },
-            'enum': { start: '#006633', end: '#003319' },
-        };
-        return colors[type.toLowerCase()] || { start: '#303030', end: '#151515' };
+        return VARIABLE_HEADER_COLORS[type.toLowerCase()] || VARIABLE_HEADER_COLORS.DEFAULT;
     }
 
     /**

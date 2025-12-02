@@ -4,6 +4,7 @@
 import { Utils } from '../utils.js';
 import { PinDefaults } from '../config/NodeDefaults.js';
 import { Pin } from './Pin.js';
+import { NODE_HEADER_COLORS, NODE_TYPES } from '../config/Constants.js';
 
 class Node {
     constructor(id, nodeData, x, y, nodeKey, app) {
@@ -38,8 +39,16 @@ class Node {
 
     refreshPinCache() {
         if (!this.pins) this.pins = [];
-        this.pinsIn = this.pins.filter(p => p.dir === 'in');
-        this.pinsOut = this.pins.filter(p => p.dir === 'out');
+
+        // Safeguard: For pure nodes, ensure no exec pins are exposed in the cache
+        // This prevents them from being rendered even if they exist in the data
+        if (this.type === 'pure-node') {
+            this.pinsIn = this.pins.filter(p => p.dir === 'in' && p.type !== 'exec');
+            this.pinsOut = this.pins.filter(p => p.dir === 'out' && p.type !== 'exec');
+        } else {
+            this.pinsIn = this.pins.filter(p => p.dir === 'in');
+            this.pinsOut = this.pins.filter(p => p.dir === 'out');
+        }
     }
 
     findPinById(pinId) {
@@ -64,19 +73,22 @@ class Node {
             return Utils.getVariableHeaderColor(this.variableType);
         }
         if (this.nodeKey === 'ConstructionScript') {
-            return { start: '#B54E05', end: '#8A3B04' };
+            return NODE_HEADER_COLORS.CONSTRUCTION_SCRIPT;
         }
-        if (this.type === 'event-node') {
-            return { start: '#8B0000', end: '#400000' }; // Red
+        if (this.type === NODE_TYPES.EVENT) {
+            return NODE_HEADER_COLORS.EVENT;
         }
-        if (this.type === 'function-node') {
-            return { start: '#005580', end: '#002a40' }; // Blue
+        if (this.type === NODE_TYPES.FUNCTION) {
+            return NODE_HEADER_COLORS.FUNCTION;
         }
-        if (this.type === 'assessment-node') {
-            return { start: '#6030a0', end: '#301560' }; // Purple
+        if (this.type === NODE_TYPES.ASSESSMENT) {
+            return NODE_HEADER_COLORS.ASSESSMENT;
+        }
+        if (this.type === NODE_TYPES.PURE) {
+            return NODE_HEADER_COLORS.PURE;
         }
         // Default
-        return { start: '#333', end: '#111' };
+        return NODE_HEADER_COLORS.DEFAULT;
     }
 
 
@@ -141,7 +153,7 @@ class Node {
             const iconEl = document.createElement('span');
             if (this.icon.startsWith('fa-')) {
                 iconEl.className = `fas ${this.icon}`;
-            } else if (this.type === 'function-node' && this.icon === 'f') {
+            } else if (this.type === NODE_TYPES.FUNCTION && this.icon === 'f') {
                 iconEl.style.fontWeight = 'bold';
                 iconEl.style.fontStyle = 'italic';
                 iconEl.style.color = 'white';
@@ -175,7 +187,7 @@ class Node {
             header.appendChild(delegateIcon);
         }
 
-        if (this.type === 'comment-node' || this.nodeKey === 'CustomEvent') {
+        if (this.type === NODE_TYPES.COMMENT || this.nodeKey === 'CustomEvent') {
             header.addEventListener('dblclick', (e) => {
                 e.stopPropagation();
                 header.contentEditable = true;
@@ -454,7 +466,7 @@ class Node {
         pin.element = pinDot;
 
         let effectiveHideLabel = hideLabel;
-        if (this.type === 'function-node' && pin.type === 'exec') {
+        if (this.type === NODE_TYPES.FUNCTION && pin.type === 'exec') {
             effectiveHideLabel = true;
         }
 
