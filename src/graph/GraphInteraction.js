@@ -41,6 +41,12 @@ export class GraphInteraction {
     }
 
     handleKeyDown(e) {
+        const target = e.target;
+        const tagName = target.tagName ? target.tagName.toUpperCase() : '';
+        const isTextEditor = tagName === 'INPUT' || tagName === 'TEXTAREA' || target.isContentEditable;
+
+        if (isTextEditor) return;
+
         if (e.key === 'F9') {
             e.preventDefault();
             this.controller.selectedNodes.forEach(nodeId => {
