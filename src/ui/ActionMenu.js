@@ -19,6 +19,15 @@ export class ActionMenu {
         this.isHideDelayActive = false;
         this.element.addEventListener('click', e => e.stopPropagation());
         this.searchInput.addEventListener('input', this.filter.bind(this));
+
+        // Handle Enter key to select first item
+        this.searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.selectFirstItem();
+            }
+        });
+
         document.addEventListener('click', (e) => {
             if (!this.isHideDelayActive) {
                 if (this.element.style.display !== 'none' && !this.element.contains(e.target)) {
@@ -26,6 +35,26 @@ export class ActionMenu {
                 }
             }
         });
+    }
+
+    selectFirstItem() {
+        // Find the first executable menu item (not a header)
+        // We look for .menu-item that doesn't have header classes
+        const items = this.list.querySelectorAll('.menu-item');
+        for (const item of items) {
+            if (item.classList.contains('menu-header') || item.classList.contains('menu-header-toggle')) {
+                continue;
+            }
+            // Check if it's visible (part of an expanded category or top level)
+            // For now, we assume if it's in the DOM and not a header, it's a valid target
+            // But we should check if it's effectively visible if inside a collapsed section?
+            // renderCategoryTree hides content divs.
+            // checking offsetParent is a common way to check visibility
+            if (item.offsetParent !== null) {
+                item.click();
+                return;
+            }
+        }
     }
     show(clientX, clientY, sourcePin = null, droppedVarName = null, droppedComponent = null) {
         this.element.style.display = 'none';
@@ -331,6 +360,31 @@ export class ActionMenu {
             this.showComponentDropOptions(this.droppedComponent);
             return;
         }
+
+        // --- DYNAMIC: Add Custom Events from the Graph ---
+        // We want to allow calling any Custom Event that exists in the graph.
+        const customEventItems = [];
+        if (this.app.graph && this.app.graph.nodes) {
+            for (const node of this.app.graph.nodes.values()) {
+                if (node.nodeKey === 'CustomEvent') {
+                    const eventName = node.title;
+                    // Filter check
+                    if (filter && !`call ${eventName}`.toLowerCase().includes(filter.toLowerCase())) {
+                        continue;
+                    }
+
+                    // Create a virtual menu item for calling this event
+                    customEventItems.push({
+                        name: `Call ${eventName}`,
+                        category: 'Custom Events',
+                        isCustomEventCall: true,
+                        eventName: eventName
+                    });
+                }
+            }
+        }
+        // ------------------------------------------------
+
         let needsSeparatorBeforeNodes = hasVariableAccess || contextHeader;
         const nodeNames = Object.keys(nodeRegistry.getAll());
         let filtered = nodeNames.filter(name => {
@@ -359,13 +413,22 @@ export class ActionMenu {
             return matchesFilter;
         });
 
-        // Sort uncategorized items by type/priority
-        // Note: buildCategoryTree handles categorization, but we sort items within categories
-        // The renderCategoryTree helper sorts categories alphabetically.
-        // We might want to pass a custom sort function if needed, but for now default is fine.
+        // Merge Custom Events into the filtered list (we'll handle them in createMenuItem)
+        // We can't just push strings to 'filtered' because our custom items are objects.
+        // So we'll need to handle them separately or adapt the tree builder.
+        // Easier approach: Add them to the tree builder as objects.
 
         // 2. Build Tree using shared helper
-        const root = buildCategoryTree(filtered, (name) => nodeRegistry.get(name).category || '');
+        // We combine standard node names (strings) and our custom event objects
+        const allItems = [...customEventItems, ...filtered];
+
+        const root = buildCategoryTree(allItems, (item) => {
+            if (typeof item === 'string') {
+                return nodeRegistry.get(item).category || '';
+            } else {
+                return item.category;
+            }
+        });
 
         if (filtered.length > 0 && needsSeparatorBeforeNodes) {
             const sep = document.createElement('div');
@@ -373,7 +436,100 @@ export class ActionMenu {
             this.list.appendChild(sep);
         }
 
-        const createMenuItem = (name) => {
+        const createMenuItem = (item) => {
+            // Handle Custom Event Call Items
+            if (typeof item === 'object' && item.isCustomEventCall) {
+                const li = document.createElement('div');
+                li.className = 'menu-item';
+                li.textContent = item.name; // "Call MyEvent"
+                li.style.paddingLeft = '20px';
+                li.addEventListener('click', () => {
+                    // Add a CallFunction node
+                    // We use a special nodeKey or just 'CallFunction' and configure it
+                    // Since we don't have a generic 'CallFunction' node in registry yet that takes a name dynamically
+                    // (CallFunction usually expects Func_Name), we might need to use a dynamic key or add a generic one.
+                    // Let's assume we can add a 'CallFunction' node and set its function name.
+                    // OR, we construct a dynamic key like 'Func_MyEvent' if we want to reuse that logic, 
+                    // but CustomEvents aren't in FunctionRegistry.
+
+                    // Better approach: Add a specific 'CallCustomEvent' node type?
+                    // Or reuse 'CallFunction' but handle the lookup differently.
+                    // For now, let's try adding a node with a special key format that GraphController recognizes.
+                    // But GraphController.addNode expects a registry entry.
+
+                    // Let's register a temporary definition or use a generic 'CallCustomEvent' node.
+                    // If 'CallCustomEvent' doesn't exist, we can create it on the fly or use 'CallFunction'.
+
+                    // Let's use a trick: Add a node with key 'CallCustomEvent' and pass custom data.
+                    // But addNode signature is (key, x, y).
+
+                    // Workaround: We'll add a 'CallCustomEvent' node (assuming it exists or we make it)
+                    // and then immediately configure it.
+                    // If 'CallCustomEvent' isn't in registry, we need to add it or use a known one.
+                    // 'FunctionEntry' is known. 'CallFunction' is known?
+
+                    // Let's assume we can add a node 'CallCustomEvent' and we'll ensure it's in registry or handled.
+                    // Actually, let's use the same pattern as Functions: 'Func_EventName'
+                    // But the event isn't in function registry.
+
+                    // Let's try adding a generic 'CallCustomEvent' node.
+                    // I'll need to ensure this node type exists in NodeDefinitions or is handled dynamically.
+                    // For now, I'll add the node and set its title/customData.
+
+                    const newNode = this.app.graph.addNode('CallCustomEvent', this.graphPos.x, this.graphPos.y);
+                    if (newNode) {
+                        newNode.title = item.name;
+                        newNode.customData = { eventName: item.eventName };
+
+                        // Force visual update of the title
+                        if (newNode.element) {
+                            const titleEl = newNode.element.querySelector('.node-title span:last-child');
+                            if (titleEl) {
+                                titleEl.textContent = newNode.title;
+                            }
+                            // Also update compact label if applicable
+                            const compactLabel = newNode.element.querySelector('.compact-node-label');
+                            if (compactLabel) {
+                                compactLabel.textContent = newNode.title.replace('Call ', '');
+                            }
+                        }
+                        // We might need to manually add pins since the registry entry is generic
+                        // Exec In, Exec Out
+                        // If the custom event has inputs, we should mirror them as inputs here.
+
+                        // Find the source CustomEvent node to get its pins
+                        const sourceNode = [...this.app.graph.nodes.values()].find(n => n.title === item.eventName && n.nodeKey === 'CustomEvent');
+                        if (sourceNode) {
+                            // Mirror pins: Output data pins of Event become Input data pins of Call
+                            sourceNode.pins.forEach(p => {
+                                if (p.type !== 'exec' && p.type !== 'delegate') {
+                                    // Event outputs become Call inputs
+                                    if (p.dir === 'out') {
+                                        newNode.addPin({
+                                            id: `in_${p.name}`,
+                                            name: p.name,
+                                            type: p.type,
+                                            dir: 'in'
+                                        });
+                                    }
+                                }
+                            });
+                        }
+
+                        if (this.sourcePin) {
+                            const targetPin = newNode.pins.find(p => this.app.graph.canConnect(this.sourcePin, p));
+                            if (targetPin) {
+                                this.app.wiring.createConnection(this.sourcePin, targetPin);
+                            }
+                        }
+                    }
+                    this.app.persistence.autoSave();
+                    this.hide();
+                });
+                return li;
+            }
+
+            const name = item; // It's a string key
             const nodeData = nodeRegistry.get(name);
             const li = document.createElement('div');
             li.className = 'menu-item';

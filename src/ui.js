@@ -14,6 +14,7 @@ import { FunctionsController } from './ui/FunctionsController.js';
 import { LocalVariablesController } from './ui/LocalVariablesController.js';
 import { MacrosController } from './ui/MacrosController.js';
 import { NeedNodeModal } from './ui/NeedNodeModal.js';
+import { ParentClassModal } from './ui/ParentClassModal.js';
 import { DebuggerController } from './ui/DebuggerController.js';
 
 export {
@@ -27,6 +28,7 @@ export {
     LocalVariablesController,
     MacrosController,
     NeedNodeModal,
+    ParentClassModal,
     PaletteController,
     TaskController,
     VariableController

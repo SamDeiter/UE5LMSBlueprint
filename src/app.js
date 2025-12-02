@@ -7,7 +7,7 @@
 // Import all controllers
 import { WiringController, GraphController } from './graph/index.js';
 import { GraphSwitcher } from './graph/GraphSwitcher.js';
-import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal, FunctionsController, MacrosController, LocalVariablesController, DebuggerController, GraphsController } from './ui.js';
+import { VariableController, PaletteController, ActionMenu, ContextMenu, DetailsController, LayoutController, TaskController, ComponentsController, NeedNodeModal, ParentClassModal, FunctionsController, MacrosController, LocalVariablesController, DebuggerController, GraphsController } from './ui.js';
 import { Compiler, Persistence, GridController, HistoryManager, SimulationEngine } from './services.js';
 // Cache bust the tests module to ensure latest export is found
 import { TestRunner, registerTests } from './tests.js?v=4';
@@ -74,7 +74,8 @@ class BlueprintApp {
         BlueprintApp.persistence = new Persistence(BlueprintApp);
         BlueprintApp.compiler = new Compiler(BlueprintApp);
         BlueprintApp.sim = new SimulationEngine(BlueprintApp);
-        BlueprintApp.dirtyState = new DirtyStateTracker(BlueprintApp);
+        BlueprintApp.dirtyState = new DirtyStateTracker(BlueprintApp);
+
 
         // 6. UI Controllers
         BlueprintApp.componentsController = new ComponentsController(BlueprintApp);
@@ -87,6 +88,7 @@ class BlueprintApp {
         BlueprintApp.actionMenu = new ActionMenu(BlueprintApp);
         BlueprintApp.contextMenu = new ContextMenu(BlueprintApp);
         BlueprintApp.needNodeModal = new NeedNodeModal(BlueprintApp);
+        BlueprintApp.parentClassModal = new ParentClassModal(BlueprintApp);
         BlueprintApp.debugger = new DebuggerController(BlueprintApp);
 
         // 7. Task System
@@ -158,6 +160,16 @@ class BlueprintApp {
             helpCloseBtn.addEventListener('click', () => {
                 const modal = document.getElementById(DOMElements.HELP_MODAL);
                 if (modal) modal.style.display = 'none';
+            });
+        }
+
+        // New Blueprint Menu Item
+        const newBlueprintMenuItem = document.getElementById('new-blueprint-menu-item');
+        if (newBlueprintMenuItem) {
+            newBlueprintMenuItem.addEventListener('click', () => {
+                if (BlueprintApp.parentClassModal) {
+                    BlueprintApp.parentClassModal.open();
+                }
             });
         }
 

@@ -20,6 +20,11 @@ export class FunctionExecutor extends BaseExecutor {
             return await this.executeFunctionResult(node);
         }
 
+        // Handle CallCustomEvent
+        if (node.nodeKey === 'CallCustomEvent') {
+            return await this.executeCustomEventCall(node);
+        }
+
         return null;
     }
 
@@ -126,6 +131,39 @@ export class FunctionExecutor extends BaseExecutor {
             });
         }
         return null; // End of flow
+    }
+
+    /**
+     * Execute a custom event call
+     */
+    async executeCustomEventCall(node) {
+        const eventName = node.customData ? node.customData.eventName : null;
+        if (!eventName) {
+            this.log("Error: CallCustomEvent node missing event name.", "error");
+            return null;
+        }
+
+        // Find the CustomEvent node in the CURRENT graph
+        const targetNode = [...this.app.graph.nodes.values()].find(n =>
+            n.nodeKey === 'CustomEvent' && n.title === eventName
+        );
+
+        if (!targetNode) {
+            this.log(`Error: Custom Event '${eventName}' not found in this graph.`, "error");
+            return null;
+        }
+
+        // 1. Evaluate Inputs (if any) and pass to Target Node
+        // Custom Events in this simple engine might not have inputs yet, but if they did:
+        // We would evaluate 'in_Param' on CallNode and set 'out_Param' on EventNode (tempValues).
+        // For now, we assume simple execution.
+
+        // 2. Execute the Event Flow
+        // We await it so it behaves like a subroutine (synchronous call)
+        await this.engine.executeFlow(targetNode);
+
+        // 3. Continue execution of the caller
+        return 'exec_out';
     }
 
     /**

@@ -77,6 +77,7 @@ export class SimulationEngine {
         this.executorRegistry.register('EventTick', eventExecutor);
         this.executorRegistry.register('FunctionEntry', functionExecutor);
         this.executorRegistry.register('FunctionResult', functionExecutor);
+        this.executorRegistry.register('CallCustomEvent', functionExecutor);
         this.executorRegistry.register('MacroEntry', macroExecutor);
         this.executorRegistry.register('MacroResult', macroExecutor);
         this.executorRegistry.register('Branch', flowControlExecutor);
@@ -143,11 +144,16 @@ export class SimulationEngine {
             return;
         }
 
-        // FORCE VALIDATION BEFORE RUNNING
-        // In UE5, you cannot Play In Editor (PIE) if there are compiler errors.
-        const isValid = this.app.compiler.validate();
-        if (!isValid) {
-            this.log("Simulation halted: Fix compiler errors before playing.", "error");
+        // FORCE COMPILATION IF DIRTY
+        // The graph must be compiled before playing to ensure renames are applied and state is valid.
+        if (this.app.compiler.isDirty) {
+            this.log("Graph is dirty. Auto-compiling...", "warning");
+            this.app.compiler.compile();
+        }
+
+        // Check if compilation succeeded (isDirty should be false now)
+        if (this.app.compiler.isDirty) {
+            this.log("Simulation halted: Compile failed. Fix errors before playing.", "error");
             return;
         }
 
@@ -289,6 +295,12 @@ export class SimulationEngine {
 
         const tick = (timestamp) => {
             if (!this.isRunning) return;
+
+            // If paused, keep the loop alive but don't process logic
+            if (this.isPaused) {
+                this.tickFrame = requestAnimationFrame(tick);
+                return;
+            }
 
             const deltaTime = (timestamp - this.lastTickTime) / 1000; // Seconds
             this.lastTickTime = timestamp;

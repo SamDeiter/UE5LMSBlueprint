@@ -158,6 +158,16 @@ export const NodeDefinitions = {
             // Removed delegate_out
         ]
     },
+    "CallCustomEvent": {
+        title: "Call Custom Event",
+        type: "function-node",
+        category: "Events",
+        icon: "f",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
     "Timeline": {
         title: "Timeline",
         type: "flow-node",
@@ -1234,5 +1244,98 @@ export const NodeDefinitions = {
         customData: {
             startIndex: 0
         }
+    },
+
+    // --- ACTOR NODES ---
+    "SpawnActorFromClass": {
+        title: "Spawn Actor from Class",
+        type: "function-node",
+        category: "Actor",
+        icon: "fa-cube",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "class_in", name: "Class", type: "class", dir: "in" },
+            { id: "transform_in", name: "Spawn Transform", type: "transform", dir: "in" },
+            { id: "collision_in", name: "Collision Handling Override", type: "enum", dir: "in", defaultValue: "AlwaysSpawn" },
+            { id: "owner_in", name: "Owner", type: "object", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "return_out", name: "Return Value", type: "object", dir: "out" }
+        ]
+    },
+    "DestroyActor": {
+        title: "Destroy Actor",
+        type: "function-node",
+        category: "Actor",
+        icon: "fa-bomb",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "target_in", name: "Target", type: "object", dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+        ]
+    },
+
+    // --- MATH: BASIC ---
+    "Lerp": {
+        title: "Lerp (Float)",
+        type: "pure-node",
+        category: "Math|Float",
+        icon: "f",
+        pins: [
+            { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
+            { id: "alpha_in", name: "Alpha", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "RandomFloat": {
+        title: "Random Float",
+        type: "pure-node",
+        category: "Math|Random",
+        icon: "f",
+        pins: [
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "RandomFloatInRange": {
+        title: "Random Float in Range",
+        type: "pure-node",
+        category: "Math|Random",
+        icon: "f",
+        pins: [
+            { id: "min_in", name: "Min", type: "float", dir: "in", defaultValue: 0.0 },
+            { id: "max_in", name: "Max", type: "float", dir: "in", defaultValue: 1.0 },
+            { id: "ret_out", name: "Return Value", type: "float", dir: "out" }
+        ]
+    },
+    "RandomInt": {
+        title: "Random Integer",
+        type: "pure-node",
+        category: "Math|Random",
+        icon: "f",
+        pins: [
+            { id: "max_in", name: "Max", type: "int", dir: "in", defaultValue: 10 },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "RandomIntInRange": {
+        title: "Random Integer in Range",
+        type: "pure-node",
+        category: "Math|Random",
+        icon: "f",
+        pins: [
+            { id: "min_in", name: "Min", type: "int", dir: "in", defaultValue: 0 },
+            { id: "max_in", name: "Max", type: "int", dir: "in", defaultValue: 10 },
+            { id: "ret_out", name: "Return Value", type: "int", dir: "out" }
+        ]
+    },
+    "RandomBool": {
+        title: "Random Bool",
+        type: "pure-node",
+        category: "Math|Random",
+        icon: "f",
+        pins: [
+            { id: "weight_in", name: "True Weight", type: "float", dir: "in", defaultValue: 0.5 },
+            { id: "ret_out", name: "Return Value", type: "bool", dir: "out" }
+        ]
     },
 };

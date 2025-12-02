@@ -1,0 +1,270 @@
+# AGENTS.md - AI Agent Development Guide
+
+## 📋 Project Overview
+
+**UE5LMSBlueprint** is a web-based replica of Unreal Engine 5's Blueprint Visual Scripting system, designed to run in Learning Management Systems (LMS) using SCORM 1.2. This educational tool allows students to learn visual programming concepts through an authentic UE5-like interface.
+
+**Key Technologies:**
+- Vanilla JavaScript (ES6 modules)
+- HTML5/CSS3
+- No external frameworks (except Font Awesome for icons)
+- SCORM 1.2 compatibility required
+
+## 🎯 User Requirements
+
+### Critical Rules (MUST FOLLOW)
+1. **Always use Python for file edits** - The user prefers Python scripts over direct file manipulation
+2. **Backup to Git frequently** - Commit changes often
+3. **Windows 11 environment** - All paths and commands must work on Windows
+4. **SCORM 1.2 compatible** - All code must work in an LMS environment
+5. **Never delete root folders** - Be extremely careful with deletion operations
+
+### User's GitHub
+- Repository: https://github.com/SamDeiter/UE5LMSBlueprint
+- Location: `C:\Users\Sam Deiter\Documents\GitHub\UE5LMSBlueprint`
+
+## 📁 Project Structure
+
+```
+UE5LMSBlueprint/
+├── index.html              # Main entry point
+├── src/
+│   ├── app.js             # Application initialization
+│   ├── ui.js              # UI module aggregator
+│   ├── services.js        # Service module aggregator
+│   ├── graph/             # Graph rendering & interaction
+│   │   ├── GraphController.js
+│   │   ├── Node.js
+│   │   ├── Pin.js
+│   │   └── WiringController.js
+│   ├── ui/                # UI Controllers
+│   │   ├── ActionMenu.js
+│   │   ├── DetailsController.js
+│   │   ├── VariableController.js
+│   │   ├── FunctionsController.js
+│   │   ├── ParentClassModal.js
+│   │   └── ...
+│   ├── services/          # Core services
+│   │   ├── SimulationEngine.js
+│   │   ├── Compiler.js
+│   │   ├── Persistence.js
+│   │   └── executors/
+│   ├── data/              # Static data
+│   │   ├── NodeDefinitions.js
+│   │   └── AssessmentTasks.js
+│   ├── css/               # Modular CSS files
+│   └── utils/             # Utility functions
+├── docs/                  # Documentation
+│   ├── planning/          # Development plans
+│   ├── testing/           # Test scenarios
+│   └── guides/            # User guides
+└── assets/                # Icons, images
+```
+
+## 🔧 Development Patterns
+
+### Making File Changes
+
+**ALWAYS use Python for file modifications:**
+
+```python
+# Example: Modifying a file
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# Make changes
+content = content.replace(old_text, new_text)
+
+with open(file_path, 'w', encoding='utf-8') as f:
+    f.write(content)
+```
+
+### Adding New Nodes
+
+1. **Add definition to `src/data/NodeDefinitions.js`:**
+```javascript
+"NodeKey": {
+    title: "Node Title",
+    type: "function-node", // or "event-node", "pure-node"
+    category: "Category Name",
+    icon: "fa-icon-name",
+    pins: [
+        { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+        { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+    ]
+}
+```
+
+2. **Register executor in `src/services/SimulationEngine.js`:**
+```javascript
+this.executorRegistry.register('NodeKey', appropriateExecutor);
+```
+
+3. **Implement execution logic in the appropriate executor**
+
+### Adding New UI Components
+
+1. Create component in `src/ui/ComponentName.js`
+2. Export from `src/ui.js`
+3. Import and instantiate in `src/app.js`
+4. Add CSS to appropriate file in `src/css/`
+
+### CSS Architecture
+
+- `variables.css` - CSS custom properties
+- `reset.css` - CSS reset
+- `layout.css` - Grid layout
+- `ui-elements.css` - Buttons, inputs
+- `nodes.css` - Node styling
+- `graph.css` - Graph canvas
+- `panels.css` - Side panels
+- `modals.css` - Modal dialogs
+
+**Always match UE5's dark theme aesthetic:**
+- Background: `#0d0d0d` to `#1a1a1a`
+- Text: `#ccc` to `#eee`
+- Accents: `#0078d7` (blue)
+- Borders: `#333`
+
+## 🎮 Key Systems
+
+### Simulation Engine
+- **Location:** `src/services/SimulationEngine.js`
+- **Purpose:** Executes blueprint nodes during "Play" mode
+- **Executors:**
+  - `EventExecutor` - Handles event nodes
+  - `FunctionExecutor` - Handles functions and custom events
+  - `FlowControlExecutor` - Handles branches, loops
+  - `MathExecutor` - Handles math operations
+  - `VariableExecutor` - Handles Get/Set nodes
+
+### Compiler
+- **Location:** `src/services/Compiler.js`
+- **Purpose:** Validates graph before simulation
+- **Sets `isDirty` flag when changes need compilation**
+
+### Persistence
+- **Location:** `src/services/Persistence.js`
+- **Saves to:** `localStorage`
+- **Auto-saves** when changes are made
+- **Serializes:** Nodes, links, variables, components, functions
+
+### Graph System
+- **Nodes** are instances created from `NodeDefinitions`
+- **Pins** connect nodes (exec or data flow)
+- **Links** stored in `WiringController`
+- **Rendering** handled by `GraphController`
+
+## 🧪 Testing
+
+### Test Tasks Location
+- **File:** `src/data/AssessmentTasks.js`
+- **Levels:** 1-5 (Fundamentals to Advanced)
+- **Format:** Requirements-based validation
+
+### Testing Scenarios
+- **Location:** `docs/testing/`
+- Key files:
+  - `DEBUGGING_TEST_PLAN.md` - Breakpoint & stepping tests
+  - `TESTING_CHECKLIST.md` - Feature verification
+  - `KNOWN_LIMITATIONS.md` - Current limitations
+
+### Running Tests
+```javascript
+// In browser console:
+runTests()              // Run all tests
+validateTask()          // Validate current task
+setTask('task_id')      // Load specific task
+```
+
+## 🐛 Common Issues & Solutions
+
+### Issue: "Unknown node type" error
+**Solution:** Register the node in `SimulationEngine.js`:
+```javascript
+this.executorRegistry.register('NodeKey', executor);
+```
+
+### Issue: Custom Event name doesn't change
+**Solution:** Ensure `DetailsController.showCustomEventDetails()` updates both `node.title` and the DOM element.
+
+### Issue: Breakpoints not persisting
+**Solution:** Ensure `isBreakpoint` is included in `Persistence.serializeNodes()`.
+
+### Issue: Graph must be compiled before play
+**Solution:** Check `compiler.isDirty` in `SimulationEngine.run()` and auto-compile if needed.
+
+## 📝 Code Style Guidelines
+
+1. **Use ES6 modules** - `import`/`export` syntax
+2. **Use template literals** for HTML generation
+3. **Camel case** for variables and functions
+4. **Pascal case** for classes
+5. **Comment complex logic** - Especially simulation/execution code
+6. **Avoid global state** - Use `BlueprintApp` singleton
+7. **Event delegation** - Attach listeners to parent elements when possible
+
+## 🔄 Git Workflow
+
+```bash
+# Frequent commits preferred
+git add .
+git commit -m "Description of changes"
+git push origin main
+```
+
+**Commit message format:**
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation
+- `style:` Formatting
+- `refactor:` Code restructuring
+- `test:` Adding tests
+
+## 🚀 Development Server
+
+```bash
+npm run serve
+# Runs on http://localhost:8080
+```
+
+**Browser:** Check console for errors
+**Auto-reload:** Not available, refresh browser after changes
+
+## 📚 Key Documentation Files
+
+- `docs/planning/task.md` - Current development tasks
+- `docs/planning/implementation_plan.md` - Detailed implementation steps
+- `docs/testing/DEBUGGING_TEST_PLAN.md` - Testing procedures
+- `docs/guides/TASK_GUIDE.md` - Task system guide
+- `README.md` - Project overview
+
+## 🎯 Current Development Focus
+
+As of December 2025:
+1. **Debugging Features** - Breakpoints, stepping, watch panel
+2. **Custom Events** - Calling and parameterization
+3. **Parent Class Selection** - Blueprint initialization workflow
+4. **Node Library Expansion** - More UE5 parity
+
+## 💡 Tips for AI Agents
+
+1. **Read checkpoint summaries carefully** - They contain crucial context
+2. **Check conversation history** - Recent edits and blockers are documented
+3. **Test in browser** - Always verify changes work
+4. **Use Python for edits** - User's strong preference
+5. **Commit frequently** - User wants git backups often
+6. **Match UE5 aesthetics** - Premium, dark theme always
+7. **SCORM compatible** - No external dependencies that won't work in LMS
+8. **Windows paths** - Use backslashes or raw strings in Python
+
+## 🔗 Useful Links
+
+- [Unreal Engine Documentation](https://docs.unrealengine.com/)
+- [Blueprint Visual Scripting](https://docs.unrealengine.com/5.0/en-US/blueprints-visual-scripting-in-unreal-engine/)
+- [SCORM 1.2 Specification](https://scorm.com/scorm-explained/technical-scorm/scorm-12-overview-for-developers/)
+
+---
+
+**Last Updated:** December 2, 2025
+**Maintained by:** AI Agents & SamDeiter

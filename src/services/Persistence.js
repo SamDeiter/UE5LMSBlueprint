@@ -98,7 +98,8 @@ export class Persistence {
             type: node.type, nodeKey: node.nodeKey, icon: node.icon,
             isCollapsed: node.isCollapsed, pins: node.getPinsData(),
             customData: node.customData,
-            variableId: node.variableId
+            variableId: node.variableId,
+            isBreakpoint: node.isBreakpoint
         })) : [];
     }
 

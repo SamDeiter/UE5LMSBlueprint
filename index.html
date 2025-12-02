@@ -37,7 +37,18 @@
         <div id="menubar" class="menubar">
             <div class="menu-left">
                 <img src="assets/icons/ue-logo.svg" alt="UE Logo" class="ue-logo-icon">
-                <div class="menu-item">File</div>
+                <div class="menu-item dropdown-menu">
+                    File
+                    <div class="dropdown-content">
+                        <div class="dropdown-item" id="new-blueprint-menu-item">
+                            <i class="fas fa-file"></i> New Blueprint
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" id="save-blueprint-menu-item">
+                            <i class="fas fa-save"></i> Save
+                        </div>
+                    </div>
+                </div>
                 <div class="menu-item">Edit</div>
                 <div class="menu-item">Asset</div>
                 <div class="menu-item">View</div>
