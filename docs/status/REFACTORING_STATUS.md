@@ -57,9 +57,28 @@ Refactored `SimulationEngine.js` (1068 lines, 44KB) using the **Strategy Pattern
 - ✅ Improved extensibility (easy to add new node types)
 - ✅ Improved testability (test executors in isolation)
 
-**Documentation**: See `PHASE2_COMPLETE.md` and `PHASE2_SIMULATION_ENGINE_REFACTORING.md`
+**Documentation**: See `PHASE2_COMPLETE.md` and `../planning/PHASE2_SIMULATION_ENGINE_REFACTORING.md`
 
 ---
+
+
+---
+
+## ✅ Phase 2.5: Source Directory Migration (COMPLETE)
+
+### Summary
+Consolidated all source code into a `src/` directory to improve project structure and cleanliness.
+
+### Changes
+- Moved all root-level source directories (`ui`, `graph`, `services`, `utils`, `macros`, `functions`, `data`, `registries`, `css`) to `src/`.
+- Moved root-level source files (`app.js`, `ui.js`, `services.js`, `tests.js`) to `src/`.
+- Updated `index.html` to reference the new paths.
+- Cleaned up root directory.
+
+### Results
+- ✅ Cleaner root directory
+- ✅ Standardized project structure
+- ✅ Resolved duplicate file issues (merged root fixes into `src/`)
 
 ## 🔄 Phase 3: UI Controllers Refactoring (NEXT)
 
