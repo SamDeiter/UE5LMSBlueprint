@@ -89,3 +89,5 @@ export const PIN_TYPE_CLASSES = {
     [PIN_TYPES.ENUM]: 'enum-pin',
     DEFAULT: 'default-pin'
 };
+
+export const APP_VERSION = '1.0.0';

@@ -18,6 +18,7 @@ import { functionRegistry } from './functions/FunctionRegistry.js';
 import { MacroRegistry } from './macros/MacroRegistry.js';
 import { NodeDefinitions } from './data/NodeDefinitions.js';
 import { DOMElements } from './config/DOMElements.js';
+import { APP_VERSION } from './config/Constants.js';
 import { DirtyStateTracker } from './services/DirtyStateTracker.js';
 class BlueprintApp {
     /**
@@ -29,6 +30,12 @@ class BlueprintApp {
         BlueprintApp.nodeRegistry = nodeRegistry;
         BlueprintApp.functionRegistry = functionRegistry;
         BlueprintApp.macroRegistry = new MacroRegistry();
+
+        // Set App Version
+        const versionEl = document.getElementById('app-version');
+        if (versionEl) {
+            versionEl.textContent = `v${APP_VERSION}`;
+        }
 
         // Register static node definitions into the runtime registry
         try {
