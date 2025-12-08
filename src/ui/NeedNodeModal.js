@@ -30,10 +30,10 @@ export class NeedNodeModal {
                     <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
                         <label for="need-task-id" style="width: 120px; text-align: right; flex-shrink: 0; display: inline-block; margin-bottom: 0;">Associated Task</label>
                         <div style="display: flex; gap: 10px; align-items: center; flex: 1;">
+                            <button id="btn-show-create-task" class="btn-primary" style="padding: 8px 16px; font-size: 14px; font-weight: bold;">+ New</button>
                             <select id="need-task-id" style="flex: 1;">
                                 <option value="">-- Select a Task --</option>
                             </select>
-                            <button id="btn-show-create-task" class="btn-secondary" style="padding: 4px 8px; font-size: 12px;">+ New</button>
                             <button id="btn-edit-task" class="btn-secondary" style="padding: 4px 8px; font-size: 12px; display: none;">Edit</button>
                         </div>
                     </div>
