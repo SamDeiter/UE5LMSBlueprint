@@ -249,6 +249,14 @@ export class NeedNodeModal {
         }
 
         this.modal.style.display = 'flex';
+        this.modal.style.zIndex = '999999';
+        this.modal.style.position = 'fixed';
+        this.modal.style.top = '0';
+        this.modal.style.left = '0';
+        this.modal.style.right = '0';
+        this.modal.style.bottom = '0';
+        this.modal.style.justifyContent = 'center';
+        this.modal.style.alignItems = 'center';
     }
 
     /**
@@ -524,8 +532,11 @@ export class NeedNodeModal {
                     // Update the node title in the DOM
                     const nodeEl = document.getElementById(node.id);
                     if (nodeEl) {
-                        const titleEl = nodeEl.querySelector('.node-title');
-                        if (titleEl) titleEl.textContent = title;
+                        // The title is inside a span within .node-title
+                        const titleEl = nodeEl.querySelector('.node-title span:last-child');
+                        if (titleEl) {
+                            titleEl.textContent = title;
+                        }
                     }
                 } else {
                     console.error('Failed to create NeedNode - addNode returned null');

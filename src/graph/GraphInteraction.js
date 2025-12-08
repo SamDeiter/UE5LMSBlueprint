@@ -151,8 +151,12 @@ export class GraphInteraction {
 
             // Special handling for NeedNode - open modal for configuration
             if (nodeType === 'NeedNode') {
-                this.app.needNodeModal._pendingLocation = graphCoords;
-                this.app.needNodeModal.open();
+                if (this.app.needNodeModal) {
+                    this.app.needNodeModal._pendingLocation = graphCoords;
+                    this.app.needNodeModal.open();
+                } else {
+                    console.error('[GraphInteraction] needNodeModal not found!');
+                }
                 return;
             }
 
