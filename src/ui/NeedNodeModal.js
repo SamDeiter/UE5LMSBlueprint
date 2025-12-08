@@ -319,7 +319,7 @@ export class NeedNodeModal {
 
         const descLabel = document.createElement('label');
         descLabel.textContent = 'Description:';
-        descLabel.style.cssText = 'min-width: 80px; font-size: 12px; color: #ccc;';
+        descLabel.style.cssText = 'min-width: 110px; font-size: 12px; color: #ccc;';
 
         const descInput = document.createElement('input');
         descInput.type = 'text';
@@ -369,7 +369,7 @@ export class NeedNodeModal {
 
             const fieldLabel = document.createElement('label');
             fieldLabel.textContent = label + ':';
-            fieldLabel.style.cssText = 'min-width: 100px; font-size: 11px; color: #aaa;';
+            fieldLabel.style.cssText = 'min-width: 110px; font-size: 11px; color: #aaa;';
 
             let input;
             if (inputType === 'select' && options) {
