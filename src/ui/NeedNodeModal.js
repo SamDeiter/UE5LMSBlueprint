@@ -73,17 +73,17 @@ export class NeedNodeModal {
                     </div>
 
                     <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                        <label for="need-title" style="width: 120px; text-align: right; flex-shrink: 0;">Title</label>
+                        <label for="need-title" style="width: 120px; text-align: right; flex-shrink: 0; display: inline-block; margin-bottom: 0;">Title</label>
                         <input type="text" id="need-title" placeholder="e.g., Connect Light Component" style="flex: 1;" />
                     </div>
                     
                     <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px;">
-                        <label for="need-description" style="width: 120px; text-align: right; flex-shrink: 0; padding-top: 4px;">Description</label>
+                        <label for="need-description" style="width: 120px; text-align: right; flex-shrink: 0; padding-top: 8px; display: inline-block; margin-bottom: 0;">Description</label>
                         <textarea id="need-description" rows="3" placeholder="Detailed explanation of what students need to accomplish..." style="flex: 1;"></textarea>
                     </div>
                     
                     <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                        <label style="width: 120px; flex-shrink: 0;"></label>
+                        <label style="width: 120px; flex-shrink: 0; display: inline-block; margin-bottom: 0;"></label>
                         <label style="flex: 1;">
                             <input type="checkbox" id="need-hidden" />
                             Hidden from students (assessment mode)
@@ -91,7 +91,7 @@ export class NeedNodeModal {
                     </div>
                     
                     <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                        <label for="need-threshold" style="width: 120px; text-align: right; flex-shrink: 0;">Pass Threshold</label>
+                        <label for="need-threshold" style="width: 120px; text-align: right; flex-shrink: 0; display: inline-block; margin-bottom: 0;">Pass Threshold</label>
                         <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
                             <input type="range" id="need-threshold" min="0" max="100" value="80" step="5" style="flex: 1;" />
                             <span id="threshold-value" style="min-width: 40px;">80</span>%
