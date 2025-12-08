@@ -333,6 +333,37 @@ export const NodeDefinitions = {
             { id: "exec_completed", name: "Completed", type: "exec", dir: "out" }
         ]
     },
+    // UE5 Spec: WhileLoop - Conditional loop that continues while condition is true
+    "WhileLoop": {
+        title: "WhileLoop",
+        type: "flow-node",
+        category: "Flow Control",
+        executor: "FlowControl",
+        icon: "fa-redo",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "condition_in", name: "Condition", type: "bool", dir: "in", defaultValue: true },
+            { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },
+            { id: "exec_completed", name: "Completed", type: "exec", dir: "out" }
+        ]
+    },
+    // UE5 Spec: ForLoopWithBreak - Loop with early exit capability
+    "ForLoopWithBreak": {
+        title: "ForLoopWithBreak",
+        type: "flow-node",
+        category: "Flow Control",
+        executor: "FlowControl",
+        icon: "fa-sync-alt",
+        pins: [
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "break_in", name: "Break", type: "exec", dir: "in" },
+            { id: "first_index_in", name: "First Index", type: "int", dir: "in", defaultValue: 0 },
+            { id: "last_index_in", name: "Last Index", type: "int", dir: "in", defaultValue: 10 },
+            { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },
+            { id: "index_out", name: "Index", type: "int", dir: "out" },
+            { id: "exec_completed", name: "Completed", type: "exec", dir: "out" }
+        ]
+    },
     "Gate": {
         title: "Gate",
         type: "flow-node",

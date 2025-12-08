@@ -133,6 +133,73 @@ export class FlowControlExecutor extends BaseExecutor {
                 return isA ? 'exec_a' : 'exec_b';
             }
 
+            // UE5 Spec: WhileLoop - Continues executing Loop Body while Condition is true
+            case 'WhileLoop': {
+                const condition = this.evaluateInput(node, 'condition_in');
+
+                // Safety: prevent infinite loops with a max iteration count
+                if (node.tempValues.iterations === undefined) node.tempValues.iterations = 0;
+                const maxIterations = 10000;
+
+                if (condition && node.tempValues.iterations < maxIterations) {
+                    node.tempValues.iterations++;
+                    return 'exec_loop_body';
+                } else {
+                    node.tempValues.iterations = 0; // Reset for next execution
+                    return 'exec_completed';
+                }
+            }
+
+            // UE5 Spec: ForLoopWithBreak - Same as ForLoop but with Break input
+            case 'ForLoopWithBreak': {
+                // Handle Break input
+                if (pinName === 'break_in') {
+                    node.tempValues.broken = true;
+                    node.tempValues.index = null; // Reset
+                    return 'exec_completed';
+                }
+
+                // Initialize on first call
+                if (node.tempValues.index === undefined || node.tempValues.index === null) {
+                    node.tempValues.index = this.evaluateInput(node, 'first_index_in') || 0;
+                    node.tempValues.broken = false;
+                }
+
+                const lastIndex = this.evaluateInput(node, 'last_index_in') || 10;
+                const currentIndex = node.tempValues.index;
+
+                // Check if loop should continue
+                if (!node.tempValues.broken && currentIndex <= lastIndex) {
+                    node.tempValues.index_out = currentIndex; // Set output value
+                    node.tempValues.index++;
+                    return 'exec_loop_body';
+                } else {
+                    node.tempValues.index = null; // Reset for next execution
+                    node.tempValues.broken = false;
+                    return 'exec_completed';
+                }
+            }
+
+            // UE5 Spec: ForLoop - Basic loop from first to last index
+            case 'ForLoop': {
+                // Initialize on first call
+                if (node.tempValues.index === undefined || node.tempValues.index === null) {
+                    node.tempValues.index = this.evaluateInput(node, 'first_index_in') || 0;
+                }
+
+                const lastIndex = this.evaluateInput(node, 'last_index_in') || 10;
+                const currentIndex = node.tempValues.index;
+
+                if (currentIndex <= lastIndex) {
+                    node.tempValues.index_out = currentIndex; // Set output value
+                    node.tempValues.index++;
+                    return 'exec_loop_body';
+                } else {
+                    node.tempValues.index = null; // Reset for next execution
+                    return 'exec_completed';
+                }
+            }
+
             default:
                 return null;
         }
