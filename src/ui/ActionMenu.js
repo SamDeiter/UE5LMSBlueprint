@@ -57,7 +57,8 @@ export class ActionMenu {
         }
     }
     show(clientX, clientY, sourcePin = null, droppedVarName = null, droppedComponent = null) {
-        this.element.style.display = 'none';
+        this.element.classList.add('hidden');
+        this.element.classList.remove('visible');
         this.graphPos = this.app.graph.getGraphCoords(clientX, clientY);
         this.sourcePin = sourcePin;
         this.droppedVarName = droppedVarName;
@@ -67,14 +68,15 @@ export class ActionMenu {
         setTimeout(() => {
             this.isHideDelayActive = false;
         }, 100);
-        this.element.style.display = 'block';
+        this.element.classList.remove('hidden');
+        this.element.classList.add('visible');
         this.element.style.left = `${clientX}px`;
         this.element.style.top = `${clientY}px`;
         this.searchInput.value = '';
         if (droppedVarName || droppedComponent) {
-            this.searchInput.style.display = 'none';
+            this.searchInput.classList.add('hidden');
         } else {
-            this.searchInput.style.display = 'block';
+            this.searchInput.classList.remove('hidden');
         }
         this.populateList();
         this.searchInput.focus();
@@ -199,7 +201,8 @@ export class ActionMenu {
         this.list.appendChild(pinContextItem);
     }
     hide() {
-        this.element.style.display = 'none';
+        this.element.classList.add('hidden');
+        this.element.classList.remove('visible');
 
         // Clear sourcePin FIRST to avoid race condition in updateGhostWire
         const hadSourcePin = this.sourcePin !== null;

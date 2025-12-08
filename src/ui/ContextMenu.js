@@ -26,12 +26,14 @@ export class ContextMenu {
                 this.element.appendChild(div);
             }
         });
-        this.element.style.display = 'block';
+        this.element.classList.remove('hidden');
+        this.element.classList.add('visible');
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
         this.app.actionMenu.hide();
     }
     hide() {
-        this.element.style.display = 'none';
+        this.element.classList.add('hidden');
+        this.element.classList.remove('visible');
     }
 }
