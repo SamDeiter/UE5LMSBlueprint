@@ -41,27 +41,29 @@ export class NeedNodeModal {
                     <!-- New/Edit Task Form (Hidden by default) -->
                     <div id="new-task-form" style="display: none; background: #2a2a2a; padding: 10px; border: 1px solid #444; margin-bottom: 15px; border-radius: 4px;">
                         <h4 id="task-form-title" style="margin-top: 0; color: #ddd; font-size: 12px; text-transform: uppercase;">Create New Task</h4>
-                        <div class="form-group">
-                            <label for="new-task-id-input" style="font-size: 11px;">Task ID</label>
-                            <input type="text" id="new-task-id-input" placeholder="e.g., custom_task_01" style="font-size: 12px;" />
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                            <label for="new-task-id-input" style="font-size: 11px; width: 120px; text-align: right; flex-shrink: 0;">Task ID</label>
+                            <input type="text" id="new-task-id-input" placeholder="e.g., custom_task_01" style="font-size: 12px; flex: 1;" />
                         </div>
-                        <div class="form-group">
-                            <label for="new-task-title-input" style="font-size: 11px;">Title</label>
-                            <input type="text" id="new-task-title-input" placeholder="e.g., My Custom Task" style="font-size: 12px;" />
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                            <label for="new-task-title-input" style="font-size: 11px; width: 120px; text-align: right; flex-shrink: 0;">Title</label>
+                            <input type="text" id="new-task-title-input" placeholder="e.g., My Custom Task" style="font-size: 12px; flex: 1;" />
                         </div>
-                        <div class="form-group">
-                            <label for="new-task-desc-input" style="font-size: 11px;">Description</label>
-                            <textarea id="new-task-desc-input" rows="2" placeholder="Task description..." style="font-size: 12px;"></textarea>
+                        <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px;">
+                            <label for="new-task-desc-input" style="font-size: 11px; width: 120px; text-align: right; flex-shrink: 0; padding-top: 4px;">Description</label>
+                            <textarea id="new-task-desc-input" rows="2" placeholder="Task description..." style="font-size: 12px; flex: 1;"></textarea>
                         </div>
 
-                        <div class="form-group">
-                            <label style="font-size: 11px;">Requirements</label>
-                            <div id="task-requirements-list" style="background: #222; padding: 5px; max-height: 100px; overflow-y: auto; font-size: 11px; color: #aaa; border: 1px solid #444; margin-bottom: 5px;">
-                                <em style="color: #666;">No requirements defined.</em>
-                            </div>
-                            <div style="display: flex; gap: 5px;">
-                                <input type="text" id="new-req-input" placeholder="Add requirement..." style="font-size: 12px; flex: 1;" />
-                                <button id="btn-add-req" class="btn-secondary" style="font-size: 11px; padding: 4px 8px;">Add</button>
+                        <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px;">
+                            <label style="font-size: 11px; width: 120px; text-align: right; flex-shrink: 0; padding-top: 4px;">Requirements</label>
+                            <div style="flex: 1;">
+                                <div id="task-requirements-list" style="background: #222; padding: 5px; max-height: 100px; overflow-y: auto; font-size: 11px; color: #aaa; border: 1px solid #444; margin-bottom: 5px;">
+                                    <em style="color: #666;">No requirements defined.</em>
+                                </div>
+                                <div style="display: flex; gap: 5px;">
+                                    <input type="text" id="new-req-input" placeholder="Add requirement..." style="font-size: 12px; flex: 1;" />
+                                    <button id="btn-add-req" class="btn-secondary" style="font-size: 11px; padding: 4px 8px;">Add</button>
+                                </div>
                             </div>
                         </div>
                         <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
@@ -70,32 +72,38 @@ export class NeedNodeModal {
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="need-title">Title</label>
-                        <input type="text" id="need-title" placeholder="e.g., Connect Light Component" />
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <label for="need-title" style="width: 120px; text-align: right; flex-shrink: 0;">Title</label>
+                        <input type="text" id="need-title" placeholder="e.g., Connect Light Component" style="flex: 1;" />
                     </div>
                     
-                    <div class="form-group">
-                        <label for="need-description">Description</label>
-                        <textarea id="need-description" rows="3" placeholder="Detailed explanation of what students need to accomplish..."></textarea>
+                    <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px;">
+                        <label for="need-description" style="width: 120px; text-align: right; flex-shrink: 0; padding-top: 4px;">Description</label>
+                        <textarea id="need-description" rows="3" placeholder="Detailed explanation of what students need to accomplish..." style="flex: 1;"></textarea>
                     </div>
                     
-                    <div class="form-group">
-                        <label>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <label style="width: 120px; flex-shrink: 0;"></label>
+                        <label style="flex: 1;">
                             <input type="checkbox" id="need-hidden" />
                             Hidden from students (assessment mode)
                         </label>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="need-threshold">Pass Threshold: <span id="threshold-value">80</span>%</label>
-                        <input type="range" id="need-threshold" min="0" max="100" value="80" step="5" />
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <label for="need-threshold" style="width: 120px; text-align: right; flex-shrink: 0;">Pass Threshold</label>
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                            <input type="range" id="need-threshold" min="0" max="100" value="80" step="5" style="flex: 1;" />
+                            <span id="threshold-value" style="min-width: 40px;">80</span>%
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label>Criteria</label>
-                        <div id="criteria-list"></div>
-                        <button type="button" id="add-criterion" class="btn-secondary">+ Add Criterion</button>
+                    <div class="form-group" style="display: flex; align-items: flex-start; gap: 10px; margin-top: 20px;">
+                        <label style="width: 120px; text-align: right; flex-shrink: 0; padding-top: 4px;">Criteria</label>
+                        <div style="flex: 1;">
+                            <div id="criteria-list"></div>
+                            <button type="button" id="add-criterion" class="btn-secondary">+ Add Criterion</button>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -276,7 +284,7 @@ export class NeedNodeModal {
 
         const typeLabel = document.createElement('label');
         typeLabel.textContent = 'Rule Type:';
-        typeLabel.style.cssText = 'min-width: 110px; font-size: 12px; color: #ccc;';
+        typeLabel.style.cssText = 'width: 120px; font-size: 12px; color: #ccc; text-align: right; flex-shrink: 0;';
 
         const typeSelect = document.createElement('select');
         typeSelect.className = 'criterion-type-select';
@@ -319,7 +327,7 @@ export class NeedNodeModal {
 
         const descLabel = document.createElement('label');
         descLabel.textContent = 'Description:';
-        descLabel.style.cssText = 'min-width: 110px; font-size: 12px; color: #ccc;';
+        descLabel.style.cssText = 'width: 120px; font-size: 12px; color: #ccc; text-align: right; flex-shrink: 0;';
 
         const descInput = document.createElement('input');
         descInput.type = 'text';
