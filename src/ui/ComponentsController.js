@@ -158,7 +158,8 @@ export class ComponentsController {
         }
 
         msg.textContent = messageText;
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+        modal.classList.add('visible-flex');
 
         // Clone buttons to remove old listeners
         const newYes = yesBtn.cloneNode(true);
@@ -168,12 +169,14 @@ export class ComponentsController {
 
         newYes.addEventListener('click', () => {
             this.executeDeletion();
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            modal.classList.remove('visible-flex');
         });
 
         newNo.addEventListener('click', () => {
             console.log('[ComponentsController] Deletion cancelled by user');
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            modal.classList.remove('visible-flex');
         });
     }
 
