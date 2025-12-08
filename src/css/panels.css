@@ -630,6 +630,17 @@
     color: #ff5555;
 }
 
+/* Play Button Needs Compile State */
+#play-btn.needs-compile {
+    opacity: 0.5;
+    border: 1px dashed #ffaa00;
+    cursor: not-allowed;
+}
+
+#play-btn.needs-compile:hover {
+    background-color: transparent;
+}
+
 /* Component Selector Modal */
 .component-selector-modal {
     position: fixed;

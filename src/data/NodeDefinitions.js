@@ -374,7 +374,7 @@ export const NodeDefinitions = {
         title: "Print String",
         type: "function-node",
         category: "String",
-        executor: "String",
+        executor: "Print",
         icon: "f",
         devWarning: "Development Only",
         pins: [

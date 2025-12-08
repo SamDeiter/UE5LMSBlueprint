@@ -65,7 +65,7 @@ export class SimulationEngine {
     /**
      * Initialize all node executors and register them
      */
-        initializeExecutors() {
+    initializeExecutors() {
         // 1. Instantiate Executors
         const executors = {
             'Event': new EventExecutor(this),
@@ -229,9 +229,21 @@ export class SimulationEngine {
 
     /** Updates Play/Stop button state and UI visual cues. */
     updateUI() {
+        const needsCompile = this.app.compiler && this.app.compiler.isDirty;
+
         if (this.playBtn) {
-            this.playBtn.disabled = this.isRunning && !this.isPaused;
+            // Disable play button if running OR if blueprint needs compilation
+            this.playBtn.disabled = (this.isRunning && !this.isPaused) || needsCompile;
             this.playBtn.textContent = this.isPaused ? 'Resume' : 'Play';
+
+            // Add visual feedback when compilation is needed
+            if (needsCompile && !this.isRunning) {
+                this.playBtn.title = 'Compile the blueprint first (Ctrl+Shift+C)';
+                this.playBtn.classList.add('needs-compile');
+            } else {
+                this.playBtn.title = '';
+                this.playBtn.classList.remove('needs-compile');
+            }
         }
         if (this.stopBtn) this.stopBtn.disabled = !this.isRunning;
 
@@ -401,7 +413,7 @@ export class SimulationEngine {
             let outPin = null;
 
             if (nextPinId) {
-                outPin = currentNode.findPinById(`${currentNode.id} -${nextPinId} `);
+                outPin = currentNode.findPinById(`${currentNode.id}-${nextPinId}`);
             } else {
                 // Default: look for the first execution output pin
                 outPin = currentNode.pinsOut.find(p => p.type === 'exec');
@@ -448,7 +460,7 @@ export class SimulationEngine {
      * @param {string} pinLocalId - The local ID of the input pin (e.g., 'a_in').
      */
     evaluateInput(node, pinLocalId) {
-        const fullPinId = `${node.id} -${pinLocalId} `;
+        const fullPinId = `${node.id}-${pinLocalId}`;
         const pin = node.findPinById(fullPinId);
 
         if (!pin) return null;

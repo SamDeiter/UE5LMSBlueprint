@@ -49,6 +49,10 @@ export class Compiler {
             this.statusElement.textContent = "Status: Dirty (Needs Compile)";
             this.statusElement.style.color = "#ffaa00";
         }
+        // Update simulation UI to disable Play button
+        if (this.app.simulation) {
+            this.app.simulation.updateUI();
+        }
     }
 
     /**
@@ -76,7 +80,7 @@ export class Compiler {
             this.log("Compile Complete!", "success");
             // Clear any persistent dirty state
             this.app.persistence.autoSave();
-            
+
             if (this.app.dirtyState) {
                 this.app.dirtyState.markClean();
             }
@@ -97,6 +101,11 @@ export class Compiler {
                 this.compileBtn.classList.remove('dirty');
                 this.compileBtn.classList.add('error');
             }
+        }
+
+        // Update simulation UI to reflect new compile state (enable/disable Play button)
+        if (this.app.simulation) {
+            this.app.simulation.updateUI();
         }
 
         // Force a redraw of wires to make them visible again (if they were hidden)
