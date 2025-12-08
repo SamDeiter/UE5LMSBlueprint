@@ -102,7 +102,7 @@ export class NeedNodeModal {
                         <label style="width: 120px; text-align: right; flex-shrink: 0; padding-top: 4px;">Criteria</label>
                         <div style="flex: 1;">
                             <div id="criteria-list"></div>
-                            <button type="button" id="add-criterion" class="btn-secondary">+ Add Criterion</button>
+                            <button type="button" id="add-criterion" class="btn-secondary" style="width: 100%; margin-top: 10px;">+ Add Criterion</button>
                         </div>
                     </div>
                 </div>
