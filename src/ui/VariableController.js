@@ -543,7 +543,7 @@ export class VariableController {
             el.addEventListener('click', () => {
                 // Clear component selection
                 if (this.app.componentsController) {
-                    this.app.componentsController.selectedComponentId = null;
+                    this.app.componentsController.selectComponent(null);
                 }
 
                 this.app.details.currentVariable = variable;
