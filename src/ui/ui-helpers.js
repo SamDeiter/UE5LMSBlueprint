@@ -120,6 +120,16 @@ export function renderCategoryTree(node, container, renderItemFn, options = {}) 
         autoExpand = false  // Auto-expand all categories (useful for search)
     } = options;
 
+    // Render items in this node FIRST (before subcategories)
+    // This ensures items at the root level appear before any subcategories
+    node.items.forEach(item => {
+        const itemEl = renderItemFn(item);
+        if (itemEl) {  // renderItemFn might return null for filtered items
+            itemEl.style.paddingLeft = `${itemIndent + depth * 12}px`;
+            container.appendChild(itemEl);
+        }
+    });
+
     // Render subcategories
     const categoryNames = sortCategories ? Object.keys(node.children).sort() : Object.keys(node.children);
 
@@ -152,17 +162,8 @@ export function renderCategoryTree(node, container, renderItemFn, options = {}) 
         section.appendChild(content);
         container.appendChild(section);
 
-        // Recurse
+        // Recurse into the content div (not the section)
         renderCategoryTree(childNode, content, renderItemFn, { ...options, depth: depth + 1 });
-    });
-
-    // Render items in this node
-    node.items.forEach(item => {
-        const itemEl = renderItemFn(item);
-        if (itemEl) {  // renderItemFn might return null for filtered items
-            itemEl.style.paddingLeft = `${itemIndent + depth * 12}px`;
-            container.appendChild(itemEl);
-        }
     });
 }
 
