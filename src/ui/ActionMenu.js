@@ -30,7 +30,7 @@ export class ActionMenu {
 
         document.addEventListener('click', (e) => {
             if (!this.isHideDelayActive) {
-                if (this.element.style.display !== 'none' && !this.element.contains(e.target)) {
+                if (!this.element.classList.contains('hidden') && !this.element.contains(e.target)) {
                     this.hide();
                 }
             }
