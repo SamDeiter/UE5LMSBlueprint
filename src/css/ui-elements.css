@@ -354,3 +354,644 @@
     background-color: #333;
     margin: 4px 0;
 }
+
+/* =====================================================
+   UTILITY CLASSES FOR STYLE CONSOLIDATION
+   Added: 2025-12-08 for inline style elimination
+   ===================================================== */
+
+/* --- Visibility Utilities --- */
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.visible-flex {
+    display: flex !important;
+}
+
+.visible-grid {
+    display: grid !important;
+}
+
+.visible-inline {
+    display: inline !important;
+}
+
+.visible-inline-flex {
+    display: inline-flex !important;
+}
+
+/* --- Collapsible Content --- */
+.collapsible-content {
+    display: block;
+}
+
+.collapsible-content.collapsed {
+    display: none;
+}
+
+/* --- Arrow Icons for Collapsibles --- */
+.collapse-arrow {
+    margin-right: 6px;
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+.collapse-arrow.expanded {
+    transform: rotate(90deg);
+}
+
+/* --- Component/Section Headers --- */
+.section-header-row {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #333, #222);
+    border-bottom: 1px solid #111;
+}
+
+.section-header-row:hover {
+    background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+}
+
+/* --- Left/Right Groups --- */
+.group-left {
+    display: flex;
+    align-items: center;
+}
+
+.group-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+/* --- Progress Bar --- */
+.progress-container {
+    margin: 15px 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 20px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #444;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, #4CAF50, #45a049);
+    transition: width 0.3s ease;
+}
+
+/* --- Status Items --- */
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.status-item.passed {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 3px solid #4CAF50;
+}
+
+.status-item.failed {
+    background: rgba(244, 67, 54, 0.1);
+    border-left: 3px solid #f44336;
+}
+
+/* --- Status Icons --- */
+.status-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.status-icon.success {
+    background: #4CAF50;
+    color: white;
+}
+
+.status-icon.error {
+    background: #f44336;
+    color: white;
+}
+
+.status-icon.pending {
+    background: #666;
+    color: #aaa;
+}
+
+/* --- Success Message --- */
+.success-message {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid #4CAF50;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    color: #4CAF50;
+}
+
+/* --- Task Complete Animation --- */
+.task-complete {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)) !important;
+    border: 2px solid #4caf50 !important;
+    padding: 20px !important;
+    font-weight: bold;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* --- Icon Sizes --- */
+.icon-xs {
+    font-size: 8px;
+}
+
+.icon-sm {
+    font-size: 10px;
+}
+
+.icon-md {
+    font-size: 14px;
+}
+
+.icon-lg {
+    font-size: 18px;
+}
+
+.icon-xl {
+    font-size: 24px;
+}
+
+/* --- Text Utilities --- */
+.text-muted {
+    color: #666;
+}
+
+.text-light {
+    color: #aaa;
+}
+
+.text-white {
+    color: #fff;
+}
+
+.text-success {
+    color: #4CAF50;
+}
+
+.text-error {
+    color: #f44336;
+}
+
+.text-warning {
+    color: #ffaa00;
+}
+
+.text-info {
+    color: #4a90e2;
+}
+
+.text-xs {
+    font-size: 9px;
+}
+
+.text-sm {
+    font-size: 10px;
+}
+
+.text-md {
+    font-size: 12px;
+}
+
+.text-lg {
+    font-size: 14px;
+}
+
+.text-italic {
+    font-style: italic;
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* --- Separators --- */
+.separator-h {
+    height: 1px;
+    background: #444;
+    margin: 4px 0;
+}
+
+.separator-v {
+    width: 1px;
+    background: #444;
+    margin: 0 4px;
+    align-self: stretch;
+}
+
+/* --- Placeholder Text --- */
+.placeholder-text {
+    padding: 8px 12px;
+    color: #666;
+    font-size: 10px;
+    font-style: italic;
+}
+
+/* --- Component Output Circle (for variable panel) --- */
+.component-output-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+    border: 1px solid #000;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* --- Components Subsection Header --- */
+.components-subsection {
+    border-bottom: 1px solid #111;
+    margin-bottom: 4px;
+}
+
+.components-header {
+    padding: 4px 10px !important;
+    background-color: #1a1a1a !important;
+    font-size: 10px !important;
+    text-transform: capitalize !important;
+    font-weight: 600;
+}
+
+/* --- Criterion Row (for NeedNode modal) --- */
+.criterion-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 10px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+}
+
+/* --- Modal Button Colors --- */
+.btn-success {
+    background-color: #4CAF50 !important;
+    border-color: #4CAF50 !important;
+}
+
+.btn-success:hover {
+    background-color: #45a049 !important;
+}
+
+/* --- Spacing Utilities --- */
+.mt-0 {
+    margin-top: 0;
+}
+
+.mt-1 {
+    margin-top: 4px;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.mt-3 {
+    margin-top: 12px;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.mb-1 {
+    margin-bottom: 4px;
+}
+
+.mb-2 {
+    margin-bottom: 8px;
+}
+
+.mb-3 {
+    margin-bottom: 12px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.mr-1 {
+    margin-right: 4px;
+}
+
+.mr-2 {
+    margin-right: 8px;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+
+.p-0 {
+    padding: 0;
+}
+
+.p-1 {
+    padding: 4px;
+}
+
+.p-2 {
+    padding: 8px;
+}
+
+.p-3 {
+    padding: 12px;
+}
+
+/* --- Flex Utilities --- */
+.d-flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.gap-1 {
+    gap: 4px;
+}
+
+.gap-2 {
+    gap: 8px;
+}
+
+.gap-3 {
+    gap: 12px;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.flex-shrink-0 {
+    flex-shrink: 0;
+}
+
+/* --- Border Utilities --- */
+.border-bottom {
+    border-bottom: 1px solid #111;
+}
+
+.border-top {
+    border-top: 1px solid #111;
+}
+
+.rounded {
+    border-radius: 4px;
+}
+
+.rounded-full {
+    border-radius: 50%;
+}
+
+/* --- Background Utilities --- */
+.bg-dark {
+    background-color: #111;
+}
+
+.bg-medium {
+    background-color: #222;
+}
+
+.bg-light {
+    background-color: #333;
+}
+
+.bg-transparent {
+    background-color: transparent;
+}
+
+/* --- App Version Label --- */
+.app-version {
+    color: #666;
+    font-size: 11px;
+    margin-right: 15px;
+    opacity: 0.7;
+}
+
+/* --- Toolbar Play/Stop Icon Colors --- */
+.icon-play {
+    color: #4caf50;
+}
+
+.icon-stop {
+    color: #f44336;
+}
+
+/* --- Task Selector --- */
+.task-selector-label {
+    color: #ccc;
+    margin-right: 8px;
+    font-size: 12px;
+}
+
+.task-selector {
+    background: #2a2a2a;
+    color: #ccc;
+    border: 1px solid #444;
+    padding: 4px 8px;
+    border-radius: 2px;
+    min-width: 200px;
+}
+
+/* --- Panel Header Icon --- */
+.panel-header-icon {
+    margin-right: 6px;
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+.panel-header-close {
+    margin-left: auto;
+    font-size: 10px;
+    color: #666;
+    cursor: pointer;
+}
+
+/* --- Component Tree Items --- */
+.tree-item-icon {
+    margin-right: 8px;
+    color: #ccc;
+}
+
+.tree-item-indent-1 {
+    padding-left: 24px;
+}
+
+.tree-item-indent-2 {
+    padding-left: 48px;
+}
+
+/* --- Add Button Span --- */
+.add-btn-text {
+    margin-left: 4px;
+}
+
+/* --- Zoom Readout --- */
+.zoom-readout {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #aaa;
+    font-size: 12px;
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* --- Task Status Content --- */
+.task-status-wrapper {
+    padding: 10px;
+}
+
+.task-title {
+    margin-top: 0;
+    color: #fff;
+}
+
+.task-desc {
+    color: #aaa;
+    margin-bottom: 15px;
+}
+
+/* --- Modal Styling --- */
+.modal-narrow {
+    max-width: 350px;
+    text-align: center;
+    border: 2px solid #000;
+}
+
+.modal-title-sm {
+    margin-top: 0;
+    color: #eee;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.modal-msg {
+    color: #aaa;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+.modal-btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-danger {
+    background-color: #d32f2f;
+    color: white;
+    border: 1px solid #000;
+    padding: 6px 20px;
+}
+
+.btn-secondary {
+    background-color: #444;
+    color: white;
+    border: 1px solid #000;
+    padding: 6px 20px;
+}
+
+/* --- Help Modal --- */
+.help-modal-title {
+    margin-top: 0;
+}
+
+.help-modal-close {
+    margin-top: 10px;
+}
+
+.help-modal-hr {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 15px 0;
+}
+
+.help-troubleshoot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.help-troubleshoot-label {
+    font-size: 11px;
+    color: #888;
+}

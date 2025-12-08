@@ -105,7 +105,7 @@ export class TaskController {
                 // Deactivate all
                 document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.panel-content').forEach(c => {
-                    if (c.parentElement.id === 'bottom-strip') c.style.display = 'none';
+                    if (c.parentElement.id === 'bottom-strip') c.classList.add('hidden');
                 });
 
                 // Activate clicked
@@ -113,13 +113,13 @@ export class TaskController {
                 const tabId = tab.dataset.tab;
 
                 if (tabId === 'task-status') {
-                    this.statusContent.style.display = 'block';
+                    this.statusContent.classList.remove('hidden');
                 } else if (tabId === 'compiler') {
-                    this.compilerResults.style.display = 'block';
+                    this.compilerResults.classList.remove('hidden');
                 } else {
                     // Find results placeholder
                     const findResults = document.getElementById('find-results') || document.createElement('div'); // Fallback
-                    findResults.style.display = 'block';
+                    findResults.classList.remove('hidden');
                 }
             });
         });
@@ -155,10 +155,10 @@ export class TaskController {
 
         // Add progress bar
         const progressContainer = document.createElement('div');
-        progressContainer.style.cssText = 'margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 4px;';
+        progressContainer.className = 'progress-container';
 
         const progressLabel = document.createElement('div');
-        progressLabel.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: #aaa;';
+        progressLabel.className = 'progress-label';
 
         const results = validationResults ? validationResults.results : null;
         const passedCount = results ? results.filter(r => r.passed).length : 0;
@@ -169,10 +169,11 @@ export class TaskController {
         progressContainer.appendChild(progressLabel);
 
         const progressBarBg = document.createElement('div');
-        progressBarBg.style.cssText = 'width: 100%; height: 20px; background: #222; border-radius: 10px; overflow: hidden; border: 1px solid #444;';
+        progressBarBg.className = 'progress-bar-bg';
 
         const progressBarFill = document.createElement('div');
-        progressBarFill.style.cssText = `width: ${progressPercent}%; height: 100%; background: linear-gradient(to right, #4CAF50, #45a049); transition: width 0.3s ease;`;
+        progressBarFill.className = 'progress-bar-fill';
+        progressBarFill.style.width = `${progressPercent}%`;
         progressBarBg.appendChild(progressBarFill);
         progressContainer.appendChild(progressBarBg);
 
@@ -184,23 +185,10 @@ export class TaskController {
             const isPassed = result ? result.passed : false;
 
             const item = document.createElement('div');
-            item.style.cssText = `
-                padding: 12px;
-                border-bottom: 1px solid #333;
-                display: flex;
-                align-items: center;
-                color: ${isPassed ? '#4caf50' : '#ccc'};
-                background: ${isPassed ? 'rgba(76, 175, 80, 0.1)' : 'transparent'};
-                transition: all 0.2s ease;
-            `;
+            item.className = `status-item ${isPassed ? 'passed' : ''}`;
 
             const icon = document.createElement('i');
-            icon.className = isPassed ? 'fas fa-check-circle' : 'far fa-circle';
-            icon.style.cssText = `
-                margin-right: 12px;
-                font-size: 16px;
-                color: ${isPassed ? '#4caf50' : '#666'};
-            `;
+            icon.className = isPassed ? 'fas fa-check-circle text-success icon-lg' : 'far fa-circle text-muted icon-lg mr-3';
 
             const text = document.createElement('span');
             text.textContent = req.description;
@@ -214,19 +202,8 @@ export class TaskController {
         // Success message
         if (validationResults && validationResults.success) {
             const successMsg = document.createElement('div');
-            successMsg.style.cssText = `
-                margin-top: 20px;
-                padding: 20px;
-                background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
-                border: 2px solid #4caf50;
-                border-radius: 8px;
-                color: #4caf50;
-                text-align: center;
-                font-size: 16px;
-                font-weight: bold;
-                animation: pulse 2s ease-in-out infinite;
-            `;
-            successMsg.innerHTML = '<i class="fas fa-trophy" style="margin-right: 10px; font-size: 20px;"></i>Task Complete! Well Done!';
+            successMsg.className = 'success-message task-complete';
+            successMsg.innerHTML = '<i class="fas fa-trophy mr-2 icon-lg"></i>Task Complete! Well Done!';
             this.requirementsList.appendChild(successMsg);
 
             // Add animation keyframes if not already present
@@ -283,10 +260,12 @@ export class TaskController {
         yesBtn.textContent = 'Clear Graph';
         yesBtn.style.backgroundColor = '#4CAF50'; // Green for positive action
 
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+        modal.classList.add('visible-flex');
 
         const handleYes = () => {
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            modal.classList.remove('visible-flex');
             // Reset to original values
             yesBtn.textContent = originalYesText;
             yesBtn.style.backgroundColor = originalYesColor;
@@ -296,7 +275,8 @@ export class TaskController {
         };
 
         const handleNo = () => {
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            modal.classList.remove('visible-flex');
             // Reset to original values
             yesBtn.textContent = originalYesText;
             yesBtn.style.backgroundColor = originalYesColor;

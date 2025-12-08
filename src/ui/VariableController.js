@@ -138,8 +138,9 @@ export class VariableController {
     toggleNewVarInput() {
         // For legacy support, though we mainly use inline renaming now
         if (this.inputContainer) {
-            const isVisible = this.inputContainer.style.display === 'grid';
-            this.inputContainer.style.display = isVisible ? 'none' : 'grid';
+            const isVisible = !this.inputContainer.classList.contains('hidden');
+            this.inputContainer.classList.toggle('hidden', isVisible);
+            this.inputContainer.classList.toggle('visible-grid', !isVisible);
             if (!isVisible) {
                 this.nameInput.value = this.generateUniqueVarName('NewVar');
                 this.nameInput.focus();
@@ -175,7 +176,8 @@ export class VariableController {
         const noBtn = document.getElementById('confirm-no-btn');
         if (!modal) return;
         msg.textContent = `Are you sure you want to delete variable '${variable.name}'?`;
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+        modal.classList.add('visible-flex');
 
         // Clone buttons to remove old listeners
         const newYes = yesBtn.cloneNode(true);
@@ -185,10 +187,12 @@ export class VariableController {
 
         newYes.addEventListener('click', () => {
             this.executeVariableDeletion(variable);
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            modal.classList.remove('visible-flex');
         });
         newNo.addEventListener('click', () => {
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            modal.classList.remove('visible-flex');
         });
     }
 
@@ -367,7 +371,7 @@ export class VariableController {
 
             const content = document.createElement('div');
             content.id = id;
-            content.style.display = 'block';
+            content.classList.remove('collapsed');
 
             createCollapsibleHeader(section, title, content, {
                 onAdd: onAdd,
@@ -387,7 +391,7 @@ export class VariableController {
 
         // FORCE expanded state and DISABLE collapse toggle
         const varContent = varSection.content;
-        if (varContent) varContent.style.display = 'block';
+        if (varContent) varContent.classList.remove('collapsed');
 
         // Find and disable the toggle click listener by replacing the header with a non-collapsible version
         const varHeader = varSection.section.querySelector('.sidebar-section-header');
@@ -414,28 +418,16 @@ export class VariableController {
 
         // 4.1 Components Subsection (collapsible within Variables)
         const componentsSubsection = document.createElement('div');
-        componentsSubsection.style.cssText = 'border-bottom: 1px solid #111; margin-bottom: 4px;';
+        componentsSubsection.className = 'components-subsection border-bottom mb-1';
 
         const componentsHeader = document.createElement('div');
-        componentsHeader.className = 'sidebar-section-header';
-        componentsHeader.style.cssText = `
-            padding: 4px 10px;
-            background-color: #1a1a1a;
-            font-size: 10px;
-            text-transform: capitalize;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        `;
+        componentsHeader.className = 'sidebar-section-header components-header';
 
         const leftGroup = document.createElement('div');
-        leftGroup.style.cssText = 'display: flex; align-items: center;';
+        leftGroup.className = 'group-left';
 
         const compArrow = document.createElement('i');
-        compArrow.className = 'fas fa-caret-down';
-        compArrow.style.cssText = 'margin-right: 6px; font-size: 10px; transition: transform 0.2s;';
+        compArrow.className = 'fas fa-caret-down collapse-arrow';
 
         const compLabel = document.createElement('span');
         compLabel.textContent = 'Components';
@@ -446,14 +438,14 @@ export class VariableController {
         componentsHeader.appendChild(leftGroup);
 
         const componentsContent = document.createElement('div');
-        componentsContent.style.display = 'block';
+        componentsContent.className = 'collapsible-content';
 
         // Toggle collapse - make entire header clickable
         let compExpanded = true;
         componentsHeader.addEventListener('click', () => {
             compExpanded = !compExpanded;
-            componentsContent.style.display = compExpanded ? 'block' : 'none';
-            compArrow.style.transform = compExpanded ? 'rotate(0deg)' : 'rotate(-90deg)';
+            componentsContent.classList.toggle('collapsed', !compExpanded);
+            compArrow.classList.toggle('expanded', compExpanded);
         });
 
         // Render component items
@@ -473,21 +465,12 @@ export class VariableController {
 
                     // Create output circle indicator
                     const outputCircle = document.createElement('span');
-                    outputCircle.style.cssText = `
-                        width: 10px;
-                        height: 10px;
-                        background-color: var(--color-object);
-                        border: 1px solid #000;
-                        border-radius: 50%;
-                        display: inline-block;
-                        margin-right: 6px;
-                        box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
-                    `;
+                    outputCircle.className = 'component-output-circle';
+                    outputCircle.style.backgroundColor = 'var(--color-object)';
 
                     const iconClass = this.app.componentsController ? this.app.componentsController.getIconForType(comp.type) : 'fa-cube';
                     const icon = document.createElement('i');
-                    icon.className = `fas ${iconClass}`;
-                    icon.style.cssText = 'margin-right: 6px; font-size: 10px;';
+                    icon.className = `fas ${iconClass} icon-sm mr-2`;
 
                     const nameSpan = document.createElement('span');
                     nameSpan.textContent = comp.name;
@@ -522,7 +505,7 @@ export class VariableController {
             } else {
                 // Show placeholder when no components
                 const placeholder = document.createElement('div');
-                placeholder.style.cssText = 'padding: 8px 12px; color: #666; font-size: 10px; font-style: italic;';
+                placeholder.className = 'placeholder-text';
                 placeholder.textContent = 'No components';
                 componentsContent.appendChild(placeholder);
             }
@@ -617,10 +600,7 @@ export class VariableController {
             const color = Utils.getPinColor(variable.type);
             const iconSpan = document.createElement('span');
             iconSpan.className = 'ue5-variable-type-icon';
-            iconSpan.style.display = 'flex';
-            iconSpan.style.alignItems = 'center';
-            iconSpan.style.justifyContent = 'center';
-            iconSpan.style.width = '16px';
+            iconSpan.className = 'ue5-variable-type-icon d-flex align-center justify-center';
 
             if (variable.containerType === 'array') {
                 // Array: 3x3 grid, colored
@@ -803,7 +783,7 @@ export class VariableController {
 
         // Add separator
         const separator = document.createElement('div');
-        separator.style.cssText = 'height: 1px; background: #444; margin: 4px 0;';
+        separator.className = 'separator-h';
         menu.appendChild(separator);
 
         // Make/Break options for complex types
