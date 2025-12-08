@@ -276,7 +276,7 @@ export class NeedNodeModal {
 
         const typeLabel = document.createElement('label');
         typeLabel.textContent = 'Rule Type:';
-        typeLabel.style.cssText = 'min-width: 80px; font-size: 12px; color: #ccc;';
+        typeLabel.style.cssText = 'min-width: 110px; font-size: 12px; color: #ccc;';
 
         const typeSelect = document.createElement('select');
         typeSelect.className = 'criterion-type-select';
