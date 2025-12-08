@@ -29,7 +29,7 @@ export class NeedNodeModal {
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="need-task-id">Associated Task</label>
-                        <div style="display: flex; gap: 10px;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
                             <select id="need-task-id" style="flex: 1;">
                                 <option value="">-- Select a Task --</option>
                             </select>
