@@ -176,10 +176,8 @@ class GraphController {
         this.nodesContainer.appendChild(nodeEl);
         this.app.compiler.markDirty();
 
-        // Automatically open the configuration modal for NeedNodes
-        if (nodeKey === 'NeedNode' && this.app.needNodeModal) {
-            this.app.needNodeModal.open(node);
-        }
+        // NeedNode modal is handled by ActionMenu/Palette drop handlers
+        // Do NOT auto-open modal here to avoid double-modal issues
 
         // Save state for undo/redo
         if (this.app.history) {
