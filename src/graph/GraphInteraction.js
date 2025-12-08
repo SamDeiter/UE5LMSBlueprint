@@ -258,10 +258,8 @@ export class GraphInteraction {
 
             if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
                 this.controller.clearSelection();
-                // Deselect component if one is selected
-                if (this.app.componentsController && this.app.componentsController.selectedComponentId) {
-                    this.app.componentsController.selectComponent(null);
-                }
+                // NOTE: Do NOT clear component selection here.
+                // UE5 behavior: component selection in sidebar is independent from graph node selection.
             }
 
             document.addEventListener('mousemove', this.handleGlobalMouseMove);
