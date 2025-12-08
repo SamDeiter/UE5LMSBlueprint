@@ -491,13 +491,16 @@ export class VariableController {
                         this.app.details.currentVariable = null;
 
                         if (this.app.componentsController) {
-                            if (this.app.componentsController.selectedComponentId === comp.id) {
+                            // Toggle selection: deselect if already selected, otherwise select
+                            if (this.app.componentsController.selectedComponentIds.has(comp.id)) {
                                 this.app.componentsController.selectComponent(null);
                                 e.target.blur();
                             } else {
                                 this.app.componentsController.selectComponent(comp.id);
                             }
                         }
+                        // Re-render to update visual selection state
+                        this.renderPanel();
                     });
 
                     componentsContent.appendChild(item);
