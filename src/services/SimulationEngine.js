@@ -21,6 +21,7 @@ import { ActorExecutor } from "./executors/ActorExecutor.js";
 import { VectorExecutor } from "./executors/VectorExecutor.js";
 import { TimerExecutor } from "./executors/TimerExecutor.js";
 import { TraceExecutor } from "./executors/TraceExecutor.js";
+import { InputExecutor } from "./executors/InputExecutor.js";
 import { timerManager } from "./TimerManager.js";
 import { NodeDefinitions } from "../data/NodeDefinitions.js";
 
@@ -85,6 +86,7 @@ export class SimulationEngine {
       Actor: new ActorExecutor(this),
       Timer: new TimerExecutor(this),
       Trace: new TraceExecutor(this),
+      Input: new InputExecutor(this),
     };
 
     // 2. Auto-Register Static Nodes from Metadata

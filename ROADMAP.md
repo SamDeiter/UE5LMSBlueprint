@@ -74,9 +74,12 @@
 
 | Node | Description | Status |
 |------|-------------|--------|
-| `InputAction` | Primary input event | ❌ |
-| `AddMappingContext` | Assign input mappings | ❌ |
-| `RemoveMappingContext` | Remove input mappings | ❌ |
+| `EnhancedInputAction` | Primary input event (Started/Triggered/Completed) | ✅ |
+| `AddMappingContext` | Assign input mappings | ✅ |
+| `RemoveMappingContext` | Remove input mappings | ✅ |
+| `GetInputActionValue` | Get current action value | ✅ |
+| `IsInputKeyDown` | Check if key is pressed | ✅ |
+| `GetInputAxisValue` | Legacy axis input | ✅ |
 
 ### Medium Priority: Audio/Visual (from UE5_BLUEPRINT_ARCH_REF §9)
 
@@ -147,7 +150,7 @@
 | Vector/Transform | 15 | 20 | 75% |
 | Casting | 2 | 5 | 40% |
 | **Tracing/Collision** | **4** | **10** | **40%** |
-| **Input** | **0** | **10** | **0%** |
+| **Input** | **6** | **10** | **60%** |
 
 ### Key Files
 
