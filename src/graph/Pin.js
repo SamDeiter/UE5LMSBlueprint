@@ -15,6 +15,7 @@ class Pin {
         this.containerType = pinData.containerType || 'single';
         this.defaultValue = pinData.defaultValue !== undefined ? pinData.defaultValue : this.getDefaultValue();
         this.isCustom = pinData.isCustom || false;
+        this.isReference = pinData.isReference || pinData.byRef || false;  // Pass-by-reference diamond pin
         this.isSplit = pinData.isSplit || false;
         this.subPins = [];
 
