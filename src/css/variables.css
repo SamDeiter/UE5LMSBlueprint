@@ -39,6 +39,9 @@
     --header-vector-gold: linear-gradient(to bottom, #FFC700 0%, #6B5400 100%);
     --header-transform-orange: linear-gradient(to bottom, #FF6600 0%, #662900 100%);
 
+    /* Cast Node Header (Cyan/Teal - UE5 Spec) */
+        --header-cast-start: #00A89D;
+        --header-cast-end: #004040;
     /* Pin Colors (Authentic UE5 Palette) */
     --color-exec: #FFFFFF;
     --color-bool: #920101; /* Dark Red */
