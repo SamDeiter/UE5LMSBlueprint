@@ -160,4 +160,83 @@ export class DebuggerController {
              this.watchPanel.style.display = 'block';
         }
     }
+    /**
+     * Phase 6: Create a watch bubble positioned next to a pin
+     */
+    createWatchBubble(pin, value) {
+        // Remove existing bubble for this pin
+        this.removeWatchBubble(pin.id);
+
+        const pinDot = pin.node.element?.querySelector(`[data-pin-id="${pin.id}"] .pin-dot`);
+        if (!pinDot) return;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'watch-bubble';
+        bubble.id = `watch-bubble-${pin.id}`;
+        bubble.innerHTML = `<span class="bubble-label">${pin.name}:</span><span class="bubble-value">${this.formatValue(value)}</span>`;
+
+        // Position relative to pin
+        const rect = pinDot.getBoundingClientRect();
+        const editorRect = document.getElementById('graph-editor').getBoundingClientRect();
+
+        bubble.style.left = `${rect.right - editorRect.left + 10}px`;
+        bubble.style.top = `${rect.top - editorRect.top + (rect.height / 2) - 12}px`;
+
+        const editor = document.getElementById('graph-editor');
+        if (editor) {
+            editor.appendChild(bubble);
+        }
+
+        // Track previous value for change detection
+        bubble.dataset.previousValue = String(value);
+    }
+
+    /**
+     * Update a watch bubble value and highlight if changed
+     */
+    updateWatchBubble(pin, value) {
+        const bubble = document.getElementById(`watch-bubble-${pin.id}`);
+        if (!bubble) {
+            this.createWatchBubble(pin, value);
+            return;
+        }
+
+        const valueEl = bubble.querySelector('.bubble-value');
+        const previousValue = bubble.dataset.previousValue;
+        const newValue = String(value);
+
+        if (previousValue !== newValue) {
+            valueEl.textContent = this.formatValue(value);
+            valueEl.classList.add('value-changed');
+            bubble.dataset.previousValue = newValue;
+
+            // Remove flash class after animation
+            setTimeout(() => valueEl.classList.remove('value-changed'), 300);
+        }
+    }
+
+    /**
+     * Remove a watch bubble
+     */
+    removeWatchBubble(pinId) {
+        const bubble = document.getElementById(`watch-bubble-${pinId}`);
+        if (bubble) bubble.remove();
+    }
+
+    /**
+     * Clear all watch bubbles
+     */
+    clearAllBubbles() {
+        document.querySelectorAll('.watch-bubble').forEach(b => b.remove());
+    }
+
+    /**
+     * Format value for display
+     */
+    formatValue(value) {
+        if (value === undefined || value === null) return 'null';
+        if (typeof value === 'boolean') return value ? 'true' : 'false';
+        if (typeof value === 'object') return JSON.stringify(value);
+        return String(value);
+    }
 }
