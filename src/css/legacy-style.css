@@ -1144,7 +1144,7 @@ textarea:focus {
 
 .details-group h4 {
     margin: 0 0 8px 0;
-    color: var(--color-accent-blue);
+    color: #fff; /* White text - no yellow */
     cursor: pointer;
 }
 

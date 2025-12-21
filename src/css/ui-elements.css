@@ -1835,7 +1835,7 @@
 }
 
 .class-defaults-header .bp-parent {
-  color: #888;
+  color: #666; /* Darker gray for (Self) */
   font-size: 11px;
 }
 
@@ -1847,22 +1847,23 @@
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  color: #c8a964; /* UE5 yellow/gold section header color */
+  color: #fff !important; /* White text - forced */
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   margin: 0 0 8px 0;
+  padding: 4px 0;
   transition: color 0.2s;
 }
 
 .section-header:hover {
-  color: #e0c080;
+  color: #ccc;
 }
 
 .section-header i {
   font-size: 10px;
   transition: transform 0.2s;
-  color: #c8a964; /* Match the header color */
+  color: #888; /* Gray caret */
 }
 
 .section-header.collapsed i {
@@ -1871,14 +1872,14 @@
 
 /* Parent Class Link */
 .parent-class-link {
-  color: #5a9bd4; /* Muted blue like UE5 */
+  color: #ccc; /* Gray like UE5 - not blue */
   cursor: pointer;
   text-decoration: none;
 }
 
 .parent-class-link:hover {
   text-decoration: underline;
-  color: #7ab3e8;
+  color: #fff;
 }
 
 /* Checkbox Wrapper */
