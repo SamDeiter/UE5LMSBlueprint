@@ -651,9 +651,7 @@ export class VariableController {
             varSection.content.appendChild(el);
         }
 
-        // 5. EVENT DISPATCHERS
-        const eventSection = createSection('Event Dispatchers', 'section-events', () => { /* TODO: Add Event Dispatcher */ });
-        this.listContainer.appendChild(eventSection.section);
+
     }
 
     updateNodeLibrary() {

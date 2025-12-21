@@ -34,3 +34,4 @@ export {
     VariableController
 };
 export { GraphsController } from './ui/GraphsController.js';
+export { EventDispatcherController } from './ui/EventDispatcherController.js';
