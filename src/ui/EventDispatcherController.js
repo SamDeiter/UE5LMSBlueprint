@@ -2,7 +2,6 @@
  * EventDispatcherController - Manages Event Dispatchers in the My Blueprint panel
  * Phase 5: Panel Implementation (UE5 Parity)
  */
-import { _Utils } from "../utils.js";
 import { generateGUID } from "../utils/guid.js";
 import { createCollapsibleHeader } from "./ui-helpers.js";
 

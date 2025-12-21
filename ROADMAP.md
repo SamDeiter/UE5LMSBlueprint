@@ -93,7 +93,7 @@
 
 | Feature | Status |
 |---------|--------|
-| Class Defaults Panel | 📋 Planned |
+| Class Defaults Panel | ✅ Complete |
 | Timeline Editor UI | ❌ |
 | Animation nodes | ❌ |
 

@@ -1152,80 +1152,594 @@ export class DetailsController {
     this.app.wiring.clearLinkSelection();
     this.app.graph.clearSelection();
 
-    // Ensure defaults exist
+    // Initialize comprehensive defaults structure (UE5 CDO)
     if (!this.app.classDefaults) {
       this.app.classDefaults = {
+        // Actor Category
         parentClass: "Actor",
-        tickInterval: 0.0,
+        initialLifeSpan: 0.0,
+        tags: [],
+        canBeDamaged: true,
+        spawnCollisionHandling: "AlwaysSpawn",
+        updateOverlapsMethod: "UseConfigDefault",
+
+        // Replication Category
         replicates: false,
+        netPriority: 1.0,
+        netCullDistanceSquared: 225000000,
+        netUpdateFrequency: 100.0,
+        minNetUpdateFrequency: 2.0,
+        netDormancy: "Awake",
+        replicateMovement: false,
+
+        // Input Category
         autoReceiveInput: "Disabled",
+        inputPriority: 0,
+        blockInput: false,
+
+        // Tick Category
+        startWithTickEnabled: true,
+        tickInterval: 0.0,
+        tickGroup: "PrePhysics",
+        allowTickOnDedicatedServer: true,
+
+        // World Partition Category
+        isSpatiallyLoaded: true,
+        runtimeGrid: "MainGrid",
+        hlodLayer: "None",
+
+        // Rendering Category
+        hiddenInGame: false,
       };
     }
     const defaults = this.app.classDefaults;
 
-    this.panel.innerHTML = `
-            <div class="details-group">
-                <h4>Class Defaults</h4>
-                <div class="detail-row">
-                    <label>Parent Class</label>
-                    <span class="detail-value-static" style="color: #4a90e2; cursor: pointer;">${
-                      defaults.parentClass
-                    }</span>
-                </div>
-            </div>
-            <div class="details-group">
-                <h4>Actor</h4>
-                <div class="detail-row">
-                    <label>Tick Interval (secs)</label>
-                    <input type="number" id="tick-interval-input" class="details-input" value="${
-                      defaults.tickInterval || 0.0
-                    }" step="0.01">
-                </div>
-                 <div class="detail-row">
-                    <label>Replicates</label>
-                    <div style="width: 60%;">
-                         <input type="checkbox" id="replicates-checkbox" class="ue5-checkbox" ${
-                           defaults.replicates ? "checked" : ""
-                         }>
-                    </div>
-                </div>
-            </div>
-             <div class="details-group">
-                <h4>Input</h4>
-                <div class="detail-row">
-                    <label>Auto Receive Input</label>
-                    <select id="auto-input-select" class="details-select">
-                        <option value="Disabled" ${
-                          defaults.autoReceiveInput === "Disabled"
-                            ? "selected"
-                            : ""
-                        }>Disabled</option>
-                        <option value="Player0" ${
-                          defaults.autoReceiveInput === "Player0"
-                            ? "selected"
-                            : ""
-                        }>Player 0</option>
-                    </select>
-                </div>
-            </div>
-        `;
+    // Helper to create collapsible sections
+    const createSection = (title, id, content, defaultExpanded = true) => `
+      <div class="details-group">
+        <h4 class="section-header ${
+          defaultExpanded ? "expanded" : "collapsed"
+        }" data-section="${id}">
+          <i class="fas fa-caret-${
+            defaultExpanded ? "down" : "right"
+          }"></i> ${title}
+        </h4>
+        <div class="section-content" id="${id}-content" style="${
+      defaultExpanded ? "" : "display: none;"
+    }">
+          ${content}
+        </div>
+      </div>
+    `;
 
-    // Bind events
-    const bindInput = (id, prop, isCheckbox = false) => {
+    // Actor Category (§2)
+    const actorContent = `
+      <div class="detail-row">
+        <label>Parent Class</label>
+        <span class="detail-value-static parent-class-link" id="parent-class-trigger">${
+          defaults.parentClass
+        }</span>
+      </div>
+      <div class="detail-row">
+        <label>Initial Life Span</label>
+        <input type="number" id="initial-life-span-input" class="details-input" value="${
+          defaults.initialLifeSpan
+        }" step="0.1" min="0" title="0 = infinite lifetime">
+      </div>
+      <div class="detail-row">
+        <label>Can Be Damaged</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="can-be-damaged-checkbox" class="ue5-checkbox" ${
+            defaults.canBeDamaged ? "checked" : ""
+          }>
+        </div>
+      </div>
+      <div class="detail-row">
+        <label>Spawn Collision Handling</label>
+        <select id="spawn-collision-select" class="details-select">
+          <option value="AlwaysSpawn" ${
+            defaults.spawnCollisionHandling === "AlwaysSpawn" ? "selected" : ""
+          }>Always Spawn, Ignore Collisions</option>
+          <option value="AdjustIfPossibleButAlwaysSpawn" ${
+            defaults.spawnCollisionHandling === "AdjustIfPossibleButAlwaysSpawn"
+              ? "selected"
+              : ""
+          }>Try To Adjust, But Always Spawn</option>
+          <option value="AdjustIfPossibleButDontSpawn" ${
+            defaults.spawnCollisionHandling === "AdjustIfPossibleButDontSpawn"
+              ? "selected"
+              : ""
+          }>Try To Adjust, Don't Spawn If Colliding</option>
+          <option value="DontSpawn" ${
+            defaults.spawnCollisionHandling === "DontSpawn" ? "selected" : ""
+          }>Do Not Spawn</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <label>Update Overlaps on Stream</label>
+        <select id="update-overlaps-select" class="details-select">
+          <option value="UseConfigDefault" ${
+            defaults.updateOverlapsMethod === "UseConfigDefault"
+              ? "selected"
+              : ""
+          }>Use Config Default</option>
+          <option value="AlwaysUpdate" ${
+            defaults.updateOverlapsMethod === "AlwaysUpdate" ? "selected" : ""
+          }>Always Update</option>
+          <option value="OnlyUpdateMovable" ${
+            defaults.updateOverlapsMethod === "OnlyUpdateMovable"
+              ? "selected"
+              : ""
+          }>Only Update Movable</option>
+          <option value="NeverUpdate" ${
+            defaults.updateOverlapsMethod === "NeverUpdate" ? "selected" : ""
+          }>Never Update</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <label>Tags</label>
+        <div class="tags-container" id="actor-tags-container">
+          ${(defaults.tags || [])
+            .map(
+              (tag, i) =>
+                `<span class="actor-tag">${tag} <i class="fas fa-times tag-remove" data-index="${i}"></i></span>`
+            )
+            .join("")}
+          <input type="text" id="add-tag-input" class="details-input tag-input" placeholder="Add tag...">
+        </div>
+      </div>
+    `;
+
+    // Replication Category (§3)
+    const replicationContent = `
+      <div class="detail-row">
+        <label>Replicates</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="replicates-checkbox" class="ue5-checkbox" ${
+            defaults.replicates ? "checked" : ""
+          }>
+        </div>
+      </div>
+      <div class="detail-row replication-dependent" ${
+        !defaults.replicates ? 'style="opacity: 0.5;"' : ""
+      }>
+        <label>Replicate Movement</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="replicate-movement-checkbox" class="ue5-checkbox" ${
+            defaults.replicateMovement ? "checked" : ""
+          } ${!defaults.replicates ? "disabled" : ""}>
+        </div>
+      </div>
+      <div class="detail-row replication-dependent" ${
+        !defaults.replicates ? 'style="opacity: 0.5;"' : ""
+      }>
+        <label>Net Priority</label>
+        <input type="number" id="net-priority-input" class="details-input" value="${
+          defaults.netPriority
+        }" step="0.1" min="0" ${!defaults.replicates ? "disabled" : ""}>
+      </div>
+      <div class="detail-row replication-dependent" ${
+        !defaults.replicates ? 'style="opacity: 0.5;"' : ""
+      }>
+        <label>Net Update Frequency</label>
+        <input type="number" id="net-update-freq-input" class="details-input" value="${
+          defaults.netUpdateFrequency
+        }" step="1" min="0" ${!defaults.replicates ? "disabled" : ""}>
+      </div>
+      <div class="detail-row replication-dependent" ${
+        !defaults.replicates ? 'style="opacity: 0.5;"' : ""
+      }>
+        <label>Net Dormancy</label>
+        <select id="net-dormancy-select" class="details-select" ${
+          !defaults.replicates ? "disabled" : ""
+        }>
+          <option value="Awake" ${
+            defaults.netDormancy === "Awake" ? "selected" : ""
+          }>Awake</option>
+          <option value="DormantAll" ${
+            defaults.netDormancy === "DormantAll" ? "selected" : ""
+          }>Dormant All</option>
+          <option value="DormantPartial" ${
+            defaults.netDormancy === "DormantPartial" ? "selected" : ""
+          }>Dormant Partial</option>
+          <option value="DormantInitial" ${
+            defaults.netDormancy === "DormantInitial" ? "selected" : ""
+          }>Dormant Initial</option>
+        </select>
+      </div>
+    `;
+
+    // Input Category (§5)
+    const inputContent = `
+      <div class="detail-row">
+        <label>Auto Receive Input</label>
+        <select id="auto-receive-input-select" class="details-select">
+          <option value="Disabled" ${
+            defaults.autoReceiveInput === "Disabled" ? "selected" : ""
+          }>Disabled</option>
+          <option value="Player0" ${
+            defaults.autoReceiveInput === "Player0" ? "selected" : ""
+          }>Player 0</option>
+          <option value="Player1" ${
+            defaults.autoReceiveInput === "Player1" ? "selected" : ""
+          }>Player 1</option>
+          <option value="Player2" ${
+            defaults.autoReceiveInput === "Player2" ? "selected" : ""
+          }>Player 2</option>
+          <option value="Player3" ${
+            defaults.autoReceiveInput === "Player3" ? "selected" : ""
+          }>Player 3</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <label>Input Priority</label>
+        <input type="number" id="input-priority-input" class="details-input" value="${
+          defaults.inputPriority
+        }" step="1">
+      </div>
+      <div class="detail-row">
+        <label>Block Input</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="block-input-checkbox" class="ue5-checkbox" ${
+            defaults.blockInput ? "checked" : ""
+          }>
+        </div>
+      </div>
+    `;
+
+    // Tick Category (§4)
+    const tickContent = `
+      <div class="detail-row">
+        <label>Start With Tick Enabled</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="start-tick-enabled-checkbox" class="ue5-checkbox" ${
+            defaults.startWithTickEnabled ? "checked" : ""
+          }>
+        </div>
+      </div>
+      <div class="detail-row">
+        <label>Tick Interval (secs)</label>
+        <input type="number" id="tick-interval-input" class="details-input" value="${
+          defaults.tickInterval
+        }" step="0.01" min="0" title="0 = every frame">
+      </div>
+      <div class="detail-row">
+        <label>Tick Group</label>
+        <select id="tick-group-select" class="details-select">
+          <option value="PrePhysics" ${
+            defaults.tickGroup === "PrePhysics" ? "selected" : ""
+          }>Pre Physics</option>
+          <option value="StartPhysics" ${
+            defaults.tickGroup === "StartPhysics" ? "selected" : ""
+          }>Start Physics</option>
+          <option value="DuringPhysics" ${
+            defaults.tickGroup === "DuringPhysics" ? "selected" : ""
+          }>During Physics</option>
+          <option value="PostPhysics" ${
+            defaults.tickGroup === "PostPhysics" ? "selected" : ""
+          }>Post Physics</option>
+          <option value="PostUpdateWork" ${
+            defaults.tickGroup === "PostUpdateWork" ? "selected" : ""
+          }>Post Update Work</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <label>Allow Tick on Dedicated Server</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="allow-tick-server-checkbox" class="ue5-checkbox" ${
+            defaults.allowTickOnDedicatedServer ? "checked" : ""
+          }>
+        </div>
+      </div>
+    `;
+
+    // World Partition Category (§6)
+    const worldPartitionContent = `
+      <div class="detail-row">
+        <label>Is Spatially Loaded</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="spatially-loaded-checkbox" class="ue5-checkbox" ${
+            defaults.isSpatiallyLoaded ? "checked" : ""
+          }>
+        </div>
+      </div>
+      <div class="detail-row spatial-dependent" ${
+        !defaults.isSpatiallyLoaded ? 'style="opacity: 0.5;"' : ""
+      }>
+        <label>Runtime Grid</label>
+        <select id="runtime-grid-select" class="details-select" ${
+          !defaults.isSpatiallyLoaded ? "disabled" : ""
+        }>
+          <option value="MainGrid" ${
+            defaults.runtimeGrid === "MainGrid" ? "selected" : ""
+          }>MainGrid</option>
+          <option value="LandscapeGrid" ${
+            defaults.runtimeGrid === "LandscapeGrid" ? "selected" : ""
+          }>LandscapeGrid</option>
+          <option value="SmallActorsGrid" ${
+            defaults.runtimeGrid === "SmallActorsGrid" ? "selected" : ""
+          }>SmallActorsGrid</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <label>HLOD Layer</label>
+        <select id="hlod-layer-select" class="details-select">
+          <option value="None" ${
+            defaults.hlodLayer === "None" ? "selected" : ""
+          }>None</option>
+          <option value="HLOD_Level_0" ${
+            defaults.hlodLayer === "HLOD_Level_0" ? "selected" : ""
+          }>HLOD Level 0</option>
+          <option value="HLOD_Level_1" ${
+            defaults.hlodLayer === "HLOD_Level_1" ? "selected" : ""
+          }>HLOD Level 1</option>
+          <option value="HLOD_Level_2" ${
+            defaults.hlodLayer === "HLOD_Level_2" ? "selected" : ""
+          }>HLOD Level 2</option>
+        </select>
+      </div>
+    `;
+
+    // Rendering Category (§7)
+    const renderingContent = `
+      <div class="detail-row">
+        <label>Hidden in Game</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="hidden-in-game-checkbox" class="ue5-checkbox" ${
+            defaults.hiddenInGame ? "checked" : ""
+          }>
+        </div>
+      </div>
+    `;
+
+    // Variables Section (§8) - Show all user-defined variables with their defaults
+    let variablesContent = "";
+    if (this.app.variables && this.app.variables.variables.size > 0) {
+      variablesContent = `<div class="variable-defaults-list" id="variable-defaults-list">`;
+      this.app.variables.variables.forEach((variable) => {
+        const defaultVal =
+          variable.defaultValue !== undefined ? variable.defaultValue : "";
+        variablesContent += `
+          <div class="detail-row variable-default-row" data-var-id="${
+            variable.id
+          }">
+            <label title="${variable.type}">${variable.name}</label>
+            ${this.renderVariableDefaultInput(variable, defaultVal)}
+          </div>
+        `;
+      });
+      variablesContent += `</div>`;
+    } else {
+      variablesContent = `<p class="no-variables-msg">No variables defined. Add variables in My Blueprint panel.</p>`;
+    }
+
+    // Assemble full panel
+    this.panel.innerHTML = `
+      <div class="class-defaults-header">
+        <span class="bp-icon">BP</span>
+        <span class="bp-name">NewBlueprint</span>
+        <span class="bp-parent">(Self)</span>
+      </div>
+      ${createSection("Actor", "actor", actorContent, true)}
+      ${createSection("Replication", "replication", replicationContent, false)}
+      ${createSection("Input", "input", inputContent, false)}
+      ${createSection("Tick", "tick", tickContent, true)}
+      ${createSection(
+        "World Partition",
+        "world-partition",
+        worldPartitionContent,
+        false
+      )}
+      ${createSection("Rendering", "rendering", renderingContent, false)}
+      ${createSection("Default Values", "variables", variablesContent, true)}
+    `;
+
+    // Bind collapsible section headers
+    this.panel.querySelectorAll(".section-header").forEach((header) => {
+      header.addEventListener("click", () => {
+        const sectionId = header.dataset.section;
+        const content = this.panel.querySelector(`#${sectionId}-content`);
+        const icon = header.querySelector("i");
+        const isExpanded = header.classList.contains("expanded");
+
+        if (isExpanded) {
+          header.classList.remove("expanded");
+          header.classList.add("collapsed");
+          icon.className = "fas fa-caret-right";
+          content.style.display = "none";
+        } else {
+          header.classList.remove("collapsed");
+          header.classList.add("expanded");
+          icon.className = "fas fa-caret-down";
+          content.style.display = "";
+        }
+      });
+    });
+
+    // Bind all inputs
+    const bindInput = (id, prop, isCheckbox = false, isNumber = false) => {
       const el = this.panel.querySelector(id);
       if (el) {
         el.addEventListener("change", (e) => {
           let val = isCheckbox ? e.target.checked : e.target.value;
-          if (e.target.type === "number") val = parseFloat(val);
+          if (isNumber) val = parseFloat(val) || 0;
           this.app.classDefaults[prop] = val;
           this.app.persistence.autoSave();
+
+          // Handle dependent fields
+          if (prop === "replicates") {
+            this.updateReplicationDependents(val);
+          }
+          if (prop === "isSpatiallyLoaded") {
+            this.updateSpatialDependents(val);
+          }
         });
       }
     };
 
-    bindInput("#tick-interval-input", "tickInterval");
+    // Actor
+    bindInput("#initial-life-span-input", "initialLifeSpan", false, true);
+    bindInput("#can-be-damaged-checkbox", "canBeDamaged", true);
+    bindInput("#spawn-collision-select", "spawnCollisionHandling");
+    bindInput("#update-overlaps-select", "updateOverlapsMethod");
+
+    // Replication
     bindInput("#replicates-checkbox", "replicates", true);
-    bindInput("#auto-input-select", "autoReceiveInput");
+    bindInput("#replicate-movement-checkbox", "replicateMovement", true);
+    bindInput("#net-priority-input", "netPriority", false, true);
+    bindInput("#net-update-freq-input", "netUpdateFrequency", false, true);
+    bindInput("#net-dormancy-select", "netDormancy");
+
+    // Input
+    bindInput("#auto-receive-input-select", "autoReceiveInput");
+    bindInput("#input-priority-input", "inputPriority", false, true);
+    bindInput("#block-input-checkbox", "blockInput", true);
+
+    // Tick
+    bindInput("#start-tick-enabled-checkbox", "startWithTickEnabled", true);
+    bindInput("#tick-interval-input", "tickInterval", false, true);
+    bindInput("#tick-group-select", "tickGroup");
+    bindInput(
+      "#allow-tick-server-checkbox",
+      "allowTickOnDedicatedServer",
+      true
+    );
+
+    // World Partition
+    bindInput("#spatially-loaded-checkbox", "isSpatiallyLoaded", true);
+    bindInput("#runtime-grid-select", "runtimeGrid");
+    bindInput("#hlod-layer-select", "hlodLayer");
+
+    // Rendering
+    bindInput("#hidden-in-game-checkbox", "hiddenInGame", true);
+
+    // Parent class trigger
+    const parentTrigger = this.panel.querySelector("#parent-class-trigger");
+    if (parentTrigger && this.app.parentClassModal) {
+      parentTrigger.addEventListener("click", () => {
+        this.app.parentClassModal.show();
+      });
+    }
+
+    // Tags input
+    const addTagInput = this.panel.querySelector("#add-tag-input");
+    if (addTagInput) {
+      addTagInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && e.target.value.trim()) {
+          if (!this.app.classDefaults.tags) this.app.classDefaults.tags = [];
+          this.app.classDefaults.tags.push(e.target.value.trim());
+          this.app.persistence.autoSave();
+          this.showClassDefaults(); // Refresh
+        }
+      });
+    }
+
+    // Tag remove buttons
+    this.panel.querySelectorAll(".tag-remove").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const index = parseInt(btn.dataset.index);
+        this.app.classDefaults.tags.splice(index, 1);
+        this.app.persistence.autoSave();
+        this.showClassDefaults(); // Refresh
+      });
+    });
+
+    // Bind variable default value changes
+    this.bindVariableDefaultInputs();
+  }
+
+  /**
+   * Render appropriate input for variable default value based on type
+   */
+  renderVariableDefaultInput(variable, value) {
+    const type = variable.type;
+    const id = `var-default-${variable.id}`;
+
+    switch (type) {
+      case "bool":
+        return `<input type="checkbox" id="${id}" class="ue5-checkbox" ${
+          value ? "checked" : ""
+        }>`;
+      case "int":
+      case "int64":
+      case "byte":
+        return `<input type="number" id="${id}" class="details-input" value="${
+          value || 0
+        }" step="1">`;
+      case "float":
+        return `<input type="number" id="${id}" class="details-input" value="${
+          value || 0
+        }" step="0.01">`;
+      case "string":
+      case "text":
+      case "name":
+        return `<input type="text" id="${id}" class="details-input" value="${
+          value || ""
+        }">`;
+      case "vector":
+      case "rotator":
+        return `<input type="text" id="${id}" class="details-input" value="${
+          value || "(0, 0, 0)"
+        }" placeholder="(X, Y, Z)">`;
+      default:
+        return `<input type="text" id="${id}" class="details-input" value="${
+          value || ""
+        }" placeholder="${type}">`;
+    }
+  }
+
+  /**
+   * Bind variable default value input change handlers
+   */
+  bindVariableDefaultInputs() {
+    if (!this.app.variables) return;
+
+    this.app.variables.variables.forEach((variable) => {
+      const el = this.panel.querySelector(`#var-default-${variable.id}`);
+      if (el) {
+        el.addEventListener("change", (e) => {
+          let val;
+          if (el.type === "checkbox") {
+            val = e.target.checked;
+          } else if (el.type === "number") {
+            val = parseFloat(e.target.value) || 0;
+          } else {
+            val = e.target.value;
+          }
+          this.app.variables.updateVariableProperty(
+            variable,
+            "defaultValue",
+            val
+          );
+        });
+      }
+    });
+  }
+
+  /**
+   * Update replication-dependent field states
+   */
+  updateReplicationDependents(enabled) {
+    this.panel.querySelectorAll(".replication-dependent").forEach((row) => {
+      row.style.opacity = enabled ? "1" : "0.5";
+      const inputs = row.querySelectorAll("input, select");
+      inputs.forEach((input) => {
+        input.disabled = !enabled;
+      });
+    });
+  }
+
+  /**
+   * Update spatial-dependent field states
+   */
+  updateSpatialDependents(enabled) {
+    this.panel.querySelectorAll(".spatial-dependent").forEach((row) => {
+      row.style.opacity = enabled ? "1" : "0.5";
+      const inputs = row.querySelectorAll("input, select");
+      inputs.forEach((input) => {
+        input.disabled = !enabled;
+      });
+    });
   }
 
   removeCustomParameter(node, pinId) {
