@@ -70,8 +70,8 @@ export class ActionMenu {
         }, 100);
         this.element.classList.remove('hidden');
         this.element.classList.add('visible');
-        this.element.style.left = `${clientX}px`;
-        this.element.style.top = `${clientY}px`;
+        this.element.style.left = `${clientX}px`; // Dynamic position
+        this.element.style.top = `${clientY}px`; // Dynamic position
         this.searchInput.value = '';
         if (droppedVarName || droppedComponent) {
             this.searchInput.classList.add('hidden');
@@ -93,10 +93,10 @@ export class ActionMenu {
         varAccessContainer.className = 'variable-access-group';
         const rootHeader = document.createElement('div');
         rootHeader.className = 'menu-item menu-header-toggle';
-        rootHeader.style.fontWeight = 'bold';
-        rootHeader.style.display = 'flex';
-        rootHeader.style.alignItems = 'center';
-        rootHeader.style.paddingLeft = '8px';
+        rootHeader.classList.add("text-bold"); // Replaced inline style
+        rootHeader.classList.add("d-flex"); // Replaced inline style
+        rootHeader.classList.add("align-center"); // Replaced inline style
+        rootHeader.classList.add("pl-2"); // Replaced inline style (8px)
         const rootIcon = document.createElement('i');
         rootIcon.className = 'fas fa-caret-right';
         rootIcon.style.marginRight = '5px';
@@ -115,7 +115,7 @@ export class ActionMenu {
         subHeader.style.paddingLeft = '20px';
         const subIcon = document.createElement('i');
         subIcon.className = 'fas fa-caret-right';
-        subIcon.style.marginRight = '5px';
+        subIcon.classList.add("mr-1"); // Replaced inline style (4px≈5px)
         subHeader.appendChild(subIcon);
         subHeader.appendChild(document.createTextNode('Default'));
         variableGroupsContainer.appendChild(subHeader);
@@ -233,21 +233,21 @@ export class ActionMenu {
             titleRow.className = 'action-header-row';
             const pinColor = this.sourcePin.type === 'exec' ? 'var(--color-exec)' : Utils.getPinColor(this.sourcePin.type);
             const redDot = document.createElement('span');
-            redDot.style.cssText = `display:inline-block; width:8px; height:8px; background-color:${pinColor}; border-radius:50%; margin-right:8px; border:1px solid black;`;
+            redDot.style.cssText = `display:inline-block; width:8px; height:8px; background-color:${pinColor}; border-radius:50%; margin-right:8px; border:1px solid black;`; // Dynamic: pin color styling
             const typeName = this.sourcePin.type.charAt(0).toUpperCase() + this.sourcePin.type.slice(1);
             const titleText = document.createElement('span');
             const titleTextContent = this.sourcePin.type === 'exec' ? 'Executable actions' : `Actions taking a(n) ${typeName}`;
             titleText.textContent = titleTextContent;
-            titleText.style.fontWeight = 'bold';
-            titleText.style.color = '#ccc';
+            titleText.classList.add("text-bold"); // Replaced inline style
+            titleText.classList.add("text-light"); // Replaced inline style
             titleRow.appendChild(redDot);
             titleRow.appendChild(titleText);
             header.appendChild(titleRow);
             const contextRow = document.createElement('div');
             contextRow.className = 'action-header-row';
-            contextRow.style.justifyContent = 'flex-end';
-            contextRow.style.fontSize = '10px';
-            contextRow.style.color = '#aaa';
+            contextRow.classList.add("justify-end"); // Replaced inline style
+            contextRow.classList.add("text-sm"); // Replaced inline style (10px)
+            contextRow.classList.add("text-light"); // Replaced inline style
             contextRow.style.marginTop = '4px';
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
