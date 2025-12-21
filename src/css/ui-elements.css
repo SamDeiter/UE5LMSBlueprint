@@ -28,6 +28,52 @@
   color: #66bb6a;
 }
 
+/* --- BOTTOM PANEL TAB Styles --- */
+.bottom-tabs {
+    display: flex;
+    background-color: #111;
+    border-bottom: 1px solid #333;
+    padding-left: 10px;
+    height: 28px;
+    align-items: center;
+}
+
+.bottom-tab {
+    padding: 0 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: #888;
+    font-size: 11px;
+    cursor: pointer;
+    border-right: 1px solid #222;
+    transition: all 0.2s;
+}
+
+.bottom-tab:hover {
+    background-color: #222;
+    color: #ccc;
+}
+
+.bottom-tab.active {
+    background-color: #333;
+    color: #fff;
+    border-top: 2px solid var(--color-accent-blue);
+    margin-top: -1px; /* Overlap border */
+}
+
+.find-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0; /* Prevent collapse */
+    position: relative;
+    z-index: 10;
+    width: 100%; /* Ensure full width */
+}
+
 /* Search Box inside Panel Toolbar */
 .search-box {
   display: flex;
@@ -51,6 +97,8 @@
   color: #ccc;
   padding: 3px 0;
   width: 100%;
+  min-width: 100px; /* Prevent collapse */
+  min-height: 20px; /* Ensure clickable area */
   font-size: 10px;
 }
 
@@ -67,7 +115,19 @@
   padding: 5px;
 }
 
-/* Replaced variable controls strip with section headers */
+#find-results-content {
+    min-height: 50px; /* Force height */
+    z-index: 9999;
+    position: relative;
+    pointer-events: auto; /* Ensure interactivity */
+    flex-grow: 1; /* Match #compiler-results so it can claim flex space */
+}
+
+#find-results-content .find-toolbar,
+#find-results-content .search-box,
+#find-results-content input {
+    pointer-events: auto; /* Explicitly enable pointer events for input */
+}
 .sidebar-section-header {
   display: flex;
   align-items: center;

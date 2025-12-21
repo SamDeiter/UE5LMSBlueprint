@@ -15,27 +15,34 @@
     filter: drop-shadow(0 0 5px var(--color-accent-blue));
     cursor: pointer;
 }
-/* === PHASE 6: ACTIVE WIRE ANIMATION === */
-/* Hardware-accelerated orange pulse during simulation */
+/* === PHASE 6: ACTIVE WIRE ANIMATION (UE5 PIE PARITY) === */
+/* Solid orange base for the active execution wire */
 .wire.active-wire {
-    stroke: #ff8c00 !important;
-    stroke-width: 4px;
+    stroke: #ff3c00 !important; /* UE5 Active Orange */
+    stroke-width: 3.5px !important;
     opacity: 1;
-    filter: drop-shadow(0 0 8px #ff8c00);
-    animation: wire-pulse 0.6s ease-in-out infinite;
-    /* Hardware acceleration */
-    transform: translateZ(0);
-    will-change: stroke-width, filter, opacity;
+    filter: none !important; /* Removed glow as requested */
 }
 
-@keyframes wire-pulse {
-    0%, 100% {
-        stroke-width: 4px;
-        filter: drop-shadow(0 0 8px #ff8c00);
+/* Moving solid orange "blobs" (overlay) */
+.wire.wire-pulse {
+    stroke: #ff3c00 !important; /* Same color as wire */
+    stroke-width: 10px !important; /* Thick "beads" */
+    stroke-dasharray: 1, 80; /* Consistent spacing */
+    stroke-linecap: round;
+    filter: none !important; /* Removed glow as requested */
+    animation: wire-pulse-move 1.5s linear infinite;
+    pointer-events: none;
+    opacity: 1;
+    z-index: 1000;
+}
+
+@keyframes wire-pulse-move {
+    from {
+        stroke-dashoffset: 161;
     }
-    50% {
-        stroke-width: 6px;
-        filter: drop-shadow(0 0 15px #ffa500);
+    to {
+        stroke-dashoffset: 0;
     }
 }
 

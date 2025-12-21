@@ -3,167 +3,260 @@
  */
 
 export class LayoutController {
-    constructor(app) {
-        this.app = app;
-        this.container = document.getElementById('app-container');
-        this.resizerLeft = document.getElementById('resizer-left');
-        this.resizerRight = document.getElementById('resizer-right');
-        this.resizerBottom = document.getElementById('resizer-bottom');
+  constructor(app) {
+    this.app = app;
+    this.container = document.getElementById("app-container");
+    this.resizerLeft = document.getElementById("resizer-left");
+    this.resizerRight = document.getElementById("resizer-right");
+    this.resizerBottom = document.getElementById("resizer-bottom");
 
-        // Initial sizes (matching CSS defaults)
-        this.leftWidth = 280;
-        this.rightWidth = 400;
-        this.bottomHeight = 200;
+    // Initial sizes (matching CSS defaults)
+    this.leftWidth = 280;
+    this.rightWidth = 400;
+    this.bottomHeight = 200;
 
-        this.isResizing = false;
-        this.currentResizer = null;
-        this.startX = 0;
-        this.startY = 0;
-        this.startSize = 0;
+    this.isResizing = false;
+    this.currentResizer = null;
+    this.startX = 0;
+    this.startY = 0;
+    this.startSize = 0;
 
-        this.initResizers();
-        this.initDetailsResizer();
-        this.initTabs();
+    this.initResizers();
+    this.initDetailsResizer();
+    this.initTabs();
+  }
+
+  initResizers() {
+    const attach = (resizer, type) => {
+      resizer.addEventListener("mousedown", (e) => {
+        this.isResizing = true;
+        this.currentResizer = type;
+        this.startX = e.clientX;
+        this.startY = e.clientY;
+
+        if (type === "left") this.startSize = this.leftWidth;
+        if (type === "right") this.startSize = this.rightWidth;
+        if (type === "bottom") this.startSize = this.bottomHeight;
+
+        document.body.style.cursor =
+          type === "bottom" ? "row-resize" : "col-resize";
+        e.preventDefault();
+      });
+    };
+
+    attach(this.resizerLeft, "left");
+    attach(this.resizerRight, "right");
+    attach(this.resizerBottom, "bottom");
+
+    document.addEventListener("mousemove", this.handleMouseMove.bind(this));
+    document.addEventListener("mouseup", this.handleMouseUp.bind(this));
+  }
+
+  handleMouseMove(e) {
+    if (!this.isResizing) return;
+
+    if (this.currentResizer === "left") {
+      const delta = e.clientX - this.startX;
+      this.leftWidth = Math.max(150, this.startSize + delta); // Min width 150
+    } else if (this.currentResizer === "right") {
+      const delta = this.startX - e.clientX; // Drag left increases width
+      this.rightWidth = Math.max(150, this.startSize + delta);
+    } else if (this.currentResizer === "bottom") {
+      const delta = this.startY - e.clientY; // Drag up increases height
+      this.bottomHeight = Math.max(100, this.startSize + delta);
     }
 
-    initResizers() {
-        const attach = (resizer, type) => {
-            resizer.addEventListener('mousedown', (e) => {
-                this.isResizing = true;
-                this.currentResizer = type;
-                this.startX = e.clientX;
-                this.startY = e.clientY;
+    this.updateLayout();
+  }
 
-                if (type === 'left') this.startSize = this.leftWidth;
-                if (type === 'right') this.startSize = this.rightWidth;
-                if (type === 'bottom') this.startSize = this.bottomHeight;
+  handleMouseUp() {
+    this.isResizing = false;
+    this.currentResizer = null;
+    document.body.style.cursor = "";
+    // Optional: Trigger canvas resize on graph grid
+    if (this.app.grid) this.app.grid.resize();
+  }
 
-                document.body.style.cursor = type === 'bottom' ? 'row-resize' : 'col-resize';
-                e.preventDefault();
-            });
-        };
+  updateLayout() {
+    // Update CSS Grid Template Columns and Rows based on new pixel values
+    // Columns: Left | Resizer | Graph | Resizer | Right
+    this.container.style.gridTemplateColumns = `${this.leftWidth}px 4px 1fr 4px ${this.rightWidth}px`;
 
-        attach(this.resizerLeft, 'left');
-        attach(this.resizerRight, 'right');
-        attach(this.resizerBottom, 'bottom');
+    // Rows: Menu | Tab | Toolbar | Graph | Resizer | Bottom
+    this.container.style.gridTemplateRows = `32px 28px 44px 1fr 4px ${this.bottomHeight}px`;
+  }
 
-        document.addEventListener('mousemove', this.handleMouseMove.bind(this));
-        document.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    }
+  initDetailsResizer() {
+    const panel = document.getElementById("details-panel");
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 140;
 
-    handleMouseMove(e) {
-        if (!this.isResizing) return;
+    // We'll attach the event listener to the panel itself to catch events on the labels
+    panel.addEventListener("mousedown", (e) => {
+      // Check if we are clicking near the border of a label
+      // The label is the first child of .detail-row or .detail-checkbox-row
+      const row = e.target.closest(".detail-row, .detail-checkbox-row");
+      if (!row) return;
 
-        if (this.currentResizer === 'left') {
-            const delta = e.clientX - this.startX;
-            this.leftWidth = Math.max(150, this.startSize + delta); // Min width 150
+      const label = row.querySelector("label");
+      if (!label) return;
+
+      const rect = label.getBoundingClientRect();
+      // Check if click is within 15px of the right edge for easier grabbing
+      if (Math.abs(e.clientX - rect.right) < 15) {
+        isResizing = true;
+        startX = e.clientX;
+        // Get current width from CSS variable or computed style
+        const rootStyle = getComputedStyle(document.documentElement);
+        const currentVal = rootStyle
+          .getPropertyValue("--details-label-width")
+          .trim();
+        startWidth = parseInt(currentVal, 10) || 140;
+
+        document.body.style.cursor = "col-resize";
+        e.preventDefault();
+        e.stopPropagation(); // Prevent text selection
+      }
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isResizing) return;
+
+      const delta = e.clientX - startX;
+      const newWidth = Math.max(140, Math.min(300, startWidth + delta)); // Clamp width between 140px and 300px
+
+      document.documentElement.style.setProperty(
+        "--details-label-width",
+        `${newWidth}px`
+      );
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (isResizing) {
+        isResizing = false;
+        document.body.style.cursor = "";
+      }
+    });
+  }
+
+  initTabs() {
+    const tabs = document.querySelectorAll(".tab");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        // Determine graph name
+        let graphName = tab.dataset.graph;
+
+        if (!graphName) {
+          // Fallback to text content if data attribute missing
+          const text = tab.querySelector("span").textContent.trim();
+          if (text === "Construction Script") {
+            graphName = "ConstructionScript";
+          } else if (text === "Event Graph") {
+            graphName = "EventGraph";
+          } else {
+            graphName = "EventGraph";
+          }
         }
-        else if (this.currentResizer === 'right') {
-            const delta = this.startX - e.clientX; // Drag left increases width
-            this.rightWidth = Math.max(150, this.startSize + delta);
+
+        // Switch graph (GraphSwitcher handles UI update if we use it)
+        if (this.app.switchGraph) {
+          this.app.switchGraph(graphName);
+        } else {
+          // Manual UI update fallback
+          tabs.forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
         }
-        else if (this.currentResizer === 'bottom') {
-            const delta = this.startY - e.clientY; // Drag up increases height
-            this.bottomHeight = Math.max(100, this.startSize + delta);
-        }
+      });
+    });
 
-        this.updateLayout();
-    }
+    this.initBottomTabs();
+  }
 
-    handleMouseUp() {
-        this.isResizing = false;
-        this.currentResizer = null;
-        document.body.style.cursor = '';
-        // Optional: Trigger canvas resize on graph grid
-        if (this.app.grid) this.app.grid.resize();
-    }
+  initBottomTabs() {
+    const bottomTabs = document.querySelectorAll(".bottom-tab");
+    const panels = {
+      compiler: document.getElementById("compiler-results"),
+      find: document.getElementById("find-results-content"),
+      "task-status": document.getElementById("task-status-content"),
+    };
 
-    updateLayout() {
-        // Update CSS Grid Template Columns and Rows based on new pixel values
-        // Columns: Left | Resizer | Graph | Resizer | Right
-        this.container.style.gridTemplateColumns = `${this.leftWidth}px 4px 1fr 4px ${this.rightWidth}px`;
+    bottomTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        console.log("Tab clicked:", tab.dataset.tab);
 
-        // Rows: Menu | Tab | Toolbar | Graph | Resizer | Bottom
-        this.container.style.gridTemplateRows = `32px 28px 44px 1fr 4px ${this.bottomHeight}px`;
-    }
+        // UI Toggle
+        bottomTabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
 
-    initDetailsResizer() {
-        const panel = document.getElementById('details-panel');
-        let isResizing = false;
-        let startX = 0;
-        let startWidth = 140;
+        // Content Toggle
+        const target = tab.dataset.tab; // compiler, find, task-status
+        console.log("Targeting panel:", target);
 
-        // We'll attach the event listener to the panel itself to catch events on the labels
-        panel.addEventListener('mousedown', (e) => {
-            // Check if we are clicking near the border of a label
-            // The label is the first child of .detail-row or .detail-checkbox-row
-            const row = e.target.closest('.detail-row, .detail-checkbox-row');
-            if (!row) return;
+        Object.entries(panels).forEach(([key, panel]) => {
+          if (panel) {
+            if (key === target) {
+              panel.classList.remove("hidden");
 
-            const label = row.querySelector('label');
-            if (!label) return;
+              // Robust Style Application with !important to override CSS
+              panel.style.setProperty("display", "flex", "important");
+              panel.style.setProperty("flex-direction", "column", "important");
+              panel.style.setProperty("flex", "1", "important");
+              panel.style.setProperty("height", "100%", "important");
+              panel.style.setProperty("visibility", "visible", "important");
+              panel.style.setProperty("opacity", "1", "important");
 
-            const rect = label.getBoundingClientRect();
-            // Check if click is within 15px of the right edge for easier grabbing
-            if (Math.abs(e.clientX - rect.right) < 15) {
-                isResizing = true;
-                startX = e.clientX;
-                // Get current width from CSS variable or computed style
-                const rootStyle = getComputedStyle(document.documentElement);
-                const currentVal = rootStyle.getPropertyValue('--details-label-width').trim();
-                startWidth = parseInt(currentVal, 10) || 140;
+              // Focus search input if opening find tab
+              if (key === "find" && this.app.search) {
+                // Force child elements to be visible
+                const findToolbar = panel.querySelector(".find-toolbar");
+                const searchBox = panel.querySelector(".search-box");
+                const findInput = panel.querySelector("#find-input");
 
-                document.body.style.cursor = 'col-resize';
-                e.preventDefault();
-                e.stopPropagation(); // Prevent text selection
-            }
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-
-            const delta = e.clientX - startX;
-            const newWidth = Math.max(140, Math.min(300, startWidth + delta)); // Clamp width between 140px and 300px
-
-            document.documentElement.style.setProperty('--details-label-width', `${newWidth}px`);
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isResizing) {
-                isResizing = false;
-                document.body.style.cursor = '';
-            }
-        });
-    }
-
-    initTabs() {
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                // Determine graph name
-                let graphName = tab.dataset.graph;
-                
-                if (!graphName) {
-                    // Fallback to text content if data attribute missing
-                    const text = tab.querySelector('span').textContent.trim();
-                    if (text === 'Construction Script') {
-                        graphName = 'ConstructionScript';
-                    } else if (text === 'Event Graph') {
-                        graphName = 'EventGraph';
-                    } else {
-                        graphName = 'EventGraph';
-                    }
+                if (findToolbar) {
+                  findToolbar.style.setProperty("display", "flex", "important");
+                  findToolbar.style.setProperty("width", "100%", "important");
+                  findToolbar.style.setProperty(
+                    "min-height",
+                    "30px",
+                    "important"
+                  );
                 }
-                
-                // Switch graph (GraphSwitcher handles UI update if we use it)
-                if (this.app.switchGraph) {
-                    this.app.switchGraph(graphName);
-                } else {
-                    // Manual UI update fallback
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
+                if (searchBox) {
+                  searchBox.style.setProperty("display", "flex", "important");
+                  searchBox.style.setProperty("flex", "1", "important");
+                  searchBox.style.setProperty(
+                    "min-width",
+                    "200px",
+                    "important"
+                  );
                 }
-            });
+                if (findInput) {
+                  findInput.style.setProperty("display", "block", "important");
+                  findInput.style.setProperty(
+                    "min-width",
+                    "150px",
+                    "important"
+                  );
+                  findInput.style.setProperty(
+                    "min-height",
+                    "24px",
+                    "important"
+                  );
+                  findInput.style.setProperty("width", "100%", "important");
+                }
+
+                this.app.search.toggle(true);
+              }
+            } else {
+              panel.classList.add("hidden");
+              panel.style.display = "none";
+            }
+          } else {
+            console.warn("Panel not found for key:", key);
+          }
         });
-    }
+      });
+    });
+  }
 }

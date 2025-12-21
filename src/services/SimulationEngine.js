@@ -169,6 +169,10 @@ export class SimulationEngine {
     // Clear active wire styling
     this.app.graph.clearActiveWires();
 
+    // Hide debug controls
+    const debugGroup = document.querySelector(".debug-controls");
+    if (debugGroup) debugGroup.classList.add("hidden");
+
     if (this.app.debugger) this.app.debugger.update();
   }
 
@@ -267,6 +271,16 @@ export class SimulationEngine {
       this.app.graph.editor.style.boxShadow = "inset 0 0 0 2px #4CAF50"; // Green border
     } else {
       this.app.graph.editor.style.boxShadow = "none";
+    }
+
+    // Toggle debug controls visibility
+    const debugGroup = document.querySelector(".debug-controls");
+    if (debugGroup) {
+      if (this.isPaused) {
+        debugGroup.classList.remove("hidden");
+      } else if (!this.isRunning) {
+        debugGroup.classList.add("hidden");
+      }
     }
   }
 
@@ -443,6 +457,7 @@ export class SimulationEngine {
       const link = this.app.wiring.links.get(linkId);
 
       if (link) {
+        this.app.wiring.setWireActive(linkId);
         currentNode = link.endPin.node;
         currentInputPin = link.endPin;
         // Small delay to visualize flow could go here
@@ -531,12 +546,26 @@ export class SimulationEngine {
     if (link) {
       const sourcePin = link.startPin;
       const sourceNode = sourcePin.node;
-      return this.evaluateNodeValue(sourceNode, sourcePin);
+      const result = this.evaluateNodeValue(sourceNode, sourcePin);
+
+      // Phase 6: Update Live Watch Bubbles if this pin is being watched
+      if (this.app.debugger && this.app.debugger.watchedPins.has(pin.id)) {
+        this.app.debugger.updateWatchBubble(pin, result);
+      }
+
+      return result;
     }
 
     // 2. If not connected, use the literal value (or default)
     const literal = pin.node.pinLiterals.get(pin.id);
-    return literal !== undefined ? literal : pin.defaultValue;
+    const result = literal !== undefined ? literal : pin.defaultValue;
+
+    // Phase 6: Update Live Watch Bubbles if this pin is being watched
+    if (this.app.debugger && this.app.debugger.watchedPins.has(pin.id)) {
+      this.app.debugger.updateWatchBubble(pin, result);
+    }
+
+    return result;
   }
 
   /** Evaluates the return value of a node (Pure nodes). */

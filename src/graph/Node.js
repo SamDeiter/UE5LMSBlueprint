@@ -5,6 +5,7 @@ import { Utils } from "../utils.js";
 import { PinDefaults } from "../config/NodeDefaults.js";
 import { Pin } from "./Pin.js";
 import { NODE_HEADER_COLORS, NODE_TYPES } from "../config/Constants.js";
+import { UE5Renderer } from "../utils/UE5Renderer.js";
 
 class Node {
   constructor(id, nodeData, x, y, nodeKey, app) {
@@ -21,6 +22,8 @@ class Node {
     this.y = y;
     this.isBreakpoint = nodeData.isBreakpoint || false;
     this.element = null;
+    this.width = nodeData.width || 250;
+    this.height = nodeData.height || 150;
 
     this.customData = nodeData.customData || {};
 
@@ -114,8 +117,9 @@ class Node {
           if (!header.querySelector(".breakpoint-icon")) {
             const bpIcon = document.createElement("div");
             bpIcon.className = "breakpoint-icon";
+            bpIcon.innerHTML = UE5Renderer.renderBreakpointIcon();
             bpIcon.style.cssText =
-              "width: 14px; height: 14px; background: #d32f2f; border-radius: 50%; position: absolute; top: 4px; left: 4px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;";
+              "position: absolute; top: -4px; left: -4px; z-index: 10;";
             header.appendChild(bpIcon);
           }
         } else {
@@ -140,6 +144,10 @@ class Node {
     if (!this.nodeKey) {
       console.error(`Node ${this.id} missing nodeKey.`);
       this.nodeKey = "INVALID_NODE";
+    }
+
+    if (this.type === NODE_TYPES.COMMENT) {
+      return this.renderCommentNode();
     }
 
     // Use compact node style for Getters, Converters, and Pure Function Calls
@@ -169,12 +177,18 @@ class Node {
       header.classList.add("has-breakpoint");
       const bpIcon = document.createElement("div");
       bpIcon.className = "breakpoint-icon";
+      bpIcon.innerHTML = UE5Renderer.renderBreakpointIcon();
       bpIcon.style.cssText =
-        "width: 12px; height: 12px; background: #d32f2f; border-radius: 50%; position: absolute; top: -6px; left: -6px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;";
+        "position: absolute; top: -6px; left: -6px; z-index: 10;";
       header.appendChild(bpIcon);
     }
 
-    if (this.icon) {
+    if (this.type === NODE_TYPES.EVENT) {
+      const iconEl = document.createElement("span");
+      iconEl.className = "node-header-icon event-icon";
+      iconEl.innerHTML = UE5Renderer.renderEventHeaderIcon();
+      header.appendChild(iconEl);
+    } else if (this.icon) {
       const iconEl = document.createElement("span");
       if (this.icon.startsWith("fa-")) {
         iconEl.className = `fas ${this.icon}`;
@@ -183,6 +197,8 @@ class Node {
         iconEl.classList.add("text-italic"); // Replaced inline style
         iconEl.classList.add("text-white"); // Replaced inline style
         iconEl.textContent = "f";
+        iconEl.style.fontSize = "14px";
+        iconEl.style.marginRight = "4px";
       } else {
         iconEl.textContent = this.icon;
       }
@@ -466,34 +482,15 @@ class Node {
     pinDot.className = dotClasses;
     pinDot.title = `${pin.name} (${pin.type})`;
 
-    // Handle container types with proper icons
-    // Only add container styling if it's not a single value
-    if (pin.containerType && pin.containerType !== "single") {
-      pinDot.classList.add("container-pin"); // Remove default circle styling
+    // Use UE5Renderer for high-fidelity SVG pins
+    pinDot.innerHTML = UE5Renderer.renderPinIcon(pin, isConnected);
 
-      if (pin.containerType === "array") {
-        pinDot.classList.add("array-pin");
-        const icon = document.createElement("i");
-        icon.className = "fas fa-th";
-        icon.classList.add("icon-xs"); // Replaced inline style (8px)
-        icon.style.color = Utils.getPinColor(pin.type); // Dynamic color
-        pinDot.appendChild(icon);
-      } else if (pin.containerType === "set") {
-        pinDot.classList.add("set-pin");
-        const icon = document.createElement("span");
-        icon.textContent = "{}";
-        icon.classList.add("icon-xs"); // Replaced inline style (8px)
-        icon.style.fontWeight = "bold";
-        icon.style.color = Utils.getPinColor(pin.type); // Dynamic color
-        pinDot.appendChild(icon);
-      } else if (pin.containerType === "map") {
-        pinDot.classList.add("map-pin");
-        const icon = document.createElement("i");
-        icon.className = "fas fa-list-ul";
-        icon.classList.add("icon-xs"); // Replaced inline style (8px)
-        icon.style.color = Utils.getPinColor(pin.type); // Dynamic color
-        pinDot.appendChild(icon);
-      }
+    // Handle container types with proper icons (legacy font-awesome removed in favor of UE5Renderer SVGs)
+    if (pin.containerType && pin.containerType !== "single") {
+      pinDot.classList.add("container-pin");
+      if (pin.containerType === "array") pinDot.classList.add("array-pin");
+      else if (pin.containerType === "set") pinDot.classList.add("set-pin");
+      else if (pin.containerType === "map") pinDot.classList.add("map-pin");
     }
 
     // Handle reference pins (pass-by-reference diamond shape)
@@ -655,6 +652,57 @@ class Node {
     }
 
     return data;
+  }
+
+  renderCommentNode() {
+    const element = document.createElement("div");
+    element.id = this.id;
+    element.className = `node comment-node`;
+    element.style.left = `${this.x}px`;
+    element.style.top = `${this.y}px`;
+    element.style.width = `${this.width}px`;
+    element.style.height = `${this.height}px`;
+
+    const header = document.createElement("div");
+    this.headerElement = header;
+    header.className = "node-title comment-title";
+    header.textContent = this.title;
+
+    // Double-click to rename comment
+    header.addEventListener("dblclick", (e) => {
+      e.stopPropagation();
+      header.contentEditable = true;
+      header.focus();
+      document.execCommand("selectAll", false, null);
+    });
+
+    header.addEventListener("blur", () => {
+      header.contentEditable = false;
+      this.title = header.textContent;
+      this.app.persistence.autoSave();
+    });
+
+    header.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        header.blur();
+      }
+    });
+
+    element.appendChild(header);
+
+    // Resize Observer to persist dimensions
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        this.width = entry.contentRect.width;
+        this.height = entry.contentRect.height;
+        // Don't autosave on every resize frame, maybe debounced in a real app
+      }
+    });
+    observer.observe(element);
+
+    this.element = element;
+    return element;
   }
 }
 

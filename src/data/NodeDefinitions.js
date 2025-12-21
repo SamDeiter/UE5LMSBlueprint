@@ -3,6 +3,13 @@
  * Includes detailed pin definitions to ensure proper rendering.
  */
 export const NodeDefinitions = {
+  Comment: {
+    title: "Comment",
+    type: "comment-node",
+    category: "Utilities",
+    icon: "fa-comment",
+    pins: [],
+  },
   // --- CONVERSION NODES (Compact Style) ---
   Conv_FloatToString: {
     title: "To String (Float)",
@@ -928,15 +935,6 @@ export const NodeDefinitions = {
       { id: "str_in", name: "Source String", type: "string", dir: "in" },
       { id: "ret_out", name: "Return Value", type: "string", dir: "out" },
     ],
-  },
-  // --- UTILITY ---
-  Comment: {
-    title: "New Comment",
-    type: "comment-node",
-    category: "Development",
-    executor: "Print",
-    icon: "fa-comment-dots",
-    pins: [],
   },
   // --- GENERIC SET NODES (Templates) ---
   Set_bool: {

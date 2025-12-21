@@ -1,7 +1,7 @@
 /* --- GLOBAL STYLES & LAYOUT --- */
 :root {
     /* General Theme */
-    --color-bg-dark: #151515;
+    --color-bg-dark: #1a1a1a;
     --color-bg-medium: #262626;
     --color-bg-light: #333333;
     --color-text-main: #e0e0e0;
@@ -17,12 +17,12 @@
     --node-selection-outline: #F0B000;
 
     /* Node Header Gradients - Event & Flow Control */
-    --header-event-start: #750000;
-    --header-event-end: #300000;
+    --header-event-start: #7a1515;
+    --header-event-end: #500a0a;
     --header-flow-start: #404040;
     --header-flow-end: #202020;
-    --header-function-start: #004060;
-    --header-function-end: #002030;
+    --header-function-start: #1d4d65;
+    --header-function-end: #123040;
     --header-macro-start: #505050;
     --header-macro-end: #282828;
 
@@ -42,33 +42,42 @@
     /* Cast Node Header (Cyan/Teal - UE5 Spec) */
         --header-cast-start: #00A89D;
         --header-cast-end: #004040;
-    /* Pin Colors (Authentic UE5 Palette) */
+    /* Pin Colors (Authentic UE5 Palette - Hex Perfect) */
     --color-exec: #FFFFFF;
-    --color-bool: #920101; /* Dark Red */
-    --color-byte: #005055;
-        /* Sherpa Blue - UE5 Spec */
-        --color-int: #00A89D;
-        /* Sea Green/Cyan - UE5 Spec */
-    --color-int64: #76D37E;
-    --color-float: #96E804;
-        /* Yellow-Green/Lime - UE5 Spec */
+    --color-bool: #920101;       /* Maroon/Red */
+    --color-byte: #005055;       /* Sherpa Blue */
+    --color-int: #00A89D;        /* Sea Green/Cyan */
+    --color-int64: #6B9E78;      /* Moss Green */
+    --color-float: #96E804;      /* Yellow-Green/Lime */
     --color-double: #4A90E2;
-    --color-name: #8566E2;
-        /* Mauve/Violet - UE5 Spec */
-    --color-string: #FF00FF; /* Magenta */
-    --color-text: #E27696; /* Pinkish */
-    --color-vector: #FFC700; /* Gold */
-    --color-rotator: #9999FF; /* Purple */
-    --color-transform: #FF6600; /* Orange */
-    --color-object: #0067C0;
-        /* Deep Blue - UE5 Spec */
-    --color-class: #5800A0; /* Purple */
-    --color-enum: #0065CA;
+    --color-name: #8566E2;       /* Mauve/Violet */
+    --color-string: #F4009F;     /* Magenta */
+    --color-text: #E2727D;       /* Pink/Soft Red */
+    --color-vector: #FFC700;     /* Gold/Yellow */
+    --color-rotator: #90A0FF;    /* Cornflower Blue */
+    --color-transform: #FF7200;  /* Orange */
+    --color-object: #0067C0;     /* Blue */
+    --color-class: #590099;      /* Purple */
+    --color-interface: #B0E69E;  /* Pale Green */
+    --color-struct: #003D72;     /* Dark Blue */
+    --color-enum: #005055;       /* Byte/Enum uses Sherpa Blue */
     
 
     --color-dev-yellow: #FFC72C;
     --color-dev-black: #202020;
     --color-array-dim: 2px;
+
+    /* --- UE5 PIXEL PERFECT TOKENS --- */
+    --ue5-node-bg: rgba(10, 10, 10, 0.85);
+    --ue5-node-blur: blur(4px);
+    --ue5-node-radius: 8px;
+    --ue5-input-bg: #050505;
+    --ue5-input-border: #303030;
+    --ue5-selection-orange: #f0a000;
+    --ue5-checkbox-tick: #0070e0;
+    --ue5-hazard-yellow: #8a7800;
+    --ue5-text-shadow: 1px 1px 2px black;
+
 }
 
 
@@ -86,7 +95,11 @@
     --grid-line-minor: #2e2e2e;
     
     /* Text */
-    --text-primary: #e0e0e0;
+    --text-primary: #ffffff;
     --text-secondary: #a0a0a0;
+}
+
+body {
+    font-family: var(--ue5-font);
 }
 

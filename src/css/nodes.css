@@ -1,16 +1,16 @@
 /* --- NODE STYLES --- */
 .node {
     position: absolute;
-    background-color: rgba(20, 20, 20, 0.95);
+    background-color: rgba(10, 10, 10, 0.85); /* UE5 Spec Glassmorphism */
     border: 1px solid #000;
-    border-radius: 12px;
+    border-radius: 8px; /* Analysis Section 4.5 */
     box-shadow: 0 0 0 1px #000000,
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 10px 20px rgba(0, 0, 0, 0.5);
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.7);
     min-width: 180px;
     z-index: 10;
     pointer-events: all;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px); /* Deeper blur for premium feel */
     transition: box-shadow 0.1s ease;
 }
 
@@ -25,20 +25,20 @@
 
 /* --- NODE TITLE --- */
 .node-title {
-    padding: 6px 10px;
-    font-weight: 700;
-    font-size: 12px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    color: white;
+    padding: 4px 8px; /* Tighter padding for UE5 feel */
+    font-weight: 500; /* UE5 uses Inter/Roboto Medium */
+    font-size: 11px;  /* Section 4.5 Spec */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    color: rgba(255, 255, 255, 0.9);
     display: flex;
     align-items: center;
-    gap: 8px;
-    text-shadow: 0 1px 2px black;
+    gap: 6px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     position: relative;
-    overflow: visible; /* Changed from hidden to prevent breakpoint icon clipping */
-    min-height: 22px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    overflow: visible;
+    min-height: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
 }
 
 
@@ -155,97 +155,30 @@
 
 /* --- PIN DOT (Base) --- */
 .pin-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-    background-color: currentColor;
-    /* Default to filled */
+    width: 18px; /* Increased to accommodate beak SVGs */
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     transition: transform 0.1s;
     position: relative;
     box-sizing: border-box;
-}
-
-/* Hollow state (unconnected) */
-.pin-dot.hollow {
-    background-color: transparent;
+    background: transparent !important; /* Disable legacy coloring */
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .pin-dot:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
 }
 
 
 
-/* --- EXEC PIN STYLES (Restored from HEAD for div-based rendering) --- */
-.pin-dot.exec-pin {
-    color: var(--color-exec);
-    width: 13px;
-    height: 14px;
-    border: none;
-    border-radius: 0;
-    background-color: var(--color-exec);
-    /* Solid Pentagon Arrow */
-    clip-path: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%);
-    box-shadow: none;
-}
+/* Legacy Exec styles removed - handled by UE5Renderer SVGs */
 
-/* The Hollow Exec Pin (Unconnected) */
-.pin-dot.exec-pin.hollow {
-    background-color: #FFFFFF !important;
-    /* Outer color (border) */
-    display: grid;
-    place-items: center;
-    border: none;
-    box-shadow: none;
-    clip-path: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%);
-    padding: 1.5px;
-    /* Thickness of the "border" */
-}
-
-.pin-dot.exec-pin.hollow::after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: #151515;
-    /* Inner match background */
-    clip-path: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%);
-}
-
-/* --- PIN ARROWS (Triangles for data pins) --- */
-/* Input pins: arrow pointing INTO circle from left */
-.pin-container.in .pin-dot:not(.exec-pin):not(.container-pin)::after {
-    content: '';
-    position: absolute;
-    right: -7px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-left: 5px solid currentColor;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    pointer-events: none;
-}
-
-/* Output pins: arrow pointing OUT from circle to right */
-.pin-container.out .pin-dot:not(.exec-pin):not(.container-pin)::after {
-    content: '';
-    position: absolute;
-    right: -7px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-left: 5px solid currentColor;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    pointer-events: none;
-}
+/* Legacy Pin Arrows removed - handled by UE5Renderer SVGs */
 
 /* Pin Colors */
 .pin-dot.bool-pin {

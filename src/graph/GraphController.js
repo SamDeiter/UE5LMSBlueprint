@@ -620,13 +620,23 @@ class GraphController {
 
   selectNodesInRect(rect, mode) {
     for (const node of this.nodes.values()) {
-      const nodeRect = node.element.getBoundingClientRect();
-      // Check if node rect intersects with selection rect
+      if (!node.element) continue;
+
+      // Use Graph Space coordinates for intersection test
+      // rect is passed in Graph Space from GraphInteraction
+      const nodeLeft = node.x;
+      const nodeTop = node.y;
+      const nodeWidth = node.width || node.element.offsetWidth;
+      const nodeHeight = node.height || node.element.offsetHeight;
+      const nodeRight = nodeLeft + nodeWidth;
+      const nodeBottom = nodeTop + nodeHeight;
+
+      // Check for intersection
       const intersects =
-        nodeRect.left < rect.right &&
-        nodeRect.right > rect.left &&
-        nodeRect.top < rect.bottom &&
-        nodeRect.bottom > rect.top;
+        nodeLeft < rect.right &&
+        nodeRight > rect.left &&
+        nodeTop < rect.bottom &&
+        nodeBottom > rect.top;
 
       if (intersects) {
         // Marquee selects the node
@@ -714,6 +724,53 @@ class GraphController {
         node.element.style.top = `${node.y}px`;
         this.redrawNodeWires(node.id);
       }
+    }
+  }
+
+  createCommentAroundSelection() {
+    if (this.selectedNodes.size === 0) return;
+
+    let minX = Infinity,
+      minY = Infinity;
+    let maxX = -Infinity,
+      maxY = -Infinity;
+
+    this.selectedNodes.forEach((nodeId) => {
+      const node = this.nodes.get(nodeId);
+      if (node) {
+        const width = node.width || node.element.offsetWidth || 150;
+        const height = node.height || node.element.offsetHeight || 100;
+
+        minX = Math.min(minX, node.x);
+        minY = Math.min(minY, node.y);
+        maxX = Math.max(maxX, node.x + width);
+        maxY = Math.max(maxY, node.y + height);
+      }
+    });
+
+    const padding = 30;
+    const headerHeight = 30;
+
+    // Bounds for the comment box
+    const x = minX - padding;
+    const y = minY - headerHeight - padding;
+    const w = maxX - minX + padding * 2;
+    const h = maxY - minY + headerHeight + padding * 2;
+
+    const commentNode = this.addNode("Comment", x, y);
+    if (commentNode) {
+      commentNode.width = w;
+      commentNode.height = h;
+      commentNode.title = "Comment";
+
+      // Update its visual element size immediately
+      if (commentNode.element) {
+        commentNode.element.style.width = `${w}px`;
+        commentNode.element.style.height = `${h}px`;
+      }
+
+      this.clearSelection();
+      this.selectNode(commentNode.id, true);
     }
   }
 

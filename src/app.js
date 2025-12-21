@@ -24,6 +24,7 @@ import {
   DebuggerController,
   GraphsController,
   EventDispatcherController,
+  SearchController,
 } from "./ui.js";
 import {
   Compiler,
@@ -139,6 +140,7 @@ class BlueprintApp {
     window.clearTask = () => BlueprintApp.taskManager.clearTask();
 
     BlueprintApp.taskUI = new TaskController(BlueprintApp);
+    BlueprintApp.search = new SearchController(BlueprintApp);
 
     // 8. Graph Switcher
     BlueprintApp.graphSwitcher = new GraphSwitcher(BlueprintApp);
@@ -284,6 +286,13 @@ class BlueprintApp {
           BlueprintApp.graph.duplicateSelectedNodes();
           return;
         }
+      }
+
+      if (e.ctrlKey && (e.key === "f" || e.key === "F")) {
+        e.preventDefault();
+        const findTab = document.querySelector('.bottom-tab[data-tab="find"]');
+        if (findTab) findTab.click();
+        return;
       }
 
       if (e.key === "Delete" || e.key === "Backspace") {
