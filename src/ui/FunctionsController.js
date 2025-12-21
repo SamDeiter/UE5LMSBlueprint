@@ -30,7 +30,7 @@ export class FunctionsController {
     section.className = "sidebar-section";
 
     const content = document.createElement("div");
-    content.style.display = "block";
+    content.classList.remove('hidden');
 
     const header = createCollapsibleHeader(section, "Functions", content, {
       onAdd: (e) => {
@@ -47,7 +47,7 @@ export class FunctionsController {
       const importBtn = document.createElement("i");
       importBtn.className = "fas fa-file-import add-btn";
       importBtn.title = "Import Function";
-      importBtn.style.marginRight = "8px";
+      importBtn.classList.add('mr-1');
       importBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         this.importFunction();
@@ -80,8 +80,8 @@ export class FunctionsController {
         isPublic ? "fa-eye active" : "fa-eye-slash"
       } var-eye-icon`;
       eyeIcon.title = isPublic ? "Public" : "Private";
-      eyeIcon.style.marginLeft = "auto";
-      eyeIcon.style.marginRight = "8px";
+      
+      
 
       eyeIcon.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -512,7 +512,7 @@ export class FunctionsController {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json";
-    input.style.display = "none";
+    input.classList.add('hidden');
 
     input.addEventListener("change", (e) => {
       const file = e.target.files[0];

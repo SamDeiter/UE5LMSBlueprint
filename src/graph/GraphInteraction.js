@@ -244,7 +244,7 @@ export class GraphInteraction {
     this.app.wiring.clearLinkSelection();
     if (this.isMarqueeing) {
       this.isMarqueeing = false;
-      this.marqueeEl.style.display = "none";
+      this.marqueeEl.classList.add("hidden");
     }
 
     const pinElement = e.target.closest(".pin-container");
@@ -351,7 +351,7 @@ export class GraphInteraction {
       this.marqueeStart.y = e.clientY;
       const rect = this.editor.getBoundingClientRect();
       this.marqueeEl.classList.remove("hidden");
-      this.marqueeEl.style.display = "block";
+      this.marqueeEl.classList.remove("hidden");
       this.marqueeEl.style.left = `${e.clientX - rect.left}px`;
       this.marqueeEl.style.top = `${e.clientY - rect.top}px`;
       this.marqueeEl.style.width = "0px";
@@ -476,7 +476,7 @@ export class GraphInteraction {
 
     if (this.isWiring) {
       this.isWiring = false;
-      this.app.wiring.ghostWire.style.display = "none";
+      this.app.wiring.ghostWire.classList.add("hidden");
 
       const pinElement = e.target.closest(".pin-container");
       if (pinElement) {
@@ -495,7 +495,7 @@ export class GraphInteraction {
 
     if (this.isMarqueeing) {
       this.isMarqueeing = false;
-      this.marqueeEl.style.display = "none";
+      this.marqueeEl.classList.add("hidden");
       this.marqueeEl.classList.add("hidden");
     }
   }
@@ -692,15 +692,16 @@ export class GraphInteraction {
   showNodeContextMenu(e, node, variable) {
     const menu = document.createElement("div");
     menu.className = "context-menu";
-    menu.style.position = "fixed";
+    
     menu.style.left = `${e.clientX}px`;
     menu.style.top = `${e.clientY}px`;
-    menu.style.zIndex = "10000";
+    menu.classList.add("z-max");
+    
 
     const createMenuItem = (label, icon, onClick) => {
       const item = document.createElement("div");
       item.className = "menu-item";
-      item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
+      item.innerHTML = `<i class="${icon}" class="mr-1 w-12"></i> ${label}`;
       item.addEventListener("click", (ev) => {
         ev.stopPropagation();
         document.body.removeChild(menu);

@@ -13,7 +13,7 @@ export class DebuggerController {
         this.panel = document.createElement('div');
         this.panel.id = 'call-stack-panel';
         this.panel.className = 'debug-floating-panel hidden';
-        this.panel.innerHTML = '<div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px;">Call Stack</div><div id="call-stack-list"></div>';
+        this.panel.innerHTML = '<div class="debug-panel-title">Call Stack</div><div id="call-stack-list"></div>';
 
         const editor = document.getElementById('graph-editor');
         if (editor) {
@@ -40,10 +40,10 @@ export class DebuggerController {
         // 1. Current Frame (Active Graph)
         const currentFrame = document.createElement('div');
         currentFrame.textContent = `> ${this.app.activeGraph}`;
-        currentFrame.style.color = '#4CAF50';
-        currentFrame.style.fontWeight = 'bold';
-        currentFrame.style.cursor = 'pointer';
-        currentFrame.style.padding = '2px 0';
+        currentFrame.className = 'stack-frame-current';
+        
+        
+        
         currentFrame.addEventListener('click', () => {
             this.app.switchGraph(this.app.activeGraph);
         });
@@ -54,10 +54,10 @@ export class DebuggerController {
             const frame = stack[i];
             const el = document.createElement('div');
             el.textContent = frame.callerGraph;
-            el.style.paddingLeft = '10px';
-            el.style.color = '#aaa';
-            el.style.cursor = 'pointer';
-            el.style.padding = '2px 0 2px 10px';
+            el.className = 'stack-frame-item';
+            
+            
+            
 
             el.addEventListener('click', () => {
                 // Switch to that graph
@@ -79,7 +79,7 @@ export class DebuggerController {
         this.watchPanel = document.createElement('div');
         this.watchPanel.id = 'watch-panel';
         this.watchPanel.className = 'debug-floating-panel hidden';
-        this.watchPanel.innerHTML = '<div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px;">Watched Values</div><div id="watch-list"></div>';
+        this.watchPanel.innerHTML = '<div class="debug-panel-title">Watched Values</div><div id="watch-list"></div>';
         
         const editor = document.getElementById('graph-editor');
         if (editor) {
@@ -113,7 +113,7 @@ export class DebuggerController {
 
             if (pin) {
                 const row = document.createElement('div');
-                row.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 2px;';
+                row.className = 'd-flex justify-between mb-1';
                 
                 // Get value from node's tempValues or literals
                 let val = 'N/A';
@@ -123,7 +123,7 @@ export class DebuggerController {
                     val = pin.node.pinLiterals.get(pin.id);
                 }
 
-                row.innerHTML = `<span style="color: #aaa;">${pin.node.title}.${pin.name}:</span> <span style="color: #4CAF50;">${val}</span>`;
+                row.innerHTML = `<span class="text-muted">${pin.node.title}.${pin.name}:</span> <span class="text-success">${val}</span>`;
                 list.appendChild(row);
             }
         });

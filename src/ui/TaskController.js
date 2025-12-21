@@ -192,7 +192,7 @@ export class TaskController {
 
             const text = document.createElement('span');
             text.textContent = req.description;
-            text.style.flex = '1';
+            text.classList.add('flex-1');
 
             item.appendChild(icon);
             item.appendChild(text);
@@ -253,12 +253,12 @@ export class TaskController {
 
         // Store original values to restore later
         const originalYesText = yesBtn.textContent;
-        const originalYesColor = yesBtn.style.backgroundColor;
+        
 
         // Set custom text for clear graph confirmation
         message.textContent = 'Clear the current graph to start this task fresh?';
         yesBtn.textContent = 'Clear Graph';
-        yesBtn.style.backgroundColor = '#4CAF50'; // Green for positive action
+        yesBtn.classList.add('bg-success'); // Green for positive action
 
         modal.classList.remove('hidden');
         modal.classList.add('visible-flex');
@@ -268,7 +268,7 @@ export class TaskController {
             modal.classList.remove('visible-flex');
             // Reset to original values
             yesBtn.textContent = originalYesText;
-            yesBtn.style.backgroundColor = originalYesColor;
+            yesBtn.classList.remove('bg-success');
             yesBtn.removeEventListener('click', handleYes);
             noBtn.removeEventListener('click', handleNo);
             if (onConfirm) onConfirm();
@@ -279,7 +279,7 @@ export class TaskController {
             modal.classList.remove('visible-flex');
             // Reset to original values
             yesBtn.textContent = originalYesText;
-            yesBtn.style.backgroundColor = originalYesColor;
+            yesBtn.classList.remove('bg-success');
             yesBtn.removeEventListener('click', handleYes);
             noBtn.removeEventListener('click', handleNo);
             if (onCancel) onCancel();

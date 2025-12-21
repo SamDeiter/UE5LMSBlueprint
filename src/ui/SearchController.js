@@ -111,11 +111,8 @@ export class SearchController {
 
     if (results.length === 0) {
       const empty = document.createElement("div");
-      empty.className = "find-result-empty";
+      empty.className = "find-result-empty placeholder-italic";
       empty.textContent = "No results found.";
-      empty.style.padding = "10px";
-      empty.style.color = "#888";
-      empty.style.fontStyle = "italic";
       this.resultsList.appendChild(empty);
       return;
     }
@@ -123,24 +120,17 @@ export class SearchController {
     results.forEach((res) => {
       const item = document.createElement("div");
       item.className = "find-result-item";
-      item.style.cssText =
-        "display: flex; align-items: center; padding: 4px 8px; cursor: pointer; border-bottom: 1px solid #333; font-size: 12px; color: #ccc;";
+      
 
       item.innerHTML = `
-        <i class="fas ${res.icon} mr-2" style="width: 16px; opacity: 0.7;"></i>
-        <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <span style="color: #aaa; margin-right: 5px;">[${res.type}]</span> ${res.title}
+        <i class="fas ${res.icon} mr-2 w-16 opacity-70"></i>
+        <span class="find-result-text">
+            <span class="find-result-type">[${res.type}]</span> ${res.title}
         </span>
       `;
 
-      item.addEventListener(
-        "mouseenter",
-        () => (item.style.backgroundColor = "rgba(255,255,255,0.05)")
-      );
-      item.addEventListener(
-        "mouseleave",
-        () => (item.style.backgroundColor = "transparent")
-      );
+      
+      
 
       item.addEventListener("click", () => {
         this.app.graph.focusNode(res.id);

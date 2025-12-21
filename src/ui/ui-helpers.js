@@ -36,8 +36,8 @@ export function createCollapsibleHeader(container, title, content, options = {})
 
     const arrow = document.createElement('i');
     arrow.className = isExpanded ? 'fas fa-caret-down' : iconClass;
-    arrow.style.marginRight = '5px';
-    arrow.style.width = '10px';
+    arrow.classList.add('collapsible-arrow');
+    
 
     const text = document.createElement('span');
     text.textContent = title;
@@ -61,12 +61,12 @@ export function createCollapsibleHeader(container, title, content, options = {})
     }
 
     // Set initial content state
-    content.style.display = isExpanded ? 'block' : 'none';
+    if (isExpanded) content.classList.remove('hidden'); else content.classList.add('hidden');
 
     // Toggle functionality
     header.addEventListener('click', () => {
-        const isHidden = content.style.display === 'none';
-        content.style.display = isHidden ? 'block' : 'none';
+        const isHidden = content.classList.contains('hidden');
+        if (isHidden) content.classList.remove('hidden'); else content.classList.add('hidden');
         arrow.className = isHidden ? 'fas fa-caret-down' : iconClass;
     });
 
@@ -140,7 +140,7 @@ export function renderCategoryTree(node, container, renderItemFn, options = {}) 
         section.className = sectionClass;
 
         const content = document.createElement('div');
-        content.style.display = autoExpand ? 'block' : 'none'; // Auto-expand if option is set
+        if (autoExpand) content.classList.remove('hidden'); else content.classList.add('hidden'); // Auto-expand if option is set
 
         // Create collapsible header with appropriate styling
         const headerOpts = {
@@ -182,12 +182,12 @@ export function setupToggle(toggleId, contentId, iconId, isExpanded = true, pare
 
     if (toggle && content && icon) {
         // Set initial state
-        content.style.display = isExpanded ? 'block' : 'none';
+        if (isExpanded) content.classList.remove('hidden'); else content.classList.add('hidden');
         icon.className = isExpanded ? 'fas fa-caret-down' : 'fas fa-caret-right';
 
         toggle.addEventListener('click', () => {
-            const isHidden = content.style.display === 'none';
-            content.style.display = isHidden ? 'block' : 'none';
+            const isHidden = content.classList.contains('hidden');
+            if (isHidden) content.classList.remove('hidden'); else content.classList.add('hidden');
             icon.className = isHidden ? 'fas fa-caret-down' : 'fas fa-caret-right';
         });
     }

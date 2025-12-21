@@ -35,12 +35,12 @@ export class LocalVariablesController {
         if (!funcDef) return;
 
         const section = document.createElement('div');
-        section.className = 'sidebar-section';
-        section.style.borderTop = '1px solid #333';
-        section.style.marginTop = '0px'; // Reset margin since it's its own container
+        section.className = 'sidebar-section sidebar-section-top-border';
+        
+         // Reset margin since it's its own container
 
         const content = document.createElement('div');
-        content.style.display = 'block';
+        content.classList.remove('hidden');
 
         createCollapsibleHeader(section, 'Local Variables', content, {
             onAdd: (e) => {
@@ -70,12 +70,12 @@ export class LocalVariablesController {
                 // Type Icon
                 const color = Utils.getPinColor(v.type);
                 const iconSpan = document.createElement('span');
-                iconSpan.className = 'ue5-variable-type-icon';
+                iconSpan.className = 'ue5-variable-type-icon ue5-local-var-icon';
                 iconSpan.style.backgroundColor = color;
-                iconSpan.style.width = '8px';
-                iconSpan.style.height = '4px';
-                iconSpan.style.borderRadius = '2px';
-                iconSpan.style.marginLeft = 'auto';
+                
+                
+                
+                
                 item.appendChild(iconSpan);
 
                 // Drag Logic

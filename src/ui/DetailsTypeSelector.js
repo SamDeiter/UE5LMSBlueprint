@@ -28,14 +28,14 @@ export class DetailsTypeSelector {
 
         // 1. Reset Content
         menu.innerHTML = '';
-        menu.style.display = 'flex';
+        menu.classList.remove('hidden');
         menu.style.left = `${x}px`;
         menu.style.top = `${y}px`;
 
         // Close handler
         const closeHandler = (e) => {
-            if (menu.style.display !== 'none' && !menu.contains(e.target)) {
-                menu.style.display = 'none';
+            if (!menu.classList.contains('hidden') && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
                 document.removeEventListener('click', closeHandler);
             }
         };
@@ -93,8 +93,8 @@ export class DetailsTypeSelector {
                     const pill = document.createElement('span');
                     pill.className = 'param-color-dot'; // Reusing pill style
                     pill.style.backgroundColor = type.color;
-                    pill.style.width = '12px'; // Wider pill per image
-                    pill.style.borderRadius = '4px';
+                    pill.classList.add("type-option-pill"); // Wider pill per image
+                    
 
                     const text = document.createElement('span');
                     text.textContent = type.label;
@@ -104,7 +104,7 @@ export class DetailsTypeSelector {
 
                     row.addEventListener('click', () => {
                         callback(type.id);
-                        menu.style.display = 'none';
+                        menu.classList.add('hidden');
                         // Clean up listener if we can (though it removes itself on next click usually, better to be clean)
                         // But closeHandler is local... it will clean up on next document click or we can leave it.
                         // For now, just hide.
@@ -143,9 +143,9 @@ export class DetailsTypeSelector {
         countSpan.textContent = `${commonTypes.length + 3} items`; // 16 types + 3 categories
 
         const checkboxContainer = document.createElement('div');
-        checkboxContainer.style.display = 'flex';
-        checkboxContainer.style.alignItems = 'center';
-        checkboxContainer.style.gap = '4px';
+        checkboxContainer.className = 'd-flex align-center gap-1';
+        
+        
 
         const chk = document.createElement('input');
         chk.type = 'checkbox';
@@ -173,20 +173,9 @@ export class DetailsTypeSelector {
         const menu = document.createElement('div');
         menu.id = 'container-type-menu';
         menu.className = 'type-selector-menu'; // Reuse basic styling structure or create new
-        menu.style.cssText = `
-            position: fixed;
-            left: ${x}px;
-            top: ${y}px;
-            background-color: #1a1a1a;
-            border: 1px solid #444;
-            border-radius: 4px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            width: 120px;
-            z-index: 6001;
-            display: flex;
-            flex-direction: column;
-            padding: 4px 0;
-        `;
+        menu.className = 'container-type-menu';
+        menu.style.left = `${x}px`;
+        menu.style.top = `${y}px`;
 
         const options = [
             { id: 'single', label: 'Single', iconHTML: `<span class="param-color-dot" style="background-color: ${color};"></span>` },
@@ -198,19 +187,19 @@ export class DetailsTypeSelector {
         options.forEach(opt => {
             const item = document.createElement('div');
             item.className = 'type-option';
-            item.style.padding = '4px 12px 4px 12px'; // Increased padding
+            item.classList.add('py-1', 'px-3'); // Increased padding
 
             // Disable Set and Map for Boolean type
             const isDisabled = variableType === 'bool' && (opt.id === 'set' || opt.id === 'map');
 
             if (isDisabled) {
-                item.style.opacity = '0.3';
-                item.style.cursor = 'not-allowed';
+                item.classList.add("type-option-disabled");
+                
                 item.title = 'Not available for Boolean type';
             }
 
             item.innerHTML = `
-                <div style="width: 20px; display: flex; justify-content: center;">
+                <div class="w-20 d-flex justify-center">
                     ${DetailsRenderer.getContainerIcon(opt.id, variableType)}
                 </div>
                 <span>${opt.label}</span>

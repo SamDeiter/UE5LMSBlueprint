@@ -216,7 +216,7 @@ export class VariableController {
     if (!modal) return;
     msg.textContent = `Are you sure you want to delete variable '${variable.name}'?`;
     modal.classList.remove("hidden");
-    modal.classList.add("visible-flex");
+    modal.classList.remove("hidden");
 
     // Clone buttons to remove old listeners
     const newYes = yesBtn.cloneNode(true);
@@ -227,11 +227,11 @@ export class VariableController {
     newYes.addEventListener("click", () => {
       this.executeVariableDeletion(variable);
       modal.classList.add("hidden");
-      modal.classList.remove("visible-flex");
+      modal.classList.add("hidden");
     });
     newNo.addEventListener("click", () => {
       modal.classList.add("hidden");
-      modal.classList.remove("visible-flex");
+      modal.classList.add("hidden");
     });
   }
 
@@ -524,7 +524,7 @@ export class VariableController {
           // Create output circle indicator
           const outputCircle = document.createElement("span");
           outputCircle.className = "component-output-circle";
-          outputCircle.style.backgroundColor = "var(--color-object)";
+          
 
           const iconClass = this.app.componentsController
             ? this.app.componentsController.getIconForType(comp.type)
@@ -665,9 +665,9 @@ export class VariableController {
           isPublic ? "fa-eye active" : "fa-eye-slash"
         } var-eye-icon`;
         eyeIcon.title = isPublic ? "Instance Editable (Public)" : "Private";
-        eyeIcon.style.marginLeft = "auto";
-        eyeIcon.style.marginRight = "8px";
-        eyeIcon.style.opacity = isPublic ? "1" : "0.5";
+        
+        
+        if (isPublic) eyeIcon.classList.add("opacity-100"); else eyeIcon.classList.add("opacity-50");
 
         eyeIcon.addEventListener("click", (e) => {
           e.stopPropagation();

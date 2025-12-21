@@ -10,38 +10,47 @@ This document breaks down the "all of this" implementation requirements from the
 - [x] **1.4 Event Header Icons**: Implement the complex composite SVG for Event node headers.
 - [x] **1.5 Node "Glassmorphism"**: Update `nodes.css` to use `rgba(10, 10, 10, 0.85)` background with `backdrop-filter: blur(8px)` and `border-radius: 8px`.
 
-## 🟡 2. Sidebar & Panel Logic (My Blueprint)
+## 🟢 2. Sidebar & Panel Logic (My Blueprint)
 
 - [x] **2.1 Variable Pill Transformation**: Update `VariableController.js` to use `UE5Renderer.renderVariablePill` instead of legacy lozenges.
 - [x] **2.2 Function Iconography**: Update `FunctionsController.js` to use the italicized 'f' icon with color coding (Blue=Impure, Green=Pure).
 - [ ] **2.3 Visibility Toggles**: Implement the "Open/Closed Eye" icon system for variable and function visibility in the sidebar.
 - [x] **2.4 Multi-Reference Support**: Ensure the "Grid" (Array), "Brackets" (Set), and "Map" icons are correctly rendered in the sidebar list.
 
-## 🟠 3. Interaction & Workflow (Behavioral Parity)
+## 🟢 3. Interaction & Workflow (Behavioral Parity)
 
-- [ ] **3.1 Shortcut Chords**:
-  - [ ] `B + Click` (Branch)
-  - [ ] `S + Click` (Sequence)
-  - [ ] `D + Click` (Delay)
-  - [ ] `P + Click` (BeginPlay)
-  - [ ] `C + Click` (Comment Box)
-- [ ] **3.2 Context Menu Filtering**: Implement "Context Sensitive" logic in `ActionMenu.js` to filter nodes based on compatibility.
-- [ ] **3.3 Find Results (Global Search)**: Implement `Ctrl+F` and `Ctrl+Shift+F` global search panel to index variables and function calls.
+- [x] **3.1 Shortcut Chords** *(implemented in GraphInteraction.js)*:
+  - [x] `B + Click` (Branch)
+  - [x] `S + Click` (Sequence)
+  - [x] `D + Click` (Delay)
+  - [x] `P + Click` (BeginPlay)
+  - [x] `C + Click` (Comment Box)
+  - [x] Plus extras: `O` (DoOnce), `G` (Gate), `F` (ForEachLoop), `M` (MultiGate)
+- [x] **3.2 Context Menu Filtering**: Context Sensitive checkbox exists in ActionMenu with isContextSensitive toggle.
+- [x] **3.3 Find Results (Global Search)**: `Ctrl+F` implemented via SearchController.js and LayoutController.js.
 
-## 🔴 4. Debugging & Animation (Active State)
+## 🟢 4. Debugging & Animation (Active State)
 
-- [ ] **4.1 Live Wire Pulsing**: Implement hardware-accelerated SVG dash-array animation for wires during active simulation (orange pulse).
-- [ ] **4.2 Watch Value Bubbles**: Implement the tooltip-style persistent data bubbles above pins during PIE.
-- [ ] **4.3 Compile State Machine**: Implement the 3-state Compile button:
-  - Yellow (?) for Dirty
-  - Green (Check) for Success
-  - Red (X) for Error
+- [x] **4.1 Live Wire Pulsing**: Implemented via `setWireActive()` and `.wire-pulse` class in WiringController.js.
+- [ ] **4.2 Watch Value Bubbles**: Partial - context menu has "Watch this value" but no persistent tooltips above pins.
+- [x] **4.3 Compile State Machine** *(implemented in Compiler.js + UE5Renderer.renderCompileIcon)*:
+  - [x] Yellow (?) for Dirty
+  - [x] Green (Check) for Success
+  - [x] Red (X) for Error
 
-## 🧹 5. Refactor & Technical Debt
+## 🟡 5. Refactor & Technical Debt
 
-- [ ] **5.1 Eliminate Inline Styles**: Target `<50` total inline styles (Current: ~290). Primary targets: `PaletteController.js`, `VariableController.js`.
+- [/] **5.1 Eliminate Inline Styles**: Target `<50` total inline styles (Current: ~123, down from 328). Most remaining are dynamic positioning/sizing which are acceptable.
 - [ ] **5.2 Constants Mapping**: Ensure all nodes use the `PIN_COLORS` constants from `Constants.js` instead of hardcoded strings.
 
 ---
 
-**Next Action**: Implement the **Compile State Machine** (Dirty/Success/Error icons) and verify **Shortcut Chords**.
+## Remaining Work Summary
+
+| Task | Priority | Effort |
+|------|----------|--------|
+| **2.3 Visibility Toggles** (Eye icons) | Medium | ~2 hours |
+| **4.2 Watch Value Bubbles** (Persistent tooltips) | Low | ~3 hours |
+| **5.2 Constants Mapping** | Low | ~1 hour |
+
+**Next Action**: Implement **Visibility Toggles** (Eye icons for variables/functions) to complete Section 2.

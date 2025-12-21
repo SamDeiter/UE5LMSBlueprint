@@ -197,14 +197,7 @@ export class LayoutController {
           if (panel) {
             if (key === target) {
               panel.classList.remove("hidden");
-
-              // Robust Style Application with !important to override CSS
-              panel.style.setProperty("display", "flex", "important");
-              panel.style.setProperty("flex-direction", "column", "important");
-              panel.style.setProperty("flex", "1", "important");
-              panel.style.setProperty("height", "100%", "important");
-              panel.style.setProperty("visibility", "visible", "important");
-              panel.style.setProperty("opacity", "1", "important");
+              panel.classList.add("active-bottom-panel");
 
               // Focus search input if opening find tab
               if (key === "find" && this.app.search) {
@@ -213,44 +206,24 @@ export class LayoutController {
                 const searchBox = panel.querySelector(".search-box");
                 const findInput = panel.querySelector("#find-input");
 
-                if (findToolbar) {
-                  findToolbar.style.setProperty("display", "flex", "important");
-                  findToolbar.style.setProperty("width", "100%", "important");
-                  findToolbar.style.setProperty(
-                    "min-height",
-                    "30px",
-                    "important"
-                  );
-                }
-                if (searchBox) {
-                  searchBox.style.setProperty("display", "flex", "important");
-                  searchBox.style.setProperty("flex", "1", "important");
-                  searchBox.style.setProperty(
-                    "min-width",
-                    "200px",
-                    "important"
-                  );
-                }
-                if (findInput) {
-                  findInput.style.setProperty("display", "block", "important");
-                  findInput.style.setProperty(
-                    "min-width",
-                    "150px",
-                    "important"
-                  );
-                  findInput.style.setProperty(
-                    "min-height",
-                    "24px",
-                    "important"
-                  );
-                  findInput.style.setProperty("width", "100%", "important");
-                }
+                if (findToolbar)
+                  findToolbar.classList.add("find-toolbar-active");
+                if (searchBox) searchBox.classList.add("search-box-active");
+                if (findInput) findInput.classList.add("find-input-active");
 
                 this.app.search.toggle(true);
               }
             } else {
               panel.classList.add("hidden");
-              panel.style.display = "none";
+              panel.classList.remove("active-bottom-panel");
+              // Clear search classes if hidden
+              const findToolbar = panel.querySelector(".find-toolbar");
+              const searchBox = panel.querySelector(".search-box");
+              const findInput = panel.querySelector("#find-input");
+              if (findToolbar)
+                findToolbar.classList.remove("find-toolbar-active");
+              if (searchBox) searchBox.classList.remove("search-box-active");
+              if (findInput) findInput.classList.remove("find-input-active");
             }
           } else {
             console.warn("Panel not found for key:", key);

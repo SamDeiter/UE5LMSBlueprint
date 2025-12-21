@@ -14,7 +14,7 @@ class WiringController {
     this.svgGroup = svg.getElementById("wire-group");
     this.ghostWire = svg.getElementById("ghost-wire");
     this.ghostWire.setAttribute("fill", "none");
-    this.ghostWire.style.display = "none";
+    this.ghostWire.classList.add('hidden');
     this.links = new Map();
     this.selectedLinks = new Set();
     this.app = app;
@@ -185,7 +185,7 @@ class WiringController {
     this.app.compiler.markDirty();
 
     // Hide ghost wire after creating connection
-    this.ghostWire.style.display = "none";
+    this.ghostWire.classList.add('hidden');
   }
   _addLink(startPin, endPin) {
     const link = {
@@ -361,7 +361,7 @@ class WiringController {
         this.handleWireDoubleClick(link, e);
       });
     } else {
-      wireEl.style.display = "";
+      wireEl.classList.remove('hidden');
     }
 
     // Always update wire color based on current pin type
@@ -393,12 +393,12 @@ class WiringController {
       console.log(
         "[WiringController] Hiding ghost wire - no startPin or element"
       );
-      this.ghostWire.style.display = "none";
+      this.ghostWire.classList.add('hidden');
       return;
     }
 
     // Force display block
-    this.ghostWire.style.display = "block";
+    this.ghostWire.classList.remove('hidden');
 
     // Ensure it's in the DOM
     if (this.ghostWire.parentNode !== this.svgGroup) {

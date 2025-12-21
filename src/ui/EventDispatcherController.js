@@ -195,7 +195,7 @@ export class EventDispatcherController {
       const iconSpan = document.createElement("span");
       iconSpan.className =
         "ue5-variable-type-icon d-flex align-center justify-center";
-      iconSpan.innerHTML = `<i class="fas fa-bolt" style="color: var(--color-exec); font-size: 10px;"></i>`;
+      iconSpan.innerHTML = `<i class="fas fa-bolt text-xs" style="color: var(--color-exec);"></i>`;
 
       const typeLabel = document.createElement("span");
       typeLabel.className = "ue5-variable-type-name";
@@ -223,11 +223,8 @@ export class EventDispatcherController {
     // Placeholder if empty
     if (this.dispatchers.size === 0) {
       const placeholder = document.createElement("div");
-      placeholder.className = "placeholder-text";
+      placeholder.className = "placeholder-text placeholder-italic";
       placeholder.textContent = "No event dispatchers";
-      placeholder.style.padding = "8px";
-      placeholder.style.color = "#666";
-      placeholder.style.fontStyle = "italic";
       content.appendChild(placeholder);
     }
   }
@@ -243,29 +240,29 @@ export class EventDispatcherController {
 
     panel.innerHTML = `
             <div class="details-group">
-                <h4 style="color: #ddd; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;">
+                <h4 class="details-header-uppercase">
                     <i class="fas fa-caret-down"></i> Event Dispatcher
                 </h4>
                 <div class="detail-row">
                     <label>Name</label>
                     <input type="text" id="dispatcher-name-input" class="details-input" value="${
                       dispatcher.name
-                    }" style="width: 60%;">
+                    }" class="w-60">
                 </div>
                 <div class="detail-row">
                     <label>Description</label>
                     <input type="text" id="dispatcher-desc-input" class="details-input" value="${
                       dispatcher.description || ""
-                    }" style="width: 60%;">
+                    }" class="w-60">
                 </div>
             </div>
             <div class="details-group">
-                <h4 style="color: #ddd; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;">
+                <h4 class="details-header-uppercase">
                     <i class="fas fa-caret-down"></i> Replication
                 </h4>
                 <div class="detail-row">
                     <label>Replicates</label>
-                    <select id="dispatcher-replicates-select" class="details-select" style="width: 60%;">
+                    <select id="dispatcher-replicates-select" class="details-select" class="w-60">
                         <option value="NotReplicated" ${
                           dispatcher.replicates === "NotReplicated"
                             ? "selected"
@@ -283,7 +280,7 @@ export class EventDispatcherController {
                 </div>
                 <div class="detail-row">
                     <label>Reliable</label>
-                    <div style="width: 60%;">
+                    <div class="w-60">
                         <input type="checkbox" id="dispatcher-reliable-checkbox" class="ue5-checkbox" ${
                           dispatcher.reliable ? "checked" : ""
                         }>
@@ -343,15 +340,15 @@ export class EventDispatcherController {
 
     const menu = document.createElement("div");
     menu.className = "context-menu dispatcher-context-menu";
-    menu.style.position = "fixed";
+    menu.classList.add("z-max");
     menu.style.left = `${e.clientX}px`;
     menu.style.top = `${e.clientY}px`;
-    menu.style.zIndex = "10000";
+    
 
     const createMenuItem = (label, icon, onClick) => {
       const item = document.createElement("div");
       item.className = "menu-item";
-      item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
+      item.innerHTML = `<i class="${icon}" class="mr-1 w-12"></i> ${label}`;
       item.addEventListener("click", (ev) => {
         ev.stopPropagation();
         document.body.removeChild(menu);

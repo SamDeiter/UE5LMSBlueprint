@@ -118,8 +118,6 @@ class Node {
             const bpIcon = document.createElement("div");
             bpIcon.className = "breakpoint-icon";
             bpIcon.innerHTML = UE5Renderer.renderBreakpointIcon();
-            bpIcon.style.cssText =
-              "position: absolute; top: -4px; left: -4px; z-index: 10;";
             header.appendChild(bpIcon);
           }
         } else {
@@ -172,14 +170,12 @@ class Node {
 
     const gradient = this.getHeaderColor();
     header.style.background = `linear-gradient // Dynamic gradient(to bottom, ${gradient.start}, ${gradient.end})`;
-    header.style.borderBottomColor = "rgba(0,0,0,0.5)";
+
     if (this.isBreakpoint) {
       header.classList.add("has-breakpoint");
       const bpIcon = document.createElement("div");
       bpIcon.className = "breakpoint-icon";
       bpIcon.innerHTML = UE5Renderer.renderBreakpointIcon();
-      bpIcon.style.cssText =
-        "position: absolute; top: -6px; left: -6px; z-index: 10;";
       header.appendChild(bpIcon);
     }
 
@@ -197,8 +193,8 @@ class Node {
         iconEl.classList.add("text-italic"); // Replaced inline style
         iconEl.classList.add("text-white"); // Replaced inline style
         iconEl.textContent = "f";
-        iconEl.style.fontSize = "14px";
-        iconEl.style.marginRight = "4px";
+        iconEl.classList.add("text-md");
+        iconEl.classList.add("mr-1");
       } else {
         iconEl.textContent = this.icon;
       }
@@ -219,8 +215,6 @@ class Node {
       const devBadge = document.createElement("span");
       devBadge.className = "dev-badge";
       devBadge.textContent = "Development Only";
-      devBadge.style.cssText =
-        "font-size: 8px; color: #aaa; margin-left: auto; padding-right: 4px; font-style: italic;";
       header.appendChild(devBadge);
     }
 
@@ -329,7 +323,7 @@ class Node {
           row.appendChild(this.renderPin(pinOut, shouldHideLabel));
         } else {
           const spacer = document.createElement("div");
-          spacer.minWidth = "10px";
+          spacer.classList.add("min-w-10");
           row.appendChild(spacer);
         }
         fragment.appendChild(row);
@@ -353,13 +347,11 @@ class Node {
       ) {
         const criteriaContainer = document.createElement("div");
         criteriaContainer.className = "need-node-criteria";
-        criteriaContainer.style.cssText =
-          "padding: 8px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px;";
+        criteriaContainer.className = "need-node-criteria-panel";
 
         needData.criteria.forEach((c) => {
           const row = document.createElement("div");
-          row.style.cssText =
-            "display: flex; gap: 6px; margin-bottom: 4px; align-items: center; color: #ccc;";
+          row.className = "need-node-criterion-row";
 
           // Status icon (updated by simulation)
           const icon = document.createElement("span");
@@ -506,10 +498,7 @@ class Node {
     if (pin.isSplit) {
       const splitGroup = document.createElement("div");
       splitGroup.className = "pin-split-group";
-      splitGroup.style.display = "flex";
-      splitGroup.style.flexDirection = "column";
-      splitGroup.style.alignItems =
-        pin.dir === "in" ? "flex-start" : "flex-end";
+      splitGroup.classList.add(pin.dir === "in" ? "align-start" : "align-end");
 
       if (pin.subPins) {
         pin.subPins.forEach((subPin) => {
@@ -548,7 +537,7 @@ class Node {
     pinLabel.className = `pin-label-${pin.dir}`;
     pinLabel.textContent = pin.name;
     if (effectiveHideLabel) {
-      pinLabel.style.display = "none";
+      pinLabel.classList.add("hidden");
     }
 
     let inputWidget = null;
@@ -563,9 +552,7 @@ class Node {
       pinContainer.appendChild(pinDot);
       const wrapper = document.createElement("div");
       wrapper.className = "pin-wrapper";
-      wrapper.style.display = "flex";
-      wrapper.style.alignItems = "center";
-      wrapper.style.gap = "5px";
+      wrapper.className = "pin-wrapper";
 
       if (!effectiveHideLabel) wrapper.appendChild(pinLabel);
       if (inputWidget) wrapper.appendChild(inputWidget);
@@ -606,12 +593,10 @@ class Node {
       inputEl.value = pinValue;
       inputEl.className = "node-literal-input";
       const wideTypes = ["string", "text", "name"];
-      inputEl.style.width = wideTypes.includes(pin.type) ? "80px" : "40px";
-      inputEl.style.backgroundColor = "#111";
-      inputEl.style.color = "white";
-      inputEl.style.border = "1px solid #444";
-      inputEl.style.borderRadius = "2px";
-      inputEl.style.marginLeft = "5px";
+      inputEl.classList.add(
+        wideTypes.includes(pin.type) ? "input-wide" : "input-narrow"
+      );
+
       inputEl.addEventListener("change", updateLiteral);
       inputEl.addEventListener("mousedown", (e) => e.stopPropagation());
 

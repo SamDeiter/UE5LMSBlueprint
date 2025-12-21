@@ -27,7 +27,7 @@ export class MacrosController {
         section.className = 'sidebar-section';
 
         const content = document.createElement('div');
-        content.style.display = 'block';
+        content.classList.remove('hidden');
 
         const header = createCollapsibleHeader(section, 'Macros', content, {
             onAdd: (e) => {
@@ -44,7 +44,7 @@ export class MacrosController {
             const importBtn = document.createElement('i');
             importBtn.className = 'fas fa-file-import add-btn';
             importBtn.title = 'Import Macro';
-            importBtn.style.marginRight = '8px';
+            importBtn.classList.add('mr-1');
             importBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.importMacro();
@@ -60,10 +60,10 @@ export class MacrosController {
             item.dataset.macroId = macro.id;
 
             const icon = document.createElement('i');
-            icon.className = 'fas fa-scroll function-icon'; // Scroll icon for macros
-            icon.style.marginRight = '6px';
-            icon.style.color = '#ccc'; // Greyish for macros
-            icon.style.fontSize = '10px';
+            icon.className = 'fas fa-scroll function-icon text-muted text-xs mr-1'; // Scroll icon for macros
+            
+             // Greyish for macros
+            
 
             const label = document.createElement('span');
             label.className = 'tree-item-label';
@@ -194,7 +194,7 @@ export class MacrosController {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json';
-        input.style.display = 'none';
+        input.classList.add('hidden');
 
         input.addEventListener('change', (e) => {
             const file = e.target.files[0];

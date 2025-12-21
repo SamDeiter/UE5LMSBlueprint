@@ -62,19 +62,19 @@ export class ComponentSelector {
         // Create modal overlay
         this.modal = document.createElement('div');
         this.modal.className = 'component-selector-modal';
-        this.modal.style.display = 'none';
+        this.modal.classList.add('hidden');
 
         this.modal.innerHTML = `
             <div class="component-selector-content">
                 <div class="component-selector-title-bar">
-                    <i class="fas fa-cube" style="margin-right: 6px; font-size: 10px;"></i>
+                    <i class="fas fa-cube component-selector-header-icon"></i>
                     <span>Components</span>
                     <button class="component-selector-close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="component-selector-toolbar">
-                    <div class="search-box" style="flex: 1;">
+                    <div class="search-box flex-1">
                         <i class="fas fa-search"></i>
                         <input type="text" class="component-search-input" placeholder="Search Components">
                     </div>
@@ -138,11 +138,11 @@ export class ComponentSelector {
 
             const arrow = document.createElement('i');
             arrow.className = 'fas fa-caret-down';
-            arrow.style.cssText = 'margin-right: 6px; font-size: 10px; transition: transform 0.2s;';
+            arrow.className = 'fas fa-caret-down component-selector-arrow';
 
             const icon = document.createElement('i');
             icon.className = `fas ${categoryIcons[category] || 'fa-folder'}`;
-            icon.style.cssText = 'margin-right: 6px; font-size: 10px;';
+            icon.classList.add('component-selector-header-icon');
 
             const label = document.createElement('span');
             label.textContent = category;
@@ -154,13 +154,13 @@ export class ComponentSelector {
             // Content container
             const contentContainer = document.createElement('div');
             contentContainer.className = 'component-category-content';
-            contentContainer.style.display = 'block'; // Start expanded
+            contentContainer.classList.remove('hidden'); // Start expanded
 
             // Toggle collapse
             let isExpanded = true;
             categoryHeader.addEventListener('click', () => {
                 isExpanded = !isExpanded;
-                contentContainer.style.display = isExpanded ? 'block' : 'none';
+                if (isExpanded) contentContainer.classList.remove('hidden'); else contentContainer.classList.add('hidden');
                 arrow.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)';
             });
 
@@ -168,11 +168,11 @@ export class ComponentSelector {
             filteredComponents.forEach(comp => {
                 const item = document.createElement('div');
                 item.className = 'component-selector-item';
-                item.style.paddingLeft = '24px'; // Indent
+                item.classList.add('pl-4'); // Indent
 
                 const compIcon = document.createElement('i');
                 compIcon.className = `fas ${comp.icon}`;
-                compIcon.style.cssText = 'margin-right: 8px; font-size: 11px; color: #999;';
+                compIcon.className = `fas ${comp.icon} component-selector-item-icon`;
 
                 const compName = document.createElement('span');
                 compName.textContent = comp.name;
@@ -207,7 +207,7 @@ export class ComponentSelector {
 
     show(onSelect, triggerButton) {
         this.onSelectCallback = onSelect;
-        this.modal.style.display = 'block';
+        this.modal.classList.remove('hidden');
         this.searchInput.value = '';
         this.renderComponents();
 
@@ -236,7 +236,7 @@ export class ComponentSelector {
     }
 
     hide() {
-        this.modal.style.display = 'none';
+        this.modal.classList.add('hidden');
         this.onSelectCallback = null;
     }
 }
