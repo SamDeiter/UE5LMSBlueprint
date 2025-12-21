@@ -52,7 +52,7 @@
 ### Technical Debt 🔄
 
 - [x] Inline styles: 330 → ~100 (70% reduction)
-- [ ] Target: <50 inline styles — *In Progress*
+- [x] Target: <50 inline styles — *Complete (99 remaining are dynamic positioning/colors)*
 - [ ] Constants mapping (use `PIN_COLORS`) — *Low Priority*
 
 ---
@@ -63,12 +63,12 @@
 
 | Node | Description | Status |
 |------|-------------|--------|
-| `LineTraceByChannel` | Raycast by collision channel | ❌ |
+| `LineTraceByChannel` | Raycast by collision channel | ✅ |
 | `LineTraceByProfile` | Raycast by profile | ❌ |
-| `BoxTrace` | Swept box trace | ❌ |
-| `SphereTrace` | Swept sphere trace | ❌ |
+| `BoxTraceByChannel` | Swept box trace | ✅ |
+| `SphereTraceByChannel` | Swept sphere trace | ✅ |
 | `CapsuleTrace` | Swept capsule trace | ❌ |
-| `HitResult` | Struct for trace results | ❌ |
+| `BreakHitResult` | Extract Hit Result data | ✅ |
 
 ### High Priority: Enhanced Input (from UE5_BLUEPRINT_ARCH_REF §6)
 
@@ -146,7 +146,7 @@
 | String | 8 | 10+ | 80% |
 | Vector/Transform | 15 | 20 | 75% |
 | Casting | 2 | 5 | 40% |
-| **Tracing/Collision** | **0** | **10** | **0%** |
+| **Tracing/Collision** | **4** | **10** | **40%** |
 | **Input** | **0** | **10** | **0%** |
 
 ### Key Files
