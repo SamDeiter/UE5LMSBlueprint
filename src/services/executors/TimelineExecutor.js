@@ -44,7 +44,7 @@ export class TimelineExecutor extends BaseExecutor {
         return null;
     }
 
-    evaluateValue(node, pin) {
+    evaluateValue(node, _pin) {
         // Timeline outputs are set via tempValues in the tick loop
         if (node.tempValues) {
             if (node.tempValues.alpha !== undefined) {

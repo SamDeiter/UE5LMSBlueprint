@@ -57,7 +57,7 @@ function getFileSizeKB(filePath) {
     try {
         const stats = fs.statSync(filePath);
         return (stats.size / 1024).toFixed(2);
-    } catch (err) {
+    } catch (_err) {
         return 0;
     }
 }

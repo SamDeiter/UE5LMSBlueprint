@@ -14,7 +14,7 @@ This document breaks down the "all of this" implementation requirements from the
 
 - [x] **2.1 Variable Pill Transformation**: Update `VariableController.js` to use `UE5Renderer.renderVariablePill` instead of legacy lozenges.
 - [x] **2.2 Function Iconography**: Update `FunctionsController.js` to use the italicized 'f' icon with color coding (Blue=Impure, Green=Pure).
-- [ ] **2.3 Visibility Toggles**: Implement the "Open/Closed Eye" icon system for variable and function visibility in the sidebar.
+- [x] **2.3 Visibility Toggles**: Implement the "Open/Closed Eye" icon system for variable and function visibility in the sidebar.
 - [x] **2.4 Multi-Reference Support**: Ensure the "Grid" (Array), "Brackets" (Set), and "Map" icons are correctly rendered in the sidebar list.
 
 ## 🟢 3. Interaction & Workflow (Behavioral Parity)

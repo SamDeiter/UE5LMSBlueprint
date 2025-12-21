@@ -22,7 +22,7 @@ export class CastExecutor extends BaseExecutor {
     /**
      * Handle CastTo_* data output
      */
-    evaluateValue(node, pin) {
+    evaluateValue(node, _pin) {
         if (node.nodeKey.startsWith('CastTo_')) {
             const targetType = node.nodeKey.replace('CastTo_', '');
             const obj = this.evaluateInput(node, 'object_in');

@@ -1,7 +1,7 @@
 import { Utils } from '../utils.js';
 import { generateGUID } from '../utils/guid.js';
 import { createCollapsibleHeader } from './ui-helpers.js';
-import { nodeRegistry } from '../registries/NodeRegistry.js';
+import { _nodeRegistry } from '../registries/NodeRegistry.js';
 
 export class LocalVariablesController {
     constructor(app) {

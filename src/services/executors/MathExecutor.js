@@ -1,5 +1,5 @@
 import { BaseExecutor } from './BaseExecutor.js';
-import { Utils } from '../../utils.js';
+import { _Utils } from '../../utils.js';
 
 /**
  * Handles mathematical operation nodes (AddInt, AddFloat, SubtractFloat, etc.)
@@ -8,14 +8,14 @@ export class MathExecutor extends BaseExecutor {
     /**
      * Math nodes are pure (data-only), so execute() is not used
      */
-    async execute(node) {
+    async execute(_node) {
         return null;
     }
 
     /**
      * Evaluate mathematical operations
      */
-    evaluateValue(node, pin) {
+    evaluateValue(node, _pin) {
         switch (node.nodeKey) {
             case 'AddInt': {
                 const a = this.evaluateInput(node, 'a_in');

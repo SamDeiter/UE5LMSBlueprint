@@ -29,7 +29,7 @@ export class ActorExecutor extends BaseExecutor {
         }
     }
 
-    evaluateValue(node, pin) {
+    evaluateValue(node, _pin) {
         switch (node.nodeKey) {
             case 'GetActorLocation':
                 return this.evaluateGetActorLocation(node);
@@ -100,8 +100,8 @@ export class ActorExecutor extends BaseExecutor {
     executeSetActorLocation(node) {
         const target = this.evaluateInput(node, 'target');
         const newLocation = this.evaluateInput(node, 'new_location');
-        const sweep = this.evaluateInput(node, 'sweep');
-        const teleport = this.evaluateInput(node, 'teleport');
+        const _sweep = this.evaluateInput(node, 'sweep');
+        const _teleport = this.evaluateInput(node, 'teleport');
 
         if (target && target.id && this.engine.actors.has(target.id)) {
             const actor = this.engine.actors.get(target.id);
@@ -126,7 +126,7 @@ export class ActorExecutor extends BaseExecutor {
     executeSetActorRotation(node) {
         const target = this.evaluateInput(node, 'target');
         const newRotation = this.evaluateInput(node, 'new_rotation');
-        const teleport = this.evaluateInput(node, 'teleport');
+        const _teleport = this.evaluateInput(node, 'teleport');
 
         if (target && target.id && this.engine.actors.has(target.id)) {
             const actor = this.engine.actors.get(target.id);

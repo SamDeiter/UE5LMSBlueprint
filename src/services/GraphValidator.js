@@ -93,7 +93,7 @@ export class GraphValidator {
     checkVariableValue(params) {
         // params: { name: 'MyVar', value: 10, operator: '==' }
         if (!params || !params.name) return false;
-        const { name, value, operator = '==' } = params;
+        const { name, value, _operator = '==' } = params;
         const variable = this.app.variables.variables.get(name);
 
         if (!variable) return false;

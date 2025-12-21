@@ -3,12 +3,12 @@ import { Utils } from '../utils.js';
 import { Node } from '../graph/Node.js';
 
 export const registerRefactorTests = (runner) => {
-    runner.register('Constants Check', (app) => {
+    runner.register('Constants Check', (_app) => {
         if (PIN_TYPES.EXEC !== 'exec') throw new Error('PIN_TYPES.EXEC should be "exec"');
         if (PIN_COLORS.exec !== 'var(--color-exec)') throw new Error('PIN_COLORS.exec should be "var(--color-exec)"');
     });
 
-    runner.register('Utils Constant Mapping', (app) => {
+    runner.register('Utils Constant Mapping', (_app) => {
         const color = Utils.getPinColor('exec');
         if (color !== 'var(--color-exec)') throw new Error(`Utils.getPinColor('exec') returned ${color}`);
 

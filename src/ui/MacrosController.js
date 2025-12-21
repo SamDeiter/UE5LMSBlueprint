@@ -30,7 +30,7 @@ export class MacrosController {
         content.classList.remove('hidden');
 
         const header = createCollapsibleHeader(section, 'Macros', content, {
-            onAdd: (e) => {
+            onAdd: (_e) => {
                 // e.stopPropagation(); // Handled by createCollapsibleHeader
                 this.addNewMacro();
             },

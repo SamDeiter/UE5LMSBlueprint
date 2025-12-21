@@ -2,7 +2,7 @@
  * Utility class for helper functions and constants.
  * Contains the NodeLibrary definition and styling helpers.
  */
-import { PIN_TYPES, PIN_COLORS, VARIABLE_HEADER_COLORS, PIN_TYPE_CLASSES } from './config/Constants.js';
+import { _PIN_TYPES, PIN_COLORS, VARIABLE_HEADER_COLORS, PIN_TYPE_CLASSES } from './config/Constants.js';
 
 class Utils {
     /**

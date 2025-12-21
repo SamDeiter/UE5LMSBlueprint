@@ -33,7 +33,7 @@ export class FunctionsController {
     content.classList.remove('hidden');
 
     const header = createCollapsibleHeader(section, "Functions", content, {
-      onAdd: (e) => {
+      onAdd: (_e) => {
         // e.stopPropagation(); // Handled by createCollapsibleHeader
         this.addNewFunction();
       },

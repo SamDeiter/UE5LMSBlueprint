@@ -102,7 +102,7 @@ export class HistoryManager {
             // Restore Functions
             if (state.functions && this.app.functionRegistry) {
                 this.app.functionRegistry.clear();
-                state.functions.forEach(fData => {
+                state.functions.forEach(_fData => {
                     // We need to import FunctionDefinition class or have a static helper, 
                     // but we can't import here easily if not already imported.
                     // However, FunctionRegistry stores FunctionDefinition objects.

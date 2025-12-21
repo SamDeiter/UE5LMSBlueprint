@@ -830,11 +830,9 @@ export class VariableController {
     if (existingMenu) existingMenu.remove();
 
     const menu = document.createElement("div");
-    menu.className = "context-menu variable-context-menu";
-    menu.style.position = "fixed";
+    menu.className = "context-menu variable-context-menu menu-fixed z-max";
     menu.style.left = `${e.clientX}px`;
     menu.style.top = `${e.clientY}px`;
-    menu.style.zIndex = "10000";
 
     const createMenuItem = (label, icon, onClick) => {
       const item = document.createElement("div");

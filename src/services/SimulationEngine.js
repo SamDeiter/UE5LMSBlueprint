@@ -266,11 +266,23 @@ export class SimulationEngine {
     if (stepOutBtn) stepOutBtn.disabled = !this.isPaused;
 
     if (this.isPaused) {
-      this.app.graph.editor.style.boxShadow = "inset 0 0 0 4px #FFC107"; // Amber border for pause
+      this.app.graph.editor.classList.remove(
+        "simulation-playing",
+        "simulation-inactive"
+      );
+      this.app.graph.editor.classList.add("simulation-paused");
     } else if (this.isRunning) {
-      this.app.graph.editor.style.boxShadow = "inset 0 0 0 2px #4CAF50"; // Green border
+      this.app.graph.editor.classList.remove(
+        "simulation-paused",
+        "simulation-inactive"
+      );
+      this.app.graph.editor.classList.add("simulation-playing");
     } else {
-      this.app.graph.editor.style.boxShadow = "none";
+      this.app.graph.editor.classList.remove(
+        "simulation-paused",
+        "simulation-playing"
+      );
+      this.app.graph.editor.classList.add("simulation-inactive");
     }
 
     // Toggle debug controls visibility

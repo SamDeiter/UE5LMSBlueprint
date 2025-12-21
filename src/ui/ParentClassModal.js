@@ -2,7 +2,7 @@
  * ParentClassModal.js
  * Handles the "Pick Parent Class" modal for new Blueprint creation.
  */
-import { DOMElements } from "../config/DOMElements.js";
+import { _DOMElements } from "../config/DOMElements.js";
 
 export class ParentClassModal {
   constructor(app) {

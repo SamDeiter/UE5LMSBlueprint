@@ -1,4 +1,4 @@
-import { FunctionDefinition } from './FunctionDefinition.js';
+import { _FunctionDefinition } from './FunctionDefinition.js';
 
 /**
  * Registry for managing user-defined functions.

@@ -6,7 +6,7 @@ import { BaseExecutor } from "./BaseExecutor.js";
 import { timerManager } from "../TimerManager.js";
 
 export class TimerExecutor extends BaseExecutor {
-  async execute(node, inputPin) {
+  async execute(node, _inputPin) {
     switch (node.nodeKey) {
       case "SetTimerByEvent": {
         const timerName =
@@ -15,7 +15,7 @@ export class TimerExecutor extends BaseExecutor {
         const looping = this.evaluateInput(node, "looping_in") || false;
 
         // Get the event name if provided (for simulation callback)
-        const eventName = this.evaluateInput(node, "event_in") || null;
+        const _eventName = this.evaluateInput(node, "event_in") || null;
 
         // Set up timer callback
         const callback = () => {

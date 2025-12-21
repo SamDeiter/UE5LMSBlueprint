@@ -8,7 +8,7 @@ export class VectorExecutor extends BaseExecutor {
     /**
      * Pure nodes, so execute() is not used.
      */
-    async execute(node) {
+    async execute(_node) {
         return null;
     }
 

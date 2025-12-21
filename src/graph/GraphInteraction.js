@@ -392,7 +392,7 @@ export class GraphInteraction {
         }
       } else if (this.isDraggingNode) {
         this.hasDragged = true;
-        const zoom = this.controller.zoom;
+        const _zoom = this.controller.zoom;
 
         this.controller.selectedNodes.forEach((nodeId) => {
           const node = this.controller.nodes.get(nodeId);

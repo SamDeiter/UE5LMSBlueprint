@@ -2,7 +2,7 @@
  * EventDispatcherController - Manages Event Dispatchers in the My Blueprint panel
  * Phase 5: Panel Implementation (UE5 Parity)
  */
-import { Utils } from "../utils.js";
+import { _Utils } from "../utils.js";
 import { generateGUID } from "../utils/guid.js";
 import { createCollapsibleHeader } from "./ui-helpers.js";
 
@@ -195,12 +195,12 @@ export class EventDispatcherController {
       const iconSpan = document.createElement("span");
       iconSpan.className =
         "ue5-variable-type-icon d-flex align-center justify-center";
-      iconSpan.innerHTML = `<i class="fas fa-bolt text-xs" style="color: var(--color-exec);"></i>`;
+      iconSpan.innerHTML = `<i class="fas fa-bolt text-xs text-exec"></i>`;
 
       const typeLabel = document.createElement("span");
       typeLabel.className = "ue5-variable-type-name";
       typeLabel.textContent = "Dispatcher";
-      typeLabel.style.color = "var(--color-exec)";
+      typeLabel.classList.add("text-exec");
 
       rightGroup.appendChild(iconSpan);
       rightGroup.appendChild(typeLabel);
@@ -343,7 +343,6 @@ export class EventDispatcherController {
     menu.classList.add("z-max");
     menu.style.left = `${e.clientX}px`;
     menu.style.top = `${e.clientY}px`;
-    
 
     const createMenuItem = (label, icon, onClick) => {
       const item = document.createElement("div");

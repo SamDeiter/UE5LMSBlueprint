@@ -8,7 +8,7 @@ export class StringExecutor extends BaseExecutor {
     /**
      * String nodes are pure (data-only), so execute() is not used
      */
-    async execute(node) {
+    async execute(_node) {
         return null;
     }
 

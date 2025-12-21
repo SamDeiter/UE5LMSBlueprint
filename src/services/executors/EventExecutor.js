@@ -8,7 +8,7 @@ export class EventExecutor extends BaseExecutor {
   /**
    * Event nodes are pass-through - they don't execute logic, just start flows
    */
-  async execute(node) {
+  async execute(_node) {
     // EventBeginPlay, EventTick, FunctionEntry, MacroEntry
     // These nodes just pass through to their connected output
     return null;
@@ -17,7 +17,7 @@ export class EventExecutor extends BaseExecutor {
   /**
    * EventTick provides delta_seconds output
    */
-  evaluateValue(node, pin) {
+  evaluateValue(node, _pin) {
     if (node.nodeKey === "EventTick" && node.tempValues) {
       return node.tempValues.delta_seconds_out;
     }

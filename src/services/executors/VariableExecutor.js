@@ -37,7 +37,7 @@ export class VariableExecutor extends BaseExecutor {
     /**
      * Handle Get_* nodes (data flow)
      */
-    evaluateValue(node, pin) {
+    evaluateValue(node, _pin) {
         if (node.nodeKey.startsWith('Get_')) {
             const varName = node.nodeKey.replace('Get_', '');
 
