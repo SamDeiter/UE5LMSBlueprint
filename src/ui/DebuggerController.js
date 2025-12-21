@@ -12,21 +12,7 @@ export class DebuggerController {
     createPanel() {
         this.panel = document.createElement('div');
         this.panel.id = 'call-stack-panel';
-        this.panel.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 220px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #444;
-            border-radius: 4px;
-            padding: 10px;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            display: none;
-            z-index: 100;
-            min-width: 200px;
-        `;
+        this.panel.className = 'debug-floating-panel hidden';
         this.panel.innerHTML = '<div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px;">Call Stack</div><div id="call-stack-list"></div>';
 
         const editor = document.getElementById('graph-editor');
@@ -45,11 +31,11 @@ export class DebuggerController {
         const stack = this.app.sim.callStack;
         // Only show if we are paused or have a stack
         if (stack.length === 0 && !this.app.sim.isPaused) {
-            this.panel.style.display = 'none';
+            this.panel.classList.add('hidden');
             return;
         }
 
-        this.panel.style.display = 'block';
+        this.panel.classList.remove('hidden');
 
         // 1. Current Frame (Active Graph)
         const currentFrame = document.createElement('div');
@@ -92,21 +78,7 @@ export class DebuggerController {
     createWatchPanel() {
         this.watchPanel = document.createElement('div');
         this.watchPanel.id = 'watch-panel';
-        this.watchPanel.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #444;
-            border-radius: 4px;
-            padding: 10px;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            display: none;
-            z-index: 100;
-            min-width: 200px;
-        `;
+        this.watchPanel.className = 'debug-floating-panel hidden';
         this.watchPanel.innerHTML = '<div style="font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px;">Watched Values</div><div id="watch-list"></div>';
         
         const editor = document.getElementById('graph-editor');
@@ -118,7 +90,7 @@ export class DebuggerController {
     addWatch(pin) {
         this.watchedPins.add(pin.id);
         this.updateWatchPanel();
-        this.watchPanel.style.display = 'block';
+        this.watchPanel.classList.remove('hidden');
     }
 
     updateWatchPanel() {
@@ -127,7 +99,7 @@ export class DebuggerController {
         list.innerHTML = '';
 
         if (this.watchedPins.size === 0) {
-            this.watchPanel.style.display = 'none';
+            this.watchPanel.classList.add('hidden');
             return;
         }
 
@@ -157,7 +129,7 @@ export class DebuggerController {
         });
         
         if (this.watchedPins.size > 0) {
-             this.watchPanel.style.display = 'block';
+             this.watchPanel.classList.remove('hidden');
         }
     }
     /**
