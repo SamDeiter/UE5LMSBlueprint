@@ -16,7 +16,7 @@ export class GraphsController {
         section.className = 'sidebar-section';
 
         const content = document.createElement('div');
-        content.style.display = 'block';
+        content.classList.remove('hidden');
 
         // Header
         createCollapsibleHeader(section, 'Graphs', content, {
@@ -41,9 +41,9 @@ export class GraphsController {
 
         const icon = document.createElement('i');
         icon.className = `fas ${iconClass}`;
-        icon.style.marginRight = '6px';
-        icon.style.color = '#ccc';
-        icon.style.fontSize = '10px';
+        icon.classList.add('mr-1', 'text-xs', 'text-muted');
+        
+        
 
         const label = document.createElement('span');
         label.className = 'tree-item-label';

@@ -524,7 +524,6 @@ export class VariableController {
           // Create output circle indicator
           const outputCircle = document.createElement("span");
           outputCircle.className = "component-output-circle";
-          
 
           const iconClass = this.app.componentsController
             ? this.app.componentsController.getIconForType(comp.type)
@@ -656,26 +655,6 @@ export class VariableController {
         });
 
         el.appendChild(nameSpan);
-
-        // Visibility Eye Icon
-        const eyeIcon = document.createElement("i");
-        const isPublic =
-          variable.access === "public" || variable.access === undefined;
-        eyeIcon.className = `fas ${
-          isPublic ? "fa-eye active" : "fa-eye-slash"
-        } var-eye-icon`;
-        eyeIcon.title = isPublic ? "Instance Editable (Public)" : "Private";
-        
-        
-        if (isPublic) eyeIcon.classList.add("opacity-100"); else eyeIcon.classList.add("opacity-50");
-
-        eyeIcon.addEventListener("click", (e) => {
-          e.stopPropagation();
-          variable.access = variable.access === "public" ? "private" : "public";
-          this.renderPanel();
-          this.app.persistence.autoSave();
-        });
-        el.appendChild(eyeIcon);
       }
 
       // Right group: container icon + type name + menu

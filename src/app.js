@@ -378,6 +378,29 @@ class BlueprintApp {
     BlueprintApp.componentsController.render(); // Ensure components panel is rendered
     BlueprintApp.compiler.validate();
     BlueprintApp.grid.draw();
+
+    // Initialize right panel tab switching (Details/Palette)
+    const rightPanelTabs = document.querySelectorAll(".right-panel-tab");
+    const detailsPanel = document.getElementById("details-panel");
+    const rightPalettePanel = document.getElementById("right-palette-panel");
+
+    rightPanelTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        // Update tab active state
+        rightPanelTabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        // Show/hide content panels
+        const targetTab = tab.dataset.tab;
+        if (targetTab === "details") {
+          if (detailsPanel) detailsPanel.classList.remove("hidden");
+          if (rightPalettePanel) rightPalettePanel.classList.add("hidden");
+        } else if (targetTab === "palette") {
+          if (detailsPanel) detailsPanel.classList.add("hidden");
+          if (rightPalettePanel) rightPalettePanel.classList.remove("hidden");
+        }
+      });
+    });
   }
 }
 
