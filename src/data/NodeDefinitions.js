@@ -8,7 +8,7 @@ export const NodeDefinitions = {
     title: "To String (Float)",
     type: "pure-node",
     category: "String",
-    executor: "String",
+    executor: "Conversion",
     icon: "●",
     pins: [
       { id: "val_in", name: "", type: "float", dir: "in" },
@@ -19,7 +19,7 @@ export const NodeDefinitions = {
     title: "To String (Int)",
     type: "pure-node",
     category: "String",
-    executor: "String",
+    executor: "Conversion",
     icon: "●",
     pins: [
       { id: "val_in", name: "", type: "int", dir: "in" },
@@ -30,7 +30,7 @@ export const NodeDefinitions = {
     title: "To String (Bool)",
     type: "pure-node",
     category: "String",
-    executor: "String",
+    executor: "Conversion",
     icon: "●",
     pins: [
       { id: "val_in", name: "", type: "bool", dir: "in" },
@@ -41,7 +41,7 @@ export const NodeDefinitions = {
     title: "To String (Byte)",
     type: "pure-node",
     category: "String",
-    executor: "String",
+    executor: "Conversion",
     icon: "●",
     pins: [
       { id: "val_in", name: "", type: "byte", dir: "in" },
@@ -52,7 +52,7 @@ export const NodeDefinitions = {
     title: "To String (Name)",
     type: "pure-node",
     category: "String",
-    executor: "String",
+    executor: "Conversion",
     icon: "●",
     pins: [
       { id: "val_in", name: "", type: "name", dir: "in" },
@@ -63,7 +63,7 @@ export const NodeDefinitions = {
     title: "To String (Text)",
     type: "pure-node",
     category: "String",
-    executor: "String",
+    executor: "Conversion",
     icon: "●",
     pins: [
       { id: "val_in", name: "", type: "text", dir: "in" },
@@ -74,7 +74,7 @@ export const NodeDefinitions = {
     title: "To Float (Int)",
     type: "pure-node",
     category: "Math|Float",
-    executor: "Math",
+    executor: "Conversion",
     icon: "●",
     pins: [
       { id: "val_in", name: "", type: "int", dir: "in" },
@@ -332,9 +332,27 @@ export const NodeDefinitions = {
     icon: "fa-stopwatch",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "name_in", name: "Timer Name", type: "string", dir: "in", defaultValue: "MyTimer" },
-      { id: "time_in", name: "Time", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "looping_in", name: "Looping", type: "bool", dir: "in", defaultValue: false },
+      {
+        id: "name_in",
+        name: "Timer Name",
+        type: "string",
+        dir: "in",
+        defaultValue: "MyTimer",
+      },
+      {
+        id: "time_in",
+        name: "Time",
+        type: "float",
+        dir: "in",
+        defaultValue: 1.0,
+      },
+      {
+        id: "looping_in",
+        name: "Looping",
+        type: "bool",
+        dir: "in",
+        defaultValue: false,
+      },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
     ],
   },
@@ -346,7 +364,13 @@ export const NodeDefinitions = {
     icon: "fa-stop-circle",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "name_in", name: "Timer Name", type: "string", dir: "in", defaultValue: "MyTimer" },
+      {
+        id: "name_in",
+        name: "Timer Name",
+        type: "string",
+        dir: "in",
+        defaultValue: "MyTimer",
+      },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
     ],
   },
@@ -357,7 +381,13 @@ export const NodeDefinitions = {
     executor: "Timer",
     icon: "fa-question-circle",
     pins: [
-      { id: "name_in", name: "Timer Name", type: "string", dir: "in", defaultValue: "MyTimer" },
+      {
+        id: "name_in",
+        name: "Timer Name",
+        type: "string",
+        dir: "in",
+        defaultValue: "MyTimer",
+      },
       { id: "is_active_out", name: "Is Active", type: "bool", dir: "out" },
     ],
   },
