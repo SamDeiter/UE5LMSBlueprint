@@ -19,6 +19,8 @@ import { NeedNodeExecutor } from './executors/NeedNodeExecutor.js';
 import { StringExecutor } from './executors/StringExecutor.js';
 import { ActorExecutor } from './executors/ActorExecutor.js';
 import { VectorExecutor } from './executors/VectorExecutor.js';
+import { TimerExecutor } from './executors/TimerExecutor.js';
+import { timerManager } from './TimerManager.js';
 import { NodeDefinitions } from '../data/NodeDefinitions.js';
 
 /**
@@ -46,6 +48,9 @@ export class SimulationEngine {
         // Actor Storage (for Phase A: Actor Nodes)
         this.actors = new Map();
         this.nextActorId = 1;
+
+        // Timer Manager (Phase 4: Behavioral Optimization)
+        this.timerManager = timerManager;
 
         // Executor Registry
         this.executorRegistry = new ExecutorRegistry(this);
@@ -81,7 +86,8 @@ export class SimulationEngine {
             'Macro': new MacroExecutor(this),
             'NeedNode': new NeedNodeExecutor(this),
             'String': new StringExecutor(this),
-            'Actor': new ActorExecutor(this)
+            'Actor': new ActorExecutor(this),
+            'Timer': new TimerExecutor(this)
         };
 
         // 2. Auto-Register Static Nodes from Metadata
