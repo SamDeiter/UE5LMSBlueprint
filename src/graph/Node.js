@@ -131,8 +131,8 @@ class Node {
 
   updatePosition() {
     if (this.element) {
-      this.element.style.left = `${this.x}px`;
-      this.element.style.top = `${this.y}px`;
+      this.element.style.left = `${this.x}px`; // Dynamic position // Dynamic position
+      this.element.style.top = `${this.y}px`; // Dynamic position // Dynamic position
     }
   }
 
@@ -155,15 +155,15 @@ class Node {
     const element = document.createElement("div");
     element.id = this.id;
     element.className = `node ${this.type}`;
-    element.style.left = `${this.x}px`;
-    element.style.top = `${this.y}px`;
+    element.style.left = `${this.x}px`; // Dynamic position
+    element.style.top = `${this.y}px`; // Dynamic position
 
     const header = document.createElement("div");
     this.headerElement = header;
     header.className = "node-title";
 
     const gradient = this.getHeaderColor();
-    header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
+    header.style.background = `linear-gradient // Dynamic gradient(to bottom, ${gradient.start}, ${gradient.end})`;
     header.style.borderBottomColor = "rgba(0,0,0,0.5)";
     if (this.isBreakpoint) {
       header.classList.add("has-breakpoint");
@@ -179,9 +179,9 @@ class Node {
       if (this.icon.startsWith("fa-")) {
         iconEl.className = `fas ${this.icon}`;
       } else if (this.type === NODE_TYPES.FUNCTION && this.icon === "f") {
-        iconEl.style.fontWeight = "bold";
-        iconEl.style.fontStyle = "italic";
-        iconEl.style.color = "white";
+        iconEl.classList.add("text-bold"); // Replaced inline style
+        iconEl.classList.add("text-italic"); // Replaced inline style
+        iconEl.classList.add("text-white"); // Replaced inline style
         iconEl.textContent = "f";
       } else {
         iconEl.textContent = this.icon;
@@ -302,7 +302,7 @@ class Node {
           row.appendChild(this.renderPin(pinIn));
         } else {
           const spacer = document.createElement("div");
-          spacer.style.minWidth = "10px";
+          spacer.classList.add("min-w-10"); // Replaced inline style
           row.appendChild(spacer);
         }
 
@@ -391,8 +391,8 @@ class Node {
     const element = document.createElement("div");
     element.id = this.id;
     element.className = `node compact-node ${this.type}`;
-    element.style.left = `${this.x}px`;
-    element.style.top = `${this.y}px`;
+    element.style.left = `${this.x}px`; // Dynamic position
+    element.style.top = `${this.y}px`; // Dynamic position
 
     const container = document.createElement("div");
     container.className = "compact-node-container";
@@ -475,23 +475,23 @@ class Node {
         pinDot.classList.add("array-pin");
         const icon = document.createElement("i");
         icon.className = "fas fa-th";
-        icon.style.fontSize = "8px";
-        icon.style.color = Utils.getPinColor(pin.type);
+        icon.classList.add("icon-xs"); // Replaced inline style (8px)
+        icon.style.color = Utils.getPinColor(pin.type); // Dynamic color
         pinDot.appendChild(icon);
       } else if (pin.containerType === "set") {
         pinDot.classList.add("set-pin");
         const icon = document.createElement("span");
         icon.textContent = "{}";
-        icon.style.fontSize = "8px";
+        icon.classList.add("icon-xs"); // Replaced inline style (8px)
         icon.style.fontWeight = "bold";
-        icon.style.color = Utils.getPinColor(pin.type);
+        icon.style.color = Utils.getPinColor(pin.type); // Dynamic color
         pinDot.appendChild(icon);
       } else if (pin.containerType === "map") {
         pinDot.classList.add("map-pin");
         const icon = document.createElement("i");
         icon.className = "fas fa-list-ul";
-        icon.style.fontSize = "8px";
-        icon.style.color = Utils.getPinColor(pin.type);
+        icon.classList.add("icon-xs"); // Replaced inline style (8px)
+        icon.style.color = Utils.getPinColor(pin.type); // Dynamic color
         pinDot.appendChild(icon);
       }
     }

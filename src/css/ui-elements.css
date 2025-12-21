@@ -1146,3 +1146,8 @@
 .text-enabled {
   color: #ffffff;
 }
+
+/* --- Min-Width Utilities --- */
+.min-w-10 {
+    min-width: 10px;
+}
