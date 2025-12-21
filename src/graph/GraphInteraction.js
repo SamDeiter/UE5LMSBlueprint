@@ -28,6 +28,9 @@ export class GraphInteraction {
         this.marqueeEl = document.getElementById('selection-marquee');
         this.rafId = null;
 
+        // Chord Shortcuts State (Phase 2: Keyboard Shortcuts)
+        this.activeKeys = new Set();
+
         // Bind methods
         this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
         this.handleGlobalMouseUp = this.handleGlobalMouseUp.bind(this);
@@ -41,12 +44,18 @@ export class GraphInteraction {
         this.editor.addEventListener('dragover', this.handleDragOver.bind(this));
         this.editor.addEventListener('drop', this.handleDrop.bind(this));
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
+        document.addEventListener('keyup', this.handleKeyUp.bind(this));
     }
 
     handleKeyDown(e) {
         const target = e.target;
         const tagName = target.tagName ? target.tagName.toUpperCase() : '';
         const isTextEditor = tagName === 'INPUT' || tagName === 'TEXTAREA' || target.isContentEditable;
+
+        // Track held keys for chord shortcuts (only if not in text editor)
+        if (!isTextEditor) {
+            this.activeKeys.add(e.key.toLowerCase());
+        }
 
         if (isTextEditor) return;
 
@@ -67,6 +76,26 @@ export class GraphInteraction {
                 this.app.wiring.deleteSelectedLinks();
             }
         }
+    }
+
+    handleKeyUp(e) {
+        this.activeKeys.delete(e.key.toLowerCase());
+    }
+
+    // Chord shortcut: Check if a chord key is held and return the corresponding node key
+    getChordNode() {
+        const CHORD_SHORTCUTS = {
+            'b': 'Branch',
+            's': 'Sequence',
+            'd': 'Delay',
+            'o': 'DoOnce',
+            'g': 'Gate',
+            'p': 'EventBeginPlay'
+        };
+        for (const [key, nodeKey] of Object.entries(CHORD_SHORTCUTS)) {
+            if (this.activeKeys.has(key)) return nodeKey;
+        }
+        return null;
     }
 
     handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
@@ -249,7 +278,18 @@ export class GraphInteraction {
             return;
         }
 
-        // 4. Marqueeing
+        // 4. Chord Shortcuts - Check BEFORE marqueeing
+        if (e.button === 0) {
+            const chordNode = this.getChordNode();
+            if (chordNode) {
+                const graphCoords = this.controller.getGraphCoords(e.clientX, e.clientY);
+                this.controller.addNode(chordNode, graphCoords.x, graphCoords.y);
+                this.app.persistence.autoSave();
+                return; // Chord consumed the click
+            }
+        }
+
+        // 5. Marqueeing
         if (e.button === 0) {
             this.isMarqueeing = true;
             this.marqueeStart.x = e.clientX;
