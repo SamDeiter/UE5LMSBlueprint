@@ -56,10 +56,10 @@ export const VARIABLE_HEADER_COLORS = {
 
 export const NODE_HEADER_COLORS = {
   CONSTRUCTION_SCRIPT: { start: "#B54E05", end: "#8A3B04" },
-  EVENT: { start: "#8B0000", end: "#400000" },
-  FUNCTION: { start: "#005580", end: "#002a40" },
+  EVENT: { start: "#7a1515", end: "#500a0a" },
+  FUNCTION: { start: "#1d4d65", end: "#123040" },
   ASSESSMENT: { start: "#6030a0", end: "#301560" },
-  PURE: { start: "#66aa66", end: "#335533" },
+  PURE: { start: "#5d9168", end: "#3b6643" },
   CAST: { start: "#00A89D", end: "#004040" },
   DEFAULT: { start: "#333", end: "#111" },
 };
