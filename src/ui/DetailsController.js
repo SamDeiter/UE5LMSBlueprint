@@ -1492,7 +1492,7 @@ export class DetailsController {
       </div>
     `;
 
-    // Variables Section (§8) - Show all user-defined variables with their defaults
+    // Variables Section - Show all user-defined variables with their defaults
     let variablesContent = "";
     if (this.app.variables && this.app.variables.variables.size > 0) {
       variablesContent = `<div class="variable-defaults-list" id="variable-defaults-list">`;
@@ -1513,6 +1513,63 @@ export class DetailsController {
       variablesContent = `<p class="no-variables-msg">No variables defined. Add variables in My Blueprint panel.</p>`;
     }
 
+    // Events Section - Bindable actor events
+    const actorEvents = [
+      {
+        name: "OnTakeAnyDamage",
+        desc: "Called when the actor takes any damage",
+      },
+      {
+        name: "OnTakePointDamage",
+        desc: "Called when the actor takes point damage",
+      },
+      {
+        name: "OnTakeRadialDamage",
+        desc: "Called when the actor takes radial damage",
+      },
+      {
+        name: "OnActorBeginOverlap",
+        desc: "Called when another actor overlaps this actor",
+      },
+      {
+        name: "OnActorEndOverlap",
+        desc: "Called when another actor stops overlapping",
+      },
+      {
+        name: "OnBeginCursorOver",
+        desc: "Called when mouse cursor moves over actor",
+      },
+      {
+        name: "OnEndCursorOver",
+        desc: "Called when mouse cursor leaves actor",
+      },
+      { name: "OnClicked", desc: "Called when actor is clicked" },
+      { name: "OnReleased", desc: "Called when click is released on actor" },
+      { name: "OnInputTouchBegin", desc: "Called when touch begins on actor" },
+      { name: "OnInputTouchEnd", desc: "Called when touch ends on actor" },
+      { name: "OnActorHit", desc: "Called when actor is hit by another" },
+      { name: "OnDestroyed", desc: "Called when actor is destroyed" },
+      { name: "OnEndPlay", desc: "Called when gameplay ends for this actor" },
+    ];
+
+    const eventsContent = `
+      <div class="events-list" id="actor-events-list">
+        ${actorEvents
+          .map(
+            (evt) => `
+          <div class="event-row" data-event="${evt.name}" title="${evt.desc}">
+            <i class="fas fa-bolt event-icon"></i>
+            <span class="event-name">${evt.name}</span>
+            <button class="event-add-btn" data-event="${evt.name}" title="Add ${evt.name} node to graph">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    `;
+
     // Assemble full panel
     this.panel.innerHTML = `
       <div class="class-defaults-header">
@@ -1524,6 +1581,7 @@ export class DetailsController {
       ${createSection("Replication", "replication", replicationContent, false)}
       ${createSection("Input", "input", inputContent, false)}
       ${createSection("Tick", "tick", tickContent, true)}
+      ${createSection("Events", "events", eventsContent, true)}
       ${createSection(
         "World Partition",
         "world-partition",
@@ -1646,6 +1704,58 @@ export class DetailsController {
 
     // Bind variable default value changes
     this.bindVariableDefaultInputs();
+
+    // Bind event add buttons
+    this.panel.querySelectorAll(".event-add-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const eventName = btn.dataset.event;
+        this.addEventNodeToGraph(eventName);
+      });
+    });
+  }
+
+  /**
+   * Add an event node to the graph based on event name
+   */
+  addEventNodeToGraph(eventName) {
+    // Map event names to node keys (create custom event nodes if needed)
+    const eventNodeMap = {
+      OnTakeAnyDamage: "EventOnTakeAnyDamage",
+      OnTakePointDamage: "EventOnTakePointDamage",
+      OnTakeRadialDamage: "EventOnTakeRadialDamage",
+      OnActorBeginOverlap: "EventActorBeginOverlap",
+      OnActorEndOverlap: "EventActorEndOverlap",
+      OnBeginCursorOver: "EventOnBeginCursorOver",
+      OnEndCursorOver: "EventOnEndCursorOver",
+      OnClicked: "EventOnClicked",
+      OnReleased: "EventOnReleased",
+      OnInputTouchBegin: "EventOnInputTouchBegin",
+      OnInputTouchEnd: "EventOnInputTouchEnd",
+      OnActorHit: "EventOnActorHit",
+      OnDestroyed: "EventOnDestroyed",
+      OnEndPlay: "EventOnEndPlay",
+    };
+
+    const nodeKey = eventNodeMap[eventName];
+    if (nodeKey && this.app.graph) {
+      // Find a good position for the new node
+      const x = 200 + Math.random() * 100;
+      const y = 200 + Math.random() * 300;
+
+      this.app.graph.addNode(nodeKey, x, y);
+      this.app.history.saveState(`Added ${eventName} event`);
+
+      // Log to compiler results
+      if (this.app.compiler && this.app.compiler.log) {
+        this.app.compiler.log(
+          `Added ${eventName} event node to graph`,
+          "success"
+        );
+      }
+    } else {
+      console.warn(`Event node ${eventName} not found in node definitions`);
+    }
   }
 
   /**

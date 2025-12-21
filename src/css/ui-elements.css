@@ -1815,12 +1815,12 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background: linear-gradient(to bottom, #333, #222);
-  border-bottom: 2px solid var(--color-accent-blue);
+  background: linear-gradient(to bottom, #2a2a2a, #1e1e1e);
+  border-bottom: 1px solid #333;
 }
 
 .class-defaults-header .bp-icon {
-  background: #4a90e2;
+  background: #3a6ea5; /* Darker, more muted blue */
   color: white;
   font-weight: bold;
   font-size: 9px;
@@ -1847,7 +1847,7 @@
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  color: var(--color-accent-blue);
+  color: #c8a964; /* UE5 yellow/gold section header color */
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1856,12 +1856,13 @@
 }
 
 .section-header:hover {
-  color: #6bb3ff;
+  color: #e0c080;
 }
 
 .section-header i {
   font-size: 10px;
   transition: transform 0.2s;
+  color: #c8a964; /* Match the header color */
 }
 
 .section-header.collapsed i {
@@ -1870,14 +1871,14 @@
 
 /* Parent Class Link */
 .parent-class-link {
-  color: #4a90e2;
+  color: #5a9bd4; /* Muted blue like UE5 */
   cursor: pointer;
   text-decoration: none;
 }
 
 .parent-class-link:hover {
   text-decoration: underline;
-  color: #6bb3ff;
+  color: #7ab3e8;
 }
 
 /* Checkbox Wrapper */
@@ -1957,4 +1958,65 @@
 .spatial-dependent select:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+/* Events Section */
+.events-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-row {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  gap: 8px;
+  border-bottom: 1px solid #1a1a1a;
+  transition: background-color 0.15s;
+}
+
+.event-row:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.event-row:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.event-icon {
+  color: #c8a964; /* Yellow like section headers */
+  font-size: 10px;
+  width: 14px;
+  text-align: center;
+}
+
+.event-name {
+  flex: 1;
+  color: #ccc;
+  font-size: 11px;
+}
+
+.event-add-btn {
+  background: #3a3a3a;
+  border: 1px solid #555;
+  color: #ccc;
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.event-add-btn:hover {
+  background: #4a4a4a;
+  border-color: #777;
+  color: #fff;
+}
+
+.event-add-btn i {
+  font-size: 10px;
 }
