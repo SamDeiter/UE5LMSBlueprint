@@ -42,18 +42,23 @@
     /* Pin Colors (Authentic UE5 Palette) */
     --color-exec: #FFFFFF;
     --color-bool: #920101; /* Dark Red */
-    --color-byte: #0065CA; /* Deep Blue */
-    --color-int: #18E1A6; /* Cyan/Teal */
+    --color-byte: #005055;
+        /* Sherpa Blue - UE5 Spec */
+        --color-int: #00A89D;
+        /* Sea Green/Cyan - UE5 Spec */
     --color-int64: #76D37E;
-    --color-float: #00EA32; /* Vibrant Neon Green (UE5 Standard) */
+    --color-float: #96E804;
+        /* Yellow-Green/Lime - UE5 Spec */
     --color-double: #4A90E2;
-    --color-name: #C966E3; /* Lavender */
+    --color-name: #8566E2;
+        /* Mauve/Violet - UE5 Spec */
     --color-string: #FF00FF; /* Magenta */
     --color-text: #E27696; /* Pinkish */
     --color-vector: #FFC700; /* Gold */
     --color-rotator: #9999FF; /* Purple */
     --color-transform: #FF6600; /* Orange */
-    --color-object: #00A8E8; /* Cyan Blue */
+    --color-object: #0067C0;
+        /* Deep Blue - UE5 Spec */
     --color-class: #5800A0; /* Purple */
     --color-enum: #0065CA;
     
