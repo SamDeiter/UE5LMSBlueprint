@@ -23,7 +23,7 @@ import { TimerExecutor } from "./executors/TimerExecutor.js";
 import { TraceExecutor } from "./executors/TraceExecutor.js";
 import { InputExecutor } from "./executors/InputExecutor.js";
 import { timerManager } from "./TimerManager.js";
-import { NodeDefinitions } from "../data/NodeDefinitions.js";
+import { NodeDefinitions } from "../data/nodes/index.js";
 
 /**
  * Handles the runtime execution of the Blueprint graph.

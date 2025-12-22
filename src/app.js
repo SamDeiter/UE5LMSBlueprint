@@ -40,7 +40,7 @@ import { TaskManager } from "./services/TaskManager.js";
 import { nodeRegistry } from "./registries/NodeRegistry.js";
 import { functionRegistry } from "./functions/FunctionRegistry.js";
 import { MacroRegistry } from "./macros/MacroRegistry.js";
-import { NodeDefinitions } from "./data/NodeDefinitions.js";
+import { NodeDefinitions } from "./data/nodes/index.js";
 import { DOMElements } from "./config/DOMElements.js";
 import { APP_VERSION } from "./config/Constants.js";
 import { DirtyStateTracker } from "./services/DirtyStateTracker.js";

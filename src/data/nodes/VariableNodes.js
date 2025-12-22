@@ -1,0 +1,177 @@
+/**
+ * VariableNodes - Auto-generated from NodeDefinitions.js
+ * Contains node definitions for this category.
+ */
+export const VariableNodes = {
+  customData: {
+      startIndex: 0,
+    },
+  Set_bool: {
+    title: "Set (Boolean)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "val_in",
+        name: "Value",
+        type: "bool",
+        dir: "in",
+        defaultValue: false,
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "bool", dir: "out" },
+    ],
+  },
+  Set_byte: {
+    title: "Set (Byte)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Value", type: "byte", dir: "in", defaultValue: 0 },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "byte", dir: "out" },
+    ],
+  },
+  Set_int: {
+    title: "Set (Integer)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Value", type: "int", dir: "in", defaultValue: 0 },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "int", dir: "out" },
+    ],
+  },
+  Set_int64: {
+    title: "Set (Integer64)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "val_in",
+        name: "Value",
+        type: "int64",
+        dir: "in",
+        defaultValue: 0,
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "int64", dir: "out" },
+    ],
+  },
+  Set_float: {
+    title: "Set (Float)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "val_in",
+        name: "Value",
+        type: "float",
+        dir: "in",
+        defaultValue: 0.0,
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "float", dir: "out" },
+    ],
+  },
+  Set_name: {
+    title: "Set (Name)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "val_in",
+        name: "Value",
+        type: "name",
+        dir: "in",
+        defaultValue: "None",
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "name", dir: "out" },
+    ],
+  },
+  Set_string: {
+    title: "Set (String)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "val_in",
+        name: "Value",
+        type: "string",
+        dir: "in",
+        defaultValue: "",
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "string", dir: "out" },
+    ],
+  },
+  Set_text: {
+    title: "Set (Text)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "val_in",
+        name: "Value",
+        type: "text",
+        dir: "in",
+        defaultValue: "",
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "text", dir: "out" },
+    ],
+  },
+  Set_vector: {
+    title: "Set (Vector)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Value", type: "vector", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "vector", dir: "out" },
+    ],
+  },
+  Set_rotator: {
+    title: "Set (Rotator)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Value", type: "rotator", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "rotator", dir: "out" },
+    ],
+  },
+  Set_transform: {
+    title: "Set (Transform)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Value", type: "transform", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "transform", dir: "out" },
+    ],
+  },
+  Set_object: {
+    title: "Set (Object)",
+    type: "variable-node",
+    icon: "fa-arrow-circle-up",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Value", type: "object", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "val_out", name: "Output", type: "object", dir: "out" },
+    ],
+  },
+};
