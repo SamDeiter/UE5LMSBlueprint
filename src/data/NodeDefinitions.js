@@ -753,7 +753,7 @@ export const NodeDefinitions = {
       {
         id: "array_in",
         name: "Array",
-        type: "object",
+        type: "wildcard",
         dir: "in",
         containerType: "array",
       },
@@ -761,7 +761,7 @@ export const NodeDefinitions = {
       {
         id: "array_element_out",
         name: "Array Element",
-        type: "object",
+        type: "wildcard",
         dir: "out",
       },
       { id: "array_index_out", name: "Array Index", type: "int", dir: "out" },
