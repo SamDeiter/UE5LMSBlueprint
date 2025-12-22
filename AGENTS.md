@@ -5,6 +5,7 @@
 **UE5LMSBlueprint** is a web-based replica of Unreal Engine 5's Blueprint Visual Scripting system, designed to run in Learning Management Systems (LMS) using SCORM 1.2. This educational tool allows students to learn visual programming concepts through an authentic UE5-like interface.
 
 **Key Technologies:**
+
 - Vanilla JavaScript (ES6 modules)
 - HTML5/CSS3
 - No external frameworks (except Font Awesome for icons)
@@ -13,6 +14,7 @@
 ## 🎯 User Requirements
 
 ### Critical Rules (MUST FOLLOW)
+
 1. **Always use Python for file edits** - The user prefers Python scripts over direct file manipulation
 2. **Backup to Git frequently** - Commit changes often
 3. **Windows 11 environment** - All paths and commands must work on Windows
@@ -20,7 +22,8 @@
 5. **Never delete root folders** - Be extremely careful with deletion operations
 
 ### User's GitHub
-- Repository: https://github.com/SamDeiter/UE5LMSBlueprint
+
+- Repository: <https://github.com/SamDeiter/UE5LMSBlueprint>
 - Location: `C:\Users\Sam Deiter\Documents\GitHub\UE5LMSBlueprint`
 
 ## 📁 Project Structure
@@ -28,6 +31,8 @@
 ```
 UE5LMSBlueprint/
 ├── index.html              # Main entry point
+├── ROADMAP.md             # Master project roadmap (single source of truth)
+├── CODE_AUDIT_PLAN.md     # Code reuse and instancing audit plan
 ├── src/
 │   ├── app.js             # Application initialization
 │   ├── ui.js              # UI module aggregator
@@ -40,6 +45,7 @@ UE5LMSBlueprint/
 │   ├── ui/                # UI Controllers
 │   │   ├── ActionMenu.js
 │   │   ├── DetailsController.js
+│   │   ├── ClassDefaultsRenderer.js  # Extracted from DetailsController
 │   │   ├── VariableController.js
 │   │   ├── FunctionsController.js
 │   │   ├── ParentClassModal.js
@@ -49,11 +55,24 @@ UE5LMSBlueprint/
 │   │   ├── Compiler.js
 │   │   ├── Persistence.js
 │   │   └── executors/
-│   ├── data/              # Static data
-│   │   ├── NodeDefinitions.js
+│   ├── data/              # Static data (MODULAR)
+│   │   ├── nodes/         # Node definitions split by category
+│   │   │   ├── index.js           # Aggregator
+│   │   │   ├── ActorNodes.js      # Actor manipulation
+│   │   │   ├── CollisionNodes.js  # Trace & collision
+│   │   │   ├── EventNodes.js      # Event nodes
+│   │   │   ├── FlowControlNodes.js
+│   │   │   ├── InputNodes.js      # Enhanced Input
+│   │   │   ├── MathNodes.js
+│   │   │   └── ... (14 total category files)
 │   │   └── AssessmentTasks.js
 │   ├── css/               # Modular CSS files
+│   │   ├── variables.css  # Design tokens
+│   │   ├── ui-elements.css # Utility classes
+│   │   └── ...
 │   └── utils/             # Utility functions
+├── scripts/               # Python refactoring scripts
+│   └── refactor_details_controller.py
 ├── docs/                  # Documentation
 │   ├── planning/          # Development plans
 │   ├── testing/           # Test scenarios
@@ -81,26 +100,36 @@ with open(file_path, 'w', encoding='utf-8') as f:
 
 ### Adding New Nodes
 
-1. **Add definition to `src/data/NodeDefinitions.js`:**
+1. **Add definition to the appropriate category file in `src/data/nodes/`:**
+   - Choose the correct category file (e.g., `CollisionNodes.js`, `MathNodes.js`)
+   - Follow existing patterns in that file
+
 ```javascript
-"NodeKey": {
+export const CollisionNodes = {
+  NodeKey: {
     title: "Node Title",
     type: "function-node", // or "event-node", "pure-node"
-    category: "Category Name",
+    category: "Collision",
     icon: "fa-icon-name",
+    executor: "Trace", // Optional: specify executor
     pins: [
-        { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-        { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" }
     ]
-}
+  },
+  // ... other nodes
+};
 ```
 
-2. **Register executor in `src/services/SimulationEngine.js`:**
+1. **The node is automatically exported** via `src/data/nodes/index.js`
+
+1. **Register executor in `src/services/SimulationEngine.js` if needed:**
+
 ```javascript
 this.executorRegistry.register('NodeKey', appropriateExecutor);
 ```
 
-3. **Implement execution logic in the appropriate executor**
+1. **Implement execution logic in the appropriate executor**
 
 ### Adding New UI Components
 
@@ -121,6 +150,7 @@ this.executorRegistry.register('NodeKey', appropriateExecutor);
 - `modals.css` - Modal dialogs
 
 **Always match UE5's dark theme aesthetic:**
+
 - Background: `#0d0d0d` to `#1a1a1a`
 - Text: `#ccc` to `#eee`
 - Accents: `#0078d7` (blue)
@@ -129,6 +159,7 @@ this.executorRegistry.register('NodeKey', appropriateExecutor);
 ## 🎮 Key Systems
 
 ### Simulation Engine
+
 - **Location:** `src/services/SimulationEngine.js`
 - **Purpose:** Executes blueprint nodes during "Play" mode
 - **Executors:**
@@ -139,17 +170,20 @@ this.executorRegistry.register('NodeKey', appropriateExecutor);
   - `VariableExecutor` - Handles Get/Set nodes
 
 ### Compiler
+
 - **Location:** `src/services/Compiler.js`
 - **Purpose:** Validates graph before simulation
 - **Sets `isDirty` flag when changes need compilation**
 
 ### Persistence
+
 - **Location:** `src/services/Persistence.js`
 - **Saves to:** `localStorage`
 - **Auto-saves** when changes are made
 - **Serializes:** Nodes, links, variables, components, functions
 
 ### Graph System
+
 - **Nodes** are instances created from `NodeDefinitions`
 - **Pins** connect nodes (exec or data flow)
 - **Links** stored in `WiringController`
@@ -158,11 +192,13 @@ this.executorRegistry.register('NodeKey', appropriateExecutor);
 ## 🧪 Testing
 
 ### Test Tasks Location
+
 - **File:** `src/data/AssessmentTasks.js`
 - **Levels:** 1-5 (Fundamentals to Advanced)
 - **Format:** Requirements-based validation
 
 ### Testing Scenarios
+
 - **Location:** `docs/testing/`
 - Key files:
   - `DEBUGGING_TEST_PLAN.md` - Breakpoint & stepping tests
@@ -170,6 +206,7 @@ this.executorRegistry.register('NodeKey', appropriateExecutor);
   - `KNOWN_LIMITATIONS.md` - Current limitations
 
 ### Running Tests
+
 ```javascript
 // In browser console:
 runTests()              // Run all tests
@@ -180,18 +217,23 @@ setTask('task_id')      // Load specific task
 ## 🐛 Common Issues & Solutions
 
 ### Issue: "Unknown node type" error
+
 **Solution:** Register the node in `SimulationEngine.js`:
+
 ```javascript
 this.executorRegistry.register('NodeKey', executor);
 ```
 
 ### Issue: Custom Event name doesn't change
+
 **Solution:** Ensure `DetailsController.showCustomEventDetails()` updates both `node.title` and the DOM element.
 
 ### Issue: Breakpoints not persisting
+
 **Solution:** Ensure `isBreakpoint` is included in `Persistence.serializeNodes()`.
 
 ### Issue: Graph must be compiled before play
+
 **Solution:** Check `compiler.isDirty` in `SimulationEngine.run()` and auto-compile if needed.
 
 ## 📝 Code Style Guidelines
@@ -214,6 +256,7 @@ git push origin main
 ```
 
 **Commit message format:**
+
 - `feat:` New feature
 - `fix:` Bug fix
 - `docs:` Documentation
@@ -241,18 +284,30 @@ npm run serve
 
 ## 🎯 Current Development Focus
 
-As of December 2025:
-1. **Debugging Features** - Breakpoints, stepping, watch panel
-2. **Custom Events** - Calling and parameterization
-3. **Parent Class Selection** - Blueprint initialization workflow
-4. **Node Library Expansion** - More UE5 parity
+As of December 21, 2025:
 
+**Phase 7: UI/UX Polish & Tech Debt** - ✅ 95% Complete
+
+- [x] CSS refactoring (330 → 99 inline styles)
+- [x] NodeDefinitions modularization (14 category files)
+- [x] DetailsController extraction (ClassDefaultsRenderer)
+- [x] All high-priority trace nodes implemented
+- [x] Enhanced Input system complete
+- [ ] Code reuse and instancing audit (NEW)
+
+**Next Priorities:**
+
+1. **Code Audit** - Identify duplication and refactoring opportunities
+2. **Audio/Visual Nodes** - PlaySound2D, SpawnNiagaraSystem
+3. **Timeline Editor UI** - Advanced feature
+4. **v1.0 Release Preparation** - Documentation and testing
 
 ## ⚡ Token Optimization
 
 AI agents should be mindful of token usage when working on this project. Follow these guidelines:
 
 ### File Viewing Strategy
+
 - **Don't view entire large files** - Use line ranges when possible
 - **Use search first** - `grep_search` or `codebase_search` before `view_file`
 - **Target specific functions** - `view_code_item` for specific functions/classes
@@ -260,6 +315,7 @@ AI agents should be mindful of token usage when working on this project. Follow 
 - **Use ANCHOR_MANIFEST.md** - Reference anchors instead of re-reading code
 
 ### Efficient Information Gathering
+
 ```python
 # ❌ BAD: View entire 1000-line file
 view_file("large_file.js")
@@ -278,18 +334,21 @@ view_file("src/services/executors/FunctionExecutor.js", StartLine=137, EndLine=1
 ```
 
 ### Context Awareness
+
 - **Read checkpoint summaries** - They contain crucial context, don't re-request
 - **Reference conversation history** - Recent edits are documented
 - **Use AGENTS.md** - This file has patterns and solutions
 - **Check ANCHOR_MANIFEST.md** - Find code locations without searching
 
 ### Response Efficiency
+
 - **Be concise but complete** - Don't repeat obvious information
 - **Use code blocks** - More efficient than prose explanations
 - **Summarize changes** - Bullet points > paragraphs
 - **Don't over-explain** - User knows the codebase context
 
 ### Python Script Efficiency
+
 ```python
 # ✅ GOOD: Single script does multiple related changes
 # Update imports AND instantiation in one script
@@ -301,12 +360,14 @@ view_file("src/services/executors/FunctionExecutor.js", StartLine=137, EndLine=1
 ```
 
 ### When NOT to Optimize
+
 - **Critical decisions** - Explain thoroughly
 - **Complex debugging** - Show full context
 - **New patterns** - Document completely
 - **User questions** - Answer completely
 
 ### Token Budget Awareness
+
 - This project runs in contexts with ~200k token budgets
 - Large file views (1000+ lines) cost ~2-3k tokens
 - Checkpoint reads cost ~15-20k tokens
@@ -320,7 +381,7 @@ view_file("src/services/executors/FunctionExecutor.js", StartLine=137, EndLine=1
 1. **Read checkpoint summaries carefully** - They contain crucial context
 2. **Check conversation history** - Recent edits and blockers are documented
 3. **Test in browser** - Always verify changes work
-4. **Use Python for edits** - User's strong preference
+4. **Use Python for edits** - User's very strong preference
 5. **Commit frequently** - User wants git backups often
 6. **Match UE5 aesthetics** - Premium, dark theme always
 7. **SCORM compatible** - No external dependencies that won't work in LMS
@@ -334,5 +395,5 @@ view_file("src/services/executors/FunctionExecutor.js", StartLine=137, EndLine=1
 
 ---
 
-**Last Updated:** December 2, 2025
+**Last Updated:** December 21, 2025
 **Maintained by:** AI Agents & SamDeiter
