@@ -247,9 +247,9 @@ class GraphController {
 
     // Clear existing state
     this.nodes.clear();
-    this.app.wiring.links.clear();
+    // Use the comprehensive clear method to remove SVG elements
+    this.app.wiring.clear();
     this.clearSelection();
-    this.app.wiring.clearLinkSelection();
 
     // 1. Load Nodes
     safeNodes.forEach((nodeData) => {
