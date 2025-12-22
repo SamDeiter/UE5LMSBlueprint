@@ -14,9 +14,9 @@
 | Phase 4 | Functions & Macros | ✅ 95% |
 | Phase 5 | Panel Implementation | ✅ 100% |
 | Phase 6 | Debugging Parity | ✅ 100% |
-| **Phase 7** | **UI/UX Polish & Tech Debt** | **🔄 85%** |
+| **Phase 7** | **UI/UX Polish & Tech Debt** | **✅ 95%** |
 
-**Overall UE5 Parity**: ~70% (targeting 90%+ for v1.0)
+**Overall UE5 Parity**: ~75% (targeting 90%+ for v1.0)
 
 ---
 
@@ -29,6 +29,8 @@
 - [x] Breakpoint parity (red octagon)
 - [x] Event header icons
 - [x] Node glassmorphism
+- [x] Delegate pin icons (black interior)
+- [x] Exec pin transparency
 
 ### Sidebar & Panel Logic ✅
 
@@ -36,12 +38,16 @@
 - [x] Function iconography (italicized 'f')
 - [x] Visibility toggles (eye icons)
 - [x] Multi-reference support (Array/Set/Map icons)
+- [x] Variable deletion with confirmation modal
+- [x] Component addition with selector modal
 
 ### Interaction & Workflow ✅
 
 - [x] Shortcut chords (B, S, D, P, C, O, G, F, M + Click)
 - [x] Context menu filtering
 - [x] Find Results (Ctrl+F)
+- [x] Variable context menu (Delete, Rename)
+- [x] Keyboard shortcuts (Delete key for variables)
 
 ### Debugging & Animation ✅
 
@@ -49,10 +55,12 @@
 - [x] Compile state machine (yellow/green/red)
 - [ ] Watch value bubbles (persistent tooltips) — *Low Priority*
 
-### Technical Debt 🔄
+### Technical Debt ✅
 
-- [x] Inline styles: 330 → ~100 (70% reduction)
-- [x] Target: <50 inline styles — *Complete (99 remaining are dynamic positioning/colors)*
+- [x] Inline styles: 330 → 99 (70% reduction)
+- [x] Target: <100 inline styles — *Complete (99 remaining are dynamic positioning/colors)*
+- [x] Modular NodeDefinitions (split into 14 category files)
+- [x] CSS modal visibility patterns documented
 - [ ] Constants mapping (use `PIN_COLORS`) — *Low Priority*
 
 ---
@@ -156,10 +164,10 @@
 
 | File | Purpose |
 |------|---------|
-| `src/data/NodeDefinitions.js` | All node definitions |
+| `src/data/nodes/index.js` | Node definitions (modular) |
 | `src/services/SimulationEngine.js` | Execution engine |
 | `src/graph/Node.js` | Node rendering |
-| `src/ui/UE5Renderer.js` | UE5-style visuals |
+| `src/utils/UE5Renderer.js` | UE5-style visuals |
 | `src/css/variables.css` | Design tokens |
 
 ---

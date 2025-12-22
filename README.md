@@ -38,7 +38,19 @@ UE5LMSBlueprint-main/
 │   └── NodeRegistry.js
 │
 ├── 📂 data/                    # Data definitions
-│   └── NodeDefinitions.js
+│   └── nodes/                  # Modular node definitions
+│       ├── index.js            # Node definitions barrel export
+│       ├── ActorNodes.js
+│       ├── CastingNodes.js
+│       ├── CollisionNodes.js
+│       ├── EventNodes.js
+│       ├── FlowControlNodes.js
+│       ├── FunctionNodes.js
+│       ├── InputNodes.js
+│       ├── MathNodes.js
+│       ├── StringNodes.js
+│       ├── UtilityNodes.js
+│       └── VariableNodes.js
 │
 ├── 📂 assets/                  # Static assets
 ├── 📂 icons/                   # Icon files
@@ -69,6 +81,7 @@ UE5LMSBlueprint-main/
 ## 🔄 Import Paths
 
 ### From Root (`app.js`)
+
 ```javascript
 import { GraphController } from './graph/index.js';
 import { TaskManager } from './services/TaskManager.js';
@@ -76,12 +89,14 @@ import { BlueprintValidator } from './utils/validator.js';
 ```
 
 ### From UI Folder (`ui/*.js`)
+
 ```javascript
 import { Pin } from '../graph/index.js';
 import { createCollapsibleHeader } from './ui-helpers.js';
 ```
 
 ### From Services Folder (`services/*.js`)
+
 ```javascript
 import { BlueprintValidator } from '../utils/validator.js';
 ```
@@ -91,7 +106,6 @@ import { BlueprintValidator } from '../utils/validator.js';
 - **ESLint** configured and running clean
 - **Pre-commit hook** validates syntax and linting before commits
 - **Git tag** `v1.0-stable` marks stable baseline
-
 
 ## 🤖 For AI Agents
 
@@ -111,6 +125,7 @@ import { BlueprintValidator } from '../utils/validator.js';
    - Search with: `git grep "anchor-name"`
 
 **Quick Start for Agents:**
+
 ```bash
 # Find implementation details
 git grep "custom-event-execution-logic"  # From ANCHOR_MANIFEST.md
