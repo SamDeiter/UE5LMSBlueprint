@@ -191,7 +191,6 @@ export class GraphInteraction {
       this.app.persistence.autoSave();
     } else if (data.startsWith("PALETTE_NODE:")) {
       const nodeType = data.split(":")[1];
-      console.log("PALETTE_NODE dropped:", nodeType, "at", graphCoords);
 
       // RESTRICTION: Construction Script cannot have Event nodes
       if (this.app.activeGraph === "ConstructionScript") {

@@ -183,7 +183,6 @@ export class LayoutController {
 
     bottomTabs.forEach((tab) => {
       tab.addEventListener("click", () => {
-        console.log("Tab clicked:", tab.dataset.tab);
 
         // UI Toggle
         bottomTabs.forEach((t) => t.classList.remove("active"));
@@ -191,7 +190,6 @@ export class LayoutController {
 
         // Content Toggle
         const target = tab.dataset.tab; // compiler, find, task-status
-        console.log("Targeting panel:", target);
 
         Object.entries(panels).forEach(([key, panel]) => {
           if (panel) {

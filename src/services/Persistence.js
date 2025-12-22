@@ -58,7 +58,6 @@ export class Persistence {
         let finalStateJSON = stateJSON;
 
         if (!parsedState.graphs) {
-          console.log("Migrating legacy save format to multi-graph format...");
           const migratedState = {
             activeGraph: "EventGraph",
             graphs: {

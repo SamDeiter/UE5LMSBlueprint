@@ -127,7 +127,6 @@ export class ScormClient {
 
     log(msg) {
         if (this.debug) {
-            console.log(`[ScormClient] ${msg}`);
         }
     }
 }

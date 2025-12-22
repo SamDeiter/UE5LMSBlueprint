@@ -141,7 +141,6 @@ export class ParentClassModal {
   }
 
   selectClass(className) {
-    console.log(`Selected Parent Class: ${className}`);
 
     // 1. Close Modal
     this.close();

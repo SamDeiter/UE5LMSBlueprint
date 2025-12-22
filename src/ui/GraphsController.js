@@ -54,7 +54,6 @@ export class GraphsController {
 
         // Click to switch
         item.addEventListener('click', (e) => {
-            console.log(`Switching to graph: ${graphId}`);
             this.app.switchGraph(graphId);
 
             // Update selection visually

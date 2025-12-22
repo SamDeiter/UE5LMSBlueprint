@@ -25,7 +25,6 @@ export class NeedNodeExecutor extends BaseExecutor {
             const score = total > 0 ? Math.round((passedCount / total) * 100) : 0;
             const passed = score >= (needData.passThreshold || 80);
 
-            console.log(`[NeedNode] Executed. Score: ${score}%, Passed: ${passed}`);
 
             // 3. Report to SCORM
             if (scormClient) {

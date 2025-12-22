@@ -188,7 +188,6 @@ export class ComponentsController {
     });
 
     newNo.addEventListener("click", () => {
-      console.log("[ComponentsController] Deletion cancelled by user");
       modal.classList.add("hidden");
       modal.classList.remove("visible-flex");
     });
@@ -235,7 +234,6 @@ export class ComponentsController {
       });
     }
 
-    console.log("[ComponentsController] Components deleted, refreshing UI...");
     this.selectedComponentIds.clear();
 
     this.render();
@@ -249,7 +247,6 @@ export class ComponentsController {
     this.app.history.saveState("component delete");
     this.app.persistence.save();
 
-    console.log("[ComponentsController] Component deletion complete");
   }
 
   // Legacy method for backward compatibility if called directly
