@@ -386,6 +386,7 @@ view_file("src/services/executors/FunctionExecutor.js", StartLine=137, EndLine=1
 6. **Match UE5 aesthetics** - Premium, dark theme always
 7. **SCORM compatible** - No external dependencies that won't work in LMS
 8. **Windows paths** - Use backslashes or raw strings in Python
+9. **User Testing** - If something fails, ask for help
 
 ## 🔗 Useful Links
 

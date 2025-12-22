@@ -1,7 +1,9 @@
 /**
- * CollisionNodes - Auto-generated from NodeDefinitions.js
- * Contains node definitions for this category.
+ * CollisionNodes - Refactored using PinFactory
+ * Contains node definitions for collision and tracing operations.
  */
+import { PinFactory as PF } from "../../utils/PinFactory.js";
+
 export const CollisionNodes = {
   SphereTraceByChannel: {
     title: "Sphere Trace By Channel",
@@ -9,106 +11,32 @@ export const CollisionNodes = {
     category: "Collision",
     executor: "Trace",
     icon: "fa-circle",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "start_in", name: "Start", type: "vector", dir: "in" },
-      { id: "end_in", name: "End", type: "vector", dir: "in" },
-      {
-        id: "radius_in",
-        name: "Radius",
-        type: "float",
-        dir: "in",
-        defaultValue: 32.0,
-      },
-      {
-        id: "channel_in",
-        name: "Trace Channel",
-        type: "string",
-        dir: "in",
-        defaultValue: "Visibility",
-      },
-      {
-        id: "trace_complex_in",
-        name: "Trace Complex",
-        type: "bool",
-        dir: "in",
-        defaultValue: false,
-      },
-      {
-        id: "ignore_self_in",
-        name: "Ignore Self",
-        type: "bool",
-        dir: "in",
-        defaultValue: true,
-      },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "hit_out", name: "Return Value", type: "bool", dir: "out" },
-      { id: "hit_result_out", name: "Out Hit", type: "struct", dir: "out" },
-    ],
+    pins: PF.traceNode([PF.floatIn("radius_in", "Radius", 32.0)]),
   },
+
   BoxTraceByChannel: {
     title: "Box Trace By Channel",
     type: "function-node",
     category: "Collision",
     executor: "Trace",
     icon: "fa-cube",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "start_in", name: "Start", type: "vector", dir: "in" },
-      { id: "end_in", name: "End", type: "vector", dir: "in" },
-      { id: "half_size_in", name: "Half Size", type: "vector", dir: "in" },
-      { id: "orientation_in", name: "Orientation", type: "rotator", dir: "in" },
-      {
-        id: "channel_in",
-        name: "Trace Channel",
-        type: "string",
-        dir: "in",
-        defaultValue: "Visibility",
-      },
-      {
-        id: "trace_complex_in",
-        name: "Trace Complex",
-        type: "bool",
-        dir: "in",
-        defaultValue: false,
-      },
-      {
-        id: "ignore_self_in",
-        name: "Ignore Self",
-        type: "bool",
-        dir: "in",
-        defaultValue: true,
-      },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "hit_out", name: "Return Value", type: "bool", dir: "out" },
-      { id: "hit_result_out", name: "Out Hit", type: "struct", dir: "out" },
-    ],
+    pins: PF.traceNode([
+      PF.vectorIn("half_size_in", "Half Size"),
+      PF.rotatorIn("orientation_in", "Orientation"),
+    ]),
   },
+
   LineTraceByChannel: {
     title: "Line Trace By Channel",
     type: "function-node",
     category: "Collision",
-    icon: "trace", // Maps to raycast/trace icon if available
-    executor: "Client", // Execute on client
+    icon: "trace",
+    executor: "Client",
     pins: [
-      { id: "exec_in", name: "", type: "exec", dir: "in" },
-      { id: "exec_out", name: "", type: "exec", dir: "out" },
-      // Start - vector that can be split via right-click
-      {
-        id: "start",
-        name: "Start",
-        type: "vector",
-        dir: "in",
-        defaultValue: "(0,0,0)",
-      },
-      // End - vector that can be split via right-click
-      {
-        id: "end",
-        name: "End",
-        type: "vector",
-        dir: "in",
-        defaultValue: "(0,0,0)",
-      },
+      PF.execIn(),
+      PF.execOut(),
+      PF.vectorIn("start", "Start", "(0,0,0)"),
+      PF.vectorIn("end", "End", "(0,0,0)"),
       {
         id: "trace_channel",
         name: "Trace Channel",
@@ -117,20 +45,8 @@ export const CollisionNodes = {
         defaultValue: "Visibility",
         enumValues: ["Visibility", "Camera"],
       },
-      {
-        id: "trace_complex",
-        name: "Trace Complex",
-        type: "bool",
-        dir: "in",
-        defaultValue: false,
-      },
-      {
-        id: "actors_to_ignore",
-        name: "Actors To Ignore",
-        type: "object",
-        containerType: "array",
-        dir: "in",
-      }, // Array of Actors
+      PF.boolIn("trace_complex", "Trace Complex", false),
+      PF.objectIn("actors_to_ignore", "Actors To Ignore", "array"),
       {
         id: "draw_debug_type",
         name: "Draw Debug Type",
@@ -139,13 +55,7 @@ export const CollisionNodes = {
         defaultValue: "None",
         enumValues: ["None", "For One Frame", "For Duration", "Persistent"],
       },
-      {
-        id: "ignore_self",
-        name: "Ignore Self",
-        type: "bool",
-        dir: "in",
-        defaultValue: true,
-      },
+      PF.boolIn("ignore_self", "Ignore Self", true),
       {
         id: "trace_color",
         name: "Trace Color",
@@ -162,18 +72,12 @@ export const CollisionNodes = {
         advanced: true,
         defaultValue: "#00FF00",
       },
-      {
-        id: "draw_time",
-        name: "Draw Time",
-        type: "float",
-        dir: "in",
-        advanced: true,
-        defaultValue: 5.0,
-      },
+      PF.floatIn("draw_time", "Draw Time", 5.0),
       { id: "out_hit", name: "Out Hit", type: "hitresult", dir: "out" },
-      { id: "return_value", name: "Return Value", type: "bool", dir: "out" },
+      PF.boolOut("return_value", "Return Value"),
     ],
   },
+
   LineTraceByProfile: {
     title: "Line Trace By Profile",
     type: "function-node",
@@ -181,22 +85,10 @@ export const CollisionNodes = {
     icon: "trace",
     executor: "Client",
     pins: [
-      { id: "exec_in", name: "", type: "exec", dir: "in" },
-      { id: "exec_out", name: "", type: "exec", dir: "out" },
-      {
-        id: "start",
-        name: "Start",
-        type: "vector",
-        dir: "in",
-        defaultValue: "(0,0,0)",
-      },
-      {
-        id: "end",
-        name: "End",
-        type: "vector",
-        dir: "in",
-        defaultValue: "(0,0,0)",
-      },
+      PF.execIn(),
+      PF.execOut(),
+      PF.vectorIn("start", "Start", "(0,0,0)"),
+      PF.vectorIn("end", "End", "(0,0,0)"),
       {
         id: "profile_name",
         name: "Profile Name",
@@ -204,20 +96,8 @@ export const CollisionNodes = {
         dir: "in",
         defaultValue: "BlockAll",
       },
-      {
-        id: "trace_complex",
-        name: "Trace Complex",
-        type: "bool",
-        dir: "in",
-        defaultValue: false,
-      },
-      {
-        id: "actors_to_ignore",
-        name: "Actors To Ignore",
-        type: "object",
-        containerType: "array",
-        dir: "in",
-      },
+      PF.boolIn("trace_complex", "Trace Complex", false),
+      PF.objectIn("actors_to_ignore", "Actors To Ignore", "array"),
       {
         id: "draw_debug_type",
         name: "Draw Debug Type",
@@ -226,13 +106,7 @@ export const CollisionNodes = {
         defaultValue: "None",
         enumValues: ["None", "For One Frame", "For Duration", "Persistent"],
       },
-      {
-        id: "ignore_self",
-        name: "Ignore Self",
-        type: "bool",
-        dir: "in",
-        defaultValue: true,
-      },
+      PF.boolIn("ignore_self", "Ignore Self", true),
       {
         id: "trace_color",
         name: "Trace Color",
@@ -249,93 +123,39 @@ export const CollisionNodes = {
         advanced: true,
         defaultValue: "#00FF00",
       },
-      {
-        id: "draw_time",
-        name: "Draw Time",
-        type: "float",
-        dir: "in",
-        advanced: true,
-        defaultValue: 5.0,
-      },
+      PF.floatIn("draw_time", "Draw Time", 5.0),
       { id: "out_hit", name: "Out Hit", type: "hitresult", dir: "out" },
-      { id: "return_value", name: "Return Value", type: "bool", dir: "out" },
+      PF.boolOut("return_value", "Return Value"),
     ],
   },
+
   CapsuleTraceByChannel: {
     title: "Capsule Trace By Channel",
     type: "function-node",
     category: "Collision",
     executor: "Trace",
     icon: "fa-capsules",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "start_in", name: "Start", type: "vector", dir: "in" },
-      { id: "end_in", name: "End", type: "vector", dir: "in" },
-      {
-        id: "radius_in",
-        name: "Radius",
-        type: "float",
-        dir: "in",
-        defaultValue: 32.0,
-      },
-      {
-        id: "half_height_in",
-        name: "Half Height",
-        type: "float",
-        dir: "in",
-        defaultValue: 44.0,
-      },
-      {
-        id: "channel_in",
-        name: "Trace Channel",
-        type: "string",
-        dir: "in",
-        defaultValue: "Visibility",
-      },
-      {
-        id: "trace_complex_in",
-        name: "Trace Complex",
-        type: "bool",
-        dir: "in",
-        defaultValue: false,
-      },
-      {
-        id: "ignore_self_in",
-        name: "Ignore Self",
-        type: "bool",
-        dir: "in",
-        defaultValue: true,
-      },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "hit_out", name: "Return Value", type: "bool", dir: "out" },
-      { id: "hit_result_out", name: "Out Hit", type: "struct", dir: "out" },
-    ],
+    pins: PF.traceNode([
+      PF.floatIn("radius_in", "Radius", 32.0),
+      PF.floatIn("half_height_in", "Half Height", 44.0),
+    ]),
   },
+
   BreakHitResult: {
     title: "Break Hit Result",
     type: "pure-node",
     category: "Collision|Structs",
-    icon: "break-struct", // Need to ensure a break struct icon maps
+    icon: "break-struct",
     pins: [
       { id: "hit_result", name: "Hit Result", type: "hitresult", dir: "in" },
-      { id: "blocking_hit", name: "Blocking Hit", type: "bool", dir: "out" },
-      {
-        id: "initial_overlap",
-        name: "Initial Overlap",
-        type: "bool",
-        dir: "out",
-      },
-      { id: "time", name: "Time", type: "float", dir: "out" },
-      { id: "distance", name: "Distance", type: "float", dir: "out" },
-      { id: "location", name: "Location", type: "vector", dir: "out" },
-      { id: "impact_point", name: "Impact Point", type: "vector", dir: "out" },
-      { id: "normal", name: "Normal", type: "vector", dir: "out" },
-      {
-        id: "impact_normal",
-        name: "Impact Normal",
-        type: "vector",
-        dir: "out",
-      },
+      PF.boolOut("blocking_hit", "Blocking Hit"),
+      PF.boolOut("initial_overlap", "Initial Overlap"),
+      PF.floatOut("time", "Time"),
+      PF.floatOut("distance", "Distance"),
+      PF.vectorOut("location", "Location"),
+      PF.vectorOut("impact_point", "Impact Point"),
+      PF.vectorOut("normal", "Normal"),
+      PF.vectorOut("impact_normal", "Impact Normal"),
       { id: "phys_mat", name: "Phys Mat", type: "object", dir: "out" },
       { id: "hit_actor", name: "Hit Actor", type: "object", dir: "out" },
       {
@@ -345,11 +165,11 @@ export const CollisionNodes = {
         dir: "out",
       },
       { id: "hit_bone_name", name: "Hit Bone Name", type: "name", dir: "out" },
-      { id: "hit_item", name: "Hit Item", type: "int", dir: "out" },
-      { id: "element_index", name: "Element Index", type: "int", dir: "out" },
-      { id: "face_index", name: "Face Index", type: "int", dir: "out" },
-      { id: "trace_start", name: "Trace Start", type: "vector", dir: "out" },
-      { id: "trace_end", name: "Trace End", type: "vector", dir: "out" },
+      PF.intOut("hit_item", "Hit Item"),
+      PF.intOut("element_index", "Element Index"),
+      PF.intOut("face_index", "Face Index"),
+      PF.vectorOut("trace_start", "Trace Start"),
+      PF.vectorOut("trace_end", "Trace End"),
     ],
   },
 };
