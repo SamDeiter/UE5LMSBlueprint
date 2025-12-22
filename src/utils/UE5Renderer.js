@@ -24,11 +24,13 @@ class UE5Renderer {
 
     // Exec pins use the Elongated Pentagon shape
     if (pin.type === "exec") {
+      // Exec pins: transparent fill when disconnected, white when connected
+      const execFill = isConnected ? "#fff" : "transparent";
       return `
                 <svg width="15" height="18" viewBox="0 0 15 18" class="ue5-pin-svg">
                     <path 
                         d="M2 3 L8 3 L13 9 L8 15 L2 15 Z" 
-                        fill="${fillColor}" 
+                        fill="${execFill}" 
                         stroke="white" 
                         stroke-width="${strokeWidth}"
                     />
