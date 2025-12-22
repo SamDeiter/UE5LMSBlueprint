@@ -78,18 +78,14 @@ This project is **NOT** developed by Epic Games, Inc.
 
 ### Fair Use Statement
 
-This project replicates the visual design and interaction patterns of Unreal Engine 5's Blueprint system for **educational purposes only**. It is intended to:
+This project replicates the visual design and interaction patterns of Unreal Engine 5's Blueprint system for **educational and testing purposes only**. It is intended to:
 
-1. Help students learn visual programming concepts
-2. Provide a browser-based learning environment for educational institutions
-3. Demonstrate web-based implementation of visual scripting systems
+- Serve as a testing platform for the Unreal Authorized Instructor program.
 
 This project does **NOT**:
 
 - Include any Epic Games source code
 - Distribute Unreal Engine assets
-- Claim affiliation with Epic Games
-- Compete with Unreal Engine as a commercial product
 
 ---
 
