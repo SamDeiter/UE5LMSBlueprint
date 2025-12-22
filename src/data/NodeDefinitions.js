@@ -1471,42 +1471,7 @@ export const NodeDefinitions = {
   },
 
   // --- COLLISION / TRACING ---
-  LineTraceByChannel: {
-    title: "Line Trace By Channel",
-    type: "function-node",
-    category: "Collision",
-    executor: "Trace",
-    icon: "fa-long-arrow-alt-right",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "start_in", name: "Start", type: "vector", dir: "in" },
-      { id: "end_in", name: "End", type: "vector", dir: "in" },
-      {
-        id: "channel_in",
-        name: "Trace Channel",
-        type: "string",
-        dir: "in",
-        defaultValue: "Visibility",
-      },
-      {
-        id: "trace_complex_in",
-        name: "Trace Complex",
-        type: "bool",
-        dir: "in",
-        defaultValue: false,
-      },
-      {
-        id: "ignore_self_in",
-        name: "Ignore Self",
-        type: "bool",
-        dir: "in",
-        defaultValue: true,
-      },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "hit_out", name: "Return Value", type: "bool", dir: "out" },
-      { id: "hit_result_out", name: "Out Hit", type: "struct", dir: "out" },
-    ],
-  },
+  // LineTraceByChannel moved to updated definition below
   SphereTraceByChannel: {
     title: "Sphere Trace By Channel",
     type: "function-node",
@@ -1588,57 +1553,7 @@ export const NodeDefinitions = {
       { id: "hit_result_out", name: "Out Hit", type: "struct", dir: "out" },
     ],
   },
-  BreakHitResult: {
-    title: "Break Hit Result",
-    type: "pure-node",
-    category: "Collision",
-    executor: "Trace",
-    icon: "fa-expand-alt",
-    pins: [
-      { id: "hit_in", name: "Hit", type: "struct", dir: "in" },
-      {
-        id: "blocking_hit_out",
-        name: "Blocking Hit",
-        type: "bool",
-        dir: "out",
-      },
-      {
-        id: "initial_overlap_out",
-        name: "Initial Overlap",
-        type: "bool",
-        dir: "out",
-      },
-      { id: "time_out", name: "Time", type: "float", dir: "out" },
-      { id: "distance_out", name: "Distance", type: "float", dir: "out" },
-      { id: "location_out", name: "Location", type: "vector", dir: "out" },
-      {
-        id: "impact_point_out",
-        name: "Impact Point",
-        type: "vector",
-        dir: "out",
-      },
-      { id: "normal_out", name: "Normal", type: "vector", dir: "out" },
-      {
-        id: "impact_normal_out",
-        name: "Impact Normal",
-        type: "vector",
-        dir: "out",
-      },
-      { id: "hit_actor_out", name: "Hit Actor", type: "object", dir: "out" },
-      {
-        id: "hit_component_out",
-        name: "Hit Component",
-        type: "object",
-        dir: "out",
-      },
-      {
-        id: "hit_bone_name_out",
-        name: "Hit Bone Name",
-        type: "name",
-        dir: "out",
-      },
-    ],
-  },
+  // BreakHitResult moved to updated definition below
   NeedNode: {
     title: "Need Node",
     type: "assessment-node",
@@ -2273,7 +2188,136 @@ export const NodeDefinitions = {
     },
   },
 
-  // --- ACTOR NODES ---
+  // --- COLLISION NODES ---
+  LineTraceByChannel: {
+    title: "Line Trace By Channel",
+    type: "function-node",
+    category: "Collision",
+    icon: "trace", // Maps to raycast/trace icon if available
+    executor: "Client", // Execute on client
+    pins: [
+      { id: "exec_in", name: "", type: "exec", dir: "in" },
+      { id: "exec_out", name: "", type: "exec", dir: "out" },
+      {
+        id: "start",
+        name: "Start",
+        type: "vector",
+        dir: "in",
+        default_value: "(0,0,0)",
+      },
+      {
+        id: "end",
+        name: "End",
+        type: "vector",
+        dir: "in",
+        default_value: "(0,0,0)",
+      },
+      {
+        id: "trace_channel",
+        name: "Trace Channel",
+        type: "enum",
+        dir: "in",
+        default_value: "Visibility",
+        options: ["Visibility", "Camera"],
+      },
+      {
+        id: "trace_complex",
+        name: "Trace Complex",
+        type: "bool",
+        dir: "in",
+        default_value: false,
+      },
+      {
+        id: "actors_to_ignore",
+        name: "Actors To Ignore",
+        type: "object",
+        containerType: "array",
+        dir: "in",
+      }, // Array of Actors
+      {
+        id: "draw_debug_type",
+        name: "Draw Debug Type",
+        type: "enum",
+        dir: "in",
+        default_value: "None",
+        options: ["None", "For One Frame", "For Duration", "Persistent"],
+      },
+      {
+        id: "ignore_self",
+        name: "Ignore Self",
+        type: "bool",
+        dir: "in",
+        default_value: true,
+      },
+      {
+        id: "trace_color",
+        name: "Trace Color",
+        type: "linearcolor",
+        dir: "in",
+        advanced: true,
+        default_value: "#FF0000",
+      },
+      {
+        id: "trace_hit_color",
+        name: "Trace Hit Color",
+        type: "linearcolor",
+        dir: "in",
+        advanced: true,
+        default_value: "#00FF00",
+      },
+      {
+        id: "draw_time",
+        name: "Draw Time",
+        type: "float",
+        dir: "in",
+        advanced: true,
+        default_value: 5.0,
+      },
+      { id: "out_hit", name: "Out Hit", type: "hitresult", dir: "out" },
+      { id: "return_value", name: "Return Value", type: "bool", dir: "out" },
+    ],
+  },
+  BreakHitResult: {
+    title: "Break Hit Result",
+    type: "pure-node",
+    category: "Collision|Structs",
+    icon: "break-struct", // Need to ensure a break struct icon maps
+    pins: [
+      { id: "hit_result", name: "Hit Result", type: "hitresult", dir: "in" },
+      { id: "blocking_hit", name: "Blocking Hit", type: "bool", dir: "out" },
+      {
+        id: "initial_overlap",
+        name: "Initial Overlap",
+        type: "bool",
+        dir: "out",
+      },
+      { id: "time", name: "Time", type: "float", dir: "out" },
+      { id: "distance", name: "Distance", type: "float", dir: "out" },
+      { id: "location", name: "Location", type: "vector", dir: "out" },
+      { id: "impact_point", name: "Impact Point", type: "vector", dir: "out" },
+      { id: "normal", name: "Normal", type: "vector", dir: "out" },
+      {
+        id: "impact_normal",
+        name: "Impact Normal",
+        type: "vector",
+        dir: "out",
+      },
+      { id: "phys_mat", name: "Phys Mat", type: "object", dir: "out" },
+      { id: "hit_actor", name: "Hit Actor", type: "object", dir: "out" },
+      {
+        id: "hit_component",
+        name: "Hit Component",
+        type: "object",
+        dir: "out",
+      },
+      { id: "hit_bone_name", name: "Hit Bone Name", type: "name", dir: "out" },
+      { id: "hit_item", name: "Hit Item", type: "int", dir: "out" },
+      { id: "element_index", name: "Element Index", type: "int", dir: "out" },
+      { id: "face_index", name: "Face Index", type: "int", dir: "out" },
+      { id: "trace_start", name: "Trace Start", type: "vector", dir: "out" },
+      { id: "trace_end", name: "Trace End", type: "vector", dir: "out" },
+    ],
+  },
   // Duplicates removed (moved to Game|Actor section)
 
   // --- MATH: BASIC ---

@@ -1,105 +1,117 @@
 /**
  * Pin class - Represents a single data pin on a node.
  */
-import { PinDefaults, StructComponents } from '../config/NodeDefaults.js';
+import { PinDefaults, StructComponents } from "../config/NodeDefaults.js";
 
 class Pin {
-    constructor(node, pinData) {
-        this.id = pinData.id.includes(node.id) ? pinData.id : `${node.id}-${pinData.id}`;
-        this.node = node;
-        this.name = pinData.name;
-        this.type = (pinData.type || '').toLowerCase(); // Safe lowercasing
-        this.dir = pinData.dir;
-        this.element = null;
-        this.links = [];
-        this.containerType = pinData.containerType || 'single';
-        this.defaultValue = pinData.defaultValue !== undefined ? pinData.defaultValue : this.getDefaultValue();
-        this.isCustom = pinData.isCustom || false;
-        this.isReference = pinData.isReference || pinData.byRef || false;  // Pass-by-reference diamond pin
-        this.isSplit = pinData.isSplit || false;
-        this.subPins = [];
+  constructor(node, pinData) {
+    this.id = pinData.id.includes(node.id)
+      ? pinData.id
+      : `${node.id}-${pinData.id}`;
+    this.node = node;
+    this.name = pinData.name;
+    this.type = (pinData.type || "").toLowerCase(); // Safe lowercasing
+    this.dir = pinData.dir;
+    this.element = null;
+    this.links = [];
+    this.containerType = pinData.containerType || "single";
+    this.defaultValue =
+      pinData.defaultValue !== undefined
+        ? pinData.defaultValue
+        : this.getDefaultValue();
+    this.isCustom = pinData.isCustom || false;
+    this.isReference = pinData.isReference || pinData.byRef || false; // Pass-by-reference diamond pin
+    this.isSplit = pinData.isSplit || false;
+    this.enumValues = pinData.options || pinData.enumValues;
+    this.subPins = [];
 
-        // Restore sub-pins if loading from save
-        if (this.isSplit && pinData.subPins) {
-            this.restoreSubPins(pinData.subPins);
-        }
+    // Restore sub-pins if loading from save
+    if (this.isSplit && pinData.subPins) {
+      this.restoreSubPins(pinData.subPins);
     }
+  }
 
-    getDefaultValue() {
-        const typeUpper = this.type.toUpperCase();
-        return PinDefaults[typeUpper] !== undefined ? PinDefaults[typeUpper] : PinDefaults.DEFAULT;
+  getDefaultValue() {
+    const typeUpper = this.type.toUpperCase();
+    return PinDefaults[typeUpper] !== undefined
+      ? PinDefaults[typeUpper]
+      : PinDefaults.DEFAULT;
+  }
+
+  isConnected() {
+    return this.links.length > 0;
+  }
+
+  getMaxLinks() {
+    if (this.dir === "in" && this.type !== "exec") {
+      return 1;
     }
+    return Infinity;
+  }
 
-    isConnected() { return this.links.length > 0; }
+  canSplit() {
+    // Allow splitting for vector, rotator, and transform types
+    // Even if already split (for nested splitting like Transform -> Location -> X/Y/Z)
+    return (
+      ["vector", "rotator", "transform", "hitresult"].includes(this.type) &&
+      !this.isSplit
+    );
+  }
 
-    getMaxLinks() {
-        if (this.dir === 'in' && this.type !== 'exec') {
-            return 1;
-        }
-        return Infinity;
-    }
+  split() {
+    if (!this.canSplit()) return;
 
-    canSplit() {
-        // Allow splitting for vector, rotator, and transform types
-        // Even if already split (for nested splitting like Transform -> Location -> X/Y/Z)
-        return ['vector', 'rotator', 'transform'].includes(this.type) && !this.isSplit;
-    }
+    this.isSplit = true;
+    this.createSubPins();
+  }
 
-    split() {
-        if (!this.canSplit()) return;
+  recombine() {
+    if (!this.isSplit) return;
 
-        this.isSplit = true;
-        this.createSubPins();
-    }
+    // Recursively recombine any split sub-pins first
+    this.subPins.forEach((subPin) => {
+      if (subPin.isSplit) {
+        subPin.recombine();
+      }
+    });
 
-    recombine() {
-        if (!this.isSplit) return;
+    this.isSplit = false;
+    this.subPins = [];
+  }
 
-        // Recursively recombine any split sub-pins first
-        this.subPins.forEach(subPin => {
-            if (subPin.isSplit) {
-                subPin.recombine();
-            }
-        });
+  createSubPins() {
+    this.subPins = [];
+    const components = this.getStructComponents();
 
-        this.isSplit = false;
-        this.subPins = [];
-    }
+    components.forEach((comp) => {
+      const subPinId = `${this.id}_${comp.name}`;
+      const subPin = new Pin(this.node, {
+        id: subPinId,
+        name: comp.name,
+        type: comp.type,
+        dir: this.dir,
+        defaultValue: comp.default,
+      });
+      // Override ID to ensure it matches exactly what we want (Pin constructor might prefix node id again if we aren't careful, but we passed full ID)
+      // Actually Pin constructor does: this.id = pinData.id.includes(node.id) ? pinData.id : `${node.id}-${pinData.id}`;
+      // So if we pass `${this.id}_${comp.name}`, it includes node.id (since this.id does), so it should be fine.
 
-    createSubPins() {
-        this.subPins = [];
-        const components = this.getStructComponents();
+      this.subPins.push(subPin);
+    });
+  }
 
-        components.forEach(comp => {
-            const subPinId = `${this.id}_${comp.name}`;
-            const subPin = new Pin(this.node, {
-                id: subPinId,
-                name: comp.name,
-                type: comp.type,
-                dir: this.dir,
-                defaultValue: comp.default
-            });
-            // Override ID to ensure it matches exactly what we want (Pin constructor might prefix node id again if we aren't careful, but we passed full ID)
-            // Actually Pin constructor does: this.id = pinData.id.includes(node.id) ? pinData.id : `${node.id}-${pinData.id}`;
-            // So if we pass `${this.id}_${comp.name}`, it includes node.id (since this.id does), so it should be fine.
+  restoreSubPins(savedSubPins) {
+    this.subPins = [];
+    savedSubPins.forEach((savedPin) => {
+      const subPin = new Pin(this.node, savedPin);
+      this.subPins.push(subPin);
+    });
+  }
 
-            this.subPins.push(subPin);
-        });
-    }
-
-    restoreSubPins(savedSubPins) {
-        this.subPins = [];
-        savedSubPins.forEach(savedPin => {
-            const subPin = new Pin(this.node, savedPin);
-            this.subPins.push(subPin);
-        });
-    }
-
-    getStructComponents() {
-        const typeUpper = this.type.toUpperCase();
-        return StructComponents[typeUpper] || [];
-    }
+  getStructComponents() {
+    const typeUpper = this.type.toUpperCase();
+    return StructComponents[typeUpper] || [];
+  }
 }
 
 export { Pin };
-

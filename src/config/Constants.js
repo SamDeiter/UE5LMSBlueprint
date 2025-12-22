@@ -15,6 +15,7 @@ export const PIN_TYPES = {
   OBJECT: "object",
   ENUM: "enum",
   WILDCARD: "wildcard",
+  HITRESULT: "hitresult",
 };
 
 export const PIN_COLORS = {
@@ -33,6 +34,7 @@ export const PIN_COLORS = {
   [PIN_TYPES.TRANSFORM]: "var(--color-transform)",
   [PIN_TYPES.OBJECT]: "var(--color-object)",
   [PIN_TYPES.ENUM]: "var(--color-enum)",
+  [PIN_TYPES.HITRESULT]: "#001A99", // Deep Blue
   DEFAULT: "#888888",
 };
 
@@ -89,6 +91,7 @@ export const PIN_TYPE_CLASSES = {
   [PIN_TYPES.TRANSFORM]: "transform-pin",
   [PIN_TYPES.OBJECT]: "object-pin",
   [PIN_TYPES.ENUM]: "enum-pin",
+  [PIN_TYPES.HITRESULT]: "hitresult-pin",
   DEFAULT: "default-pin",
 };
 

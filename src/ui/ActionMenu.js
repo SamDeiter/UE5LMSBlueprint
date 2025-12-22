@@ -15,7 +15,9 @@ export class ActionMenu {
     this.graphPos = { x: 0, y: 0 };
     this.sourcePin = null;
     this.droppedVarName = null;
-    this.isContextSensitive = true;
+    const savedContext = localStorage.getItem("ue5_context_sensitive");
+    this.isContextSensitive =
+      savedContext !== null ? savedContext === "true" : true;
     this.isHideDelayActive = false;
     this.element.addEventListener("click", (e) => e.stopPropagation());
     this.searchInput.addEventListener("input", this.filter.bind(this));
@@ -288,6 +290,7 @@ export class ActionMenu {
       const checkboxLabel = document.createTextNode("Context Sensitive");
       checkbox.addEventListener("change", (e) => {
         this.isContextSensitive = e.target.checked;
+        localStorage.setItem("ue5_context_sensitive", this.isContextSensitive);
         this.populateList(this.searchInput.value.toLowerCase());
       });
       contextRow.appendChild(checkbox);
