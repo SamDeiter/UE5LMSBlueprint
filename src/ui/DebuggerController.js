@@ -88,6 +88,30 @@ export class DebuggerController {
     this.watchPanel.classList.remove("hidden");
   }
 
+  /**
+   * Get the current value of a pin
+   * @param {Object} pin - Pin object
+   * @returns {*} Pin value
+   */
+  getPinValue(pin) {
+    // Priority 1: Runtime temp values (during execution)
+    if (pin.node.tempValues && pin.node.tempValues[pin.name] !== undefined) {
+      return pin.node.tempValues[pin.name];
+    }
+
+    // Priority 2: Pin literals (user-set values)
+    if (pin.node.pinLiterals && pin.node.pinLiterals.has(pin.id)) {
+      return pin.node.pinLiterals.get(pin.id);
+    }
+
+    // Priority 3: Default value
+    if (pin.defaultValue !== undefined) {
+      return pin.defaultValue;
+    }
+
+    return "N/A";
+  }
+
   updateWatchPanel() {
     const list = this.watchPanel.querySelector("#watch-list");
     if (!list) return;
@@ -110,16 +134,8 @@ export class DebuggerController {
         const row = document.createElement("div");
         row.className = "d-flex justify-between mb-1";
 
-        // Get value from node's tempValues or literals
-        let val = "N/A";
-        if (
-          pin.node.tempValues &&
-          pin.node.tempValues[pin.name] !== undefined
-        ) {
-          val = pin.node.tempValues[pin.name];
-        } else if (pin.node.pinLiterals.has(pin.id)) {
-          val = pin.node.pinLiterals.get(pin.id);
-        }
+        // Use shared value retrieval method
+        const val = this.getPinValue(pin);
 
         row.innerHTML = `<span class="text-muted">${pin.node.title}.${pin.name}:</span> <span class="text-success">${val}</span>`;
         list.appendChild(row);
@@ -133,7 +149,7 @@ export class DebuggerController {
   /**
    * Phase 6: Create a watch bubble positioned next to a pin
    */
-  createWatchBubble(pin, value) {
+  createWatchBubble(pin, value = null) {
     // Remove existing bubble for this pin
     this.removeWatchBubble(pin.id);
 
@@ -158,9 +174,14 @@ export class DebuggerController {
       this.updateWatchPanel();
     });
 
+    // Use shared value retrieval method for consistency
+    const currentValue = value !== null ? value : this.getPinValue(pin);
+
     bubble.innerHTML = `<span class="bubble-label">${
       pin.name
-    }:</span><span class="bubble-value">${this.formatValue(value)}</span>`;
+    }:</span><span class="bubble-value">${this.formatValue(
+      currentValue
+    )}</span>`;
     bubble.appendChild(closeBtn);
 
     // Position relative to pin
@@ -178,13 +199,13 @@ export class DebuggerController {
     }
 
     // Track previous value for change detection
-    bubble.dataset.previousValue = String(value);
+    bubble.dataset.previousValue = String(currentValue);
   }
 
   /**
    * Update a watch bubble value and highlight if changed
    */
-  updateWatchBubble(pin, value) {
+  updateWatchBubble(pin, value = null) {
     const bubble = document.getElementById(`watch-bubble-${pin.id}`);
     if (!bubble) {
       this.createWatchBubble(pin, value);
@@ -193,10 +214,13 @@ export class DebuggerController {
 
     const valueEl = bubble.querySelector(".bubble-value");
     const previousValue = bubble.dataset.previousValue;
-    const newValue = String(value);
+
+    // Use shared value retrieval method for consistency
+    const currentValue = value !== null ? value : this.getPinValue(pin);
+    const newValue = String(currentValue);
 
     if (previousValue !== newValue) {
-      valueEl.textContent = this.formatValue(value);
+      valueEl.textContent = this.formatValue(currentValue);
       valueEl.classList.add("value-changed");
       bubble.dataset.previousValue = newValue;
 
