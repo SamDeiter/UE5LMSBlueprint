@@ -269,20 +269,25 @@ export class PinFactory {
   /**
    * Complete trace node pins (exec flow + trace params + debug + results)
    * Matches UE5 trace node specification with full debug visualization support
+   * @param {Array} shapeParams - Shape-specific parameters (radius, half size, etc.)
+   * @param {Object} channelParam - Optional custom channel parameter (for ByProfile traces)
    */
-  static traceNode(shapeParams = []) {
+  static traceNode(shapeParams = [], channelParam = null) {
+    // Default trace channel enum
+    const defaultChannel = {
+      id: "trace_channel",
+      name: "Trace Channel",
+      type: "enum",
+      dir: "in",
+      defaultValue: "Visibility",
+      enumValues: ["Visibility", "Camera"],
+    };
+
     return [
       ...this.execFlow(),
       ...this.traceStartEnd(),
       ...shapeParams,
-      {
-        id: "trace_channel",
-        name: "Trace Channel",
-        type: "enum",
-        dir: "in",
-        defaultValue: "Visibility",
-        enumValues: ["Visibility", "Camera"],
-      },
+      channelParam || defaultChannel, // Use custom channel or default
       this.traceComplex(),
       this.objectIn("actors_to_ignore", "Actors To Ignore", "array"),
       {
