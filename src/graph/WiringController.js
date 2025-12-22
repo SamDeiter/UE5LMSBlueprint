@@ -70,6 +70,20 @@ class WiringController {
     this.selectedLinks.clear();
   }
 
+  /**
+   * Clears all wires from the graph and the internal state.
+   */
+  clear() {
+    this.links.clear();
+    this.selectedLinks.clear();
+    // Remove all wire paths from the SVG group
+    if (this.svgGroup) {
+      while (this.svgGroup.firstChild) {
+        this.svgGroup.removeChild(this.svgGroup.firstChild);
+      }
+    }
+  }
+
   setWireActive(linkId) {
     const wireEl = document.getElementById(linkId);
     if (!wireEl) return;
