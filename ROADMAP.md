@@ -72,10 +72,10 @@
 | Node | Description | Status |
 |------|-------------|--------|
 | `LineTraceByChannel` | Raycast by collision channel | ✅ |
-| `LineTraceByProfile` | Raycast by profile | ❌ |
+| `LineTraceByProfile` | Raycast by profile | ✅ |
 | `BoxTraceByChannel` | Swept box trace | ✅ |
 | `SphereTraceByChannel` | Swept sphere trace | ✅ |
-| `CapsuleTrace` | Swept capsule trace | ❌ |
+| `CapsuleTrace` | Swept capsule trace | ✅ |
 | `BreakHitResult` | Extract Hit Result data | ✅ |
 
 ### High Priority: Enhanced Input (from UE5_BLUEPRINT_ARCH_REF §6)
@@ -93,9 +93,9 @@
 
 | Node | Description | Status |
 |------|-------------|--------|
-| `PlaySound2D` | Non-spatialized audio | ❌ |
-| `PlaySoundAtLocation` | Spatialized audio | ❌ |
-| `SpawnNiagaraSystem` | Particle effects | ❌ |
+| `PlaySound2D` | Play provided non-spatialized audio | ❌ |
+| `PlaySoundAtLocation` | Play provided spatialized audio | ❌ |
+| `SpawnNiagaraSystem` | Spawn provided particle effects | ❌ |
 
 ### Low Priority: Advanced
 
@@ -174,10 +174,12 @@
 
 ## 📅 Suggested Next Actions
 
-1. **Finish inline style refactor** — Get to <50 inline styles
-2. **Implement Line Trace nodes** — Critical for gameplay tutorials
+1. **Implement Line Trace nodes** — Critical for gameplay tutorials
+2. **Implement Input Action nodes** — Essential for interactive demos
+3. **Class Defaults Panel** — Full UE5 workflow parity
+2. **Implement Line Trace nodes** — ✅ *Complete*
 3. **Implement Input Action nodes** — Essential for interactive demos
-4. **Class Defaults Panel** — Full UE5 workflow parity
+4. **Class Defaults Panel** — ✅ *Complete*
 
 ---
 
