@@ -1,0 +1,142 @@
+================================================================================
+DEAD CODE DETECTION REPORT
+================================================================================
+
+Total files analyzed: 104
+Files with exports: 100
+Total unique imports: 114
+Files with unused exports: 9
+Potentially unused files: 92
+
+================================================================================
+UNUSED EXPORTS
+================================================================================
+
+src\graph\GraphSelection.js:
+  - GraphSelection
+
+src\registries\NodeRegistry.js:
+  - NodeRegistry
+
+src\services\ScormClient.js:
+  - ScormClient
+
+src\services\TimerManager.js:
+  - TimerManager
+
+src\tests\NodeRegistryTests.js:
+  - NodeRegistryTests
+
+src\tests\PinRendering.test.js:
+  - PinRenderingTests
+
+src\ui\ComponentSelector.js:
+  - COMPONENT_DEFINITIONS
+
+src\utils\PinFactory.js:
+  - PF
+
+src\utils\validator.js:
+  - TASK_1_1_HEALTH_INIT
+  - TASK_1_2_PRINT_MESSAGE
+
+================================================================================
+POTENTIALLY UNUSED FILES
+================================================================================
+
+(Note: These files are not imported. Verify before deleting!)
+
+  - src\config\Constants.js
+  - src\config\DOMElements.js
+  - src\config\NodeDefaults.js
+  - src\data\AssessmentTasks.js
+  - src\data\nodes\ActorNodes.js
+  - src\data\nodes\AssessmentNodes.js
+  - src\data\nodes\CastingNodes.js
+  - src\data\nodes\CollectionNodes.js
+  - src\data\nodes\CollisionNodes.js
+  - src\data\nodes\EventNodes.js
+  - src\data\nodes\FlowControlNodes.js
+  - src\data\nodes\FunctionNodes.js
+  - src\data\nodes\InputNodes.js
+  - src\data\nodes\MacroNodes.js
+  - src\data\nodes\MathNodes.js
+  - src\data\nodes\StringNodes.js
+  - src\data\nodes\UtilityNodes.js
+  - src\data\nodes\VariableNodes.js
+  - src\debug_root.js
+  - src\functions\FunctionDefinition.js
+  - src\functions\FunctionRegistry.js
+  - src\graph\GraphController.js
+  - src\graph\GraphInteraction.js
+  - src\graph\GraphRenderer.js
+  - src\graph\GraphSelection.js
+  - src\graph\GraphSwitcher.js
+  - src\graph\Node.js
+  - src\graph\Pin.js
+  - src\graph\WiringController.js
+  - src\macros\MacroDefinition.js
+  - src\macros\MacroRegistry.js
+  - src\registries\NodeRegistry.js
+  - src\services\Compiler.js
+  - src\services\DirtyStateTracker.js
+  - src\services\GraphValidator.js
+  - src\services\GridController.js
+  - src\services\HistoryManager.js
+  - src\services\Persistence.js
+  - src\services\ScormClient.js
+  - src\services\SimulationEngine.js
+  - src\services\TaskManager.js
+  - src\services\TimerManager.js
+  - src\services\executors\ActorExecutor.js
+  - src\services\executors\BaseExecutor.js
+  - src\services\executors\CastExecutor.js
+  - src\services\executors\ConversionExecutor.js
+  - src\services\executors\EventExecutor.js
+  - src\services\executors\ExecutorRegistry.js
+  - src\services\executors\FlowControlExecutor.js
+  - src\services\executors\FunctionExecutor.js
+  - src\services\executors\InputExecutor.js
+  - src\services\executors\MacroExecutor.js
+  - src\services\executors\MathExecutor.js
+  - src\services\executors\NeedNodeExecutor.js
+  - src\services\executors\PrintExecutor.js
+  - src\services\executors\StringExecutor.js
+  - src\services\executors\TimelineExecutor.js
+  - src\services\executors\TimerExecutor.js
+  - src\services\executors\TraceExecutor.js
+  - src\services\executors\VariableExecutor.js
+  - src\services\executors\VectorExecutor.js
+  - src\tests\NodeRegistryTests.js
+  - src\tests\debug_import.js
+  - src\tests\test_refactor.js
+  - src\ui\ActionMenu.js
+  - src\ui\ClassDefaultsRenderer.js
+  - src\ui\ComponentSelector.js
+  - src\ui\ComponentsController.js
+  - src\ui\ContextMenu.js
+  - src\ui\DebuggerController.js
+  - src\ui\DetailsController.js
+  - src\ui\DetailsRenderer.js
+  - src\ui\DetailsTypeSelector.js
+  - src\ui\EventDispatcherController.js
+  - src\ui\FunctionsController.js
+  - src\ui\GraphsController.js
+  - src\ui\LayoutController.js
+  - src\ui\LocalVariablesController.js
+  - src\ui\MacrosController.js
+  - src\ui\NeedNodeModal.js
+  - src\ui\PaletteController.js
+  - src\ui\ParentClassModal.js
+  - src\ui\SearchController.js
+  - src\ui\TaskController.js
+  - src\ui\VariableController.js
+  - src\ui\ui-helpers.js
+  - src\utils.js
+  - src\utils\NodeDefinitionValidator.js
+  - src\utils\PinFactory.js
+  - src\utils\UE5Renderer.js
+  - src\utils\guid.js
+  - src\utils\validator.js
+
+================================================================================
