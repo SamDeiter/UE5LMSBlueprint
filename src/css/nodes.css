@@ -58,6 +58,7 @@
     pointer-events: none;
 }
 
+
 /* UE5 SVG Icon Support */
 .ue5-icon {
     display: inline-flex;
@@ -72,13 +73,28 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: brightness(1.0);
+    /* Make SVG icons white to match UE5 style */
+    filter: brightness(0) invert(1);
 }
 
 .node-title:hover .ue5-icon-svg {
-    filter: brightness(1.2);
+    filter: brightness(0) invert(1) brightness(1.2);
 }
 
+/* UE5 Pin SVG Styling */
+.ue5-pin-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.ue5-container-svg {
+    display: block;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+}
 
 .node-title::after {
     content: '';
@@ -635,4 +651,4 @@
 .ue-color-picker::-webkit-color-swatch {
     border: none;
     border-radius: 1px;
-}
+}/* Cache bust: 20251221202155 */
