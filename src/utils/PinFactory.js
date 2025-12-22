@@ -267,17 +267,52 @@ export class PinFactory {
   }
 
   /**
-   * Complete trace node pins (exec flow + trace params + results)
+   * Complete trace node pins (exec flow + trace params + debug + results)
+   * Matches UE5 trace node specification with full debug visualization support
    */
   static traceNode(shapeParams = []) {
     return [
       ...this.execFlow(),
       ...this.traceStartEnd(),
       ...shapeParams,
-      this.traceChannel(),
+      {
+        id: "trace_channel",
+        name: "Trace Channel",
+        type: "enum",
+        dir: "in",
+        defaultValue: "Visibility",
+        enumValues: ["Visibility", "Camera"],
+      },
       this.traceComplex(),
+      this.objectIn("actors_to_ignore", "Actors To Ignore", "array"),
+      {
+        id: "draw_debug_type",
+        name: "Draw Debug Type",
+        type: "enum",
+        dir: "in",
+        defaultValue: "None",
+        enumValues: ["None", "For One Frame", "For Duration", "Persistent"],
+      },
       this.ignoreSelf(),
-      ...this.traceResults(),
+      {
+        id: "trace_color",
+        name: "Trace Color",
+        type: "linearcolor",
+        dir: "in",
+        advanced: true,
+        defaultValue: "#FF0000",
+      },
+      {
+        id: "trace_hit_color",
+        name: "Trace Hit Color",
+        type: "linearcolor",
+        dir: "in",
+        advanced: true,
+        defaultValue: "#00FF00",
+      },
+      this.floatIn("draw_time", "Draw Time", 5.0),
+      { id: "out_hit", name: "Out Hit", type: "hitresult", dir: "out" },
+      this.boolOut("return_value", "Return Value"),
     ];
   }
 
