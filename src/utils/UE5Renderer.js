@@ -38,7 +38,7 @@ class UE5Renderer {
 
     // Delegate/Event pins use a Diamond shape (hollow when connected, filled when not)
     if (pin.type === "delegate") {
-      const delegateFill = isConnected ? "transparent" : "#000";
+      const delegateFill = isConnected ? strokeColor : "transparent";
       return `
                 <svg width="15" height="15" viewBox="0 0 15 15" class="ue5-pin-svg">
                     <path 

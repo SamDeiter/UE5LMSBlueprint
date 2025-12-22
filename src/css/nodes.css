@@ -457,7 +457,7 @@
 .event-delegate-icon {
     width: 10px;
     height: 10px;
-    background-color: #000;
+    background-color: transparent;
     border: 2px solid #ff4444;
     border-radius: 3px;
     margin-left: auto;
