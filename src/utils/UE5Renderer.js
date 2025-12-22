@@ -29,7 +29,22 @@ class UE5Renderer {
                     <path 
                         d="M2 3 L8 3 L13 9 L8 15 L2 15 Z" 
                         fill="${fillColor}" 
-                        stroke="${isConnected ? "white" : "#888"}" 
+                        stroke="white" 
+                        stroke-width="${strokeWidth}"
+                    />
+                </svg>
+            `;
+    }
+
+    // Delegate/Event pins use a Diamond shape (hollow when connected, filled when not)
+    if (pin.type === "delegate") {
+      const delegateFill = isConnected ? "transparent" : "#000";
+      return `
+                <svg width="15" height="15" viewBox="0 0 15 15" class="ue5-pin-svg">
+                    <path 
+                        d="M7.5 1 L14 7.5 L7.5 14 L1 7.5 Z" 
+                        fill="${delegateFill}" 
+                        stroke="${strokeColor}" 
                         stroke-width="${strokeWidth}"
                     />
                 </svg>
