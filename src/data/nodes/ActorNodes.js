@@ -43,6 +43,12 @@ export const ActorNodes = {
         type: "enum",
         dir: "in",
         defaultValue: "AlwaysSpawn",
+        enumValues: [
+          "AlwaysSpawn",
+          "AdjustIfPossibleButAlwaysSpawn",
+          "AdjustIfPossibleButDontSpawnIfColliding",
+          "DontSpawnIfColliding",
+        ],
       },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
       { id: "return_value", name: "Return Value", type: "object", dir: "out" },

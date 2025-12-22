@@ -14,7 +14,18 @@
 
 export class NodeDefinitionValidator {
   static get validNodeTypes() {
-    return ["event-node", "function-node", "pure-node", "macro-node"];
+    return [
+      "event-node",
+      "function-node",
+      "pure-node",
+      "macro-node",
+      // UE5-specific node types
+      "flow-node",
+      "cast-node",
+      "variable-node",
+      "assessment-node",
+      "comment-node",
+    ];
   }
 
   static get validPinTypes() {
@@ -34,6 +45,12 @@ export class NodeDefinitionValidator {
       "linearcolor",
       "hitresult",
       "enum",
+      // UE5-specific types
+      "wildcard",
+      "class",
+      "scenecomponent",
+      "text",
+      "int64",
     ];
   }
 
@@ -51,6 +68,11 @@ export class NodeDefinitionValidator {
     const warnings = [];
 
     Object.entries(definitions).forEach(([nodeKey, nodeDef]) => {
+      // Skip metadata fields (not actual node definitions)
+      if (nodeKey === "customData") {
+        return;
+      }
+
       try {
         this.validateNode(nodeKey, nodeDef, errors, warnings);
       } catch (err) {

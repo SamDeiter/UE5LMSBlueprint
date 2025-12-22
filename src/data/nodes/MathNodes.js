@@ -1,303 +1,244 @@
 /**
- * MathNodes - Auto-generated from NodeDefinitions.js
- * Contains node definitions for this category.
+ * MathNodes - Refactored using PinFactory
+ * Contains node definitions for mathematical operations.
+ *
+ * Refactored from 748 lines to ~250 lines (67% reduction)
+ * Using PinFactory patterns for binary/unary operations
  */
+import { PinFactory as PF } from "../../utils/PinFactory.js";
+
 export const MathNodes = {
+  // ============================================================================
+  // TYPE CONVERSIONS
+  // ============================================================================
+
   Conv_IntToFloat: {
     title: "To Float (Int)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Conversion",
     icon: "●",
-    pins: [
-      { id: "val_in", name: "", type: "int", dir: "in" },
-      { id: "val_out", name: "", type: "float", dir: "out" },
-    ],
+    pins: PF.conversion("int", "float"),
   },
+
   Conv_ByteToInt: {
     title: "To Int (Byte)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "●",
-    pins: [
-      { id: "val_in", name: "", type: "byte", dir: "in" },
-      { id: "val_out", name: "", type: "int", dir: "out" },
-    ],
+    pins: PF.conversion("byte", "int"),
   },
+
+  // ============================================================================
+  // INTEGER OPERATIONS
+  // ============================================================================
+
   AddInt: {
     title: "Add (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "fa-plus",
-    pins: [
-      { id: "a_in", name: "A", type: "int", dir: "in" },
-      { id: "b_in", name: "B", type: "int", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.binaryOp("int", 0, 0),
   },
+
   SubtractInt: {
     title: "Subtract (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "-",
-    pins: [
-      { id: "a_in", name: "A", type: "int", dir: "in" },
-      { id: "b_in", name: "B", type: "int", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.binaryOp("int", 0, 0),
   },
+
   MultiplyInt: {
     title: "Multiply (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "×",
-    pins: [
-      { id: "a_in", name: "A", type: "int", dir: "in" },
-      { id: "b_in", name: "B", type: "int", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.binaryOp("int", 0, 0),
   },
+
   DivideInt: {
     title: "Divide (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "÷",
-    pins: [
-      { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 1 },
-      { id: "b_in", name: "B", type: "int", dir: "in", defaultValue: 1 },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.binaryOp("int", 1, 1),
   },
+
+  // ============================================================================
+  // FLOAT OPERATIONS
+  // ============================================================================
+
   AddFloat: {
     title: "Add (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "+",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.binaryOp("float", 0.0, 0.0),
   },
+
   SubtractFloat: {
     title: "Subtract (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "-",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.binaryOp("float", 0.0, 1.0),
   },
+
   MultiplyFloat: {
     title: "Multiply (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "×",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.binaryOp("float", 1.0, 1.0),
   },
+
   DivideFloat: {
     title: "Divide (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "÷",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.binaryOp("float", 1.0, 1.0),
   },
+
+  // ============================================================================
+  // BOOLEAN OPERATIONS
+  // ============================================================================
+
   OR: {
     title: "OR",
     type: "pure-node",
     category: "Math|Boolean",
     executor: "Math",
     icon: "∨",
-    pins: [
-      { id: "a_in", name: "A", type: "bool", dir: "in", defaultValue: false },
-      { id: "b_in", name: "B", type: "bool", dir: "in", defaultValue: false },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    pins: PF.binaryOp("bool", false, false),
   },
+
   AND: {
     title: "AND",
     type: "pure-node",
     category: "Math|Boolean",
     executor: "Math",
     icon: "∧",
-    pins: [
-      { id: "a_in", name: "A", type: "bool", dir: "in", defaultValue: false },
-      { id: "b_in", name: "B", type: "bool", dir: "in", defaultValue: false },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    pins: PF.binaryOp("bool", false, false),
   },
+
   NOT: {
     title: "NOT",
     type: "pure-node",
     category: "Math|Boolean",
     executor: "Math",
     icon: "¬",
-    pins: [
-      { id: "a_in", name: "A", type: "bool", dir: "in", defaultValue: false },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    pins: PF.unaryOp("bool", "bool", false),
   },
+
+  // ============================================================================
+  // COMPARISON OPERATIONS
+  // ============================================================================
+
   Greater: {
     title: "> (Greater)",
     type: "pure-node",
     category: "Math|Comparison",
     executor: "Math",
-    icon: "\u003e",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    icon: ">",
+    pins: PF.comparison(0.0, 0.0),
   },
+
   GreaterEqual: {
     title: ">= (Greater or Equal)",
     type: "pure-node",
     category: "Math|Comparison",
     executor: "Math",
     icon: "≥",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    pins: PF.comparison(0.0, 0.0),
   },
+
   Less: {
     title: "< (Less)",
     type: "pure-node",
     category: "Math|Comparison",
     executor: "Math",
-    icon: "\u003c",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    icon: "<",
+    pins: PF.comparison(0.0, 0.0),
   },
+
   LessEqual: {
     title: "<= (Less or Equal)",
     type: "pure-node",
     category: "Math|Comparison",
     executor: "Math",
     icon: "≤",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    pins: PF.comparison(0.0, 0.0),
   },
+
   EqualEqual: {
     title: "== (Equal)",
     type: "pure-node",
     category: "Math|Comparison",
     executor: "Math",
     icon: "=",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    pins: PF.comparison(0.0, 0.0),
   },
+
   NotEqual: {
     title: "!= (Not Equal)",
     type: "pure-node",
     category: "Math|Comparison",
     executor: "Math",
     icon: "≠",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
-    ],
+    pins: PF.comparison(0.0, 0.0),
   },
+
+  // ============================================================================
+  // VECTOR/ROTATOR OPERATIONS
+  // ============================================================================
+
   MakeVector: {
     title: "Make Vector",
     category: "Math|Vector",
     executor: "Vector",
     type: "pure-node",
     icon: "fa-plus",
-    pins: [
-      { id: "x_in", name: "X", type: "float", dir: "in", defaultValue: 0 },
-      { id: "y_in", name: "Y", type: "float", dir: "in", defaultValue: 0 },
-      { id: "z_in", name: "Z", type: "float", dir: "in", defaultValue: 0 },
-      { id: "vec_out", name: "Return Value", type: "vector", dir: "out" },
-    ],
+    pins: PF.makeVector(),
   },
+
   BreakVector: {
     title: "Break Vector",
     category: "Math|Vector",
     executor: "Vector",
     type: "pure-node",
     icon: "fa-minus",
-    pins: [
-      { id: "vec_in", name: "Vector", type: "vector", dir: "in" },
-      { id: "x_out", name: "X", type: "float", dir: "out" },
-      { id: "y_out", name: "Y", type: "float", dir: "out" },
-      { id: "z_out", name: "Z", type: "float", dir: "out" },
-    ],
+    pins: PF.breakVector(),
   },
+
   MakeRotator: {
     title: "Make Rotator",
     category: "Math|Rotator",
     executor: "Vector",
     type: "pure-node",
     icon: "fa-sync",
-    pins: [
-      {
-        id: "roll_in",
-        name: "Roll (X)",
-        type: "float",
-        dir: "in",
-        defaultValue: 0,
-      },
-      {
-        id: "pitch_in",
-        name: "Pitch (Y)",
-        type: "float",
-        dir: "in",
-        defaultValue: 0,
-      },
-      {
-        id: "yaw_in",
-        name: "Yaw (Z)",
-        type: "float",
-        dir: "in",
-        defaultValue: 0,
-      },
-      { id: "rot_out", name: "Return Value", type: "rotator", dir: "out" },
-    ],
+    pins: PF.makeRotator(),
   },
+
   BreakRotator: {
     title: "Break Rotator",
     category: "Math|Rotator",
     executor: "Vector",
     type: "pure-node",
     icon: "fa-sync",
-    pins: [
-      { id: "rot_in", name: "Rotator", type: "rotator", dir: "in" },
-      { id: "roll_out", name: "Roll", type: "float", dir: "out" },
-      { id: "pitch_out", name: "Pitch", type: "float", dir: "out" },
-      { id: "yaw_out", name: "Yaw", type: "float", dir: "out" },
-    ],
+    pins: PF.breakRotator(),
   },
+
   BreakTransform: {
     title: "Break Transform",
     category: "Math|Transform",
@@ -306,125 +247,88 @@ export const MathNodes = {
     icon: "fa-cube",
     pins: [
       { id: "trans_in", name: "Transform", type: "transform", dir: "in" },
-      { id: "loc_out", name: "Location", type: "vector", dir: "out" },
-      { id: "rot_out", name: "Rotation", type: "rotator", dir: "out" },
-      { id: "scale_out", name: "Scale", type: "vector", dir: "out" },
+      PF.vectorOut("loc_out", "Location"),
+      PF.rotatorOut("rot_out", "Rotation"),
+      PF.vectorOut("scale_out", "Scale"),
     ],
   },
+
+  // ============================================================================
+  // CLAMP/MIN/MAX OPERATIONS
+  // ============================================================================
+
   ClampInt: {
     title: "Clamp (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "val_in", name: "Value", type: "int", dir: "in", defaultValue: 0 },
-      { id: "min_in", name: "Min", type: "int", dir: "in", defaultValue: 0 },
-      { id: "max_in", name: "Max", type: "int", dir: "in", defaultValue: 10 },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.clamp("int", 0, 0, 10),
   },
+
   ClampFloat: {
     title: "Clamp (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "f",
-    pins: [
-      {
-        id: "val_in",
-        name: "Value",
-        type: "float",
-        dir: "in",
-        defaultValue: 0.0,
-      },
-      {
-        id: "min_in",
-        name: "Min",
-        type: "float",
-        dir: "in",
-        defaultValue: 0.0,
-      },
-      {
-        id: "max_in",
-        name: "Max",
-        type: "float",
-        dir: "in",
-        defaultValue: 1.0,
-      },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.clamp("float", 0.0, 0.0, 1.0),
   },
+
   MinInt: {
     title: "Min (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
-      { id: "b_in", name: "B", type: "int", dir: "in", defaultValue: 0 },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.binaryOp("int", 0, 0),
   },
+
   MaxInt: {
     title: "Max (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
-      { id: "b_in", name: "B", type: "int", dir: "in", defaultValue: 0 },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.binaryOp("int", 0, 0),
   },
+
   MinFloat: {
     title: "Min (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.binaryOp("float", 0.0, 0.0),
   },
+
   MaxFloat: {
     title: "Max (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.binaryOp("float", 0.0, 0.0),
   },
+
   AbsInt: {
     title: "Abs (Integer)",
     type: "pure-node",
     category: "Math|Integer",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "int", dir: "in", defaultValue: 0 },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.unaryOp("int", "int", 0),
   },
+
   AbsFloat: {
     title: "Abs (Float)",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", 0.0),
   },
+
   Lerp: {
     title: "Lerp (Float)",
     type: "pure-node",
@@ -432,109 +336,90 @@ export const MathNodes = {
     executor: "Math",
     icon: "f",
     pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in", defaultValue: 0.0 },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
-      {
-        id: "alpha_in",
-        name: "Alpha",
-        type: "float",
-        dir: "in",
-        defaultValue: 0.0,
-      },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
+      PF.floatIn("a_in", "A", 0.0),
+      PF.floatIn("b_in", "B", 1.0),
+      PF.floatIn("alpha_in", "Alpha", 0.0),
+      PF.floatOut("ret_out", "Return Value"),
     ],
   },
+
+  // ============================================================================
+  // RANDOM OPERATIONS
+  // ============================================================================
+
   RandomFloat: {
     title: "Random Float",
     type: "pure-node",
     category: "Math|Random",
     icon: "f",
-    pins: [{ id: "ret_out", name: "Return Value", type: "float", dir: "out" }],
+    pins: [PF.floatOut("ret_out", "Return Value")],
   },
+
   RandomFloatInRange: {
     title: "Random Float in Range",
     type: "pure-node",
     category: "Math|Random",
     icon: "f",
     pins: [
-      {
-        id: "min_in",
-        name: "Min",
-        type: "float",
-        dir: "in",
-        defaultValue: 0.0,
-      },
-      {
-        id: "max_in",
-        name: "Max",
-        type: "float",
-        dir: "in",
-        defaultValue: 1.0,
-      },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
+      PF.floatIn("min_in", "Min", 0.0),
+      PF.floatIn("max_in", "Max", 1.0),
+      PF.floatOut("ret_out", "Return Value"),
     ],
   },
+
   RandomInt: {
     title: "Random Integer",
     type: "pure-node",
     category: "Math|Random",
     icon: "f",
-    pins: [
-      { id: "max_in", name: "Max", type: "int", dir: "in", defaultValue: 10 },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: [PF.intIn("max_in", "Max", 10), PF.intOut("ret_out", "Return Value")],
   },
+
   RandomIntInRange: {
     title: "Random Integer in Range",
     type: "pure-node",
     category: "Math|Random",
     icon: "f",
     pins: [
-      { id: "min_in", name: "Min", type: "int", dir: "in", defaultValue: 0 },
-      { id: "max_in", name: "Max", type: "int", dir: "in", defaultValue: 10 },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
+      PF.intIn("min_in", "Min", 0),
+      PF.intIn("max_in", "Max", 10),
+      PF.intOut("ret_out", "Return Value"),
     ],
   },
+
   RandomBool: {
     title: "Random Bool",
     type: "pure-node",
     category: "Math|Random",
     icon: "f",
     pins: [
-      {
-        id: "weight_in",
-        name: "True Weight",
-        type: "float",
-        dir: "in",
-        defaultValue: 0.5,
-      },
-      { id: "ret_out", name: "Return Value", type: "bool", dir: "out" },
+      PF.floatIn("weight_in", "True Weight", 0.5),
+      PF.boolOut("ret_out", "Return Value"),
     ],
   },
+
+  // ============================================================================
+  // VECTOR MATH OPERATIONS
+  // ============================================================================
+
   AddVector: {
     title: "Add (Vector)",
     type: "pure-node",
     category: "Math|Vector",
     executor: "Vector",
     icon: "fa-plus",
-    pins: [
-      { id: "a_in", name: "A", type: "vector", dir: "in" },
-      { id: "b_in", name: "B", type: "vector", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "vector", dir: "out" },
-    ],
+    pins: PF.binaryOp("vector", undefined, undefined),
   },
+
   SubtractVector: {
     title: "Subtract (Vector)",
     type: "pure-node",
     category: "Math|Vector",
     executor: "Vector",
     icon: "fa-minus",
-    pins: [
-      { id: "a_in", name: "A", type: "vector", dir: "in" },
-      { id: "b_in", name: "B", type: "vector", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "vector", dir: "out" },
-    ],
+    pins: PF.binaryOp("vector", undefined, undefined),
   },
+
   MultiplyVectorFloat: {
     title: "Multiply (Vector * Float)",
     type: "pure-node",
@@ -543,10 +428,11 @@ export const MathNodes = {
     icon: "fa-times",
     pins: [
       { id: "a_in", name: "A", type: "vector", dir: "in" },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "ret_out", name: "Return Value", type: "vector", dir: "out" },
+      PF.floatIn("b_in", "B", 1.0),
+      PF.vectorOut("ret_out", "Return Value"),
     ],
   },
+
   DivideVectorFloat: {
     title: "Divide (Vector / Float)",
     type: "pure-node",
@@ -555,10 +441,11 @@ export const MathNodes = {
     icon: "fa-divide",
     pins: [
       { id: "a_in", name: "A", type: "vector", dir: "in" },
-      { id: "b_in", name: "B", type: "float", dir: "in", defaultValue: 1.0 },
-      { id: "ret_out", name: "Return Value", type: "vector", dir: "out" },
+      PF.floatIn("b_in", "B", 1.0),
+      PF.vectorOut("ret_out", "Return Value"),
     ],
   },
+
   DotProduct: {
     title: "Dot Product",
     type: "pure-node",
@@ -568,21 +455,19 @@ export const MathNodes = {
     pins: [
       { id: "a_in", name: "A", type: "vector", dir: "in" },
       { id: "b_in", name: "B", type: "vector", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
+      PF.floatOut("ret_out", "Return Value"),
     ],
   },
+
   CrossProduct: {
     title: "Cross Product",
     type: "pure-node",
     category: "Math|Vector",
     executor: "Vector",
     icon: "fa-times",
-    pins: [
-      { id: "a_in", name: "A", type: "vector", dir: "in" },
-      { id: "b_in", name: "B", type: "vector", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "vector", dir: "out" },
-    ],
+    pins: PF.binaryOp("vector", undefined, undefined),
   },
+
   VectorLength: {
     title: "Vector Length",
     type: "pure-node",
@@ -591,9 +476,10 @@ export const MathNodes = {
     icon: "fa-ruler-horizontal",
     pins: [
       { id: "a_in", name: "A", type: "vector", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
+      PF.floatOut("ret_out", "Return Value"),
     ],
   },
+
   VectorDistance: {
     title: "Vector Distance",
     type: "pure-node",
@@ -603,102 +489,92 @@ export const MathNodes = {
     pins: [
       { id: "a_in", name: "A", type: "vector", dir: "in" },
       { id: "b_in", name: "B", type: "vector", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
+      PF.floatOut("ret_out", "Return Value"),
     ],
   },
+
   NormalizeVector: {
     title: "Normalize",
     type: "pure-node",
     category: "Math|Vector",
     executor: "Vector",
     icon: "fa-arrow-right",
-    pins: [
-      { id: "a_in", name: "A", type: "vector", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "vector", dir: "out" },
-    ],
+    pins: PF.unaryOp("vector", "vector", undefined),
   },
+
+  // ============================================================================
+  // TRIGONOMETRY OPERATIONS
+  // ============================================================================
+
   Sin: {
     title: "Sin (Degrees)",
     type: "pure-node",
     category: "Math|Trig",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", undefined),
   },
+
   Cos: {
     title: "Cos (Degrees)",
     type: "pure-node",
     category: "Math|Trig",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", undefined),
   },
+
   Tan: {
     title: "Tan (Degrees)",
     type: "pure-node",
     category: "Math|Trig",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", undefined),
   },
+
   Asin: {
     title: "Asin (Degrees)",
     type: "pure-node",
     category: "Math|Trig",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", undefined),
   },
+
   Acos: {
     title: "Acos (Degrees)",
     type: "pure-node",
     category: "Math|Trig",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", undefined),
   },
+
   Atan: {
     title: "Atan (Degrees)",
     type: "pure-node",
     category: "Math|Trig",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", undefined),
   },
+
   Atan2: {
     title: "Atan2 (Degrees)",
     type: "pure-node",
     category: "Math|Trig",
     icon: "f",
     pins: [
-      { id: "y_in", name: "Y", type: "float", dir: "in" },
-      { id: "x_in", name: "X", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
+      PF.floatIn("y_in", "Y", undefined),
+      PF.floatIn("x_in", "X", undefined),
+      PF.floatOut("ret_out", "Return Value"),
     ],
   },
+
   Sqrt: {
     title: "Sqrt",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "√",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "float", undefined),
   },
+
   Power: {
     title: "Power",
     type: "pure-node",
@@ -706,42 +582,36 @@ export const MathNodes = {
     executor: "Math",
     icon: "^",
     pins: [
-      { id: "base_in", name: "Base", type: "float", dir: "in" },
-      { id: "exp_in", name: "Exp", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "float", dir: "out" },
+      PF.floatIn("base_in", "Base", undefined),
+      PF.floatIn("exp_in", "Exp", undefined),
+      PF.floatOut("ret_out", "Return Value"),
     ],
   },
+
   Round: {
     title: "Round",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "int", undefined),
   },
+
   Floor: {
     title: "Floor",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "int", undefined),
   },
+
   Ceil: {
     title: "Ceil",
     type: "pure-node",
     category: "Math|Float",
     executor: "Math",
     icon: "f",
-    pins: [
-      { id: "a_in", name: "A", type: "float", dir: "in" },
-      { id: "ret_out", name: "Return Value", type: "int", dir: "out" },
-    ],
+    pins: PF.unaryOp("float", "int", undefined),
   },
 };
