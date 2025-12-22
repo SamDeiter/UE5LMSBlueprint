@@ -44,6 +44,7 @@ import { NodeDefinitions } from "./data/nodes/index.js";
 import { DOMElements } from "./config/DOMElements.js";
 import { APP_VERSION } from "./config/Constants.js";
 import { DirtyStateTracker } from "./services/DirtyStateTracker.js";
+import { NodeDefinitionValidator } from "./utils/NodeDefinitionValidator.js";
 class BlueprintApp {
   /**
    * Initializes all controllers and loads the graph.
@@ -62,6 +63,17 @@ class BlueprintApp {
       console.log(
         `BlueprintApp v${APP_VERSION} initialized at ${new Date().toISOString()}`
       );
+    }
+
+    // Validate node definitions before registration
+    try {
+      NodeDefinitionValidator.validateAll(NodeDefinitions);
+    } catch (err) {
+      console.error("Node definition validation failed:", err);
+      window.alert(
+        `Node Definition Errors: ${err.message}\nCheck console for details.`
+      );
+      return; // Abort initialization if validation fails
     }
 
     // Register static node definitions into the runtime registry
