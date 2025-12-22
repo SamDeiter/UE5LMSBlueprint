@@ -1,44 +1,45 @@
 /* --- NODE STYLES --- */
 .node {
     position: absolute;
-    background-color: rgba(10, 10, 10, 0.85); /* UE5 Spec Glassmorphism */
-    border: 1px solid #000;
-    border-radius: 8px; /* Analysis Section 4.5 */
-    box-shadow: 0 0 0 1px #000000,
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-        0 10px 20px rgba(0, 0, 0, 0.7);
+    background-color: rgba(15, 15, 15, 0.98); /* UE5 darker node body */
+    border: 1px solid rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+    /* UE5 shadow spec: 18/64 margin shadow */
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.7),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 0 0 1px rgba(0, 0, 0, 0.9);
     min-width: 180px;
     z-index: 10;
     pointer-events: all;
-    backdrop-filter: blur(8px); /* Deeper blur for premium feel */
-    transition: box-shadow 0.1s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: box-shadow 0.15s ease;
 }
 
-/* Selected Node - Golden Orange Outline (UE5 Standard) */
+/* Selected Node - UE5 Standard */
 .node.selected {
-    box-shadow: 0 0 0 2px var(--node-selection-outline),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 10px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 200, 100, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 4px 20px rgba(0, 0, 0, 0.9);
     z-index: 100;
-    /* Bring selected nodes to front */
 }
 
 /* --- NODE TITLE --- */
 .node-title {
-    padding: 4px 8px; /* Tighter padding for UE5 feel */
-    font-weight: 500; /* UE5 uses Inter/Roboto Medium */
-    font-size: 11px;  /* Section 4.5 Spec */
+    padding: 5px 10px;  /* UE5 spec padding */
+    font-weight: 600;   /* UE5 uses Bold (600) */
+    font-size: 10px;    /* UE5 spec: DEFAULT_FONT("Bold", 10) */
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(218, 218, 218, 1.0);  /* UE5 Foreground color */
     display: flex;
     align-items: center;
     gap: 6px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: none;  /* UE5 uses zero shadow offset */
     position: relative;
     overflow: visible;
-    min-height: 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+    min-height: 22px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.7);
 }
 
 
@@ -57,6 +58,28 @@
     pointer-events: none;
 }
 
+/* UE5 SVG Icon Support */
+.ue5-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.ue5-icon-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(1.0);
+}
+
+.node-title:hover .ue5-icon-svg {
+    filter: brightness(1.2);
+}
+
+
 .node-title::after {
     content: '';
     position: absolute;
@@ -67,17 +90,20 @@
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
     pointer-events: none;
     z-index: 1;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
 }
 
 .node-title::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background-color: var(--node-accent-color, rgba(255, 255, 255, 0.2));
+    left: 8px;
+    right: 8px;
+    height: 1px;
+    background-color: var(--node-accent-color, rgba(255, 255, 255, 0.3));
     z-index: 2;
+    border-radius: 0 0 2px 2px;
 }
 
 .node.event-node .node-title {
@@ -415,7 +441,7 @@
 .event-delegate-icon {
     width: 10px;
     height: 10px;
-    background-color: transparent;
+    background-color: #000;
     border: 2px solid #ff4444;
     border-radius: 3px;
     margin-left: auto;
@@ -506,7 +532,7 @@
 
 .ue-vector-widget {
     display: flex;
-    gap: 4px;
+    gap: 2px;  /* UE5 spec: 2px padding between components */
     align-items: center;
     margin-bottom: 4px;
 }
@@ -519,7 +545,7 @@
 
 .val-label {
     font-size: 10px;
-    color: #aaa;
+    color: rgba(255, 255, 255, 0.4);  /* UE5 spec: 40% opacity */
     font-family: monospace;
     font-weight: bold;
 }
@@ -561,4 +587,52 @@
 
 .pin-row.has-widget .pin-icon {
     margin-top: 2px;
+}
+
+/* --- ENUM DROPDOWN --- */
+.ue-enum-select {
+    background: rgba(0, 0, 0, 0.7);
+    color: #ddd;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    padding: 3px 20px 3px 8px;
+    font-size: 11px;
+    min-width: 100px;
+    cursor: pointer;
+    outline: none;
+}
+
+.ue-enum-select:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.ue-enum-select:focus {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* --- COLOR PICKER --- */
+.ue-color-picker-container {
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    padding: 1px;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.ue-color-picker {
+    width: 24px;
+    height: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 1px;
+}
+
+.ue-color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.ue-color-picker::-webkit-color-swatch {
+    border: none;
+    border-radius: 1px;
 }

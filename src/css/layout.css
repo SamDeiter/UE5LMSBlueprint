@@ -321,7 +321,8 @@
 #left-panel {
     display: flex;
     flex-direction: column;
-    background: #1a1a1a;
+    background: rgb(26, 26, 26); /* UE5 panel background */
+    border-right: 1px solid #000;
 }
 
 #left-sidebar-tabs {
@@ -358,7 +359,8 @@
 #right-panel {
     display: flex;
     flex-direction: column;
-    background: #1a1a1a;
+    background: rgb(26, 26, 26); /* UE5 panel background */
+    border-left: 1px solid #000;
 }
 
 /* Ensure the main sidebar content fills the space if palette is hidden */
@@ -370,11 +372,12 @@
 
 .panel-header {
     padding: 6px 10px;
-    background-color: #2a2a2a;
+    /* UE5 header gradient */
+    background: linear-gradient(to bottom, rgb(42, 42, 42), rgb(34, 34, 34));
     border-bottom: 1px solid #000;
-    font-weight: 700;
-    font-size: 12px;
-    color: #fff;
+    font-weight: 600; /* UE5 uses SmallBold */
+    font-size: 11px;  /* UE5 spec */
+    color: rgba(218, 218, 218, 1.0); /* UE5 ForegroundHeader */
     text-transform: uppercase;
     letter-spacing: 0.5px;
     display: flex;

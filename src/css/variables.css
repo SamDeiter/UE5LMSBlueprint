@@ -42,25 +42,25 @@
     /* Cast Node Header (Cyan/Teal - UE5 Spec) */
         --header-cast-start: #00A89D;
         --header-cast-end: #004040;
-    /* Pin Colors (Authentic UE5 Palette - Hex Perfect) */
-    --color-exec: #FFFFFF;
-    --color-bool: #920101;       /* Maroon/Red */
-    --color-byte: #005055;       /* Sherpa Blue */
-    --color-int: #00A89D;        /* Sea Green/Cyan */
-    --color-int64: #6B9E78;      /* Moss Green */
-    --color-float: #96E804;      /* Yellow-Green/Lime */
-    --color-double: #4A90E2;
-    --color-name: #8566E2;       /* Mauve/Violet */
-    --color-string: #F4009F;     /* Magenta */
-    --color-text: #E2727D;       /* Pink/Soft Red */
-    --color-vector: #FFC700;     /* Gold/Yellow */
-    --color-rotator: #90A0FF;    /* Cornflower Blue */
-    --color-transform: #FF7200;  /* Orange */
-    --color-object: #0067C0;     /* Blue */
-    --color-class: #590099;      /* Purple */
-    --color-interface: #B0E69E;  /* Pale Green */
-    --color-struct: #003D72;     /* Dark Blue */
-    --color-enum: #005055;       /* Byte/Enum uses Sherpa Blue */
+    /* Pin Colors (Exact UE5.6 Specifications from GraphEditorSettings.cpp) */
+    --color-exec: #FFFFFF;          /* FLinearColor(1.0, 1.0, 1.0) */
+    --color-bool: #4C0000;          /* FLinearColor(0.3, 0.0, 0.0) - maroon */
+    --color-byte: #002921;          /* FLinearColor(0.0, 0.16, 0.13127) - dark green */
+    --color-int: #03C46E;           /* FLinearColor(0.013575, 0.77, 0.429609) - green-blue */
+    --color-int64: #69C46E;         /* FLinearColor(0.413575, 0.77, 0.429609) */
+    --color-float: #5BFF0F;         /* FLinearColor(0.357667, 1.0, 0.06) - bright green */
+    --color-double: #0AAA00;        /* FLinearColor(0.039216, 0.666667, 0.0) - darker green */
+    --color-name: #9B39FF;          /* FLinearColor(0.607717, 0.224984, 1.0) - lilac */
+    --color-string: #FF00A8;        /* FLinearColor(1.0, 0.0, 0.660537) - bright pink */
+    --color-text: #CC3366;          /* FLinearColor(0.8, 0.2, 0.4) - salmon */
+    --color-vector: #FF9704;        /* FLinearColor(1.0, 0.591255, 0.016512) - gold */
+    --color-rotator: #5A74FF;       /* FLinearColor(0.353393, 0.454175, 1.0) - periwinkle */
+    --color-transform: #FF2C00;     /* FLinearColor(1.0, 0.172585, 0.0) - orange */
+    --color-object: #0066E8;        /* FLinearColor(0.0, 0.4, 0.91) - sharp blue */
+    --color-class: #1900CC;         /* FLinearColor(0.1, 0.0, 0.8) - deep purple */
+    --color-interface: #E0FF66;     /* FLinearColor(0.8784, 1.0, 0.4) - pale green */
+    --color-struct: #001A99;        /* FLinearColor(0.0, 0.1, 0.6) - deep blue */
+    --color-enum: #00BB55;          /* FLinearColor(0.0, 0.733, 0.333) - forest green */
     
 
     --color-dev-yellow: #FFC72C;

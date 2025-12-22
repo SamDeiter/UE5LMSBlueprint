@@ -137,11 +137,15 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     width: 220px;
     z-index: 6000;
-    display: none;
+    display: flex;  /* Changed from none to flex */
     flex-direction: column;
     font-family: 'Inter', sans-serif;
     overflow: hidden;
     color: #ccc;
+}
+
+#type-selector-menu.hidden {
+    display: none !important;  /* Hide when .hidden class is present */
 }
 
 .type-selector-header {

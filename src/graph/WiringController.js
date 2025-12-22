@@ -9,12 +9,22 @@ import {
   BREAK_NODE_KEYS,
 } from "../config/Constants.js";
 
+// UE5 Wire Thickness Specifications (from GraphEditorSettings.cpp)
+const WIRE_THICKNESS = {
+  data: 1.5, // DefaultDataWireThickness
+  exec: 2.5, // DefaultExecutionWireThickness
+  container: 2.5, // Containers use exec thickness (line 579)
+  attack: 6.0, // TraceAttackWireThickness (for pulse animation)
+  sustain: 3.5, // TraceSustainWireThickness
+  release: 1.5, // TraceReleaseWireThickness
+};
+
 class WiringController {
   constructor(svg, app) {
     this.svgGroup = svg.getElementById("wire-group");
     this.ghostWire = svg.getElementById("ghost-wire");
     this.ghostWire.setAttribute("fill", "none");
-    this.ghostWire.classList.add('hidden');
+    this.ghostWire.classList.add("hidden");
     this.links = new Map();
     this.selectedLinks = new Set();
     this.app = app;
@@ -185,7 +195,7 @@ class WiringController {
     this.app.compiler.markDirty();
 
     // Hide ghost wire after creating connection
-    this.ghostWire.classList.add('hidden');
+    this.ghostWire.classList.add("hidden");
   }
   _addLink(startPin, endPin) {
     const link = {
@@ -361,12 +371,24 @@ class WiringController {
         this.handleWireDoubleClick(link, e);
       });
     } else {
-      wireEl.classList.remove('hidden');
+      wireEl.classList.remove("hidden");
+    }
+
+    // UE5-accurate wire thickness based on pin type
+    const isExec = startPin.type === "exec";
+    const isContainer =
+      startPin.containerType && startPin.containerType !== "single";
+    let thickness = WIRE_THICKNESS.data;
+    if (isExec) {
+      thickness = WIRE_THICKNESS.exec;
+    } else if (isContainer) {
+      thickness = WIRE_THICKNESS.container; // Containers use exec thickness
     }
 
     // Always update wire color based on current pin type
     const pinColor = Utils.getPinColor(startPin.type);
     wireEl.setAttribute("stroke", pinColor);
+    wireEl.setAttribute("stroke-width", thickness);
 
     const typeClass = Utils.getPinTypeClass(startPin.type);
     wireEl.setAttribute(
@@ -393,12 +415,12 @@ class WiringController {
       console.log(
         "[WiringController] Hiding ghost wire - no startPin or element"
       );
-      this.ghostWire.classList.add('hidden');
+      this.ghostWire.classList.add("hidden");
       return;
     }
 
     // Force display block
-    this.ghostWire.classList.remove('hidden');
+    this.ghostWire.classList.remove("hidden");
 
     // Ensure it's in the DOM
     if (this.ghostWire.parentNode !== this.svgGroup) {

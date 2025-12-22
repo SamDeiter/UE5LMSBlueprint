@@ -576,7 +576,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-code-branch",
+    icon: "ue5/Branch.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       {
@@ -595,7 +595,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-list-ol",
+    icon: "ue5/Sequence.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "exec_0", name: "Then 0", type: "exec", dir: "out" },
@@ -607,7 +607,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-step-forward",
+    icon: "ue5/DoOnce.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "reset_in", name: "Reset", type: "exec", dir: "in" },
@@ -619,7 +619,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-redo-alt",
+    icon: "ue5/DoN.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "reset_in", name: "Reset", type: "exec", dir: "in" },
@@ -719,7 +719,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-toggle-on",
+    icon: "ue5/FlipFlop.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "exec_a", name: "A", type: "exec", dir: "out" },
@@ -732,7 +732,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-sync-alt",
+    icon: "ue5/ForEach.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "first_index_in", name: "First Index", type: "int", dir: "in" },
@@ -747,7 +747,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-sync-alt",
+    icon: "ue5/ForEach.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       {
@@ -794,7 +794,7 @@ export const NodeDefinitions = {
     type: "flow-node",
     category: "Flow Control",
     executor: "FlowControl",
-    icon: "fa-sync-alt",
+    icon: "ue5/ForEach.svg",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "break_in", name: "Break", type: "exec", dir: "in" },

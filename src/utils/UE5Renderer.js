@@ -13,7 +13,7 @@ class UE5Renderer {
    */
   static renderPinIcon(pin, isConnected) {
     const color = Utils.getPinColor(pin.type);
-    const fillColor = isConnected ? color : "transparent";
+    const fillColor = isConnected ? color : "#000";
     const strokeColor = color;
     const strokeWidth = 1.5;
 
@@ -60,7 +60,7 @@ class UE5Renderer {
                     stroke-width="${strokeWidth}"
                 />
                 <path 
-                    d="M10.5 3.5 L15.5 7 L10.5 10.5 Z" 
+                    d="M12 3.5 L17 7 L12 10.5 Z" 
                     fill="${strokeColor}"
                 />
             </svg>
@@ -96,22 +96,35 @@ class UE5Renderer {
    * Renders the complex Event Icon for node headers.
    */
   static renderEventHeaderIcon() {
+    const maskId = `icon-mask-${Math.random().toString(36).substr(2, 9)}`;
+    const diamondPath = "M12 2 L22 12 L12 22 L2 12 Z";
+    const leftHalfPath = "M12 2 L12 22 L2 12 Z";
+    const arrowPath = "M7 8 H12 V4 L22 12 L12 20 V16 H7 Z";
+    const arrowTransform = "scale(0.75) translate(4, 4)";
+
     return `
             <svg width="24" height="24" viewBox="0 0 24 24" class="ue5-header-icon">
+                <defs>
+                    <mask id="${maskId}">
+                        <rect x="0" y="0" width="24" height="24" fill="white" />
+                        <path d="${arrowPath}" fill="black" transform="${arrowTransform}" />
+                    </mask>
+                </defs>
+                
+                <!-- Group components that need the cutout -->
+                <g mask="url(#${maskId})">
+                    <!-- Background Diamond Fill -->
+                    <path d="${diamondPath}" fill="rgba(255,255,255,0.1)" />
+                    <!-- Solid white left half -->
+                    <path d="${leftHalfPath}" fill="white" />
+                </g>
+
+                <!-- Border stays OUTSIDE the mask for maximum sharpness -->
                 <path 
-                    d="M12 2 L22 12 L12 22 L2 12 Z" 
-                    fill="rgba(255,255,255,0.1)" 
+                    d="${diamondPath}" 
+                    fill="none" 
                     stroke="white" 
-                    stroke-width="1.5"
-                />
-                <path 
-                    d="M12 2 L12 22 L2 12 Z" 
-                    fill="white"
-                />
-                <path 
-                    d="M7 8 H12 V4 L22 12 L12 20 V16 H7 Z" 
-                    fill="black" 
-                    transform="scale(0.8) translate(3, 3)"
+                    stroke-width="1.5" 
                 />
             </svg>
         `;

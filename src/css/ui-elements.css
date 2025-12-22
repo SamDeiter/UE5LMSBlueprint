@@ -346,6 +346,18 @@
   left: 0;
   width: 100%;
   height: 100%;
+  /* UE5 Grid Specifications from StarshipStyle.cpp:3870-3875 */
+  background-color: rgb(6, 6, 6); /* GridLineColor: 0.024 * 255 ≈ 6 */
+  background-image: 
+    /* Major grid lines (every 8 dots) - GridRuleColor */
+    radial-gradient(circle, rgba(3, 3, 3, 0.8) 1px, transparent 1px),
+    /* Minor grid dots - GridLineColor */
+    radial-gradient(circle, rgba(6, 6, 6, 0.6) 0.5px, transparent 0.5px);
+  background-size: 
+    128px 128px,  /* Major grid: 8 * 16px = 128px (GridRulePeriod = 8) */
+    16px 16px;     /* Minor grid: 16px spacing */
+  background-position: 0 0, 0 0;
+  cursor: grab;
 }
 
 #graph-svg {
@@ -1989,6 +2001,7 @@
   font-size: 10px;
   width: 14px;
   text-align: center;
+  margin-right: 6px;
 }
 
 .event-name {

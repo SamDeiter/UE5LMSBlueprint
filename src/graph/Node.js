@@ -187,7 +187,16 @@ class Node {
     } else if (this.icon) {
       const iconEl = document.createElement("span");
       if (this.icon.startsWith("fa-")) {
+        // Font Awesome icon
         iconEl.className = `fas ${this.icon}`;
+      } else if (this.icon.startsWith("ue5/")) {
+        // UE5 SVG icon
+        iconEl.className = "node-header-icon ue5-icon";
+        const img = document.createElement("img");
+        img.src = `/assets/icons/${this.icon}`;
+        img.alt = this.title;
+        img.className = "ue5-icon-svg";
+        iconEl.appendChild(img);
       } else if (this.type === NODE_TYPES.FUNCTION && this.icon === "f") {
         iconEl.classList.add("text-bold"); // Replaced inline style
         iconEl.classList.add("text-italic"); // Replaced inline style
@@ -529,7 +538,8 @@ class Node {
     pin.element = pinDot;
 
     let effectiveHideLabel = hideLabel;
-    if (this.type === NODE_TYPES.FUNCTION && pin.type === "exec") {
+    // Hide labels for all exec pins to match UE5 style
+    if (pin.type === "exec") {
       effectiveHideLabel = true;
     }
 
@@ -580,6 +590,21 @@ class Node {
       this.app.persistence.autoSave();
     };
 
+    // Handle vector/rotator/transform types
+    if (["vector", "rotator", "transform"].includes(pin.type)) {
+      return this.createVectorWidget(pin);
+    }
+
+    // Handle enum types
+    if (pin.type === "enum" || pin.enumValues) {
+      return this.createEnumWidget(pin);
+    }
+
+    // Handle color types
+    if (pin.type === "color" || pin.name.toLowerCase().includes("color")) {
+      return this.createColorWidget(pin);
+    }
+
     if (pin.type === "bool") {
       inputEl = document.createElement("input");
       inputEl.type = "checkbox";
@@ -610,6 +635,115 @@ class Node {
       );
     }
     return inputEl;
+  }
+
+  createVectorWidget(pin) {
+    const container = document.createElement("div");
+    container.className = "ue-vector-widget";
+
+    const value = this.pinLiterals.get(pin.id) || "(0,0,0)";
+    const components = value
+      .replace(/[()]/g, "")
+      .split(",")
+      .map((v) => parseFloat(v.trim()) || 0);
+
+    const labels = pin.type === "rotator" ? ["R", "P", "Y"] : ["X", "Y", "Z"];
+
+    labels.forEach((label, i) => {
+      const group = document.createElement("div");
+      group.className = "val-group";
+
+      const labelEl = document.createElement("span");
+      labelEl.className = "val-label";
+      labelEl.textContent = label;
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "small-input";
+      input.value = components[i] || 0;
+
+      input.addEventListener("change", () => {
+        components[i] = parseFloat(input.value) || 0;
+        this.pinLiterals.set(pin.id, `(${components.join(",")})`);
+        this.app.persistence.autoSave();
+      });
+
+      input.addEventListener("mousedown", (e) => e.stopPropagation());
+      input.addEventListener(
+        "focus",
+        () => (this.app.graph.isEditingLiteral = true)
+      );
+      input.addEventListener(
+        "blur",
+        () => (this.app.graph.isEditingLiteral = false)
+      );
+
+      group.appendChild(labelEl);
+      group.appendChild(input);
+      container.appendChild(group);
+    });
+
+    return container;
+  }
+
+  createEnumWidget(pin) {
+    const select = document.createElement("select");
+    select.className = "ue-enum-select";
+
+    const enumValues = pin.enumValues || [
+      "None",
+      "Visibility",
+      "Camera",
+      "Pawn",
+    ];
+    const currentValue = this.pinLiterals.get(pin.id) || enumValues[0];
+
+    enumValues.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      option.selected = value === currentValue;
+      select.appendChild(option);
+    });
+
+    select.addEventListener("change", (e) => {
+      this.pinLiterals.set(pin.id, e.target.value);
+      this.app.persistence.autoSave();
+    });
+
+    select.addEventListener("mousedown", (e) => e.stopPropagation());
+    select.addEventListener(
+      "focus",
+      () => (this.app.graph.isEditingLiteral = true)
+    );
+    select.addEventListener(
+      "blur",
+      () => (this.app.graph.isEditingLiteral = false)
+    );
+
+    return select;
+  }
+
+  createColorWidget(pin) {
+    const container = document.createElement("div");
+    container.className = "ue-color-picker-container";
+
+    const colorBox = document.createElement("input");
+    colorBox.type = "color";
+    colorBox.className = "ue-color-picker";
+
+    const value = this.pinLiterals.get(pin.id) || "#FF0000";
+    colorBox.value = value;
+
+    colorBox.addEventListener("change", (e) => {
+      this.pinLiterals.set(pin.id, e.target.value);
+      this.app.persistence.autoSave();
+    });
+
+    colorBox.addEventListener("mousedown", (e) => e.stopPropagation());
+
+    container.appendChild(colorBox);
+    return container;
   }
 
   getPinsData() {
