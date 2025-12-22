@@ -209,14 +209,28 @@ export class VariableController {
   }
 
   deleteVariable(variable) {
+    console.log("[deleteVariable] Called with:", variable?.name);
     const modal = document.getElementById("confirmation-modal");
     const msg = document.getElementById("confirmation-msg");
     const yesBtn = document.getElementById("confirm-yes-btn");
     const noBtn = document.getElementById("confirm-no-btn");
-    if (!modal) return;
+    console.log(
+      "[deleteVariable] Modal found:",
+      !!modal,
+      "msg:",
+      !!msg,
+      "yesBtn:",
+      !!yesBtn,
+      "noBtn:",
+      !!noBtn
+    );
+    if (!modal) {
+      console.error("[deleteVariable] Modal not found!");
+      return;
+    }
     msg.textContent = `Are you sure you want to delete variable '${variable.name}'?`;
     modal.classList.remove("hidden");
-    modal.classList.remove("hidden");
+    console.log("[deleteVariable] Modal should now be visible");
 
     // Clone buttons to remove old listeners
     const newYes = yesBtn.cloneNode(true);
@@ -870,6 +884,26 @@ export class VariableController {
     const separator = document.createElement("div");
     separator.className = "separator-h";
     menu.appendChild(separator);
+
+    // Rename
+    menu.appendChild(
+      createMenuItem(`Rename`, "fas fa-edit", () => {
+        this.renamingVarId = variable.id;
+        this.renderPanel();
+      })
+    );
+
+    // Delete
+    menu.appendChild(
+      createMenuItem(`Delete`, "fas fa-trash", () => {
+        this.deleteVariable(variable);
+      })
+    );
+
+    // Add separator for type-specific options
+    const separator2 = document.createElement("div");
+    separator2.className = "separator-h";
+    menu.appendChild(separator2);
 
     // Make/Break options for complex types
     if (variable.type === "vector") {

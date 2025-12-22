@@ -547,9 +547,13 @@ class Node {
    * @param {boolean} hideLabel - Whether to hide the pin label
    */
   renderSinglePin(pin, parentPin = null, hideLabel = false) {
+    // Safety: ensure pin has required properties
+    const pinDir = pin.dir || (parentPin ? parentPin.dir : "in");
+    const pinType = pin.type || "wildcard";
+
     const pinContainer = document.createElement("div");
-    const typeClass = Utils.getPinTypeClass(pin.type);
-    pinContainer.className = `pin-container ${pin.dir} ${typeClass}`;
+    const typeClass = Utils.getPinTypeClass(pinType);
+    pinContainer.className = `pin-container ${pinDir} ${typeClass}`;
     pinContainer.dataset.pinId = pin.id;
 
     // If this is a subPin, mark it and store parent reference
@@ -562,12 +566,12 @@ class Node {
     pin.element = pinDot;
 
     let effectiveHideLabel = hideLabel;
-    if (pin.type === "exec") {
+    if (pinType === "exec") {
       effectiveHideLabel = true;
     }
 
     const pinLabel = document.createElement("span");
-    pinLabel.className = `pin-label-${pin.dir}`;
+    pinLabel.className = `pin-label-${pinDir}`;
     // For subPins, include parent name in label
     pinLabel.textContent = parentPin
       ? `${parentPin.name} ${pin.name}`
@@ -577,7 +581,7 @@ class Node {
     }
 
     let inputWidget = null;
-    const isDataPin = pin.type !== "exec";
+    const isDataPin = pinType !== "exec";
     const isConnected = pin.links && pin.links.length > 0;
 
     // Connection-only pin types that should never show an input widget
@@ -591,9 +595,9 @@ class Node {
     const hasContainerType =
       pin.containerType && pin.containerType !== "single";
     const isConnectionOnly =
-      connectionOnlyTypes.includes(pin.type) || pin.isArray || hasContainerType;
+      connectionOnlyTypes.includes(pinType) || pin.isArray || hasContainerType;
 
-    if (pin.dir === "in" && isDataPin && !isConnected && !isConnectionOnly) {
+    if (pinDir === "in" && isDataPin && !isConnected && !isConnectionOnly) {
       inputWidget = this.createInputWidget(pin);
     }
 

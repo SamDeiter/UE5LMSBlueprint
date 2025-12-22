@@ -655,7 +655,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999;
-    display: none;
+    display: flex;  /* Changed from 'none' - .hidden class handles hiding */
 }
 
 .component-selector-content {
@@ -849,7 +849,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999;
-    display: none;
+    display: flex;  /* Changed from 'none' - .hidden class handles hiding */
 }
 
 .component-selector-content {
@@ -1044,7 +1044,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999;
-    display: none;
+    display: flex;  /* Changed from 'none' - .hidden class handles hiding */
 }
 
 .component-selector-content {
@@ -1170,7 +1170,6 @@
     border: 1px solid #8e44ad;
     box-shadow: 0 0 10px rgba(142, 68, 173, 0.5);
     min-width: 220px;
-    <<<<<<< HEAD
 }
 
 
@@ -1195,8 +1194,3 @@
     padding-bottom: 20px;
     /* Extra space at bottom */
 }
-
-=======
-}
-
->>>>>>>main

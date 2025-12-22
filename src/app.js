@@ -312,7 +312,10 @@ class BlueprintApp {
         if (!varToDelete) {
           const activeEl = document.activeElement;
           if (activeEl) {
-            const focusedVarEl = activeEl.closest(".tree-item[data-var-id]");
+            // Check for ue5-variable-item (regular variables) or tree-item with data-var-id
+            const focusedVarEl = activeEl.closest(
+              ".ue5-variable-item[data-var-id], .tree-item[data-var-id]"
+            );
             if (focusedVarEl) {
               varToDelete = [...BlueprintApp.variables.variables.values()].find(
                 (v) => v.id === focusedVarEl.dataset.varId
