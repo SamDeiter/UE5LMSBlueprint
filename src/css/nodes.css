@@ -535,12 +535,12 @@
 
 .pin-container.sub-pin {
     padding-left: 12px;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .pin-container.sub-pin .pin-dot {
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
 }
 
 /* --- COMPLEX INPUT WIDGETS --- */
@@ -662,3 +662,10 @@
     border: none;
     border-radius: 1px;
 }/* Cache bust: 20251221202155 */
+
+/* Hide wrapper background for connection-only pins */
+.pin-container.array-pin .pin-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}

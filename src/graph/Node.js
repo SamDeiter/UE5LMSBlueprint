@@ -42,6 +42,23 @@ class Node {
         p.id,
         literalValue !== undefined ? literalValue : p.defaultValue
       );
+
+      // Also initialize pinLiterals for subPins of split pins
+      if (p.isSplit && p.subPins) {
+        p.subPins.forEach((subPin) => {
+          const subLiteralValue = pinDataArray
+            .find((pd) => pd.id === p.id.replace(`${this.id}-`, ""))
+            ?.subPins?.find(
+              (sp) => sp.id === subPin.id.replace(`${this.id}-`, "")
+            )?.literalValue;
+          this.pinLiterals.set(
+            subPin.id,
+            subLiteralValue !== undefined
+              ? subLiteralValue
+              : subPin.defaultValue
+          );
+        });
+      }
     });
   }
 
@@ -304,32 +321,52 @@ class Node {
       outCol.appendChild(outFragment);
       content.appendChild(outCol);
     } else {
-      // SAFEGUARD: Ensure pins arrays exist and have length before checking
-      const inLen = this.pinsIn ? this.pinsIn.length : 0;
-      const outLen = this.pinsOut ? this.pinsOut.length : 0;
-      const maxRows = Math.max(inLen, outLen);
+      // Flatten pins arrays: split pins expand into their subPins for row counting
+      const flattenPins = (pins) => {
+        const result = [];
+        pins.forEach((pin) => {
+          if (pin.isSplit && pin.subPins && pin.subPins.length > 0) {
+            // Add each subPin as a separate row entry
+            pin.subPins.forEach((subPin) => {
+              result.push({ pin: subPin, parentPin: pin, isSubPin: true });
+            });
+          } else {
+            result.push({ pin, parentPin: null, isSubPin: false });
+          }
+        });
+        return result;
+      };
+
+      const flatPinsIn = flattenPins(this.pinsIn || []);
+      const flatPinsOut = flattenPins(this.pinsOut || []);
+      const maxRows = Math.max(flatPinsIn.length, flatPinsOut.length);
       const fragment = document.createDocumentFragment();
 
       for (let i = 0; i < maxRows; i++) {
         const row = document.createElement("div");
         row.className = "pin-row";
 
-        const pinIn = this.pinsIn[i];
-        const pinOut = this.pinsOut[i];
+        const pinEntry = flatPinsIn[i];
+        const outEntry = flatPinsOut[i];
 
-        if (pinIn) {
-          row.appendChild(this.renderPin(pinIn));
+        if (pinEntry) {
+          const pinEl = this.renderSinglePin(pinEntry.pin, pinEntry.parentPin);
+          row.appendChild(pinEl);
         } else {
           const spacer = document.createElement("div");
-          spacer.classList.add("min-w-10"); // Replaced inline style
+          spacer.classList.add("min-w-10");
           row.appendChild(spacer);
         }
 
-        if (pinOut) {
-          // For SET nodes, hide the label on data output pins (not exec pins)
+        if (outEntry) {
           const shouldHideLabel =
-            this.nodeKey.startsWith("Set_") && pinOut.type !== "exec";
-          row.appendChild(this.renderPin(pinOut, shouldHideLabel));
+            this.nodeKey.startsWith("Set_") && outEntry.pin.type !== "exec";
+          const pinEl = this.renderSinglePin(
+            outEntry.pin,
+            outEntry.parentPin,
+            shouldHideLabel
+          );
+          row.appendChild(pinEl);
         } else {
           const spacer = document.createElement("div");
           spacer.classList.add("min-w-10");
@@ -502,6 +539,88 @@ class Node {
     return pinDot;
   }
 
+  /**
+   * Render a single pin element (used for flattened row layout).
+   * Unlike renderPin, this doesn't create split groups - each pin is rendered individually.
+   * @param {Pin} pin - The pin to render
+   * @param {Pin|null} parentPin - The parent pin if this is a subPin, otherwise null
+   * @param {boolean} hideLabel - Whether to hide the pin label
+   */
+  renderSinglePin(pin, parentPin = null, hideLabel = false) {
+    const pinContainer = document.createElement("div");
+    const typeClass = Utils.getPinTypeClass(pin.type);
+    pinContainer.className = `pin-container ${pin.dir} ${typeClass}`;
+    pinContainer.dataset.pinId = pin.id;
+
+    // If this is a subPin, mark it and store parent reference
+    if (parentPin) {
+      pinContainer.classList.add("sub-pin");
+      pinContainer.dataset.parentPinId = parentPin.id;
+    }
+
+    const pinDot = this.createPinDot(pin);
+    pin.element = pinDot;
+
+    let effectiveHideLabel = hideLabel;
+    if (pin.type === "exec") {
+      effectiveHideLabel = true;
+    }
+
+    const pinLabel = document.createElement("span");
+    pinLabel.className = `pin-label-${pin.dir}`;
+    // For subPins, include parent name in label
+    pinLabel.textContent = parentPin
+      ? `${parentPin.name} ${pin.name}`
+      : pin.name;
+    if (effectiveHideLabel) {
+      pinLabel.classList.add("hidden");
+    }
+
+    let inputWidget = null;
+    const isDataPin = pin.type !== "exec";
+    const isConnected = pin.links && pin.links.length > 0;
+
+    // Connection-only pin types that should never show an input widget
+    const connectionOnlyTypes = [
+      "array",
+      "object",
+      "struct",
+      "class",
+      "interface",
+    ];
+    const hasContainerType =
+      pin.containerType && pin.containerType !== "single";
+    const isConnectionOnly =
+      connectionOnlyTypes.includes(pin.type) || pin.isArray || hasContainerType;
+
+    if (pin.dir === "in" && isDataPin && !isConnected && !isConnectionOnly) {
+      inputWidget = this.createInputWidget(pin);
+    }
+
+    // Build pin container structure based on direction
+    if (pin.dir === "in") {
+      pinContainer.appendChild(pinDot);
+      pinContainer.appendChild(pinLabel);
+      if (inputWidget) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "pin-wrapper";
+        wrapper.appendChild(inputWidget);
+        pinContainer.appendChild(wrapper);
+      }
+    } else {
+      if (inputWidget) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "pin-wrapper";
+        wrapper.appendChild(inputWidget);
+        pinContainer.appendChild(wrapper);
+      }
+      pinContainer.appendChild(pinLabel);
+      pinContainer.appendChild(pinDot);
+    }
+
+    return pinContainer;
+  }
+
   renderPin(pin, hideLabel = false) {
     // Handle Split Pins
     if (pin.isSplit) {
@@ -554,7 +673,20 @@ class Node {
     const isDataPin = pin.type !== "exec";
     const isConnected = pin.links.length > 0;
 
-    if (pin.dir === "in" && isDataPin && !isConnected) {
+    // Connection-only pin types that should never show an input widget
+    const connectionOnlyTypes = [
+      "array",
+      "object",
+      "struct",
+      "class",
+      "interface",
+    ];
+    const hasContainerType =
+      pin.containerType && pin.containerType !== "single";
+    const isConnectionOnly =
+      connectionOnlyTypes.includes(pin.type) || pin.isArray || hasContainerType;
+
+    if (pin.dir === "in" && isDataPin && !isConnected && !isConnectionOnly) {
       inputWidget = this.createInputWidget(pin);
     }
 
@@ -575,6 +707,19 @@ class Node {
   }
 
   createInputWidget(pin) {
+    // Safeguard: Connection-only types should never have widgets
+    const connectionOnlyTypes = [
+      "array",
+      "object",
+      "struct",
+      "wildcard",
+      "class",
+      "interface",
+    ];
+    if (connectionOnlyTypes.includes(pin.type) || pin.isArray) {
+      return null;
+    }
+
     let inputEl;
     const pinValue = this.pinLiterals.get(pin.id);
     const updateLiteral = (e) => {
