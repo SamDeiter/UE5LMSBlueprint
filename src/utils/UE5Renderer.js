@@ -75,7 +75,7 @@ class UE5Renderer {
                     stroke-width="${strokeWidth}"
                 />
                 <path 
-                    d="M12 3.5 L17 7 L12 10.5 Z" 
+                    d="M11.5 3.5 L16.5 7.5 L11.5 11.5 Z" 
                     fill="${strokeColor}"
                 />
             </svg>
