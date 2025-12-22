@@ -234,7 +234,16 @@ export class TaskController {
   clearGraphAndLoadTask(taskId) {
     // Clear the graph completely
     this.app.graph.nodes.clear();
-    this.app.wiring.clear(); // Use the new clear method to remove SVG elements
+    // Robust clearing of wires (handles potential caching issues)
+    if (typeof this.app.wiring.clear === "function") {
+      this.app.wiring.clear();
+    } else {
+      console.warn("WiringController.clear() not found. Using fallback.");
+      this.app.wiring.links.clear();
+      const wireGroup = document.getElementById("wire-group");
+      if (wireGroup) wireGroup.innerHTML = "";
+    }
+
     this.app.graph.clearSelection();
     this.app.graph.renderAllNodes();
     this.app.graph.drawAllWires();
