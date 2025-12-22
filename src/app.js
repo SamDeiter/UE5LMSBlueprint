@@ -59,6 +59,9 @@ class BlueprintApp {
     const versionEl = document.getElementById("app-version");
     if (versionEl) {
       versionEl.textContent = `v${APP_VERSION}`;
+      console.log(
+        `BlueprintApp v${APP_VERSION} initialized at ${new Date().toISOString()}`
+      );
     }
 
     // Register static node definitions into the runtime registry
