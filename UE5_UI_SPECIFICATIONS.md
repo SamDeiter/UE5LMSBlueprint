@@ -129,6 +129,56 @@ PinPaddingRight = FMath::Clamp(
 
 ---
 
+## 📐 Detailed Layout Specifications
+
+### Variable Node Margins (from SGraphNodeK2Var.cpp)
+
+```cpp
+FMargin TitleMargin = FMargin(0.0f, 8.0f);           // Title: 0px left/right, 8px top/bottom
+FMargin ContentAreaMargin = FMargin(0.0f, 4.0f);     // Content: 0px left/right, 4px top/bottom
+
+// For compact variable nodes
+TitleMargin = FMargin(12.0f, VerticalTitleMargin);   // 12px horizontal
+
+// For full variable nodes
+TitleMargin = FMargin(12.0f, VerticalTitleMargin, 32.0f, 2.0f);  // 12px left, 32px right, 2px bottom
+```
+
+### Button & Control Padding
+
+```cpp
+.Padding(FMargin(2, 0))      // Buttons: 2px horizontal
+.Padding(FMargin(5.0f, 1.0f)) // Controls: 5px horizontal, 1px vertical
+```
+
+### Composite Node Padding
+
+```cpp
+.Padding(FMargin(10.0f, 5.0f, 30.0f, 3.0f))  // Composite title: 10/5/30/3px
+.Padding(FMargin(0.0f, 5.0f))                // Composite content: 0/5px
+.Padding(FMargin(0.0f, 3.0f))                // Composite inner: 0/3px
+```
+
+### Tooltip Padding
+
+```cpp
+.TextMargin(FMargin(11.0f))  // Tooltip text: 11px all sides
+```
+
+### Node Overlay Padding
+
+```cpp
+.Padding(FMargin(0, 3))  // Node overlay: 0px horizontal, 3px vertical
+```
+
+### Title Text Wrapping
+
+```cpp
+.WrapTextAt(128.0f)  // Compact node title wraps at 128px
+```
+
+---
+
 ## 🎨 Error & Warning Colors
 
 ### Error Reporting (from SGraphNode.cpp lines 744-777)
@@ -224,6 +274,49 @@ if (Lines.Num() > 1) {
 // Background
 "Graph.Pin.Background"
 "Graph.Pin.BackgroundHovered"
+```
+
+---
+
+## 🎨 Debug Overlay Colors
+
+### Breakpoint & Debug Colors (from SGraphNodeK2Base.cpp)
+
+```cpp
+const FLinearColor BreakpointHitColor(0.7f, 0.0f, 0.0f);     // Dark red
+const FLinearColor LatentBubbleColor(1.f, 0.5f, 0.25f);      // Orange
+const FLinearColor TimelineBubbleColor(0.7f, 0.5f, 0.5f);    // Pink-gray
+const FLinearColor PinnedWatchColor(0.35f, 0.25f, 0.25f);   // Dark brown
+```
+
+**Debug Overlay Brushes:**
+
+- `Kismet.DebuggerOverlay.Breakpoint.EnabledAndValid`
+- `Kismet.DebuggerOverlay.Breakpoint.EnabledAndInvalid`
+- `Kismet.DebuggerOverlay.Breakpoint.Disabled`
+- `Kismet.DebuggerOverlay.InstructionPointer`
+- `Kismet.DebuggerOverlay.InstructionPointerBreakpoint`
+
+### Instruction Pointer Positioning
+
+```cpp
+float Overlap = 10.f;
+IPOverlayInfo.OverlayOffset.X = (WidgetSize.X/2.f) - (IPOverlayInfo.Brush->ImageSize.X/2.f);
+IPOverlayInfo.OverlayOffset.Y = (Overlap - IPOverlayInfo.Brush->ImageSize.Y);
+IPOverlayInfo.AnimationEnvelope = FVector2f(0.f, 10.f);  // 10px animation range
+```
+
+### Corner Icon Positioning
+
+```cpp
+// Timeline autoplay/loop icons
+const float Padding = 2.5f;
+IPOverlayInfo.OverlayOffset.X = WidgetSize.X - IPOverlayInfo.Brush->ImageSize.X - Padding;
+IPOverlayInfo.OverlayOffset.Y = Padding;
+
+// Corner icon (latent, pure, etc.)
+IPOverlayInfo.OverlayOffset.X = (WidgetSize.X - (IPOverlayInfo.Brush->ImageSize.X/2.f)) - 3.f;
+IPOverlayInfo.OverlayOffset.Y = (IPOverlayInfo.Brush->ImageSize.Y/-2.f) + 2.f;
 ```
 
 ---
