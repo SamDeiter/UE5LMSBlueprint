@@ -429,9 +429,12 @@ export class SimulationEngine {
             shouldPause = true;
           }
         }
-      } else if (currentNode.isBreakpoint) {
+      } else if (
+        this.app.breakpointManager &&
+        this.app.breakpointManager.shouldBreak(currentNode.id)
+      ) {
         shouldPause = true;
-        this.log(`Breakpoint hit at: ${currentNode.title} `, "warning");
+        this.log(`Breakpoint hit at: ${currentNode.title}`, "warning");
       } else if (this.isPaused) {
         // Manual pause triggered externally
         shouldPause = true;
