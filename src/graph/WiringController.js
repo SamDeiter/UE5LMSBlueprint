@@ -3,6 +3,7 @@
  */
 import { Utils } from "../utils.js";
 import { generateGUID } from "../utils/guid.js";
+import { PinTypeValidator } from "../utils/PinTypeValidator.js";
 import {
   GRAPH_CONSTANTS,
   STRUCT_TYPES,
@@ -152,9 +153,33 @@ class WiringController {
     if (endPin.getMaxLinks() === 1 && endPin.isConnected()) {
       this.breakPinLinks(endPin.id);
     }
+
+    // NEW: Use PinTypeValidator for comprehensive type checking
+    const validation = PinTypeValidator.canConnect(startPin, endPin);
+
+    if (!validation.valid) {
+      // Show error message to user
+      console.error(`[Wiring] ${validation.reason}`);
+
+      // TODO: Show toast notification
+      // this.app.showToast(validation.reason, 'error');
+
+      return;
+    }
+
+    // Show warning if there's a potential issue (e.g., narrowing conversion)
+    if (validation.warning) {
+      console.warn(`[Wiring] ${validation.warning}`);
+
+      // TODO: Show toast notification
+      // this.app.showToast(validation.warning, 'warning');
+    }
+
+    // Check if automatic conversion node is needed
     const isExecPin = startPin.type === "exec" || endPin.type === "exec";
-    const isCompatible = Utils.isTypeCompatible(startPin.type, endPin.type);
-    if (!isExecPin && !isCompatible) {
+    const isExactMatch = startPin.type === endPin.type;
+
+    if (!isExecPin && !isExactMatch) {
       const convKey = Utils.getConversionNodeKey(startPin.type, endPin.type);
       if (convKey) {
         const startPos = Utils.getPinPosition(startPin.element, this.app);
@@ -195,8 +220,6 @@ class WiringController {
           }
         }
       }
-      // Incompatible and no conversion found
-      return;
     }
     this._addLink(startPin, endPin);
     this.updateVisuals(endPin.node);
