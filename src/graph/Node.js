@@ -124,12 +124,22 @@ class Node {
   }
 
   toggleBreakpoint() {
-    this.isBreakpoint = !this.isBreakpoint;
+    // Use BreakpointManager instead of local flag
+    if (!this.app.breakpointManager) {
+      console.warn("BreakpointManager not initialized");
+      return;
+    }
+
+    this.app.breakpointManager.toggleBreakpoint(this.id);
+
+    // Update visual state
     if (this.element) {
       const header =
         this.headerElement || this.element.querySelector(".node-title");
       if (header) {
-        if (this.isBreakpoint) {
+        const hasBreakpoint = this.app.breakpointManager.hasBreakpoint(this.id);
+
+        if (hasBreakpoint) {
           header.classList.add("has-breakpoint");
           if (!header.querySelector(".breakpoint-icon")) {
             const bpIcon = document.createElement("div");
@@ -144,8 +154,8 @@ class Node {
         }
       }
     }
-    // Save state
-    this.app.persistence.autoSave();
+
+    // Note: BreakpointManager handles its own persistence via sessionStorage
   }
 
   updatePosition() {
@@ -188,7 +198,12 @@ class Node {
     const gradient = this.getHeaderColor();
     header.style.background = `linear-gradient // Dynamic gradient(to bottom, ${gradient.start}, ${gradient.end})`;
 
-    if (this.isBreakpoint) {
+    // Check BreakpointManager for breakpoint state
+    const hasBreakpoint =
+      this.app.breakpointManager &&
+      this.app.breakpointManager.hasBreakpoint(this.id);
+
+    if (hasBreakpoint) {
       header.classList.add("has-breakpoint");
       const bpIcon = document.createElement("div");
       bpIcon.className = "breakpoint-icon";
