@@ -200,3 +200,5 @@ class BreakpointManager {
     };
   }
 }
+
+export { BreakpointManager };
