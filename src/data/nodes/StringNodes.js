@@ -114,7 +114,7 @@ export const StringNodes = {
       {
         id: "str_in",
         name: "In String",
-        type: "string",
+        type: "wildcard", // Accepts any type - will auto-convert to string
         dir: "in",
         defaultValue: "Hello",
       },
