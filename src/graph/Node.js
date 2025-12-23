@@ -579,19 +579,13 @@ class Node {
 
     const pinDot = this.createPinDot(pin);
     pin.element = pinDot;
-
-    let effectiveHideLabel = hideLabel;
-    if (pinType === "exec") {
-      effectiveHideLabel = true;
-    }
-
-    const pinLabel = document.createElement("span");
+const pinLabel = document.createElement("span");
     pinLabel.className = `pin-label-${pinDir}`;
     // For subPins, include parent name in label
     pinLabel.textContent = parentPin
       ? `${parentPin.name} ${pin.name}`
       : pin.name;
-    if (effectiveHideLabel) {
+    if (hideLabel) {
       pinLabel.classList.add("hidden");
     }
 
@@ -684,7 +678,7 @@ class Node {
     const pinLabel = document.createElement("span");
     pinLabel.className = `pin-label-${pin.dir}`;
     pinLabel.textContent = pin.name;
-    if (effectiveHideLabel) {
+    if (hideLabel) {
       pinLabel.classList.add("hidden");
     }
 
