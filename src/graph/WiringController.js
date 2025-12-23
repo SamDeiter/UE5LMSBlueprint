@@ -137,6 +137,14 @@ class WiringController {
     }
   }
   createConnection(pinA, pinB) {
+    // Prevent connection during simulation (read-only mode)
+    if (this.app.simulation && this.app.simulation.isRunning) {
+      console.warn(
+        "[Wiring] Cannot create connections while simulation is running"
+      );
+      return;
+    }
+
     if (!pinA || !pinB) return;
     if (pinA.node.id === pinB.node.id) {
       console.warn("[Wiring] Cannot connect pins on the same node.");
@@ -265,6 +273,14 @@ class WiringController {
     node.element = newEl;
   }
   breakLinkById(linkId) {
+    // Prevent disconnection during simulation (read-only mode)
+    if (this.app.simulation && this.app.simulation.isRunning) {
+      console.warn(
+        "[Wiring] Cannot disconnect wires while simulation is running"
+      );
+      return;
+    }
+
     const link = this.links.get(linkId);
     if (!link) return;
 
