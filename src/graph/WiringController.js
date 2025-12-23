@@ -165,28 +165,8 @@ class WiringController {
       this.breakPinLinks(endPin.id);
     }
 
-    // NEW: Use PinTypeValidator for comprehensive type checking
-    const validation = this.typeValidator.canConnect(startPin, endPin);
-
-    if (!validation.valid) {
-      // Show error message to user
-      console.error(`[Wiring] ${validation.reason}`);
-
-      // TODO: Show toast notification
-      // this.app.showToast(validation.reason, 'error');
-
-      return;
-    }
-
-    // Show warning if there's a potential issue (e.g., narrowing conversion)
-    if (validation.warning) {
-      console.warn(`[Wiring] ${validation.warning}`);
-
-      // TODO: Show toast notification
-      // this.app.showToast(validation.warning, 'warning');
-    }
-
-    // Check if automatic conversion node is needed
+    // Check if automatic conversion node is needed FIRST
+    // (before validation, so incompatible types can use conversion nodes)
     const isExecPin = startPin.type === "exec" || endPin.type === "exec";
     const isExactMatch = startPin.type === endPin.type;
 
@@ -232,6 +212,29 @@ class WiringController {
         }
       }
     }
+
+    // NOW validate the connection (after checking for conversions)
+    const validation = this.typeValidator.canConnect(startPin, endPin);
+
+    if (!validation.valid) {
+      // Show error message to user
+      console.error(`[Wiring] ${validation.reason}`);
+
+      // TODO: Show toast notification
+      // this.app.showToast(validation.reason, 'error');
+
+      return;
+    }
+
+    // Show warning if there's a potential issue (e.g., narrowing conversion)
+    if (validation.warning) {
+      console.warn(`[Wiring] ${validation.warning}`);
+
+      // TODO: Show toast notification
+      // this.app.showToast(validation.warning, 'warning');
+    }
+
+    // Direct connection (no conversion needed)
     this._addLink(startPin, endPin);
     this.updateVisuals(endPin.node);
     this.updateVisuals(startPin.node);
