@@ -45,6 +45,7 @@ import { DOMElements } from "./config/DOMElements.js";
 import { APP_VERSION } from "./config/Constants.js";
 import { DirtyStateTracker } from "./services/DirtyStateTracker.js";
 import { NodeDefinitionValidator } from "./utils/NodeDefinitionValidator.js";
+import { BreakpointManager } from "./services/BreakpointManager.js";
 class BlueprintApp {
   /**
    * Initializes all controllers and loads the graph.
@@ -125,10 +126,11 @@ class BlueprintApp {
       BlueprintApp
     );
 
-    // 5. Service Controllers (Persistence, Compiler, Sim)
+    // 5. Service Controllers (Persistence, Compiler, Sim, Breakpoints)
     BlueprintApp.persistence = new Persistence(BlueprintApp);
     BlueprintApp.compiler = new Compiler(BlueprintApp);
     BlueprintApp.sim = new SimulationEngine(BlueprintApp);
+    BlueprintApp.breakpointManager = new BreakpointManager();
     BlueprintApp.dirtyState = new DirtyStateTracker(BlueprintApp);
 
     // 6. UI Controllers
