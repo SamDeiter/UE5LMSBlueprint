@@ -1,21 +1,31 @@
+# http://editorconfig.org
 root = true
 
 [*]
-charset = utf-8
+# Use Unix-style line endings (LF) for everything
 end_of_line = lf
+# Ensure files end with a newline for POSIX compliance
 insert_final_newline = true
+# Trim trailing whitespace to keep diffs clean
 trim_trailing_whitespace = true
-
-[*.{js,jsx,ts,tsx,html,css,json,md}]
+# Standard encoding
+charset = utf-8
+# Default indentation for web projects (JavaScript, HTML, CSS)
 indent_style = space
 indent_size = 2
 
+# Configuration files typically use 2-space indentation
+[{*.json,*.yml,*.yaml}]
+indent_size = 2
+
+# Python uses 4-space indentation (PEP 8 standard)
 [*.py]
-indent_style = space
 indent_size = 4
 
+# Markdown allows trailing whitespace for line breaks
 [*.md]
 trim_trailing_whitespace = false
 
+# Makefiles require tabs
 [Makefile]
 indent_style = tab
