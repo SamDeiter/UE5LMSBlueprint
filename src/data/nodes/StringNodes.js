@@ -114,7 +114,7 @@ export const StringNodes = {
       {
         id: "str_in",
         name: "In String",
-        type: "wildcard", // Accepts any type - will auto-convert to string
+        type: "string", // String type - conversion nodes auto-inserted by WiringController
         dir: "in",
         defaultValue: "Hello",
       },

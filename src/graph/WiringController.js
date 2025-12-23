@@ -188,12 +188,9 @@ class WiringController {
 
     // Check if automatic conversion node is needed
     const isExecPin = startPin.type === "exec" || endPin.type === "exec";
-    const isWildcard =
-      startPin.type === "wildcard" || endPin.type === "wildcard";
     const isExactMatch = startPin.type === endPin.type;
 
-    // Skip conversion for exec pins and wildcard pins (they handle conversion internally)
-    if (!isExecPin && !isWildcard && !isExactMatch) {
+    if (!isExecPin && !isExactMatch) {
       const convKey = Utils.getConversionNodeKey(startPin.type, endPin.type);
       if (convKey) {
         const startPos = Utils.getPinPosition(startPin.element, this.app);
