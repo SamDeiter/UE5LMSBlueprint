@@ -6,10 +6,12 @@ import { generateGUID } from "../utils/guid.js";
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { createCollapsibleHeader } from "./ui-helpers.js";
 import { UE5Renderer } from "../utils/UE5Renderer.js";
+import { BaseController } from "./BaseController.js";
 
-export class VariableController {
+export class VariableController extends BaseController {
   constructor(app) {
-    this.app = app;
+    super(app); // IMPORTANT: Call parent constructor first
+
     this.listContainer = document.getElementById("variables-list");
     // Bind input elements for creation (can be triggered from new Add button)
     this.nameInput = document.getElementById("new-var-name");
@@ -20,19 +22,19 @@ export class VariableController {
     this.variables = new Map();
     this.renamingVarId = null; // Track which variable is currently being renamed
 
-    // Bind create events
+    // Bind create events using BaseController's addListener
     if (this.createBtn) {
-      this.createBtn.addEventListener("click", this.addVariable.bind(this));
+      this.addListener(this.createBtn, "click", this.addVariable.bind(this));
     }
     if (this.nameInput) {
-      this.nameInput.addEventListener("keyup", (e) => {
+      this.addListener(this.nameInput, "keyup", (e) => {
         if (e.key === "Enter") this.addVariable();
       });
     }
 
     // Deselect when clicking on empty space
     if (this.listContainer) {
-      this.listContainer.addEventListener("click", (e) => {
+      this.addListener(this.listContainer, "click", (e) => {
         // Check if click is NOT on a variable item or component item
         if (
           !e.target.closest(".ue5-variable-item") &&
@@ -954,5 +956,14 @@ export class VariableController {
     setTimeout(() => document.addEventListener("click", closeMenu), 0);
 
     document.body.appendChild(menu);
+  }
+
+  /**
+   * Cleanup method - called when controller is destroyed
+   * Removes all event listeners to prevent memory leaks
+   */
+  cleanup() {
+    super.cleanup(); // Remove all tracked listeners
+    console.log("VariableController: Cleaned up successfully");
   }
 }
