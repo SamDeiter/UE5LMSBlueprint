@@ -34,6 +34,7 @@ export const PIN_COLORS = {
   [PIN_TYPES.TRANSFORM]: "var(--color-transform)",
   [PIN_TYPES.OBJECT]: "var(--color-object)",
   [PIN_TYPES.ENUM]: "var(--color-enum)",
+  [PIN_TYPES.WILDCARD]: "var(--color-wildcard)",
   [PIN_TYPES.HITRESULT]: "#001A99", // Deep Blue
   DEFAULT: "#888888",
 };
