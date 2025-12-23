@@ -312,6 +312,29 @@ class BlueprintApp {
         return;
       }
 
+      // Step Debugging Shortcuts (F10, F11, Shift+F11)
+      if (e.key === "F10") {
+        e.preventDefault();
+        if (BlueprintApp.simulationEngine) {
+          BlueprintApp.simulationEngine.stepOver();
+        }
+        return;
+      }
+
+      if (e.key === "F11") {
+        e.preventDefault();
+        if (BlueprintApp.simulationEngine) {
+          if (e.shiftKey) {
+            // Shift+F11 = Step Out
+            BlueprintApp.simulationEngine.stepOut();
+          } else {
+            // F11 = Step Into
+            BlueprintApp.simulationEngine.stepInto();
+          }
+        }
+        return;
+      }
+
       if (e.key === "Delete" || e.key === "Backspace") {
         // If the graph has selected nodes or links, let GraphInteraction handle it.
         // Do NOT trigger component/variable deletion here.

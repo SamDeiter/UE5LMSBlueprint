@@ -44,6 +44,10 @@ export class SimulationEngine {
     this.tickFrame = null;
     this.callStack = [];
 
+    // Step Debugging State
+    this.stepMode = null; // 'over', 'into', 'out', or null
+    this.stepDepth = 0; // Call stack depth when step command issued
+
     this.functionReturnValues = null;
 
     // Actor Storage (for Phase A: Actor Nodes)
