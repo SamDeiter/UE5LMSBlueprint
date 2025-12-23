@@ -31,7 +31,7 @@ export const CollisionNodes = {
     type: "function-node",
     category: "Collision",
     icon: "trace",
-    executor: "Client",
+    executor: "Trace",
     pins: PF.traceNode(), // No shape params needed for line trace
   },
 
@@ -40,7 +40,7 @@ export const CollisionNodes = {
     type: "function-node",
     category: "Collision",
     icon: "trace",
-    executor: "Client",
+    executor: "Trace",
     pins: PF.traceNode(
       [], // No shape params
       {
