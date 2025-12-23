@@ -29,6 +29,9 @@ class WiringController {
     this.links = new Map();
     this.selectedLinks = new Set();
     this.app = app;
+
+    // Initialize PinTypeValidator for type checking
+    this.typeValidator = new PinTypeValidator();
   }
   findLink(linkId) {
     return this.links.get(linkId);
@@ -155,7 +158,7 @@ class WiringController {
     }
 
     // NEW: Use PinTypeValidator for comprehensive type checking
-    const validation = PinTypeValidator.canConnect(startPin, endPin);
+    const validation = this.typeValidator.canConnect(startPin, endPin);
 
     if (!validation.valid) {
       // Show error message to user
