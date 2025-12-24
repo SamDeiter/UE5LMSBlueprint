@@ -1171,26 +1171,3 @@
     box-shadow: 0 0 10px rgba(142, 68, 173, 0.5);
     min-width: 220px;
 }
-
-
-#palette-content {
-    overflow-y: auto;
-    flex: 1;
-}
-
-#palette-panel {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    /* Allow it to grow and shrink */
-    min-height: 0;
-    /* Critical for nested flex scrolling */
-    overflow: hidden;
-}
-
-#palette-content {
-    overflow-y: auto;
-    flex: 1;
-    padding-bottom: 20px;
-    /* Extra space at bottom */
-}

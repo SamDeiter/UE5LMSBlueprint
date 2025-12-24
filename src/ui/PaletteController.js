@@ -1,5 +1,5 @@
 /**
- * PaletteController - Manages the node palette
+ * PaletteController - Manages the node palette in the right panel
  */
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { buildCategoryTree, renderCategoryTree } from "./ui-helpers.js";
@@ -7,43 +7,22 @@ import { buildCategoryTree, renderCategoryTree } from "./ui-helpers.js";
 export class PaletteController {
   constructor(app) {
     this.app = app;
-    // Left sidebar palette (existing)
-    this.container = document.getElementById("palette-content");
-    this.filterInput = document.getElementById("palette-filter");
+    // Right panel palette (tabbed view)
+    this.container = document.getElementById("right-palette-content");
+    this.filterInput = document.getElementById("right-palette-filter");
 
-    // Right panel palette (new - for tabbed view)
-    this.rightContainer = document.getElementById("right-palette-content");
-    this.rightFilterInput = document.getElementById("right-palette-filter");
-
-    // Set up event listeners for both filter inputs
+    // Set up filter input event listener
     if (this.filterInput) {
       this.filterInput.addEventListener("input", () => this.populateList());
-    }
-    if (this.rightFilterInput) {
-      this.rightFilterInput.addEventListener("input", () =>
-        this.populateList()
-      );
     }
   }
 
   populateList() {
-    // Get filter value from whichever input has focus, or use the active one
-    const leftFilter = this.filterInput
-      ? this.filterInput.value.toLowerCase()
-      : "";
-    const rightFilter = this.rightFilterInput
-      ? this.rightFilterInput.value.toLowerCase()
-      : "";
+    if (!this.container) return;
 
-    // Populate left palette if it exists
-    if (this.container) {
-      this._renderPalette(this.container, leftFilter);
-    }
+    const filter = this.filterInput ? this.filterInput.value.toLowerCase() : "";
 
-    // Populate right palette if it exists
-    if (this.rightContainer) {
-      this._renderPalette(this.rightContainer, rightFilter);
-    }
+    this._renderPalette(this.container, filter);
   }
 
   _renderPalette(container, filter) {

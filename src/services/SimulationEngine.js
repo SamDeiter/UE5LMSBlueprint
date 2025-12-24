@@ -1,4 +1,4 @@
-/* eslint-disable no-undef, no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { GraphValidator } from "./GraphValidator.js";
 import { scormClient } from "./ScormClient.js";
 
