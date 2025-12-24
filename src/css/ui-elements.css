@@ -348,12 +348,12 @@
   height: 100%;
   /* UE5 Grid Specifications from StarshipStyle.cpp:3870-3875 */
   background-color: rgb(6, 6, 6); /* GridLineColor: 0.024 * 255 ≈ 6 */
-  background-image: 
+  background-image:
     /* Major grid lines (every 8 dots) - GridRuleColor */
     radial-gradient(circle, rgba(3, 3, 3, 0.8) 1px, transparent 1px),
     /* Minor grid dots - GridLineColor */
     radial-gradient(circle, rgba(6, 6, 6, 0.6) 0.5px, transparent 0.5px);
-  background-size: 
+  background-size:
     128px 128px,  /* Major grid: 8 * 16px = 128px (GridRulePeriod = 8) */
     16px 16px;     /* Minor grid: 16px spacing */
   background-position: 0 0, 0 0;
@@ -2033,4 +2033,64 @@
 
 .event-add-btn i {
   font-size: 10px;
+}
+
+/* --- VFX Simulation Effects --- */
+.vfx-simulation-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.vfx-simulation-particle i {
+  filter: drop-shadow(0 0 8px rgba(255, 152, 0, 0.8));
+  animation: vfx-flicker 0.2s infinite alternate;
+}
+
+@keyframes vfx-flicker {
+  from { opacity: 0.8; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+/* --- UE5 Checkbox (Consolidated) --- */
+.ue5-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #080808;
+  border: 1px solid #555;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.ue5-checkbox:checked {
+  background-color: #080808;
+  border-color: #555;
+}
+
+.ue5-checkbox:checked::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 12px;
+  color: #0070e0;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.ue5-checkbox:hover {
+  border-color: #888;
 }

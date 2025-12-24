@@ -2,10 +2,11 @@
  * Node class - Represents a single node in the graph canvas.
  */
 import { Utils } from "../utils.js";
-import { PinDefaults } from "../config/NodeDefaults.js";
+// import { PinDefaults } from "../config/NodeDefaults.js";
 import { Pin } from "./Pin.js";
 import { NODE_HEADER_COLORS, NODE_TYPES } from "../config/Constants.js";
 import { UE5Renderer } from "../utils/UE5Renderer.js";
+import { NodeWidgets } from "./node/NodeWidgets.js";
 
 class Node {
   constructor(id, nodeData, x, y, nodeKey, app) {
@@ -160,9 +161,95 @@ class Node {
 
   updatePosition() {
     if (this.element) {
-      this.element.style.left = `${this.x}px`; // Dynamic position // Dynamic position
-      this.element.style.top = `${this.y}px`; // Dynamic position // Dynamic position
+      this.element.style.left = `${this.x}px`;
+      this.element.style.top = `${this.y}px`;
     }
+  }
+
+  /**
+   * Re-evaluates pins based on current state (e.g. selected class/asset).
+   * Usually triggered by a property change in the Details panel.
+   */
+  reallocatePins() {
+    // 1. Collect links from existing dynamic pins to preserve them
+    const linkMap = new Map();
+    this.pins.forEach((p) => {
+      if (p.isDynamic && p.links.length > 0) {
+        // We use the ID portion after the node ID as the key
+        const localId = p.id.split("-").pop();
+        linkMap.set(localId, p.links);
+      }
+    });
+
+    // 2. Remove dynamic pins
+    this.pins = this.pins.filter((p) => !p.isDynamic);
+
+    // 3. Request new dynamic pins from the AssetInterfacingService
+    const dynamicPinData =
+      this.app.assetInterfacingService?.getDynamicPinsForNode(this) || [];
+
+    // 4. Create new Pin instances and restore links if available
+    dynamicPinData.forEach((pData) => {
+      const pin = new Pin(this, pData);
+      pin.isDynamic = true;
+
+      // Restore links if we have a match
+      const preservedLinks = linkMap.get(pData.id);
+      if (preservedLinks) {
+        pin.links = preservedLinks;
+        // Update the link objects in the registry to point to the new Pin instance
+        pin.links.forEach((linkId) => {
+          const lObj = this.app.wiring.findLink(linkId);
+          if (lObj) {
+            if (lObj.startPin.id === pin.id) lObj.startPin = pin;
+            if (lObj.endPin.id === pin.id) lObj.endPin = pin;
+          }
+        });
+      }
+
+      this.pins.push(pin);
+    });
+
+    // 4. Refresh caches and re-render
+    this.refreshPinCache();
+
+    // 5. Re-render the node element if it exists
+    if (this.element) {
+      const newElement = this.render();
+      this.element.replaceWith(newElement);
+      this.element = newElement;
+
+      // Notify graph that node size might have changed (for wires)
+      this.app.graph.requestRedraw();
+    }
+  }
+
+  /**
+   * Called when a property is changed in the Details panel.
+   * @param {string} propName
+   * @param {any} value
+   */
+  onPropertyChanged(propName, value) {
+    console.log(`Node ${this.id} property ${propName} changed to ${value}`);
+    this.customData[propName] = value;
+
+    // Specific logic for dynamic pin nodes
+    if (
+      propName === "class" ||
+      propName === "asset" ||
+      propName === "DataTable"
+    ) {
+      if (propName === "class") {
+        if (this.nodeKey === "SpawnActorFromClass") {
+          this.title = `SpawnActor ${value || "NONE"}`;
+        } else if (this.nodeKey === "CreateWidget") {
+          this.title = `Create ${value || "NONE"}_C`;
+        }
+      }
+      this.reallocatePins();
+    }
+
+    this.app.persistence.autoSave();
   }
 
   render() {
@@ -175,7 +262,6 @@ class Node {
       return this.renderCommentNode();
     }
 
-    // Use compact node style for Getters, Converters, and Pure Function Calls
     if (
       this.nodeKey.startsWith("Get_") ||
       this.nodeKey.startsWith("Conv_") ||
@@ -185,24 +271,33 @@ class Node {
       return this.renderCompactNode();
     }
 
+    if (this.type === NODE_TYPES.REROUTE) {
+      return this.renderRerouteNode();
+    }
+
     const element = document.createElement("div");
     element.id = this.id;
-    element.className = `node ${this.type}`;
-    element.style.left = `${this.x}px`; // Dynamic position
-    element.style.top = `${this.y}px`; // Dynamic position
+    element.className = `node ${this.type
+      .toLowerCase()
+      .replace(/_/g, "-")}-node`;
+    element.style.left = `${this.x}px`;
+    element.style.top = `${this.y}px`;
+
+    if (this.customData && this.customData.advancedExpanded) {
+      element.classList.add("advanced-expanded");
+    }
 
     const header = document.createElement("div");
     this.headerElement = header;
     header.className = "node-title";
 
     const gradient = this.getHeaderColor();
-    header.style.background = `linear-gradient // Dynamic gradient(to bottom, ${gradient.start}, ${gradient.end})`;
+    header.style.background = `linear-gradient(to bottom, ${gradient.start}, ${gradient.end})`;
 
-    // Check BreakpointManager for breakpoint state
+    // Breakpoint Support
     const hasBreakpoint =
       this.app.breakpointManager &&
       this.app.breakpointManager.hasBreakpoint(this.id);
-
     if (hasBreakpoint) {
       header.classList.add("has-breakpoint");
       const bpIcon = document.createElement("div");
@@ -211,6 +306,7 @@ class Node {
       header.appendChild(bpIcon);
     }
 
+    // Header Icon
     if (this.type === NODE_TYPES.EVENT) {
       const iconEl = document.createElement("span");
       iconEl.className = "node-header-icon event-icon";
@@ -218,97 +314,30 @@ class Node {
       header.appendChild(iconEl);
     } else if (this.icon) {
       const iconEl = document.createElement("span");
-      if (this.icon.startsWith("fa-")) {
-        // Font Awesome icon
-        iconEl.className = `fas ${this.icon}`;
-      } else if (this.icon.startsWith("ue5/")) {
-        // UE5 SVG icon
+      if (this.icon.startsWith("ue5/")) {
         iconEl.className = "node-header-icon ue5-icon";
         const img = document.createElement("img");
         img.src = `/assets/icons/${this.icon}`;
-        img.alt = this.title;
         img.className = "ue5-icon-svg";
         iconEl.appendChild(img);
-      } else if (this.type === NODE_TYPES.FUNCTION && this.icon === "f") {
-        iconEl.classList.add("text-bold"); // Replaced inline style
-        iconEl.classList.add("text-italic"); // Replaced inline style
-        iconEl.classList.add("text-white"); // Replaced inline style
+      } else if (this.icon === "f") {
+        iconEl.className = "fas fa-function text-italic mr-1";
         iconEl.textContent = "f";
-        iconEl.classList.add("text-md");
-        iconEl.classList.add("mr-1");
-      } else {
-        iconEl.textContent = this.icon;
       }
       header.appendChild(iconEl);
     }
 
+    // Title
     const titleSpan = document.createElement("span");
-    if (
-      this.nodeKey.startsWith("Set_") ||
-      this.nodeKey.startsWith("SetComponent_")
-    ) {
-      titleSpan.textContent = "SET";
-    } else {
-      titleSpan.textContent = this.title;
-    }
+    titleSpan.textContent = this.nodeKey.startsWith("Set_")
+      ? "SET"
+      : this.title;
     header.appendChild(titleSpan);
-    if (this.nodeKey === "PrintString" || this.devWarning) {
-      const devBadge = document.createElement("span");
-      devBadge.className = "dev-badge";
-      devBadge.textContent = "Development Only";
-      header.appendChild(devBadge);
-    }
 
     if (this.type === NODE_TYPES.EVENT) {
       const delegateIcon = document.createElement("div");
       delegateIcon.className = "event-delegate-icon";
-      delegateIcon.title = "Output Delegate";
       header.appendChild(delegateIcon);
-    }
-
-    if (this.type === NODE_TYPES.COMMENT || this.nodeKey === "CustomEvent") {
-      header.addEventListener("dblclick", (e) => {
-        e.stopPropagation();
-        header.contentEditable = true;
-        header.focus();
-        document.execCommand("selectAll", false, null);
-        header.classList.add("editing-title");
-      });
-
-      const finishEditing = () => {
-        header.contentEditable = false;
-        this.title = header.textContent;
-        header.classList.remove("editing-title");
-        if (this.app.details && this.app.graph.selectedNodes.has(this.id)) {
-          if (this.nodeKey === "CustomEvent") {
-            this.app.details.showNodeDetails(this);
-          }
-        }
-        this.app.persistence.autoSave();
-      };
-
-      header.addEventListener("blur", finishEditing);
-      header.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          header.blur();
-        }
-      });
-      header.addEventListener("mousedown", (e) => {
-        if (header.isContentEditable) {
-          e.stopPropagation();
-        }
-      });
-    }
-
-    // NeedNode double-click to open configuration modal
-    if (this.nodeKey === "NeedNode") {
-      header.addEventListener("dblclick", (e) => {
-        e.stopPropagation();
-        if (this.app.needNodeModal) {
-          this.app.needNodeModal.open(this);
-        }
-      });
     }
 
     element.appendChild(header);
@@ -316,144 +345,192 @@ class Node {
     const content = document.createElement("div");
     content.className = "node-content";
 
-    if (this.type === NODE_TYPES.PURE) {
-      content.classList.add("pure-node-content");
-      const inCol = document.createElement("div");
-      inCol.className = "pin-column in";
-      const inFragment = document.createDocumentFragment();
-      this.pinsIn.forEach((pinIn) =>
-        inFragment.appendChild(this.renderPin(pinIn))
-      );
-      inCol.appendChild(inFragment);
-      content.appendChild(inCol);
+    // Zip pins into logical rows for horizontal parity (UE5 style)
+    const execIn = this.pinsIn.filter((p) => p.type === "exec");
+    const execOut = this.pinsOut.filter((p) => p.type === "exec");
+    const dataIn = this.pinsIn.filter((p) => p.type !== "exec");
+    const dataOut = this.pinsOut.filter((p) => p.type !== "exec");
 
-      const outCol = document.createElement("div");
-      outCol.className = "pin-column out";
-      const outFragment = document.createDocumentFragment();
-      this.pinsOut.forEach((pinOut) =>
-        outFragment.appendChild(this.renderPin(pinOut))
-      );
-      outCol.appendChild(outFragment);
-      content.appendChild(outCol);
-    } else {
-      // Flatten pins arrays: split pins expand into their subPins for row counting
-      const flattenPins = (pins) => {
-        const result = [];
-        pins.forEach((pin) => {
-          if (pin.isSplit && pin.subPins && pin.subPins.length > 0) {
-            // Add each subPin as a separate row entry
-            pin.subPins.forEach((subPin) => {
-              result.push({ pin: subPin, parentPin: pin, isSubPin: true });
-            });
-          } else {
-            result.push({ pin, parentPin: null, isSubPin: false });
-          }
-        });
-        return result;
-      };
+    const execRows = Math.max(execIn.length, execOut.length);
+    const dataRows = Math.max(dataIn.length, dataOut.length);
 
-      const flatPinsIn = flattenPins(this.pinsIn || []);
-      const flatPinsOut = flattenPins(this.pinsOut || []);
-      const maxRows = Math.max(flatPinsIn.length, flatPinsOut.length);
-      const fragment = document.createDocumentFragment();
+    let hasAdvanced = false;
 
-      for (let i = 0; i < maxRows; i++) {
-        const row = document.createElement("div");
-        row.className = "pin-row";
-
-        const pinEntry = flatPinsIn[i];
-        const outEntry = flatPinsOut[i];
-
-        if (pinEntry) {
-          const pinEl = this.renderSinglePin(pinEntry.pin, pinEntry.parentPin);
-          row.appendChild(pinEl);
-        } else {
-          const spacer = document.createElement("div");
-          spacer.classList.add("min-w-10");
-          row.appendChild(spacer);
-        }
-
-        if (outEntry) {
-          const shouldHideLabel =
-            this.nodeKey.startsWith("Set_") && outEntry.pin.type !== "exec";
-          const pinEl = this.renderSinglePin(
-            outEntry.pin,
-            outEntry.parentPin,
-            shouldHideLabel
-          );
-          row.appendChild(pinEl);
-        } else {
-          const spacer = document.createElement("div");
-          spacer.classList.add("min-w-10");
-          row.appendChild(spacer);
-        }
-        fragment.appendChild(row);
+    // Helper to process a pin for rendering and advanced tracking
+    const processPin = (pin) => {
+      if (!pin) return null;
+      const pinEl = this.renderPin(pin);
+      if (pin.advanced) {
+        pinEl.classList.add("advanced");
+        hasAdvanced = true;
+        if (pin.links && pin.links.length > 0) pinEl.classList.add("connected");
       }
-      content.appendChild(fragment);
+      return pinEl;
+    };
+
+    // 1. Render Exec Rows
+    for (let i = 0; i < execRows; i++) {
+      const row = document.createElement("div");
+      row.className = "pin-row exec-row";
+      const pIn = processPin(execIn[i]);
+      const pOut = processPin(execOut[i]);
+      if (pIn) row.appendChild(pIn);
+      if (pOut) row.appendChild(pOut);
+      content.appendChild(row);
+    }
+
+    // 2. Render Data Rows
+    for (let i = 0; i < dataRows; i++) {
+      const row = document.createElement("div");
+      row.className = "pin-row data-row";
+
+      const pinIn = dataIn[i];
+      const pinOut = dataOut[i];
+
+      const pInEl = processPin(pinIn);
+      const pOutEl = processPin(pinOut);
+
+      // Handle advanced row logic: if both are advanced, hide entire row?
+      // For now, let the pins handle their own visibility via CSS.
+      if (pInEl) row.appendChild(pInEl);
+      if (pOutEl) row.appendChild(pOutEl);
+
+      content.appendChild(row);
     }
 
     element.appendChild(content);
 
-    // NeedNode Visualization: Show criteria checklist
-    if (
-      this.nodeKey === "NeedNode" &&
-      this.customData &&
-      this.customData.needNodeData
-    ) {
-      const needData = this.customData.needNodeData;
-      if (
-        !needData.hidden &&
-        needData.criteria &&
-        needData.criteria.length > 0
-      ) {
-        const criteriaContainer = document.createElement("div");
-        criteriaContainer.className = "need-node-criteria";
-        criteriaContainer.className = "need-node-criteria-panel";
+    // Advanced Toggle
+    if (hasAdvanced) {
+      const toggle = document.createElement("div");
+      toggle.className = "advanced-toggle-container";
+      if (this.customData && this.customData.advancedExpanded)
+        toggle.classList.add("expanded");
 
-        needData.criteria.forEach((c) => {
-          const row = document.createElement("div");
-          row.className = "need-node-criterion-row";
+      const icon = document.createElement("div");
+      icon.className = "advanced-toggle-icon";
+      toggle.appendChild(icon);
 
-          // Status icon (updated by simulation)
-          const icon = document.createElement("span");
-          icon.textContent = c.passed ? "✅" : "⬜"; // Checkmark or empty box
-
-          const text = document.createElement("span");
-          text.textContent = c.description;
-
-          row.appendChild(icon);
-          row.appendChild(text);
-          criteriaContainer.appendChild(row);
-        });
-
-        content.appendChild(criteriaContainer);
-      }
-      // Note: devBar was referenced in original code but not defined in this snippet context.
-      // Assuming it was part of previous code or I should remove it if it causes error.
-      // Looking at original code, devBar seems to be missing from my snippet view or I missed it.
-      // Wait, lines 322-328 in original code reference `arrowIcon` and `devBar`.
-      // But `devBar` is NOT defined in the `render` method I see in Step 49.
-      // Ah, I see `if (this.nodeKey === 'PrintString' || this.devWarning)` block creates `devBadge`.
-      // But `devBar` is not there.
-      // The original code snippet in Step 49 lines 322-328:
-      /*
-            arrowIcon.style.marginLeft = '5px';
-            ...
-            devBar.appendChild(arrowIcon);
-            element.appendChild(devBar);
-            */
-      // This looks like a copy-paste error in the original file or my view is truncated/confused.
-      // Step 49 shows lines 322-328 being outside the `if (this.nodeKey === 'NeedNode' ...)` block?
-      // No, it's inside `render`.
-      // But `devBar` is not defined.
-      // I will remove the `devBar` lines if they are problematic, or keep them if they are valid.
-      // Since I am replacing the whole `render` method, I should be careful.
-      // The `devBar` lines in Step 49 seem to be dangling code.
-      // I will OMIT them in my replacement to fix potential ReferenceError.
+      toggle.addEventListener("mousedown", (e) => {
+        e.stopPropagation();
+        this.toggleAdvanced();
+      });
+      element.appendChild(toggle);
     }
 
     this.element = element;
     return element;
+  }
+
+  toggleAdvanced() {
+    if (!this.customData) this.customData = {};
+    this.customData.advancedExpanded = !this.customData.advancedExpanded;
+
+    if (this.element) {
+      if (this.customData.advancedExpanded) {
+        this.element.classList.add("advanced-expanded");
+        const toggle = this.element.querySelector(".advanced-toggle-container");
+        if (toggle) toggle.classList.add("expanded");
+      } else {
+        this.element.classList.remove("advanced-expanded");
+        const toggle = this.element.querySelector(".advanced-toggle-container");
+        if (toggle) toggle.classList.remove("expanded");
+      }
+    }
+
+    if (this.app && this.app.graph) {
+      this.app.graph.requestRedraw();
+    }
+    this.app.persistence.autoSave();
+  }
+
+  renderRerouteNode() {
+    const element = document.createElement("div");
+    element.id = this.id;
+    element.className = `node reroute-node`;
+    element.style.left = `${this.x}px`;
+    element.style.top = `${this.y}px`;
+
+    const content = document.createElement("div");
+    content.className = "node-content";
+
+    const pinIn = this.pinsIn[0];
+    const pinOut = this.pinsOut[0];
+
+    // Determine color for the knot
+    const pinType = pinIn ? pinIn.type : pinOut ? pinOut.type : "wildcard";
+    let color = Utils.getPinColor(pinType);
+    if (pinType === "exec") color = "#ffffff";
+
+    // Create the visual "knot"
+    const knot = document.createElement("div");
+    knot.className = "visual-knot";
+    knot.style.backgroundColor = color;
+    content.appendChild(knot);
+
+    const row = document.createElement("div");
+    row.className = "pin-row";
+
+    if (pinIn) {
+      const pEl = this.renderPin(pinIn);
+      // Hide SVG to rely on knot
+      const svg = pEl.querySelector("svg");
+      if (svg) svg.style.display = "none";
+      row.appendChild(pEl);
+    }
+    if (pinOut) {
+      const pEl = this.renderPin(pinOut);
+      const svg = pEl.querySelector("svg");
+      if (svg) svg.style.display = "none";
+      row.appendChild(pEl);
+    }
+
+    content.appendChild(row);
+    element.appendChild(content);
+
+    this.element = element;
+
+    // Set explicit dimensions for marquee selection hit-testing
+    // Without these, offsetWidth/offsetHeight would include overflow elements
+    this.width = 16;
+    this.height = 16;
+
+    // Immediate visual update to ensure correct shape/color
+    requestAnimationFrame(() => this.updateRerouteVisuals());
+
+    return element;
+  }
+
+  updateRerouteVisuals() {
+    if (!this.element || this.type !== "reroute-node") return;
+
+    const knot = this.element.querySelector(".visual-knot");
+    if (!knot) return;
+
+    const pinIn = this.pinsIn[0];
+    const pinOut = this.pinsOut[0];
+    const pinType = pinIn ? pinIn.type : pinOut ? pinOut.type : "wildcard";
+
+    // Check if connected (either input or output has links)
+    const isConnected =
+      (pinIn && pinIn.links.length > 0) || (pinOut && pinOut.links.length > 0);
+
+    // Toggle hollow class based on connection state
+    if (isConnected) {
+      knot.classList.remove("hollow");
+    } else {
+      knot.classList.add("hollow");
+    }
+
+    let color = Utils.getPinColor(pinType);
+    if (pinType === "exec") {
+      knot.classList.add("is-exec");
+      // Let CSS handle the fill color for exec pins based on hollow class
+      knot.style.backgroundColor = "";
+    } else {
+      knot.classList.remove("is-exec");
+      knot.style.backgroundColor = color;
+    }
   }
 
   renderCompactNode() {
@@ -558,82 +635,8 @@ class Node {
    * Render a single pin element (used for flattened row layout).
    * Unlike renderPin, this doesn't create split groups - each pin is rendered individually.
    * @param {Pin} pin - The pin to render
-   * @param {Pin|null} parentPin - The parent pin if this is a subPin, otherwise null
    * @param {boolean} hideLabel - Whether to hide the pin label
    */
-  renderSinglePin(pin, parentPin = null, hideLabel = false) {
-    // Safety: ensure pin has required properties
-    const pinDir = pin.dir || (parentPin ? parentPin.dir : "in");
-    const pinType = pin.type || "wildcard";
-
-    const pinContainer = document.createElement("div");
-    const typeClass = Utils.getPinTypeClass(pinType);
-    pinContainer.className = `pin-container ${pinDir} ${typeClass}`;
-    pinContainer.dataset.pinId = pin.id;
-
-    // If this is a subPin, mark it and store parent reference
-    if (parentPin) {
-      pinContainer.classList.add("sub-pin");
-      pinContainer.dataset.parentPinId = parentPin.id;
-    }
-
-    const pinDot = this.createPinDot(pin);
-    pin.element = pinDot;
-const pinLabel = document.createElement("span");
-    pinLabel.className = `pin-label-${pinDir}`;
-    // For subPins, include parent name in label
-    pinLabel.textContent = parentPin
-      ? `${parentPin.name} ${pin.name}`
-      : pin.name;
-    if (hideLabel) {
-      pinLabel.classList.add("hidden");
-    }
-
-    let inputWidget = null;
-    const isDataPin = pinType !== "exec";
-    const isConnected = pin.links && pin.links.length > 0;
-
-    // Connection-only pin types that should never show an input widget
-    const connectionOnlyTypes = [
-      "array",
-      "object",
-      "struct",
-      "class",
-      "interface",
-    ];
-    const hasContainerType =
-      pin.containerType && pin.containerType !== "single";
-    const isConnectionOnly =
-      connectionOnlyTypes.includes(pinType) || pin.isArray || hasContainerType;
-
-    if (pinDir === "in" && isDataPin && !isConnected && !isConnectionOnly) {
-      inputWidget = this.createInputWidget(pin);
-    }
-
-    // Build pin container structure based on direction
-    if (pin.dir === "in") {
-      pinContainer.appendChild(pinDot);
-      pinContainer.appendChild(pinLabel);
-      if (inputWidget) {
-        const wrapper = document.createElement("div");
-        wrapper.className = "pin-wrapper";
-        wrapper.appendChild(inputWidget);
-        pinContainer.appendChild(wrapper);
-      }
-    } else {
-      if (inputWidget) {
-        const wrapper = document.createElement("div");
-        wrapper.className = "pin-wrapper";
-        wrapper.appendChild(inputWidget);
-        pinContainer.appendChild(wrapper);
-      }
-      pinContainer.appendChild(pinLabel);
-      pinContainer.appendChild(pinDot);
-    }
-
-    return pinContainer;
-  }
-
   renderPin(pin, hideLabel = false) {
     // Handle Split Pins
     if (pin.isSplit) {
@@ -677,8 +680,8 @@ const pinLabel = document.createElement("span");
 
     const pinLabel = document.createElement("span");
     pinLabel.className = `pin-label-${pin.dir}`;
-    pinLabel.textContent = pin.name;
-    if (hideLabel) {
+    pinLabel.textContent = Utils.formatNodeProperty(pin.name);
+    if (effectiveHideLabel) {
       pinLabel.classList.add("hidden");
     }
 
@@ -688,19 +691,20 @@ const pinLabel = document.createElement("span");
 
     // Connection-only pin types that should never show an input widget
     const connectionOnlyTypes = [
+      "exec",
       "array",
       "object",
       "struct",
-      "class",
       "interface",
     ];
+    // NOTE: 'class' is NOT in connectionOnlyTypes here because SpawnActor needs a dropdown
     const hasContainerType =
       pin.containerType && pin.containerType !== "single";
     const isConnectionOnly =
       connectionOnlyTypes.includes(pin.type) || pin.isArray || hasContainerType;
 
     if (pin.dir === "in" && isDataPin && !isConnected && !isConnectionOnly) {
-      inputWidget = this.createInputWidget(pin);
+      inputWidget = NodeWidgets.createInputWidget(pin, this);
     }
 
     if (pin.dir === "in") {
@@ -717,191 +721,6 @@ const pinLabel = document.createElement("span");
       pinContainer.appendChild(pinDot);
     }
     return pinContainer;
-  }
-
-  createInputWidget(pin) {
-    // Safeguard: Connection-only types should never have widgets
-    const connectionOnlyTypes = [
-      "array",
-      "object",
-      "struct",
-      "wildcard",
-      "class",
-      "interface",
-    ];
-    if (connectionOnlyTypes.includes(pin.type) || pin.isArray) {
-      return null;
-    }
-
-    let inputEl;
-    const pinValue = this.pinLiterals.get(pin.id);
-    const updateLiteral = (e) => {
-      let newValue = e.target.value;
-      if (["int", "int64", "byte"].includes(pin.type)) {
-        newValue = parseInt(newValue) || PinDefaults.INT;
-      } else if (pin.type === "float") {
-        newValue = parseFloat(newValue) || PinDefaults.FLOAT;
-      } else if (pin.type === "bool") {
-        newValue = e.target.checked;
-      }
-      this.pinLiterals.set(pin.id, newValue);
-      this.app.persistence.autoSave();
-    };
-
-    // Handle vector/rotator/transform types
-    if (["vector", "rotator", "transform"].includes(pin.type)) {
-      return this.createVectorWidget(pin);
-    }
-
-    // Handle enum types
-    if (pin.type === "enum" || pin.enumValues) {
-      return this.createEnumWidget(pin);
-    }
-
-    // Handle color types
-    if (pin.type === "color" || pin.name.toLowerCase().includes("color")) {
-      return this.createColorWidget(pin);
-    }
-
-    if (pin.type === "bool") {
-      inputEl = document.createElement("input");
-      inputEl.type = "checkbox";
-      inputEl.className = "ue5-checkbox";
-      inputEl.checked = pinValue;
-      inputEl.addEventListener("change", updateLiteral);
-      inputEl.addEventListener("mousedown", (e) => e.stopPropagation());
-    } else {
-      inputEl = document.createElement("input");
-      inputEl.type = "text";
-      inputEl.value = pinValue;
-      inputEl.className = "node-literal-input";
-      const wideTypes = ["string", "text", "name"];
-      inputEl.classList.add(
-        wideTypes.includes(pin.type) ? "input-wide" : "input-narrow"
-      );
-
-      inputEl.addEventListener("change", updateLiteral);
-      inputEl.addEventListener("mousedown", (e) => e.stopPropagation());
-
-      inputEl.addEventListener(
-        "focus",
-        () => (this.app.graph.isEditingLiteral = true)
-      );
-      inputEl.addEventListener(
-        "blur",
-        () => (this.app.graph.isEditingLiteral = false)
-      );
-    }
-    return inputEl;
-  }
-
-  createVectorWidget(pin) {
-    const container = document.createElement("div");
-    container.className = "ue-vector-widget";
-
-    const value = this.pinLiterals.get(pin.id) || "(0,0,0)";
-    const components = value
-      .replace(/[()]/g, "")
-      .split(",")
-      .map((v) => parseFloat(v.trim()) || 0);
-
-    const labels = pin.type === "rotator" ? ["R", "P", "Y"] : ["X", "Y", "Z"];
-
-    labels.forEach((label, i) => {
-      const group = document.createElement("div");
-      group.className = "val-group";
-
-      const labelEl = document.createElement("span");
-      labelEl.className = "val-label";
-      labelEl.textContent = label;
-
-      const input = document.createElement("input");
-      input.type = "text";
-      input.className = "small-input";
-      input.value = components[i] || 0;
-
-      input.addEventListener("change", () => {
-        components[i] = parseFloat(input.value) || 0;
-        this.pinLiterals.set(pin.id, `(${components.join(",")})`);
-        this.app.persistence.autoSave();
-      });
-
-      input.addEventListener("mousedown", (e) => e.stopPropagation());
-      input.addEventListener(
-        "focus",
-        () => (this.app.graph.isEditingLiteral = true)
-      );
-      input.addEventListener(
-        "blur",
-        () => (this.app.graph.isEditingLiteral = false)
-      );
-
-      group.appendChild(labelEl);
-      group.appendChild(input);
-      container.appendChild(group);
-    });
-
-    return container;
-  }
-
-  createEnumWidget(pin) {
-    const select = document.createElement("select");
-    select.className = "ue-enum-select";
-
-    const enumValues = pin.enumValues || [
-      "None",
-      "Visibility",
-      "Camera",
-      "Pawn",
-    ];
-    const currentValue = this.pinLiterals.get(pin.id) || enumValues[0];
-
-    enumValues.forEach((value) => {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = value;
-      option.selected = value === currentValue;
-      select.appendChild(option);
-    });
-
-    select.addEventListener("change", (e) => {
-      this.pinLiterals.set(pin.id, e.target.value);
-      this.app.persistence.autoSave();
-    });
-
-    select.addEventListener("mousedown", (e) => e.stopPropagation());
-    select.addEventListener(
-      "focus",
-      () => (this.app.graph.isEditingLiteral = true)
-    );
-    select.addEventListener(
-      "blur",
-      () => (this.app.graph.isEditingLiteral = false)
-    );
-
-    return select;
-  }
-
-  createColorWidget(pin) {
-    const container = document.createElement("div");
-    container.className = "ue-color-picker-container";
-
-    const colorBox = document.createElement("input");
-    colorBox.type = "color";
-    colorBox.className = "ue-color-picker";
-
-    const value = this.pinLiterals.get(pin.id) || "#FF0000";
-    colorBox.value = value;
-
-    colorBox.addEventListener("change", (e) => {
-      this.pinLiterals.set(pin.id, e.target.value);
-      this.app.persistence.autoSave();
-    });
-
-    colorBox.addEventListener("mousedown", (e) => e.stopPropagation());
-
-    container.appendChild(colorBox);
-    return container;
   }
 
   getPinsData() {

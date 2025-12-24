@@ -2,6 +2,7 @@
  * ClassDefaultsRenderer - Handles rendering of Class Defaults panel
  * Extracted from DetailsController to improve maintainability
  */
+import { DetailsRenderer } from "./DetailsRenderer.js";
 
 export class ClassDefaultsRenderer {
   constructor(detailsController) {
@@ -403,14 +404,12 @@ export class ClassDefaultsRenderer {
     if (this.app.variables && this.app.variables.variables.size > 0) {
       variablesContent = `<div class="variable-defaults-list" id="variable-defaults-list">`;
       this.app.variables.variables.forEach((variable) => {
-        const defaultVal =
-          variable.defaultValue !== undefined ? variable.defaultValue : "";
         variablesContent += `
           <div class="detail-row variable-default-row" data-var-id="${
             variable.id
           }">
             <label title="${variable.type}">${variable.name}</label>
-            ${this.details.renderVariableDefaultInput(variable, defaultVal)}
+            ${DetailsRenderer.renderDefaultValueInput(variable)}
           </div>
         `;
       });

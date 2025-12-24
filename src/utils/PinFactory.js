@@ -427,6 +427,3 @@ export class PinFactory {
     ];
   }
 }
-
-// Export singleton instance for convenience
-export const PF = PinFactory;

@@ -1,0 +1,3897 @@
+{
+  "statistics": {
+    "detectionDate": "2025-12-23T23:31:02.116Z",
+    "formats": {
+      "javascript": {
+        "sources": {
+          "src/ui/details/VariableDetails.js": {
+            "lines": 408,
+            "tokens": 3403,
+            "sources": 1,
+            "clones": 8,
+            "duplicatedLines": 84,
+            "duplicatedTokens": 1024,
+            "percentage": 20.59,
+            "percentageTokens": 30.09,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/details/NodeDetails.js": {
+            "lines": 463,
+            "tokens": 2775,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 17,
+            "duplicatedTokens": 161,
+            "percentage": 3.67,
+            "percentageTokens": 5.8,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/details/FunctionDetails.js": {
+            "lines": 199,
+            "tokens": 1354,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 9,
+            "duplicatedTokens": 77,
+            "percentage": 4.52,
+            "percentageTokens": 5.69,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/details/ComponentDetails.js": {
+            "lines": 61,
+            "tokens": 316,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/details/ClassDetails.js": {
+            "lines": 136,
+            "tokens": 663,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 81,
+            "percentage": 7.35,
+            "percentageTokens": 12.22,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/VFXExecutor.js": {
+            "lines": 63,
+            "tokens": 458,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/VectorExecutor.js": {
+            "lines": 121,
+            "tokens": 1793,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/VariableExecutor.js": {
+            "lines": 58,
+            "tokens": 469,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/TraceExecutor.js": {
+            "lines": 237,
+            "tokens": 1979,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 160,
+            "percentage": 4.22,
+            "percentageTokens": 8.08,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/TimerExecutor.js": {
+            "lines": 74,
+            "tokens": 586,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/TimelineExecutor.js": {
+            "lines": 58,
+            "tokens": 354,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/StringExecutor.js": {
+            "lines": 97,
+            "tokens": 891,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/PrintExecutor.js": {
+            "lines": 93,
+            "tokens": 718,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 76,
+            "duplicatedTokens": 604,
+            "percentage": 81.72,
+            "percentageTokens": 84.12,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/NeedNodeExecutor.js": {
+            "lines": 59,
+            "tokens": 523,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/MathExecutor.js": {
+            "lines": 140,
+            "tokens": 1481,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/MacroExecutor.js": {
+            "lines": 181,
+            "tokens": 1313,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 29,
+            "duplicatedTokens": 218,
+            "percentage": 16.02,
+            "percentageTokens": 16.6,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/InputExecutor.js": {
+            "lines": 263,
+            "tokens": 2185,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/FunctionExecutor.js": {
+            "lines": 196,
+            "tokens": 1444,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 117,
+            "percentage": 8.16,
+            "percentageTokens": 8.1,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/FlowControlExecutor.js": {
+            "lines": 205,
+            "tokens": 1667,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/ExecutorRegistry.js": {
+            "lines": 83,
+            "tokens": 382,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/EventExecutor.js": {
+            "lines": 25,
+            "tokens": 114,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/ConversionExecutor.js": {
+            "lines": 106,
+            "tokens": 734,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 76,
+            "duplicatedTokens": 604,
+            "percentage": 71.7,
+            "percentageTokens": 82.29,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/CastExecutor.js": {
+            "lines": 57,
+            "tokens": 362,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 12,
+            "duplicatedTokens": 156,
+            "percentage": 21.05,
+            "percentageTokens": 43.09,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/BaseExecutor.js": {
+            "lines": 53,
+            "tokens": 183,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/AudioExecutor.js": {
+            "lines": 45,
+            "tokens": 401,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/executors/ActorExecutor.js": {
+            "lines": 171,
+            "tokens": 1703,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 148,
+            "percentage": 5.85,
+            "percentageTokens": 8.69,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/node/NodeWidgets.js": {
+            "lines": 263,
+            "tokens": 2492,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 56,
+            "duplicatedTokens": 510,
+            "percentage": 21.29,
+            "percentageTokens": 20.47,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/VariableNodes.js": {
+            "lines": 188,
+            "tokens": 2088,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/UtilityNodes.js": {
+            "lines": 135,
+            "tokens": 1077,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/UserInterfaceNodes.js": {
+            "lines": 51,
+            "tokens": 524,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/StringNodes.js": {
+            "lines": 239,
+            "tokens": 2329,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 20,
+            "duplicatedTokens": 206,
+            "percentage": 8.37,
+            "percentageTokens": 8.84,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/MathNodes.js": {
+            "lines": 616,
+            "tokens": 4302,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 176,
+            "percentage": 2.6,
+            "percentageTokens": 4.09,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/MacroNodes.js": {
+            "lines": 20,
+            "tokens": 164,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/InputNodes.js": {
+            "lines": 145,
+            "tokens": 1150,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 30,
+            "duplicatedTokens": 226,
+            "percentage": 20.69,
+            "percentageTokens": 19.65,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/index.js": {
+            "lines": 43,
+            "tokens": 324,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/FunctionNodes.js": {
+            "lines": 22,
+            "tokens": 178,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/FlowControlNodes.js": {
+            "lines": 224,
+            "tokens": 2399,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 40,
+            "duplicatedTokens": 390,
+            "percentage": 17.86,
+            "percentageTokens": 16.26,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/EventNodes.js": {
+            "lines": 261,
+            "tokens": 2255,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 20,
+            "duplicatedTokens": 206,
+            "percentage": 7.66,
+            "percentageTokens": 9.14,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/DataTableNodes.js": {
+            "lines": 19,
+            "tokens": 264,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/CollisionNodes.js": {
+            "lines": 98,
+            "tokens": 799,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/CollectionNodes.js": {
+            "lines": 420,
+            "tokens": 3733,
+            "sources": 1,
+            "clones": 22,
+            "duplicatedLines": 222,
+            "duplicatedTokens": 2204,
+            "percentage": 52.86,
+            "percentageTokens": 59.04,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/CastingNodes.js": {
+            "lines": 31,
+            "tokens": 399,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 12,
+            "duplicatedTokens": 260,
+            "percentage": 38.71,
+            "percentageTokens": 65.16,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/AudioVisualNodes.js": {
+            "lines": 230,
+            "tokens": 1652,
+            "sources": 1,
+            "clones": 8,
+            "duplicatedLines": 188,
+            "duplicatedTokens": 1368,
+            "percentage": 81.74,
+            "percentageTokens": 82.81,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/AssessmentNodes.js": {
+            "lines": 17,
+            "tokens": 177,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/nodes/ActorNodes.js": {
+            "lines": 185,
+            "tokens": 1580,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 24,
+            "duplicatedTokens": 222,
+            "percentage": 12.97,
+            "percentageTokens": 14.05,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/assessment/ValidationTasks.js": {
+            "lines": 205,
+            "tokens": 1198,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/assessment/Level6.js": {
+            "lines": 169,
+            "tokens": 1112,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/assessment/Level5.js": {
+            "lines": 369,
+            "tokens": 2495,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/assessment/Level4.js": {
+            "lines": 122,
+            "tokens": 714,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/assessment/Level3.js": {
+            "lines": 127,
+            "tokens": 712,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/assessment/Level2.js": {
+            "lines": 140,
+            "tokens": 949,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/assessment/Level1.js": {
+            "lines": 74,
+            "tokens": 496,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/validator.js": {
+            "lines": 320,
+            "tokens": 2855,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/UE5Renderer.js": {
+            "lines": 214,
+            "tokens": 932,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/PinTypeValidator.js": {
+            "lines": 294,
+            "tokens": 1735,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/PinFactory.js": {
+            "lines": 431,
+            "tokens": 2999,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/NodeDefinitionValidator.js": {
+            "lines": 268,
+            "tokens": 1877,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/guid.js": {
+            "lines": 13,
+            "tokens": 141,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/VariableController.js": {
+            "lines": 968,
+            "tokens": 8448,
+            "sources": 1,
+            "clones": 6,
+            "duplicatedLines": 63,
+            "duplicatedTokens": 589,
+            "percentage": 6.51,
+            "percentageTokens": 6.97,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/ui-helpers.js": {
+            "lines": 193,
+            "tokens": 1541,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/TaskController.js": {
+            "lines": 307,
+            "tokens": 2669,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 166,
+            "percentage": 5.21,
+            "percentageTokens": 6.22,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/SearchController.js": {
+            "lines": 142,
+            "tokens": 1084,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/ParentClassModal.js": {
+            "lines": 204,
+            "tokens": 1201,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/PaletteController.js": {
+            "lines": 103,
+            "tokens": 861,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/NeedNodeModal.js": {
+            "lines": 615,
+            "tokens": 4990,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/NeedNodeFormHelper.js": {
+            "lines": 278,
+            "tokens": 1248,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/MacrosController.js": {
+            "lines": 241,
+            "tokens": 2250,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 23,
+            "duplicatedTokens": 197,
+            "percentage": 9.54,
+            "percentageTokens": 8.76,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/LocalVariablesController.js": {
+            "lines": 103,
+            "tokens": 822,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/LayoutController.js": {
+            "lines": 232,
+            "tokens": 2108,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/GraphsController.js": {
+            "lines": 67,
+            "tokens": 516,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 13,
+            "duplicatedTokens": 91,
+            "percentage": 19.4,
+            "percentageTokens": 17.64,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/FunctionsController.js": {
+            "lines": 566,
+            "tokens": 5116,
+            "sources": 1,
+            "clones": 5,
+            "duplicatedLines": 56,
+            "duplicatedTokens": 660,
+            "percentage": 9.89,
+            "percentageTokens": 12.9,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/EventDispatcherController.js": {
+            "lines": 411,
+            "tokens": 2847,
+            "sources": 1,
+            "clones": 6,
+            "duplicatedLines": 60,
+            "duplicatedTokens": 583,
+            "percentage": 14.6,
+            "percentageTokens": 20.48,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/DetailsTypeSelector.js": {
+            "lines": 254,
+            "tokens": 2327,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/DetailsRenderer.js": {
+            "lines": 696,
+            "tokens": 3161,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 117,
+            "percentage": 1.58,
+            "percentageTokens": 3.7,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/DetailsController.js": {
+            "lines": 181,
+            "tokens": 1225,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 8,
+            "duplicatedTokens": 84,
+            "percentage": 4.42,
+            "percentageTokens": 6.86,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/DebuggerController.js": {
+            "lines": 255,
+            "tokens": 2070,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/ContextMenu.js": {
+            "lines": 38,
+            "tokens": 383,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/ComponentSelector.js": {
+            "lines": 241,
+            "tokens": 2151,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/ComponentsController.js": {
+            "lines": 502,
+            "tokens": 4216,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 42,
+            "duplicatedTokens": 347,
+            "percentage": 8.37,
+            "percentageTokens": 8.23,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/ClassDefaultsRenderer.js": {
+            "lines": 594,
+            "tokens": 3367,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 81,
+            "percentage": 1.68,
+            "percentageTokens": 2.41,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/BaseController.js": {
+            "lines": 189,
+            "tokens": 899,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui/ActionMenu.js": {
+            "lines": 888,
+            "tokens": 8070,
+            "sources": 1,
+            "clones": 10,
+            "duplicatedLines": 88,
+            "duplicatedTokens": 896,
+            "percentage": 9.91,
+            "percentageTokens": 11.1,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/test_refactor.js": {
+            "lines": 35,
+            "tokens": 459,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/SpawnActor.test.js": {
+            "lines": 101,
+            "tokens": 831,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/Scorm.test.js": {
+            "lines": 162,
+            "tokens": 1242,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/PinRendering.test.js": {
+            "lines": 209,
+            "tokens": 1621,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/NodeRegistryTests.js": {
+            "lines": 211,
+            "tokens": 1425,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/NeedNode.test.js": {
+            "lines": 23,
+            "tokens": 217,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/guid.test.js": {
+            "lines": 221,
+            "tokens": 2070,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/ComponentsController.test.js": {
+            "lines": 187,
+            "tokens": 1614,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests/ComponentHierarchy.test.js": {
+            "lines": 50,
+            "tokens": 417,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/TimerManager.js": {
+            "lines": 93,
+            "tokens": 500,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/TaskManager.js": {
+            "lines": 255,
+            "tokens": 1689,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/SimulationEngine.js": {
+            "lines": 770,
+            "tokens": 6269,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 13,
+            "duplicatedTokens": 101,
+            "percentage": 1.69,
+            "percentageTokens": 1.61,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/ScormClient.js": {
+            "lines": 135,
+            "tokens": 927,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/Persistence.js": {
+            "lines": 171,
+            "tokens": 1405,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/index.js": {
+            "lines": 7,
+            "tokens": 105,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/HistoryManager.js": {
+            "lines": 234,
+            "tokens": 2181,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/GridController.js": {
+            "lines": 66,
+            "tokens": 794,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/GraphValidator.js": {
+            "lines": 195,
+            "tokens": 1656,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/DirtyStateTracker.js": {
+            "lines": 37,
+            "tokens": 248,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/Compiler.js": {
+            "lines": 258,
+            "tokens": 2014,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/BreakpointManager.js": {
+            "lines": 203,
+            "tokens": 1035,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/services/AssetInterfacingService.js": {
+            "lines": 83,
+            "tokens": 565,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 30,
+            "duplicatedTokens": 214,
+            "percentage": 36.14,
+            "percentageTokens": 37.88,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/registries/VirtualAssetRegistry.js": {
+            "lines": 75,
+            "tokens": 609,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/registries/NodeRegistry.js": {
+            "lines": 66,
+            "tokens": 280,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/macros/MacroRegistry.js": {
+            "lines": 49,
+            "tokens": 341,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/macros/MacroDefinition.js": {
+            "lines": 74,
+            "tokens": 476,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/WiringController.js": {
+            "lines": 587,
+            "tokens": 5314,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/Pin.js": {
+            "lines": 116,
+            "tokens": 940,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/Node.js": {
+            "lines": 787,
+            "tokens": 7255,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/index.js": {
+            "lines": 9,
+            "tokens": 65,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/GraphSwitcher.js": {
+            "lines": 190,
+            "tokens": 1715,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/GraphSelection.js": {
+            "lines": 97,
+            "tokens": 958,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 111,
+            "percentage": 6.19,
+            "percentageTokens": 11.59,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/GraphRenderer.js": {
+            "lines": 44,
+            "tokens": 425,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/GraphInteraction.js": {
+            "lines": 927,
+            "tokens": 8393,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 33,
+            "duplicatedTokens": 251,
+            "percentage": 3.56,
+            "percentageTokens": 2.99,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/graph/GraphController.js": {
+            "lines": 906,
+            "tokens": 7976,
+            "sources": 1,
+            "clones": 5,
+            "duplicatedLines": 48,
+            "duplicatedTokens": 429,
+            "percentage": 5.3,
+            "percentageTokens": 5.38,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/functions/FunctionRegistry.js": {
+            "lines": 87,
+            "tokens": 407,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/functions/FunctionDefinition.js": {
+            "lines": 81,
+            "tokens": 550,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/AssessmentTasks.js": {
+            "lines": 22,
+            "tokens": 141,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/config/NodeDefaults.js": {
+            "lines": 52,
+            "tokens": 761,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/config/DOMElements.js": {
+            "lines": 18,
+            "tokens": 129,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/config/Constants.js": {
+            "lines": 121,
+            "tokens": 1278,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils.js": {
+            "lines": 289,
+            "tokens": 2028,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 117,
+            "percentage": 3.81,
+            "percentageTokens": 5.77,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/ui.js": {
+            "lines": 37,
+            "tokens": 286,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/tests.js": {
+            "lines": 371,
+            "tokens": 3821,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/app.js": {
+            "lines": 458,
+            "tokens": 3819,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 27042,
+          "tokens": 215173,
+          "sources": 127,
+          "clones": 61,
+          "duplicatedLines": 754,
+          "duplicatedTokens": 7076,
+          "percentage": 2.79,
+          "percentageTokens": 3.29,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "css": {
+        "sources": {
+          "src/ui/blueprint_style.css": {
+            "lines": 91,
+            "tokens": 581,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/css/variables.css": {
+            "lines": 105,
+            "tokens": 763,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/css/reset.css": {
+            "lines": 60,
+            "tokens": 288,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/css/nodes_fix.css": {
+            "lines": 27,
+            "tokens": 201,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/css/nodes.css": {
+            "lines": 868,
+            "tokens": 5220,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/css/modals.css": {
+            "lines": 238,
+            "tokens": 1290,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/css/layout.css": {
+            "lines": 482,
+            "tokens": 2620,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/css/graph.css": {
+            "lines": 542,
+            "tokens": 3086,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 2413,
+          "tokens": 14049,
+          "sources": 8,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "json": {
+        "sources": {
+          "src/tests/graph-test.json": {
+            "lines": 36,
+            "tokens": 194,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 36,
+          "tokens": 194,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 29491,
+      "tokens": 229416,
+      "sources": 136,
+      "clones": 61,
+      "duplicatedLines": 754,
+      "duplicatedTokens": 7076,
+      "percentage": 2.56,
+      "percentageTokens": 3.08,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "javascript",
+      "lines": 15,
+      "fragment": ";\n    }\n\n    const vectorComponent = e.target.dataset.vectorComponent;\n    const transformComponent = e.target.dataset.transformComponent;\n\n    if (vectorComponent) {\n      // Handle Vector/Rotator component update\n      const parsed = DetailsRenderer.parseVectorValue(variable.defaultValue);\n      parsed[vectorComponent] = parseFloat(e.target.value) || 0;\n      const newValue = `(${parsed.x},${parsed.y},${parsed.z})`;\n      this.app.variables.updateVariableProperty(\n        variable,\n        \"defaultValue\",\n        newValue,",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 247,
+        "end": 261,
+        "startLoc": {
+          "line": 247,
+          "column": 2,
+          "position": 1933
+        },
+        "endLoc": {
+          "line": 261,
+          "column": 2,
+          "position": 2071
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 182,
+        "end": 197,
+        "startLoc": {
+          "line": 182,
+          "column": 6,
+          "position": 1232
+        },
+        "endLoc": {
+          "line": 197,
+          "column": 2,
+          "position": 1372
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 8,
+      "fragment": "const [section, axis] = transformComponent.split(\"-\");\n      const parsed = DetailsRenderer.parseTransformValue(variable.defaultValue);\n      parsed[section][axis] = parseFloat(e.target.value) || 0;\n      const newValue = `(${parsed.location.x},${parsed.location.y},${parsed.location.z}|${parsed.rotation.x},${parsed.rotation.y},${parsed.rotation.z}|${parsed.scale.x},${parsed.scale.y},${parsed.scale.z})`;\n      this.app.variables.updateVariableProperty(\n        variable,\n        \"defaultValue\",\n        newValue,",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 266,
+        "end": 273,
+        "startLoc": {
+          "line": 266,
+          "column": 7,
+          "position": 2097
+        },
+        "endLoc": {
+          "line": 273,
+          "column": 2,
+          "position": 2260
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 200,
+        "end": 208,
+        "startLoc": {
+          "line": 200,
+          "column": 7,
+          "position": 1392
+        },
+        "endLoc": {
+          "line": 208,
+          "column": 2,
+          "position": 1557
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ");\n    } else if (mapIndex !== undefined && mapField !== undefined) {\n      // Handle Map Update\n      const index = parseInt(mapIndex);\n      const newMap = [...variable.defaultValue];\n      if (!newMap[index]) newMap[index] = {};\n      newMap[index][mapField] = value;\n      this.app.variables.updateVariableProperty(\n        variable,\n        \"defaultValue\",\n        newMap,",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 275,
+        "end": 285,
+        "startLoc": {
+          "line": 275,
+          "column": 7,
+          "position": 2266
+        },
+        "endLoc": {
+          "line": 285,
+          "column": 2,
+          "position": 2381
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 208,
+        "end": 219,
+        "startLoc": {
+          "line": 208,
+          "column": 7,
+          "position": 1557
+        },
+        "endLoc": {
+          "line": 219,
+          "column": 2,
+          "position": 1674
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": "(varId) {\n    let variable = this._findVariable(varId);\n    if (!variable) return;\n\n    if (!Array.isArray(variable.defaultValue)) {\n      variable.defaultValue = [];\n    }\n\n    const type = variable.type;\n    let newVal = this._getDefaultValueForType(type);\n\n    const newEntry",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 344,
+        "end": 355,
+        "startLoc": {
+          "line": 344,
+          "column": 14,
+          "position": 2829
+        },
+        "endLoc": {
+          "line": 355,
+          "column": 9,
+          "position": 2925
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\details\\VariableDetails.js",
+        "start": 304,
+        "end": 315,
+        "startLoc": {
+          "line": 304,
+          "column": 16,
+          "position": 2516
+        },
+        "endLoc": {
+          "line": 315,
+          "column": 9,
+          "position": 2612
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 10,
+      "fragment": ";\n\n      typeTrigger.addEventListener(\"click\", (e) => {\n        e.stopPropagation();\n        const rect = typeTrigger.getBoundingClientRect();\n        this.controller.typeSelector.showTypeMenu(\n          rect.left,\n          rect.bottom + 5,\n          (newType) => {\n            param",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\details\\FunctionDetails.js",
+        "start": 155,
+        "end": 164,
+        "startLoc": {
+          "line": 155,
+          "column": 5,
+          "position": 958
+        },
+        "endLoc": {
+          "line": 164,
+          "column": 6,
+          "position": 1035
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\details\\NodeDetails.js",
+        "start": 424,
+        "end": 433,
+        "startLoc": {
+          "line": 424,
+          "column": 2,
+          "position": 2418
+        },
+        "endLoc": {
+          "line": 433,
+          "column": 4,
+          "position": 2495
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 6,
+      "fragment": ";\n    const channel = this.evaluateInput(node, \"channel_in\") || \"Visibility\";\n    const traceComplex = this.evaluateInput(node, \"trace_complex_in\") || false;\n    const ignoreSelf = this.evaluateInput(node, \"ignore_self_in\") !== false;\n\n    const hit = this.simulateTrace(\"box\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\services\\executors\\TraceExecutor.js",
+        "start": 112,
+        "end": 117,
+        "startLoc": {
+          "line": 112,
+          "column": 2,
+          "position": 870
+        },
+        "endLoc": {
+          "line": 117,
+          "column": 6,
+          "position": 950
+        }
+      },
+      "secondFile": {
+        "name": "src\\services\\executors\\TraceExecutor.js",
+        "start": 76,
+        "end": 81,
+        "startLoc": {
+          "line": 76,
+          "column": 5,
+          "position": 561
+        },
+        "endLoc": {
+          "line": 81,
+          "column": 9,
+          "position": 641
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 17,
+      "fragment": ") && node.tempValues) {\n            // Check exact match first\n            if (node.tempValues[pin.name] !== undefined) {\n                return node.tempValues[pin.name];\n            }\n\n            // Check if pin ID ends with any key (for generated IDs)\n            for (const key in node.tempValues) {\n                if (pin.id.endsWith(key)) {\n                    return node.tempValues[key];\n                }\n            }\n        }\n\n        return null;\n    }\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\services\\executors\\FunctionExecutor.js",
+        "start": 181,
+        "end": 197,
+        "startLoc": {
+          "line": 181,
+          "column": 8,
+          "position": 1327
+        },
+        "endLoc": {
+          "line": 197,
+          "column": 2,
+          "position": 1444
+        }
+      },
+      "secondFile": {
+        "name": "src\\services\\executors\\MacroExecutor.js",
+        "start": 166,
+        "end": 182,
+        "startLoc": {
+          "line": 166,
+          "column": 9,
+          "position": 1196
+        },
+        "endLoc": {
+          "line": 182,
+          "column": 2,
+          "position": 1313
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 77,
+      "fragment": "convertToString(value) {\n    if (value === null || value === undefined) {\n      return \"None\";\n    }\n\n    // Boolean → \"true\" or \"false\" (lowercase in UE5)\n    if (typeof value === \"boolean\") {\n      return value ? \"true\" : \"false\";\n    }\n\n    // Numbers → string\n    if (typeof value === \"number\") {\n      return String(value);\n    }\n\n    // Already a string\n    if (typeof value === \"string\") {\n      return value;\n    }\n\n    // Objects (Vector, Rotator, Transform, etc.)\n    if (typeof value === \"object\") {\n      // Vector: {x, y, z} → \"X=1.000000 Y=2.000000 Z=3.000000\"\n      // Check for pitch to distinguish from Rotator\n      if (\n        value.x !== undefined &&\n        value.y !== undefined &&\n        value.z !== undefined &&\n        value.pitch === undefined\n      ) {\n        return `X=${value.x} Y=${value.y} Z=${value.z}`;\n      }\n\n      // Rotator: {pitch, yaw, roll} → \"P=0.000000 Y=90.000000 R=0.000000\"\n      if (\n        value.pitch !== undefined &&\n        value.yaw !== undefined &&\n        value.roll !== undefined\n      ) {\n        return `P=${value.pitch} Y=${value.yaw} R=${value.roll}`;\n      }\n\n      // Transform: {translation, rotation, scale} → Multi-line format\n      if (value.translation && value.rotation && value.scale) {\n        return (\n          `Translation: X=${value.translation.x} Y=${value.translation.y} Z=${value.translation.z}\\n` +\n          `Rotation: P=${value.rotation.pitch} Y=${value.rotation.yaw} R=${value.rotation.roll}\\n` +\n          `Scale: X=${value.scale.x} Y=${value.scale.y} Z=${value.scale.z}`\n        );\n      }\n\n      // LinearColor: {r, g, b, a} → \"(R=1.000000,G=0.500000,B=0.250000,A=1.000000)\"\n      if (\n        value.r !== undefined &&\n        value.g !== undefined &&\n        value.b !== undefined &&\n        value.a !== undefined\n      ) {\n        return `(R=${value.r},G=${value.g},B=${value.b},A=${value.a})`;\n      }\n\n      // Arrays → \"[Element0, Element1, Element2]\"\n      if (Array.isArray(value)) {\n        return `[${value.map((v) => this.convertToString(v)).join(\", \")}]`;\n      }\n\n      // Unknown object type → describe it (no JSON in UE5!)\n      return \"[Object]\";\n    }\n\n    // Fallback\n    return String(value);\n  }\n\n  /**\n   * Conversion nodes are pure (data-only)\n   */",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\services\\executors\\ConversionExecutor.js",
+        "start": 13,
+        "end": 89,
+        "startLoc": {
+          "line": 13,
+          "column": 3,
+          "position": 32
+        },
+        "endLoc": {
+          "line": 89,
+          "column": 6,
+          "position": 636
+        }
+      },
+      "secondFile": {
+        "name": "src\\services\\executors\\PrintExecutor.js",
+        "start": 12,
+        "end": 86,
+        "startLoc": {
+          "line": 12,
+          "column": 3,
+          "position": 32
+        },
+        "endLoc": {
+          "line": 86,
+          "column": 6,
+          "position": 636
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 7,
+      "fragment": ") {\n        if (node.nodeKey.startsWith('CastTo_')) {\n            const targetType = node.nodeKey.replace('CastTo_', '');\n            const obj = this.evaluateInput(node, 'object_in');\n\n            const isMatch = this.checkTypeMatch(obj, targetType);\n            if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\services\\executors\\CastExecutor.js",
+        "start": 25,
+        "end": 31,
+        "startLoc": {
+          "line": 25,
+          "column": 5,
+          "position": 152
+        },
+        "endLoc": {
+          "line": 31,
+          "column": 3,
+          "position": 230
+        }
+      },
+      "secondFile": {
+        "name": "src\\services\\executors\\CastExecutor.js",
+        "start": 10,
+        "end": 16,
+        "startLoc": {
+          "line": 10,
+          "column": 5,
+          "position": 37
+        },
+        "endLoc": {
+          "line": 16,
+          "column": 7,
+          "position": 115
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 6,
+      "fragment": ");\n        const _teleport = this.evaluateInput(node, 'teleport');\n\n        if (target && target.id && this.engine.actors.has(target.id)) {\n            const actor = this.engine.actors.get(target.id);\n            actor",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\services\\executors\\ActorExecutor.js",
+        "start": 128,
+        "end": 133,
+        "startLoc": {
+          "line": 128,
+          "column": 15,
+          "position": 1115
+        },
+        "endLoc": {
+          "line": 133,
+          "column": 6,
+          "position": 1189
+        }
+      },
+      "secondFile": {
+        "name": "src\\services\\executors\\ActorExecutor.js",
+        "start": 103,
+        "end": 109,
+        "startLoc": {
+          "line": 103,
+          "column": 8,
+          "position": 883
+        },
+        "endLoc": {
+          "line": 109,
+          "column": 19,
+          "position": 958
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 29,
+      "fragment": "|| [];\n\n    options.forEach((opt) => {\n      const option = document.createElement(\"option\");\n      option.value = opt;\n      option.textContent = Utils.formatNodeProperty(opt);\n      if (opt === pin.defaultValue) option.selected = true;\n      select.appendChild(option);\n    });\n\n    select.addEventListener(\"change\", (e) => {\n      pin.defaultValue = e.target.value;\n      node.onPropertyChanged(pin.id, e.target.value);\n    });\n\n    select.addEventListener(\"mousedown\", (e) => e.stopPropagation());\n    select.addEventListener(\n      \"focus\",\n      () => (node.app.graph.isEditingLiteral = true)\n    );\n    select.addEventListener(\n      \"blur\",\n      () => (node.app.graph.isEditingLiteral = false)\n    );\n\n    return select;\n  }\n\n  static createColorWidget",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\graph\\node\\NodeWidgets.js",
+        "start": 215,
+        "end": 243,
+        "startLoc": {
+          "line": 215,
+          "column": 2,
+          "position": 2036
+        },
+        "endLoc": {
+          "line": 243,
+          "column": 18,
+          "position": 2291
+        }
+      },
+      "secondFile": {
+        "name": "src\\graph\\node\\NodeWidgets.js",
+        "start": 184,
+        "end": 212,
+        "startLoc": {
+          "line": 184,
+          "column": 2,
+          "position": 1735
+        },
+        "endLoc": {
+          "line": 212,
+          "column": 22,
+          "position": 1990
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ",\n    type: \"pure-node\",\n    category: \"String\",\n    executor: \"String\",\n    icon: \"f\",\n    pins: [\n      { id: \"str_in\", name: \"Source String\", type: \"string\", dir: \"in\" },\n      { id: \"ret_out\", name: \"Return Value\", type: \"string\", dir: \"out\" },\n    ],\n  },\n  Len",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\StringNodes.js",
+        "start": 188,
+        "end": 198,
+        "startLoc": {
+          "line": 188,
+          "column": 11,
+          "position": 1897
+        },
+        "endLoc": {
+          "line": 198,
+          "column": 4,
+          "position": 2000
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\StringNodes.js",
+        "start": 177,
+        "end": 187,
+        "startLoc": {
+          "line": 177,
+          "column": 11,
+          "position": 1784
+        },
+        "endLoc": {
+          "line": 187,
+          "column": 8,
+          "position": 1887
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": ",\n    pins: [\n      { id: \"a_in\", name: \"A\", type: \"vector\", dir: \"in\" },\n      { id: \"b_in\", name: \"B\", type: \"vector\", dir: \"in\" },\n      PF.floatOut(\"ret_out\", \"Return Value\"),\n    ],\n  },\n\n  NormalizeVector",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\MathNodes.js",
+        "start": 488,
+        "end": 496,
+        "startLoc": {
+          "line": 488,
+          "column": 11,
+          "position": 3354
+        },
+        "endLoc": {
+          "line": 496,
+          "column": 16,
+          "position": 3442
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\MathNodes.js",
+        "start": 454,
+        "end": 462,
+        "startLoc": {
+          "line": 454,
+          "column": 12,
+          "position": 3067
+        },
+        "endLoc": {
+          "line": 462,
+          "column": 13,
+          "position": 3155
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 16,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"player_controller_in\",\n        name: \"Player Controller\",\n        type: \"object\",\n        dir: \"in\",\n      },\n      {\n        id: \"mapping_context_in\",\n        name: \"Mapping Context\",\n        type: \"object\",\n        dir: \"in\",\n      },\n      { id: \"exec_out\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\InputNodes.js",
+        "start": 76,
+        "end": 91,
+        "startLoc": {
+          "line": 76,
+          "column": 18,
+          "position": 598
+        },
+        "endLoc": {
+          "line": 91,
+          "column": 11,
+          "position": 711
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\InputNodes.js",
+        "start": 46,
+        "end": 62,
+        "startLoc": {
+          "line": 46,
+          "column": 17,
+          "position": 373
+        },
+        "endLoc": {
+          "line": 62,
+          "column": 14,
+          "position": 487
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 14,
+      "fragment": ", type: \"exec\", dir: \"in\" },\n      {\n        id: \"first_index_in\",\n        name: \"First Index\",\n        type: \"int\",\n        dir: \"in\",\n        defaultValue: 0,\n      },\n      {\n        id: \"last_index_in\",\n        name: \"Last Index\",\n        type: \"int\",\n        dir: \"in\",\n        defaultValue: 10",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\FlowControlNodes.js",
+        "start": 156,
+        "end": 169,
+        "startLoc": {
+          "line": 156,
+          "column": 8,
+          "position": 1627
+        },
+        "endLoc": {
+          "line": 169,
+          "column": 3,
+          "position": 1720
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\FlowControlNodes.js",
+        "start": 83,
+        "end": 96,
+        "startLoc": {
+          "line": 83,
+          "column": 7,
+          "position": 911
+        },
+        "endLoc": {
+          "line": 96,
+          "column": 2,
+          "position": 1004
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 8,
+      "fragment": ",\n      },\n      { id: \"exec_loop_body\", name: \"Loop Body\", type: \"exec\", dir: \"out\" },\n      { id: \"index_out\", name: \"Index\", type: \"int\", dir: \"out\" },\n      { id: \"exec_completed\", name: \"Completed\", type: \"exec\", dir: \"out\" },\n    ],\n  },\n  Gate",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\FlowControlNodes.js",
+        "start": 169,
+        "end": 176,
+        "startLoc": {
+          "line": 169,
+          "column": 3,
+          "position": 1721
+        },
+        "endLoc": {
+          "line": 176,
+          "column": 5,
+          "position": 1823
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\FlowControlNodes.js",
+        "start": 96,
+        "end": 103,
+        "startLoc": {
+          "line": 96,
+          "column": 2,
+          "position": 1005
+        },
+        "endLoc": {
+          "line": 103,
+          "column": 12,
+          "position": 1107
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ",\n    type: \"event-node\",\n    category: \"Events\",\n    executor: \"Event\",\n    icon: \"fa-hand-point-up\",\n    pins: [\n      { id: \"exec_out\", name: \"Exec\", type: \"exec\", dir: \"out\" },\n      { id: \"finger_index_out\", name: \"Finger Index\", type: \"int\", dir: \"out\" },\n    ],\n  },\n  EventOnDestroyed",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\EventNodes.js",
+        "start": 228,
+        "end": 238,
+        "startLoc": {
+          "line": 228,
+          "column": 24,
+          "position": 1954
+        },
+        "endLoc": {
+          "line": 238,
+          "column": 17,
+          "position": 2057
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\EventNodes.js",
+        "start": 217,
+        "end": 227,
+        "startLoc": {
+          "line": 217,
+          "column": 26,
+          "position": 1841
+        },
+        "endLoc": {
+          "line": 227,
+          "column": 21,
+          "position": 1944
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"array_in\",\n        name: \"Target Array\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"array\",\n        isRef: true,\n      },\n      { id: \"index_in\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 30,
+        "end": 41,
+        "startLoc": {
+          "line": 30,
+          "column": 18,
+          "position": 257
+        },
+        "endLoc": {
+          "line": 41,
+          "column": 11,
+          "position": 349
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 10,
+        "end": 21,
+        "startLoc": {
+          "line": 10,
+          "column": 17,
+          "position": 44
+        },
+        "endLoc": {
+          "line": 21,
+          "column": 10,
+          "position": 136
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 15,
+      "fragment": ",\n    type: \"function-node\",\n    category: \"Utilities|Array\",\n    icon: \"fa-minus-square\",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"array_in\",\n        name: \"Target Array\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"array\",\n        isRef: true,\n      },\n      { id: \"item_in\", name: \"Item\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 46,
+        "end": 60,
+        "startLoc": {
+          "line": 46,
+          "column": 14,
+          "position": 420
+        },
+        "endLoc": {
+          "line": 60,
+          "column": 7,
+          "position": 539
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 27,
+        "end": 21,
+        "startLoc": {
+          "line": 27,
+          "column": 15,
+          "position": 236
+        },
+        "endLoc": {
+          "line": 21,
+          "column": 11,
+          "position": 142
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 13,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"array_in\",\n        name: \"Target Array\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"array\",\n        isRef: true,\n      },\n      { id: \"index_in\", name: \"Index\", type: \"int\", dir: \"in\" },\n      { id: \"item_in\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 86,
+        "end": 98,
+        "startLoc": {
+          "line": 86,
+          "column": 10,
+          "position": 802
+        },
+        "endLoc": {
+          "line": 98,
+          "column": 10,
+          "position": 923
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 10,
+        "end": 42,
+        "startLoc": {
+          "line": 10,
+          "column": 17,
+          "position": 44
+        },
+        "endLoc": {
+          "line": 42,
+          "column": 11,
+          "position": 378
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"array_in\",\n        name: \"Target Array\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"array\",\n        isRef: true,\n      },\n      { id: \"exec_out\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 123,
+        "end": 134,
+        "startLoc": {
+          "line": 123,
+          "column": 15,
+          "position": 1163
+        },
+        "endLoc": {
+          "line": 134,
+          "column": 11,
+          "position": 1255
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 10,
+        "end": 21,
+        "startLoc": {
+          "line": 10,
+          "column": 17,
+          "position": 44
+        },
+        "endLoc": {
+          "line": 21,
+          "column": 10,
+          "position": 136
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"set_in\",\n        name: \"Target Set\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"set\",\n        isRef: true,\n      },\n      { id: \"item_in\", name: \"Item\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 195,
+        "end": 206,
+        "startLoc": {
+          "line": 195,
+          "column": 18,
+          "position": 1827
+        },
+        "endLoc": {
+          "line": 206,
+          "column": 7,
+          "position": 1925
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 175,
+        "end": 186,
+        "startLoc": {
+          "line": 175,
+          "column": 17,
+          "position": 1614
+        },
+        "endLoc": {
+          "line": 186,
+          "column": 11,
+          "position": 1712
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": ",\n        isRef: true,\n      },\n      { id: \"item_in\", name: \"Item\", type: \"wildcard\", dir: \"in\" },\n      { id: \"exec_out\", name: \"Exec\", type: \"exec\", dir: \"out\" },\n      { id: \"removed_out\", name: \"Removed\", type: \"bool\", dir: \"out\" },\n    ],\n  },\n  Set_Contains",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 203,
+        "end": 211,
+        "startLoc": {
+          "line": 203,
+          "column": 6,
+          "position": 1900
+        },
+        "endLoc": {
+          "line": 211,
+          "column": 13,
+          "position": 2009
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 57,
+        "end": 65,
+        "startLoc": {
+          "line": 57,
+          "column": 8,
+          "position": 514
+        },
+        "endLoc": {
+          "line": 65,
+          "column": 10,
+          "position": 623
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"set_in\",\n        name: \"Target Set\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"set\",\n        isRef: true,\n      },\n      { id: \"exec_out\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 232,
+        "end": 243,
+        "startLoc": {
+          "line": 232,
+          "column": 15,
+          "position": 2188
+        },
+        "endLoc": {
+          "line": 243,
+          "column": 11,
+          "position": 2280
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 175,
+        "end": 186,
+        "startLoc": {
+          "line": 175,
+          "column": 17,
+          "position": 1614
+        },
+        "endLoc": {
+          "line": 186,
+          "column": 10,
+          "position": 1706
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 6,
+      "fragment": ", type: \"wildcard\", dir: \"in\" },\n      { id: \"exec_out\", name: \"Exec\", type: \"exec\", dir: \"out\" },\n      { id: \"added_out\", name: \"Added\", type: \"bool\", dir: \"out\" },\n    ],\n  },\n  Map_Remove",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 300,
+        "end": 305,
+        "startLoc": {
+          "line": 300,
+          "column": 8,
+          "position": 2722
+        },
+        "endLoc": {
+          "line": 305,
+          "column": 11,
+          "position": 2805
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 186,
+        "end": 191,
+        "startLoc": {
+          "line": 186,
+          "column": 11,
+          "position": 1713
+        },
+        "endLoc": {
+          "line": 191,
+          "column": 11,
+          "position": 1796
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 13,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"map_in\",\n        name: \"Target Map\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"map\",\n        isRef: true,\n      },\n      { id: \"key_in\", name: \"Key\", type: \"wildcard\", dir: \"in\" },\n      { id: \"exec_out\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 309,
+        "end": 321,
+        "startLoc": {
+          "line": 309,
+          "column": 18,
+          "position": 2836
+        },
+        "endLoc": {
+          "line": 321,
+          "column": 11,
+          "position": 2957
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 288,
+        "end": 300,
+        "startLoc": {
+          "line": 288,
+          "column": 17,
+          "position": 2594
+        },
+        "endLoc": {
+          "line": 300,
+          "column": 11,
+          "position": 2715
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 6,
+      "fragment": ", type: \"wildcard\", dir: \"in\" },\n      { id: \"exec_out\", name: \"Exec\", type: \"exec\", dir: \"out\" },\n      { id: \"removed_out\", name: \"Removed\", type: \"bool\", dir: \"out\" },\n    ],\n  },\n  Map_Find",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 320,
+        "end": 325,
+        "startLoc": {
+          "line": 320,
+          "column": 6,
+          "position": 2935
+        },
+        "endLoc": {
+          "line": 325,
+          "column": 9,
+          "position": 3018
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 60,
+        "end": 65,
+        "startLoc": {
+          "line": 60,
+          "column": 7,
+          "position": 540
+        },
+        "endLoc": {
+          "line": 65,
+          "column": 10,
+          "position": 623
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      {\n        id: \"map_in\",\n        name: \"Target Map\",\n        type: \"wildcard\",\n        dir: \"in\",\n        containerType: \"map\",\n        isRef: true,\n      },\n      { id: \"exec_out\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 347,
+        "end": 358,
+        "startLoc": {
+          "line": 347,
+          "column": 15,
+          "position": 3226
+        },
+        "endLoc": {
+          "line": 358,
+          "column": 11,
+          "position": 3318
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CollectionNodes.js",
+        "start": 288,
+        "end": 299,
+        "startLoc": {
+          "line": 288,
+          "column": 17,
+          "position": 2594
+        },
+        "endLoc": {
+          "line": 299,
+          "column": 9,
+          "position": 2686
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 7,
+      "fragment": ",\n    pins: [\n      { id: \"exec_in\", name: \"Exec\", type: \"exec\", dir: \"in\" },\n      { id: \"object_in\", name: \"Object\", type: \"object\", dir: \"in\" },\n      { id: \"exec_out\", name: \"Exec\", type: \"exec\", dir: \"out\" },\n      { id: \"cast_failed\", name: \"Cast Failed\", type: \"exec\", dir: \"out\" },\n      { id: \"as_pawn\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\CastingNodes.js",
+        "start": 23,
+        "end": 29,
+        "startLoc": {
+          "line": 23,
+          "column": 16,
+          "position": 237
+        },
+        "endLoc": {
+          "line": 29,
+          "column": 10,
+          "position": 367
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\CastingNodes.js",
+        "start": 10,
+        "end": 16,
+        "startLoc": {
+          "line": 10,
+          "column": 10,
+          "position": 44
+        },
+        "endLoc": {
+          "line": 16,
+          "column": 15,
+          "position": 174
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 28,
+      "fragment": ",\n      },\n      {\n        id: \"volume\",\n        name: \"Volume Multiplier\",\n        type: \"float\",\n        dir: \"in\",\n        defaultValue: 1.0,\n      },\n      {\n        id: \"pitch\",\n        name: \"Pitch Multiplier\",\n        type: \"float\",\n        dir: \"in\",\n        defaultValue: 1.0,\n      },\n      {\n        id: \"start_time\",\n        name: \"Start Time\",\n        type: \"float\",\n        dir: \"in\",\n        defaultValue: 0.0,\n      },\n      { id: \"exec_out\", name: \"\", type: \"exec\", dir: \"out\" },\n    ],\n  },\n\n  // ============================================================================",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 84,
+        "end": 111,
+        "startLoc": {
+          "line": 84,
+          "column": 2,
+          "position": 570
+        },
+        "endLoc": {
+          "line": 111,
+          "column": 80,
+          "position": 741
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 27,
+        "end": 54,
+        "startLoc": {
+          "line": 27,
+          "column": 3,
+          "position": 151
+        },
+        "endLoc": {
+          "line": 54,
+          "column": 20,
+          "position": 322
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 21,
+      "fragment": ",\n        type: \"object\",\n        dir: \"in\",\n        defaultValue: \"\",\n      },\n      {\n        id: \"location\",\n        name: \"Location\",\n        type: \"vector\",\n        dir: \"in\",\n        defaultValue: { x: 0, y: 0, z: 0 },\n      },\n      {\n        id: \"rotation\",\n        name: \"Rotation\",\n        type: \"rotator\",\n        dir: \"in\",\n        defaultValue: { r: 0, p: 0, y: 0 },\n      },\n      {\n        id: \"scale\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 127,
+        "end": 147,
+        "startLoc": {
+          "line": 127,
+          "column": 18,
+          "position": 855
+        },
+        "endLoc": {
+          "line": 147,
+          "column": 8,
+          "position": 1011
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 67,
+        "end": 87,
+        "startLoc": {
+          "line": 67,
+          "column": 8,
+          "position": 427
+        },
+        "endLoc": {
+          "line": 87,
+          "column": 9,
+          "position": 583
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 34,
+      "fragment": ",\n        type: \"object\",\n        dir: \"in\",\n        defaultValue: \"\",\n      },\n      {\n        id: \"location\",\n        name: \"Location\",\n        type: \"vector\",\n        dir: \"in\",\n        defaultValue: { x: 0, y: 0, z: 0 },\n      },\n      {\n        id: \"rotation\",\n        name: \"Rotation\",\n        type: \"rotator\",\n        dir: \"in\",\n        defaultValue: { r: 0, p: 0, y: 0 },\n      },\n      {\n        id: \"scale\",\n        name: \"Scale\",\n        type: \"vector\",\n        dir: \"in\",\n        defaultValue: { x: 1, y: 1, z: 1 },\n      },\n      {\n        id: \"auto_destroy\",\n        name: \"Auto Destroy\",\n        type: \"bool\",\n        dir: \"in\",\n        defaultValue: true,\n      },\n      { id: \"exec_out\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 189,
+        "end": 222,
+        "startLoc": {
+          "line": 189,
+          "column": 19,
+          "position": 1327
+        },
+        "endLoc": {
+          "line": 222,
+          "column": 11,
+          "position": 1585
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 67,
+        "end": 161,
+        "startLoc": {
+          "line": 67,
+          "column": 8,
+          "position": 427
+        },
+        "endLoc": {
+          "line": 161,
+          "column": 16,
+          "position": 1114
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 15,
+      "fragment": ",\n        type: \"bool\",\n        dir: \"in\",\n        defaultValue: true,\n      },\n      { id: \"exec_out\", name: \"\", type: \"exec\", dir: \"out\" },\n      {\n        id: \"return_value\",\n        name: \"Return Value\",\n        type: \"object\",\n        dir: \"out\",\n      },\n    ],\n  },\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 217,
+        "end": 231,
+        "startLoc": {
+          "line": 217,
+          "column": 15,
+          "position": 1552
+        },
+        "endLoc": {
+          "line": 231,
+          "column": 2,
+          "position": 1651
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\AudioVisualNodes.js",
+        "start": 162,
+        "end": 177,
+        "startLoc": {
+          "line": 162,
+          "column": 16,
+          "position": 1122
+        },
+        "endLoc": {
+          "line": 177,
+          "column": 23,
+          "position": 1223
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 13,
+      "fragment": "},\n      {\n        id: \"teleport\",\n        name: \"Teleport\",\n        type: \"bool\",\n        dir: \"in\",\n        defaultValue: false,\n      },\n      { id: \"exec_out\", name: \"Exec\", type: \"exec\", dir: \"out\" },\n      { id: \"return_value\", name: \"Return Value\", type: \"bool\", dir: \"out\" },\n    ],\n  },\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\data\\nodes\\ActorNodes.js",
+        "start": 174,
+        "end": 186,
+        "startLoc": {
+          "line": 174,
+          "column": 2,
+          "position": 1468
+        },
+        "endLoc": {
+          "line": 186,
+          "column": 2,
+          "position": 1579
+        }
+      },
+      "secondFile": {
+        "name": "src\\data\\nodes\\ActorNodes.js",
+        "start": 132,
+        "end": 144,
+        "startLoc": {
+          "line": 132,
+          "column": 7,
+          "position": 1101
+        },
+        "endLoc": {
+          "line": 144,
+          "column": 17,
+          "position": 1213
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "= () => {\n      modal.classList.add(\"hidden\");\n      modal.classList.remove(\"visible-flex\");\n      // Reset to original values\n      yesBtn.textContent = originalYesText;\n      yesBtn.classList.remove(\"bg-success\");\n      yesBtn.removeEventListener(\"click\", handleYes);\n      noBtn.removeEventListener(\"click\", handleNo);\n      if (onCancel",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\TaskController.js",
+        "start": 294,
+        "end": 302,
+        "startLoc": {
+          "line": 294,
+          "column": 2,
+          "position": 2546
+        },
+        "endLoc": {
+          "line": 302,
+          "column": 9,
+          "position": 2629
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\TaskController.js",
+        "start": 283,
+        "end": 291,
+        "startLoc": {
+          "line": 283,
+          "column": 2,
+          "position": 2445
+        },
+        "endLoc": {
+          "line": 291,
+          "column": 10,
+          "position": 2528
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 14,
+      "fragment": "}\n\n    render() {\n        if (!this.listContainer) return;\n\n        this.listContainer.innerHTML = '';\n\n        const section = document.createElement('div');\n        section.className = 'sidebar-section';\n\n        const content = document.createElement('div');\n        content.classList.remove('hidden');\n\n        // Header",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\GraphsController.js",
+        "start": 8,
+        "end": 21,
+        "startLoc": {
+          "line": 8,
+          "column": 5,
+          "position": 64
+        },
+        "endLoc": {
+          "line": 21,
+          "column": 10,
+          "position": 155
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\MacrosController.js",
+        "start": 19,
+        "end": 32,
+        "startLoc": {
+          "line": 19,
+          "column": 5,
+          "position": 150
+        },
+        "endLoc": {
+          "line": 32,
+          "column": 6,
+          "position": 241
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ".pins.map((p) => [this.getPinKey(p), p])\n    );\n    const newPins = [];\n\n    newPinDefs.forEach((def) => {\n      const key = this.getPinKey(def);\n      const oldPin = oldPinsMap.get(key);\n\n      let pin;\n      if (oldPin) {\n        pin = oldPin;\n        if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\FunctionsController.js",
+        "start": 366,
+        "end": 377,
+        "startLoc": {
+          "line": 366,
+          "column": 9,
+          "position": 3293
+        },
+        "endLoc": {
+          "line": 377,
+          "column": 3,
+          "position": 3401
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\FunctionsController.js",
+        "start": 237,
+        "end": 247,
+        "startLoc": {
+          "line": 237,
+          "column": 5,
+          "position": 2072
+        },
+        "endLoc": {
+          "line": 247,
+          "column": 26,
+          "position": 2178
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ".name}`;\n\n    // Remove from active graph\n    if (this.app.graph && this.app.graph.nodes) {\n      const nodesToRemove = [];\n      for (const node of this.app.graph.nodes.values()) {\n        if (node.nodeKey === callNodeKey) {\n          nodesToRemove.push(node.id);\n        }\n      }\n      nodesToRemove.forEach((",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\FunctionsController.js",
+        "start": 431,
+        "end": 441,
+        "startLoc": {
+          "line": 431,
+          "column": 5,
+          "position": 3858
+        },
+        "endLoc": {
+          "line": 441,
+          "column": 2,
+          "position": 3964
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\MacrosController.js",
+        "start": 130,
+        "end": 140,
+        "startLoc": {
+          "line": 130,
+          "column": 6,
+          "position": 1050
+        },
+        "endLoc": {
+          "line": 140,
+          "column": 7,
+          "position": 1156
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 13,
+      "fragment": "const allGraphs = [];\n    if (this.app.graphs)\n      Object.values(this.app.graphs).forEach((g) => allGraphs.push(g));\n    if (this.app.functionRegistry)\n      this.app.functionRegistry\n        .getAll()\n        .forEach((f) => allGraphs.push(f.graph));\n    if (this.app.macroRegistry)\n      this.app.macroRegistry.getAll().forEach((m) => allGraphs.push(m.graph));\n\n    allGraphs.forEach((graphData) => {\n      if (!graphData || !graphData.nodes) return;\n      graphData",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\FunctionsController.js",
+        "start": 445,
+        "end": 457,
+        "startLoc": {
+          "line": 445,
+          "column": 5,
+          "position": 3991
+        },
+        "endLoc": {
+          "line": 457,
+          "column": 10,
+          "position": 4160
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\FunctionsController.js",
+        "start": 275,
+        "end": 288,
+        "startLoc": {
+          "line": 275,
+          "column": 5,
+          "position": 2396
+        },
+        "endLoc": {
+          "line": 288,
+          "column": 45,
+          "position": 2566
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 8,
+      "fragment": "const modal = document.getElementById(\"confirmation-modal\");\n    const msg = document.getElementById(\"confirmation-msg\");\n    const yesBtn = document.getElementById(\"confirm-yes-btn\");\n    const noBtn = document.getElementById(\"confirm-no-btn\");\n\n    if (!modal) return;\n\n    msg.textContent = `Delete event dispatcher '",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\EventDispatcherController.js",
+        "start": 75,
+        "end": 82,
+        "startLoc": {
+          "line": 75,
+          "column": 5,
+          "position": 482
+        },
+        "endLoc": {
+          "line": 82,
+          "column": 27,
+          "position": 561
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\VariableController.js",
+        "start": 214,
+        "end": 219,
+        "startLoc": {
+          "line": 214,
+          "column": 5,
+          "position": 1542
+        },
+        "endLoc": {
+          "line": 219,
+          "column": 44,
+          "position": 1619
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 7,
+      "fragment": "const newYes = yesBtn.cloneNode(true);\n    yesBtn.parentNode.replaceChild(newYes, yesBtn);\n    const newNo = noBtn.cloneNode(true);\n    noBtn.parentNode.replaceChild(newNo, noBtn);\n\n    newYes.addEventListener(\"click\", () => {\n      this.dispatchers",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\EventDispatcherController.js",
+        "start": 86,
+        "end": 92,
+        "startLoc": {
+          "line": 86,
+          "column": 5,
+          "position": 594
+        },
+        "endLoc": {
+          "line": 92,
+          "column": 12,
+          "position": 670
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\VariableController.js",
+        "start": 223,
+        "end": 229,
+        "startLoc": {
+          "line": 223,
+          "column": 5,
+          "position": 1644
+        },
+        "endLoc": {
+          "line": 229,
+          "column": 24,
+          "position": 1720
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 16,
+      "fragment": ", input.value.trim());\n        input.addEventListener(\"blur\", commit);\n        input.addEventListener(\"keydown\", (e) => {\n          if (e.key === \"Enter\") {\n            e.preventDefault();\n            input.blur();\n          }\n        });\n\n        el.appendChild(input);\n        requestAnimationFrame(() => {\n          input.focus();\n          input.select();\n        });\n      } else {\n        // Normal display mode",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\EventDispatcherController.js",
+        "start": 159,
+        "end": 174,
+        "startLoc": {
+          "line": 159,
+          "column": 11,
+          "position": 1197
+        },
+        "endLoc": {
+          "line": 174,
+          "column": 23,
+          "position": 1325
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\VariableController.js",
+        "start": 632,
+        "end": 647,
+        "startLoc": {
+          "line": 632,
+          "column": 9,
+          "position": 5091
+        },
+        "endLoc": {
+          "line": 647,
+          "column": 6,
+          "position": 5219
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 8,
+      "fragment": ";\n    menu.style.left = `${e.clientX}px`;\n    menu.style.top = `${e.clientY}px`;\n\n    const createMenuItem = (label, icon, onClick) => {\n      const item = document.createElement(\"div\");\n      item.className = \"menu-item\";\n      item.innerHTML = `<i class=\"${icon}\" class=\"mr-1 w-12\"></i> ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\EventDispatcherController.js",
+        "start": 342,
+        "end": 349,
+        "startLoc": {
+          "line": 342,
+          "column": 2,
+          "position": 2328
+        },
+        "endLoc": {
+          "line": 349,
+          "column": 26,
+          "position": 2424
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\VariableController.js",
+        "start": 834,
+        "end": 841,
+        "startLoc": {
+          "line": 834,
+          "column": 54,
+          "position": 6937
+        },
+        "endLoc": {
+          "line": 841,
+          "column": 48,
+          "position": 7033
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": ").forEach((row) => {\n      row.style.opacity = enabled ? \"1\" : \"0.5\";\n      const inputs = row.querySelectorAll(\"input, select\");\n      inputs.forEach((input) => {\n        input.disabled = !enabled;\n      });\n    });\n  }\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\DetailsController.js",
+        "start": 174,
+        "end": 182,
+        "startLoc": {
+          "line": 174,
+          "column": 21,
+          "position": 1141
+        },
+        "endLoc": {
+          "line": 182,
+          "column": 2,
+          "position": 1225
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\details\\NodeDetails.js",
+        "start": 456,
+        "end": 464,
+        "startLoc": {
+          "line": 456,
+          "column": 25,
+          "position": 2691
+        },
+        "endLoc": {
+          "line": 464,
+          "column": 2,
+          "position": 2775
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ");\n      items.forEach((item) => {\n        const itemId = item.dataset.componentId;\n        if (itemId && this.selectedComponentIds.has(itemId)) {\n          item.classList.add(\"selected\");\n        } else {\n          item.classList.remove(\"selected\");\n        }\n      });\n    }\n\n    // Sync with Details Panel",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ComponentsController.js",
+        "start": 115,
+        "end": 126,
+        "startLoc": {
+          "line": 115,
+          "column": 7,
+          "position": 923
+        },
+        "endLoc": {
+          "line": 126,
+          "column": 27,
+          "position": 1015
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\ComponentsController.js",
+        "start": 100,
+        "end": 111,
+        "startLoc": {
+          "line": 100,
+          "column": 13,
+          "position": 784
+        },
+        "endLoc": {
+          "line": 111,
+          "column": 59,
+          "position": 876
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 10,
+      "fragment": ");\n\n    // Clone buttons to remove old listeners\n    const newYes = yesBtn.cloneNode(true);\n    yesBtn.parentNode.replaceChild(newYes, yesBtn);\n    const newNo = noBtn.cloneNode(true);\n    noBtn.parentNode.replaceChild(newNo, noBtn);\n\n    newYes.addEventListener(\"click\", () => {\n      this.executeDeletion",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ComponentsController.js",
+        "start": 176,
+        "end": 185,
+        "startLoc": {
+          "line": 176,
+          "column": 15,
+          "position": 1391
+        },
+        "endLoc": {
+          "line": 185,
+          "column": 16,
+          "position": 1475
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\VariableController.js",
+        "start": 220,
+        "end": 229,
+        "startLoc": {
+          "line": 220,
+          "column": 9,
+          "position": 1636
+        },
+        "endLoc": {
+          "line": 229,
+          "column": 24,
+          "position": 1720
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": "();\n      modal.classList.add(\"hidden\");\n      modal.classList.remove(\"visible-flex\");\n    });\n\n    newNo.addEventListener(\"click\", () => {\n      modal.classList.add(\"hidden\");\n      modal.classList.remove(\"visible-flex\");\n    });\n  }\n\n  executeDeletion",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ComponentsController.js",
+        "start": 185,
+        "end": 196,
+        "startLoc": {
+          "line": 185,
+          "column": 16,
+          "position": 1476
+        },
+        "endLoc": {
+          "line": 196,
+          "column": 16,
+          "position": 1555
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\EventDispatcherController.js",
+        "start": 94,
+        "end": 107,
+        "startLoc": {
+          "line": 94,
+          "column": 9,
+          "position": 694
+        },
+        "endLoc": {
+          "line": 107,
+          "column": 6,
+          "position": 773
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ", true);\n\n    // Parent class trigger\n    const parentTrigger = this.panel.querySelector(\"#parent-class-trigger\");\n    if (parentTrigger && this.app.parentClassModal) {\n      parentTrigger.addEventListener(\"click\", () => {\n        this.app.parentClassModal.show();\n      });\n    }\n\n    // Tags management",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ClassDefaultsRenderer.js",
+        "start": 530,
+        "end": 540,
+        "startLoc": {
+          "line": 530,
+          "column": 15,
+          "position": 2715
+        },
+        "endLoc": {
+          "line": 540,
+          "column": 19,
+          "position": 2796
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\details\\ClassDetails.js",
+        "start": 127,
+        "end": 136,
+        "startLoc": {
+          "line": 127,
+          "column": 25,
+          "position": 581
+        },
+        "endLoc": {
+          "line": 136,
+          "column": 2,
+          "position": 661
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 6,
+      "fragment": "${varName}`;\n          this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);\n          this.app.persistence.autoSave();\n          this.hide();\n        });\n        varItemContainer.appendChild(setItem",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 168,
+        "end": 173,
+        "startLoc": {
+          "line": 168,
+          "column": 6,
+          "position": 1645
+        },
+        "endLoc": {
+          "line": 173,
+          "column": 8,
+          "position": 1708
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 156,
+        "end": 161,
+        "startLoc": {
+          "line": 156,
+          "column": 6,
+          "position": 1500
+        },
+        "endLoc": {
+          "line": 161,
+          "column": 8,
+          "position": 1563
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ") {\n            const targetPin = newNode.pins.find((p) =>\n              this.app.graph.canConnect(this.sourcePin, p)\n            );\n            if (targetPin) {\n              this.app.wiring.createConnection(this.sourcePin, targetPin);\n            }\n          }\n          this.app.persistence.autoSave();\n          this.hide();\n        };",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 644,
+        "end": 654,
+        "startLoc": {
+          "line": 644,
+          "column": 10,
+          "position": 5912
+        },
+        "endLoc": {
+          "line": 654,
+          "column": 2,
+          "position": 6011
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 379,
+        "end": 389,
+        "startLoc": {
+          "line": 379,
+          "column": 8,
+          "position": 3681
+        },
+        "endLoc": {
+          "line": 389,
+          "column": 2,
+          "position": 3780
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "this.sourcePin) {\n              const targetPin = newNode.pins.find((p) =>\n                this.app.graph.canConnect(this.sourcePin, p)\n              );\n              if (targetPin) {\n                this.app.wiring.createConnection(this.sourcePin, targetPin);\n              }\n            }\n          }",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 747,
+        "end": 755,
+        "startLoc": {
+          "line": 747,
+          "column": 2,
+          "position": 6600
+        },
+        "endLoc": {
+          "line": 755,
+          "column": 2,
+          "position": 6681
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 644,
+        "end": 387,
+        "startLoc": {
+          "line": 644,
+          "column": 2,
+          "position": 5909
+        },
+        "endLoc": {
+          "line": 387,
+          "column": 5,
+          "position": 3759
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": "newNode) {\n          const targetPin = newNode.pins.find((p) =>\n            this.app.graph.canConnect(this.sourcePin, p)\n          );\n          if (targetPin) {\n            this.app.wiring.createConnection(this.sourcePin, targetPin);\n          }\n        }\n        this.app.persistence.autoSave();\n        this.hide();\n      });\n      return",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 811,
+        "end": 822,
+        "startLoc": {
+          "line": 811,
+          "column": 2,
+          "position": 7214
+        },
+        "endLoc": {
+          "line": 822,
+          "column": 7,
+          "position": 7318
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 379,
+        "end": 390,
+        "startLoc": {
+          "line": 379,
+          "column": 2,
+          "position": 3680
+        },
+        "endLoc": {
+          "line": 390,
+          "column": 5,
+          "position": 3784
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ".name}`;\n      item.addEventListener(\"click\", () => {\n        this.app.graph.addNode(nodeKey, this.graphPos.x, this.graphPos.y);\n        this.app.persistence.autoSave();\n        this.hide();\n      });\n      itemsListContainer.appendChild(item);\n    });\n    this.list.appendChild(itemsListContainer);\n  }\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 879,
+        "end": 889,
+        "startLoc": {
+          "line": 879,
+          "column": 10,
+          "position": 7969
+        },
+        "endLoc": {
+          "line": 889,
+          "column": 2,
+          "position": 8070
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\ActionMenu.js",
+        "start": 858,
+        "end": 868,
+        "startLoc": {
+          "line": 858,
+          "column": 9,
+          "position": 7723
+        },
+        "endLoc": {
+          "line": 868,
+          "column": 25,
+          "position": 7825
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 14,
+      "fragment": ") {\n        // Check exact match first\n        if (node.tempValues[pin.name] !== undefined) {\n          return node.tempValues[pin.name];\n        }\n\n        // Check if pin ID ends with any key (for generated IDs)\n        for (const key in node.tempValues) {\n          if (pin.id.endsWith(key)) {\n            return node.tempValues[key];\n          }\n        }\n      }\n    }",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\services\\SimulationEngine.js",
+        "start": 612,
+        "end": 625,
+        "startLoc": {
+          "line": 612,
+          "column": 4,
+          "position": 5159
+        },
+        "endLoc": {
+          "line": 625,
+          "column": 2,
+          "position": 5260
+        }
+      },
+      "secondFile": {
+        "name": "src\\services\\executors\\MacroExecutor.js",
+        "start": 166,
+        "end": 180,
+        "startLoc": {
+          "line": 166,
+          "column": 11,
+          "position": 1203
+        },
+        "endLoc": {
+          "line": 180,
+          "column": 7,
+          "position": 1305
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 16,
+      "fragment": "if (asset.exposedVariables) {\n          asset.exposedVariables.forEach((vr) => {\n            dynamicPins.push({\n              id: `dynamic_${vr.name}`,\n              name: vr.name,\n              type: vr.type,\n              dir: \"in\",\n              defaultValue: vr.defaultValue,\n              isDynamic: true,\n            });\n          });\n        }\n      }\n    }\n\n    // --- GetDataTableRow ---",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\services\\AssetInterfacingService.js",
+        "start": 49,
+        "end": 64,
+        "startLoc": {
+          "line": 49,
+          "column": 9,
+          "position": 316
+        },
+        "endLoc": {
+          "line": 64,
+          "column": 27,
+          "position": 423
+        }
+      },
+      "secondFile": {
+        "name": "src\\services\\AssetInterfacingService.js",
+        "start": 28,
+        "end": 43,
+        "startLoc": {
+          "line": 28,
+          "column": 9,
+          "position": 145
+        },
+        "endLoc": {
+          "line": 43,
+          "column": 24,
+          "position": 252
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 15,
+      "fragment": ";\n\n    const createMenuItem = (label, icon, onClick) => {\n      const item = document.createElement(\"div\");\n      item.className = \"menu-item\";\n      item.innerHTML = `<i class=\"${icon}\" class=\"mr-1 w-12\"></i> ${label}`;\n      item.addEventListener(\"click\", (ev) => {\n        ev.stopPropagation();\n        document.body.removeChild(menu);\n        onClick();\n      });\n      return item;\n    };\n\n    // Add Make/Break options based on type",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\graph\\GraphInteraction.js",
+        "start": 758,
+        "end": 772,
+        "startLoc": {
+          "line": 758,
+          "column": 2,
+          "position": 6763
+        },
+        "endLoc": {
+          "line": 772,
+          "column": 40,
+          "position": 6888
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\EventDispatcherController.js",
+        "start": 344,
+        "end": 358,
+        "startLoc": {
+          "line": 344,
+          "column": 4,
+          "position": 2364
+        },
+        "endLoc": {
+          "line": 358,
+          "column": 5,
+          "position": 2489
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 20,
+      "fragment": ",\n            worldPos.y\n          );\n        })\n      );\n    }\n\n    // Close menu on click outside\n    const closeMenu = () => {\n      if (document.body.contains(menu)) {\n        document.body.removeChild(menu);\n      }\n      document.removeEventListener(\"click\", closeMenu);\n    };\n    setTimeout(() => document.addEventListener(\"click\", closeMenu), 0);\n\n    document.body.appendChild(menu);\n  }\n\n  handlePinContextMenu",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\graph\\GraphInteraction.js",
+        "start": 811,
+        "end": 830,
+        "startLoc": {
+          "line": 811,
+          "column": 3,
+          "position": 7404
+        },
+        "endLoc": {
+          "line": 830,
+          "column": 21,
+          "position": 7530
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\VariableController.js",
+        "start": 944,
+        "end": 964,
+        "startLoc": {
+          "line": 944,
+          "column": 2,
+          "position": 8294
+        },
+        "endLoc": {
+          "line": 964,
+          "column": 6,
+          "position": 8417
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ".inputs.forEach((input) => {\n          nodeData.pins.push({\n            id: `in_${input.name}`,\n            name: input.name,\n            type: input.type,\n            dir: \"in\",\n            defaultValue: input.defaultValue,\n          });\n        });\n\n        // Add Outputs (Execs and Data)",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\graph\\GraphController.js",
+        "start": 138,
+        "end": 148,
+        "startLoc": {
+          "line": 138,
+          "column": 9,
+          "position": 1059
+        },
+        "endLoc": {
+          "line": 148,
+          "column": 32,
+          "position": 1140
+        }
+      },
+      "secondFile": {
+        "name": "src\\graph\\GraphController.js",
+        "start": 90,
+        "end": 100,
+        "startLoc": {
+          "line": 90,
+          "column": 8,
+          "position": 697
+        },
+        "endLoc": {
+          "line": 100,
+          "column": 44,
+          "position": 778
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ".outputs.forEach((output) => {\n          nodeData.pins.push({\n            id: `out_${output.name}`,\n            name: output.name,\n            type: output.type,\n            dir: \"out\",\n          });\n        });\n      }\n    }\n\n    if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\graph\\GraphController.js",
+        "start": 149,
+        "end": 160,
+        "startLoc": {
+          "line": 149,
+          "column": 9,
+          "position": 1144
+        },
+        "endLoc": {
+          "line": 160,
+          "column": 3,
+          "position": 1222
+        }
+      },
+      "secondFile": {
+        "name": "src\\graph\\GraphController.js",
+        "start": 110,
+        "end": 121,
+        "startLoc": {
+          "line": 110,
+          "column": 8,
+          "position": 840
+        },
+        "endLoc": {
+          "line": 121,
+          "column": 33,
+          "position": 918
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 7,
+      "fragment": ".nodes.get(nodeId);\n      if (node) {\n        node.x = Math.round(node.x / gridSize) * gridSize;\n        node.y = Math.round(node.y / gridSize) * gridSize;\n        node.element.style.left = `${node.x}px`;\n        node.element.style.top = `${node.y}px`;\n        this.redrawNodeWires",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\graph\\GraphController.js",
+        "start": 719,
+        "end": 725,
+        "startLoc": {
+          "line": 719,
+          "column": 5,
+          "position": 6116
+        },
+        "endLoc": {
+          "line": 725,
+          "column": 16,
+          "position": 6227
+        }
+      },
+      "secondFile": {
+        "name": "src\\graph\\GraphSelection.js",
+        "start": 88,
+        "end": 94,
+        "startLoc": {
+          "line": 88,
+          "column": 11,
+          "position": 828
+        },
+        "endLoc": {
+          "line": 94,
+          "column": 11,
+          "position": 939
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": "const str = String(value).replace(/[()]/g, \"\").trim();\n    const parts = str.split(\",\").map((p) => parseFloat(p.trim()) || 0);\n    return {\n      x: parts[0] || 0,\n      y: parts[1] || 0,\n      z: parts[2] || 0,\n    };\n  }\n\n  /**\n   * Parses a Rotator string \"(R=...,P=...,Y=...)\" or \"(x,y,z)\" into {roll, pitch, yaw}.\n   */",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\utils.js",
+        "start": 207,
+        "end": 218,
+        "startLoc": {
+          "line": 207,
+          "column": 5,
+          "position": 1230
+        },
+        "endLoc": {
+          "line": 218,
+          "column": 6,
+          "position": 1347
+        }
+      },
+      "secondFile": {
+        "name": "src\\ui\\DetailsRenderer.js",
+        "start": 365,
+        "end": 374,
+        "startLoc": {
+          "line": 365,
+          "column": 5,
+          "position": 1276
+        },
+        "endLoc": {
+          "line": 374,
+          "column": 7,
+          "position": 1393
+        }
+      }
+    }
+  ]
+}

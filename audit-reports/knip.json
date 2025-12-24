@@ -1,0 +1,6 @@
+{
+  "entry": ["index.html", "src/app.js"],
+  "project": ["src/**/*.js"],
+  "ignore": ["src/data/assessment/Level*.js"],
+  "ignoreExportsUsedInFile": true
+}

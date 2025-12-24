@@ -168,7 +168,8 @@ export const FlowControlNodes = {
         dir: "in",
         defaultValue: 10,
       },
-      { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },      { id: "index_out", name: "Index", type: "int", dir: "out" },
+      { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },
+      { id: "index_out", name: "Index", type: "int", dir: "out" },
       { id: "exec_completed", name: "Completed", type: "exec", dir: "out" },
     ],
   },
@@ -209,5 +210,16 @@ export const FlowControlNodes = {
     customData: {
       startIndex: 0,
     },
+  },
+  Reroute: {
+    title: "Reroute",
+    type: "reroute-node",
+    category: "Flow Control",
+    executor: "FlowControl", // Logic is pass-through, but needs an executor
+    icon: "fa-circle", // Simple dot
+    pins: [
+      { id: "in", name: "", type: "wildcard", dir: "in" },
+      { id: "out", name: "", type: "wildcard", dir: "out" },
+    ],
   },
 };

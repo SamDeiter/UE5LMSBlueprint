@@ -9,6 +9,7 @@ export const VariableNodes = {
   Set_bool: {
     title: "Set (Boolean)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -26,6 +27,7 @@ export const VariableNodes = {
   Set_byte: {
     title: "Set (Byte)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -37,6 +39,7 @@ export const VariableNodes = {
   Set_int: {
     title: "Set (Integer)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -48,6 +51,7 @@ export const VariableNodes = {
   Set_int64: {
     title: "Set (Integer64)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -65,6 +69,7 @@ export const VariableNodes = {
   Set_float: {
     title: "Set (Float)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -82,6 +87,7 @@ export const VariableNodes = {
   Set_name: {
     title: "Set (Name)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -99,6 +105,7 @@ export const VariableNodes = {
   Set_string: {
     title: "Set (String)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -116,6 +123,7 @@ export const VariableNodes = {
   Set_text: {
     title: "Set (Text)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -133,6 +141,7 @@ export const VariableNodes = {
   Set_vector: {
     title: "Set (Vector)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -144,6 +153,7 @@ export const VariableNodes = {
   Set_rotator: {
     title: "Set (Rotator)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -155,6 +165,7 @@ export const VariableNodes = {
   Set_transform: {
     title: "Set (Transform)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -166,6 +177,7 @@ export const VariableNodes = {
   Set_object: {
     title: "Set (Object)",
     type: "variable-node",
+    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },

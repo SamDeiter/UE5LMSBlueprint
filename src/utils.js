@@ -8,7 +8,7 @@ import {
   PIN_TYPE_CLASSES,
 } from "./config/Constants.js";
 
-class Utils {
+export class Utils {
   /**
    * Generates a unique ID string.
    * @param {string} [prefix='id'] - A prefix for the ID.
@@ -273,6 +273,28 @@ class Utils {
       scale: { x: 1, y: 1, z: 1 },
     };
   }
-}
+  /**
+   * Formats a property name (CamelCase) into a user-friendly display name (Spaced).
+   * e.g., "SpawnTransform" -> "Spawn Transform"
+   */
+  static formatNodeProperty(text) {
+    if (!text) return "";
+    // Insert a space before all caps that are followed by lowercase
+    // or are at the end of a word (simple heuristic for CamelCase)
+    let formatted = text.replace(/([A-Z][a-z])/g, " $1").trim();
+    // Handle cases like "CPF_Edit" -> "CPF Edit" or "SCROM" -> "SCROM"
+    formatted = formatted.replace(/([a-z])([A-Z])/g, "$1 $2");
+    // Ensure "UE5" or "LMS" don't get split weirdly if they are all caps
+    return formatted;
+  }
 
-export { Utils };
+  /**
+   * Creates a horizontal separator element for menus and panels.
+   * @returns {HTMLElement} A separator div element.
+   */
+  static createSeparator() {
+    const sep = document.createElement("div");
+    sep.className = "menu-separator";
+    return sep;
+  }
+}

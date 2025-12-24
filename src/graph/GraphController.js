@@ -331,7 +331,17 @@ class GraphController {
             // Ensure a default is set if literalValue was missing or undefined
             node.pinLiterals.set(pin.id, pin.defaultValue);
           }
+
+          // Restore saved pin type (important for reroute nodes)
+          if (pin && savedPin.type && savedPin.type !== pin.type) {
+            pin.type = savedPin.type;
+          }
         });
+      }
+
+      // Special handling for reroute nodes: update visuals after pin types are restored
+      if (nodeData.nodeKey === "Reroute" && node.updateRerouteVisuals) {
+        node.refreshPinCache();
       }
     });
 

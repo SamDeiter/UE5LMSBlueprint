@@ -8,7 +8,7 @@
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.7),
         inset 0 0 0 1px rgba(255, 255, 255, 0.03),
         0 0 0 1px rgba(0, 0, 0, 0.9);
-    min-width: 180px;
+    min-width: 120px; /* Reduced from 180px */
     z-index: 10;
     pointer-events: all;
     backdrop-filter: blur(8px);
@@ -156,6 +156,24 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.pin-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 24px;
+    box-sizing: border-box;
+}
+
+.pin-row.exec-row {
+    min-height: 24px;
+    margin-bottom: 2px;
+}
+
+.pin.out {
+    margin-left: auto;
 }
 
 .pin-column.in {
@@ -344,23 +362,43 @@
     width: 10px;
     height: 10px;
 }
-/* --- PIN LABELS --- */
-.pin-label-in,
-.pin-label-out {
+/* --- PIN ELEMENTS (from Node.js) --- */
+.pin {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    min-height: 22px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.pin.in {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.pin.out {
+    flex-direction: row-reverse; /* Pin dot on right */
+    justify-content: flex-start;
+    text-align: right;
+}
+
+.pin.out .pin-label {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.pin-label {
     font-size: 11px;
     color: #ccc;
-    white-space: nowrap;
     user-select: none;
-    font-weight: 600;
-    text-shadow: 0 1px 1px black;
+    font-weight: 500;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 }
 
-.pin-label-in {
-    margin-left: 4px;
-}
-
-.pin-label-out {
-    margin-right: 4px;
+.pin .hidden {
+    display: none !important;
 }
 
 /* --- COMPACT NODES (Getters, Math) --- */
@@ -471,40 +509,7 @@
 }
 
 /* --- INPUT WIDGETS --- */
-.ue5-checkbox {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    background-color: #1a1a1a;
-    border: 1px solid #555;
-    border-radius: 2px;
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-    flex-shrink: 0;
-}
-
-.ue5-checkbox:checked {
-    background-color: #1a1a1a;
-    border-color: #888;
-}
-
-.ue5-checkbox:checked::after {
-    content: '\f00c';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    font-size: 9px;
-    color: #eee;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.ue5-checkbox:hover {
-    border-color: #aaa;
-}
+/* .ue5-checkbox moved to ui-elements.css */
 
 .node-literal-input {
     background-color: rgba(0, 0, 0, 0.5) !important;
@@ -555,6 +560,26 @@
     gap: 2px;  /* UE5 spec: 2px padding between components */
     align-items: center;
     margin-bottom: 4px;
+}
+
+.pin-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    flex: 1;
+}
+
+.pin.out .pin-wrapper {
+    align-items: flex-end;
+}
+
+.pin-label-in, .pin-label-out {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    pointer-events: none;
+    line-height: 1.2;
 }
 
 .val-group {
@@ -609,23 +634,33 @@
     margin-top: 2px;
 }
 
-/* --- ENUM DROPDOWN --- */
+/* --- ENUM & SELECTION WIDGETS --- */
+.enum-widget,
+.object-selection-widget,
 .ue-enum-select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     background-color: rgba(0, 0, 0, 0.7);
-    color: #ddd;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-    padding: 3px 24px 3px 8px; /* Extra right padding for arrow */
-    font-size: 11px;
-    min-width: 100px;
+    color: #eee;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    padding: 2px 20px 2px 6px;
+    font-size: 10px;
+    min-width: 80px;
+    max-width: 160px;
     cursor: pointer;
     outline: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23dddddd' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 6px center;
+    background-position: right 4px center;
+    margin-left: 4px;
+}
+
+.enum-widget:hover,
+.object-selection-widget:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 .ue-enum-select:hover {
@@ -663,9 +698,230 @@
     border-radius: 1px;
 }/* Cache bust: 20251221202155 */
 
-/* Hide wrapper background for connection-only pins */
-.pin-container.array-pin .pin-wrapper {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+/* --- ADVANCED PINS TOGGLE --- */
+.advanced-toggle-container {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+    cursor: pointer;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.node-content {
+    background: rgba(15, 15, 15, 0.95);
+    padding: 2px 0 8px 0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.advanced-toggle-icon {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s ease;
+}
+
+.advanced-toggle-container.expanded .advanced-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.advanced-toggle-container:hover .advanced-toggle-icon {
+    border-top-color: white;
+}
+
+/* Hide advanced pins by default */
+.pin.advanced {
+    display: none;
+}
+
+.node.advanced-expanded .pin.advanced {
+    display: flex;
+}
+
+/* Always show connected advanced pins */
+.pin.advanced.connected {
+    display: flex;
+}
+/* --- REROUTE NODE --- */
+.node.reroute-node {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    z-index: 5;
+    border-radius: 50%;
+    cursor: move;
+
+}
+
+
+.node.reroute-node .node-content {
+    padding: 0;
+    min-height: unset;
+    background: transparent !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* --- REROUTE NODE PINS --- */
+.node.reroute-node .pin-row {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    background: transparent !important;
+}
+
+.node.reroute-node .pin-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    background: transparent !important;
+    pointer-events: none;
+}
+
+
+
+.node.reroute-node .visual-knot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: auto;
+    cursor: move;
+    box-shadow: none;
+    transition: box-shadow 0.1s;
+    background: transparent !important;
+}
+
+
+/* Exec Reroute Styling - Circle with Arrow Overlay (UE5 style) */
+/* Default: HOLLOW state (unconnected) - transparent center, white border */
+.node.reroute-node .visual-knot.is-exec {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: transparent !important;
+    border: 2px solid white;
+    transform: translate(-50%, -50%);
+    box-shadow: none;
+    position: relative;
+}
+
+
+/* CONNECTED state - fully white filled */
+.node.reroute-node .visual-knot.is-exec:not(.hollow) {
+    background-color: white !important;
+}
+
+/* Back connection area for exec reroute (input side) - LARGER HIT AREA */
+.node.reroute-node .visual-knot.is-exec::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: auto;
+    cursor: crosshair;
+}
+
+/* Arrow overlay for exec reroute - positioned OUTSIDE circle - LARGER HIT AREA */
+.node.reroute-node .visual-knot.is-exec::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid white;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    pointer-events: auto;
+    cursor: crosshair;
+}
+
+
+/* Provide visual feedback when selected */
+.node.reroute-node.selected .visual-knot {
+    box-shadow: 0 0 0 2px #fff, 0 0 4px 2px rgba(255, 165, 0, 0.8) !important;
+}
+/* Adjust selection for Exec shape */
+.node.reroute-node.selected .visual-knot.is-exec {
+    box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.8) !important;
+}
+
+
+.node.reroute-node .pin-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* Opacity 0 makes it invisible but clickable */
+    opacity: 0;
+    z-index: 10;
+    /* Ensure internal pin-dot is centered */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto; /* Ensure clickable even if row is none */
+}
+
+.node.reroute-node .pin-dot {
+    /* valid layout needed for getBoundingClientRect() */
+    display: block !important;
+    /* FIX: Visibility hidden prevents mouse events! Use opacity 0 instead. */
+    visibility: visible;
+    opacity: 0;
+    width: 0px; /* Collapse size so it doesn't offset */
+    height: 0px;
+    padding: 0; /* No padding */
+    margin: 0;
+    border: none !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Connects to exact enter */
+}
+
+.node.reroute-node .pin-dot svg {
+    display: none !important;
+}
+
+.node.reroute-node .pin-label {
+    display: none;
 }

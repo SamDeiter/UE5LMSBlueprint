@@ -27,12 +27,12 @@ class UE5Renderer {
       // Exec pins: transparent fill when disconnected, white when connected
       const execFill = isConnected ? "#fff" : "transparent";
       return `
-                <svg width="15" height="18" viewBox="0 0 15 18" class="ue5-pin-svg">
-                    <path 
-                        d="M2 3 L8 3 L13 9 L8 15 L2 15 Z" 
-                        fill="${execFill}" 
-                        stroke="white" 
-                        stroke-width="${strokeWidth}"
+                <svg width="18" height="18" viewBox="0 0 18 18" class="ue5-pin-svg">
+                    <path
+                        d="M2 3 H11 L17 9 L11 15 H2 Z"
+                        fill="${execFill}"
+                        stroke="white"
+                        stroke-width="2"
                     />
                 </svg>
             `;
@@ -43,10 +43,10 @@ class UE5Renderer {
       const delegateFill = isConnected ? strokeColor : "transparent";
       return `
                 <svg width="15" height="15" viewBox="0 0 15 15" class="ue5-pin-svg">
-                    <path 
-                        d="M7.5 1 L14 7.5 L7.5 14 L1 7.5 Z" 
-                        fill="${delegateFill}" 
-                        stroke="${strokeColor}" 
+                    <path
+                        d="M7.5 1 L14 7.5 L7.5 14 L1 7.5 Z"
+                        fill="${delegateFill}"
+                        stroke="${strokeColor}"
                         stroke-width="${strokeWidth}"
                     />
                 </svg>
@@ -57,10 +57,10 @@ class UE5Renderer {
     if (pin.isReference) {
       return `
                 <svg width="15" height="15" viewBox="0 0 15 15" class="ue5-pin-svg">
-                    <path 
-                        d="M7.5 1 L14 7.5 L7.5 14 L1 7.5 Z" 
-                        fill="${fillColor}" 
-                        stroke="${strokeColor}" 
+                    <path
+                        d="M7.5 1 L14 7.5 L7.5 14 L1 7.5 Z"
+                        fill="${fillColor}"
+                        stroke="${strokeColor}"
                         stroke-width="${strokeWidth}"
                     />
                 </svg>
@@ -70,14 +70,14 @@ class UE5Renderer {
     // Standard Data Pins (Circle w/ Beak)
     return `
             <svg width="18" height="15" viewBox="0 0 18 15" class="ue5-pin-svg">
-                <circle 
-                    cx="6.5" cy="7.5" r="4.5" 
-                    fill="${fillColor}" 
-                    stroke="${strokeColor}" 
+                <circle
+                    cx="6.5" cy="7.5" r="4.5"
+                    fill="${fillColor}"
+                    stroke="${strokeColor}"
                     stroke-width="${strokeWidth}"
                 />
-                <path 
-                    d="M11.5 3.5 L16.5 7.5 L11.5 11.5 Z" 
+                <path
+                    d="M11.5 3.5 L16.5 7.5 L11.5 11.5 Z"
                     fill="${strokeColor}"
                 />
             </svg>
@@ -127,7 +127,7 @@ class UE5Renderer {
                         <path d="${arrowPath}" fill="black" transform="${arrowTransform}" />
                     </mask>
                 </defs>
-                
+
                 <!-- Group components that need the cutout -->
                 <g mask="url(#${maskId})">
                     <!-- Background Diamond Fill -->
@@ -137,11 +137,11 @@ class UE5Renderer {
                 </g>
 
                 <!-- Border stays OUTSIDE the mask for maximum sharpness -->
-                <path 
-                    d="${diamondPath}" 
-                    fill="none" 
-                    stroke="white" 
-                    stroke-width="1.5" 
+                <path
+                    d="${diamondPath}"
+                    fill="none"
+                    stroke="white"
+                    stroke-width="1.5"
                 />
             </svg>
         `;
@@ -201,10 +201,10 @@ class UE5Renderer {
   static renderBreakpointIcon() {
     return `
             <svg width="16" height="16" viewBox="0 0 16 16" class="ue5-breakpoint-svg">
-                <path 
-                    d="M5 1 h6 l4 4 v6 l-4 4 h-6 l-4-4 v-6 Z" 
-                    fill="#d32f2f" 
-                    stroke="white" 
+                <path
+                    d="M5 1 h6 l4 4 v6 l-4 4 h-6 l-4-4 v-6 Z"
+                    fill="#d32f2f"
+                    stroke="white"
                     stroke-width="1.5"
                 />
             </svg>

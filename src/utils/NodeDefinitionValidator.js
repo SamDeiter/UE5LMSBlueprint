@@ -25,6 +25,7 @@ export class NodeDefinitionValidator {
       "variable-node",
       "assessment-node",
       "comment-node",
+      "reroute-node",
     ];
   }
 

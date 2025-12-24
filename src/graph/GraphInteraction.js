@@ -251,33 +251,74 @@ export class GraphInteraction {
 
     // 1. Wiring Start
     if (pinElement && e.button === 0) {
-      e.stopPropagation();
-      e.preventDefault();
-      this.isWiring = true;
-      const pinId = pinElement.dataset.pinId;
-      this.activePin = this.controller.findPinById(pinId);
+      // FIX: Reroute nodes are essentially just pins.
+      // However, we want to allow simple Drag-To-Wire from them without ALT.
+      // But we still need to be able to move them.
+      const isReroute =
+        nodeElement && nodeElement.classList.contains("reroute-node");
 
-      if (e.altKey && this.activePin) {
-        if (this.activePin.isConnected()) {
+      // Check if clicking the visual knot (center drag point) for reroute movement
+      const isKnotClick = e.target.classList.contains("visual-knot");
+
+      // If it's a reroute node, and we are NOT holding Alt, checks:
+      if (isReroute && !e.altKey) {
+        // If clicking the visual knot, allow node movement instead of wiring
+        if (isKnotClick) {
+          // Fall through to Node Selection/Movement logic below
+        } else if (e.ctrlKey || e.shiftKey) {
+          // If holding Ctrl/Shift, it's definitely selection/movement
+          // Fall through to Node Selection logic
+        } else {
+          // Clicking on pin area (not knot) - start wiring
+          if (this.controller.selectedNodes.has(nodeElement.id)) {
+            // Already selected: Assume user might want to move it.
+            // Fall through to Move logic.
+          } else {
+            // Not selected: Start Wiring immediately.
+            e.stopPropagation();
+            e.preventDefault();
+            this.isWiring = true;
+            const pinId = pinElement.dataset.pinId;
+            this.activePin = this.controller.findPinById(pinId);
+            if (this.activePin) {
+              this.app.wiring.updateGhostWire(e, this.activePin);
+            }
+            document.addEventListener("mousemove", this.handleGlobalMouseMove);
+            document.addEventListener("mouseup", this.handleGlobalMouseUp);
+            return;
+          }
+        }
+      } else {
+        // Standard pin behavior (or Alt+Click Reroute)
+        e.stopPropagation();
+        e.preventDefault();
+
+        this.isWiring = true;
+        const pinId = pinElement.dataset.pinId;
+        this.activePin = this.controller.findPinById(pinId);
+
+        if (e.altKey && this.activePin) {
+          if (this.activePin.isConnected()) {
+            this.app.wiring.breakPinLinks(this.activePin.id);
+          }
+        }
+
+        if (
+          this.activePin &&
+          this.activePin.dir === "in" &&
+          this.activePin.isConnected()
+        ) {
           this.app.wiring.breakPinLinks(this.activePin.id);
         }
-      }
 
-      if (
-        this.activePin &&
-        this.activePin.dir === "in" &&
-        this.activePin.isConnected()
-      ) {
-        this.app.wiring.breakPinLinks(this.activePin.id);
-      }
+        if (this.activePin) {
+          this.app.wiring.updateGhostWire(e, this.activePin);
+        }
 
-      if (this.activePin) {
-        this.app.wiring.updateGhostWire(e, this.activePin);
+        document.addEventListener("mousemove", this.handleGlobalMouseMove);
+        document.addEventListener("mouseup", this.handleGlobalMouseUp);
+        return;
       }
-
-      document.addEventListener("mousemove", this.handleGlobalMouseMove);
-      document.addEventListener("mouseup", this.handleGlobalMouseUp);
-      return;
     }
 
     // 2. Node Dragging/Selection
@@ -477,18 +518,53 @@ export class GraphInteraction {
       this.isWiring = false;
       this.app.wiring.ghostWire.classList.add("hidden");
 
+      let targetPin = null;
       const pinElement = e.target.closest(".pin-container");
+      const nodeElement = e.target.closest(".node");
+
       if (pinElement) {
         const pinId = pinElement.dataset.pinId;
-        const targetPin = this.controller.findPinById(pinId);
-        if (targetPin && this.activePin && targetPin.id !== this.activePin.id) {
-          this.app.wiring.createConnection(this.activePin, targetPin);
+        targetPin = this.controller.findPinById(pinId);
+
+        // Special handling for reroute nodes - select the COMPATIBLE pin
+        // If clicking on a reroute node, choose the pin that matches the activePin's direction
+        if (
+          targetPin &&
+          targetPin.node &&
+          targetPin.node.type === "reroute-node"
+        ) {
+          const node = targetPin.node;
+          if (node.pinsIn[0] && node.pinsOut[0] && this.activePin) {
+            // If activePin is output, we need reroute's input pin
+            // If activePin is input, we need reroute's output pin
+            if (this.activePin.dir === "out") {
+              targetPin = node.pinsIn[0]; // Connect output -> reroute input
+            } else {
+              targetPin = node.pinsOut[0]; // Connect input <- reroute output
+            }
+          }
         }
-      } else {
-        if (this.hasDragged && this.activePin) {
-          this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
+      } else if (
+        nodeElement &&
+        nodeElement.classList.contains("reroute-node")
+      ) {
+        // Fallback: clicking on reroute node but not on pin-container
+        const node = this.controller.nodes.get(nodeElement.id);
+        if (node && node.pinsIn[0] && node.pinsOut[0] && this.activePin) {
+          if (this.activePin.dir === "out") {
+            targetPin = node.pinsIn[0];
+          } else {
+            targetPin = node.pinsOut[0];
+          }
         }
       }
+
+      if (targetPin && this.activePin && targetPin.id !== this.activePin.id) {
+        this.app.wiring.createConnection(this.activePin, targetPin);
+      } else if (!targetPin && this.hasDragged && this.activePin) {
+        this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
+      }
+
       this.activePin = null;
     }
 
@@ -691,11 +767,10 @@ export class GraphInteraction {
   showNodeContextMenu(e, node, variable) {
     const menu = document.createElement("div");
     menu.className = "context-menu";
-    
+
     menu.style.left = `${e.clientX}px`;
     menu.style.top = `${e.clientY}px`;
     menu.classList.add("z-max");
-    
 
     const createMenuItem = (label, icon, onClick) => {
       const item = document.createElement("div");
