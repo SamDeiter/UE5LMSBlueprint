@@ -4,6 +4,7 @@
  */
 import { generateGUID } from "../utils/guid.js";
 import { createCollapsibleHeader } from "./ui-helpers.js";
+import { ContextMenuHelper } from "./ContextMenuHelper.js";
 
 export class EventDispatcherController {
   constructor(app) {
@@ -334,52 +335,28 @@ export class EventDispatcherController {
    * Show context menu for dispatcher
    */
   showContextMenu(e, dispatcher) {
-    const existingMenu = document.querySelector(".dispatcher-context-menu");
-    if (existingMenu) existingMenu.remove();
+    const items = [
+      {
+        label: "Rename",
+        icon: "fas fa-edit",
+        onClick: () => {
+          this.renamingId = dispatcher.id;
+          this.renderPanel();
+        },
+      },
+      {
+        label: "Delete",
+        icon: "fas fa-trash",
+        onClick: () => this.deleteDispatcher(dispatcher.id),
+      },
+    ];
 
-    const menu = document.createElement("div");
-    menu.className = "context-menu dispatcher-context-menu";
-    menu.classList.add("z-max");
-    menu.style.left = `${e.clientX}px`;
-    menu.style.top = `${e.clientY}px`;
-
-    const createMenuItem = (label, icon, onClick) => {
-      const item = document.createElement("div");
-      item.className = "menu-item";
-      item.innerHTML = `<i class="${icon}" class="mr-1 w-12"></i> ${label}`;
-      item.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        document.body.removeChild(menu);
-        onClick();
-      });
-      return item;
-    };
-
-    menu.appendChild(
-      createMenuItem("Rename", "fas fa-edit", () => {
-        this.renamingId = dispatcher.id;
-        this.renderPanel();
-      })
+    ContextMenuHelper.show(
+      e.clientX,
+      e.clientY,
+      items,
+      "context-menu dispatcher-context-menu"
     );
-
-    menu.appendChild(
-      createMenuItem("Delete", "fas fa-trash", () => {
-        this.deleteDispatcher(dispatcher.id);
-      })
-    );
-
-    document.body.appendChild(menu);
-
-    const closeMenu = (ev) => {
-      if (!menu.contains(ev.target)) {
-        if (document.body.contains(menu)) {
-          document.body.removeChild(menu);
-        }
-        document.removeEventListener("click", closeMenu);
-      }
-    };
-
-    setTimeout(() => document.addEventListener("click", closeMenu), 0);
   }
 
   /**

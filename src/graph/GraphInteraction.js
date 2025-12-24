@@ -3,6 +3,7 @@
  */
 
 import { DRAG_DATA_PREFIXES } from "../config/Constants.js";
+import { ContextMenuHelper } from "../ui/ContextMenuHelper.js";
 
 export class GraphInteraction {
   constructor(controller) {
@@ -765,81 +766,43 @@ export class GraphInteraction {
   }
 
   showNodeContextMenu(e, node, variable) {
-    const menu = document.createElement("div");
-    menu.className = "context-menu";
-
-    menu.style.left = `${e.clientX}px`;
-    menu.style.top = `${e.clientY}px`;
-    menu.classList.add("z-max");
-
-    const createMenuItem = (label, icon, onClick) => {
-      const item = document.createElement("div");
-      item.className = "menu-item";
-      item.innerHTML = `<i class="${icon}" class="mr-1 w-12"></i> ${label}`;
-      item.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        document.body.removeChild(menu);
-        onClick();
-      });
-      return item;
+    const items = [];
+    const typeConfig = {
+      vector: { make: "MakeVector", break: "BreakVector", icon: "fa-plus" },
+      rotator: { make: "MakeRotator", break: "BreakRotator", icon: "fa-sync" },
+      transform: {
+        make: "MakeTransform",
+        break: "BreakTransform",
+        icon: "fa-cube",
+      },
     };
 
-    // Add Make/Break options based on type
-    if (variable.type === "vector") {
-      menu.appendChild(
-        createMenuItem("Make Vector", "fas fa-plus", () => {
+    if (variable && typeConfig[variable.type]) {
+      const cfg = typeConfig[variable.type];
+      const typeName =
+        variable.type.charAt(0).toUpperCase() + variable.type.slice(1);
+
+      items.push({
+        label: `Make ${typeName}`,
+        icon: `fas ${cfg.icon}`,
+        onClick: () => {
           const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode("MakeVector", worldPos.x + 50, worldPos.y);
-        })
-      );
-      menu.appendChild(
-        createMenuItem("Break Vector", "fas fa-minus", () => {
+          this.controller.addNode(cfg.make, worldPos.x + 50, worldPos.y);
+        },
+      });
+      items.push({
+        label: `Break ${typeName}`,
+        icon: `fas ${cfg.icon}`,
+        onClick: () => {
           const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode("BreakVector", worldPos.x + 50, worldPos.y);
-        })
-      );
-    } else if (variable.type === "rotator") {
-      menu.appendChild(
-        createMenuItem("Make Rotator", "fas fa-sync", () => {
-          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode("MakeRotator", worldPos.x + 50, worldPos.y);
-        })
-      );
-      menu.appendChild(
-        createMenuItem("Break Rotator", "fas fa-sync", () => {
-          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode("BreakRotator", worldPos.x + 50, worldPos.y);
-        })
-      );
-    } else if (variable.type === "transform") {
-      menu.appendChild(
-        createMenuItem("Make Transform", "fas fa-cube", () => {
-          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode("MakeTransform", worldPos.x + 50, worldPos.y);
-        })
-      );
-      menu.appendChild(
-        createMenuItem("Break Transform", "fas fa-cube", () => {
-          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode(
-            "BreakTransform",
-            worldPos.x + 50,
-            worldPos.y
-          );
-        })
-      );
+          this.controller.addNode(cfg.break, worldPos.x + 50, worldPos.y);
+        },
+      });
     }
 
-    // Close menu on click outside
-    const closeMenu = () => {
-      if (document.body.contains(menu)) {
-        document.body.removeChild(menu);
-      }
-      document.removeEventListener("click", closeMenu);
-    };
-    setTimeout(() => document.addEventListener("click", closeMenu), 0);
-
-    document.body.appendChild(menu);
+    if (items.length > 0) {
+      ContextMenuHelper.show(e.clientX, e.clientY, items);
+    }
   }
 
   handlePinContextMenu(e) {

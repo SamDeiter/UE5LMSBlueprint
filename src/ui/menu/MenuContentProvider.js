@@ -72,17 +72,18 @@ export class MenuContentProvider {
     if (!variable) return [];
 
     const color = Utils.getPinColor(variable.type);
+    // No category - display directly at top level without nesting
     return [
       {
         name: `Get ${varName}`,
-        category: "Variables",
+        category: "", // Empty category = flat display
         nodeKey: `Get_${varName}`,
         color: color,
         isVariableOp: true,
       },
       {
         name: `Set ${varName}`,
-        category: "Variables",
+        category: "", // Empty category = flat display
         nodeKey: `Set_${varName}`,
         color: color,
         isVariableOp: true,

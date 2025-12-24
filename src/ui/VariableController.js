@@ -7,6 +7,7 @@ import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { createCollapsibleHeader } from "./ui-helpers.js";
 import { UE5Renderer } from "../utils/UE5Renderer.js";
 import { BaseController } from "./BaseController.js";
+import { ContextMenuHelper } from "./ContextMenuHelper.js";
 
 export class VariableController extends BaseController {
   constructor(app) {
@@ -826,136 +827,90 @@ export class VariableController extends BaseController {
   }
 
   showVariableContextMenu(e, variable) {
-    // Remove any existing context menu
-    const existingMenu = document.querySelector(".variable-context-menu");
-    if (existingMenu) existingMenu.remove();
-
-    const menu = document.createElement("div");
-    menu.className = "context-menu variable-context-menu menu-fixed z-max";
-    menu.style.left = `${e.clientX}px`;
-    menu.style.top = `${e.clientY}px`;
-
-    const createMenuItem = (label, icon, onClick) => {
-      const item = document.createElement("div");
-      item.className = "menu-item";
-      item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
-      item.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        document.body.removeChild(menu);
-        onClick();
-      });
-      return item;
+    const getGraphCenter = () => {
+      const centerX = this.app.graph.editor.offsetWidth / 2;
+      const centerY = this.app.graph.editor.offsetHeight / 2;
+      return this.app.graph.getGraphCoords(centerX, centerY);
     };
 
-    // Get [Variable]
-    menu.appendChild(
-      createMenuItem(`Get ${variable.name}`, "fas fa-arrow-down", () => {
-        const centerX = this.app.graph.editor.offsetWidth / 2;
-        const centerY = this.app.graph.editor.offsetHeight / 2;
-        const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-        this.app.graph.addNode(`Get_${variable.name}`, worldPos.x, worldPos.y);
-      })
-    );
+    const items = [
+      {
+        label: `Get ${variable.name}`,
+        icon: "fas fa-arrow-down",
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(`Get_${variable.name}`, pos.x, pos.y);
+        },
+      },
+      {
+        label: `Set ${variable.name}`,
+        icon: "fas fa-arrow-up",
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(`Set_${variable.name}`, pos.x, pos.y);
+        },
+      },
+      { separator: true },
+      {
+        label: "Rename",
+        icon: "fas fa-edit",
+        onClick: () => {
+          this.renamingVarId = variable.id;
+          this.renderPanel();
+        },
+      },
+      {
+        label: "Delete",
+        icon: "fas fa-trash",
+        onClick: () => this.deleteVariable(variable),
+      },
+    ];
 
-    // Set [Variable]
-    menu.appendChild(
-      createMenuItem(`Set ${variable.name}`, "fas fa-arrow-up", () => {
-        const centerX = this.app.graph.editor.offsetWidth / 2;
-        const centerY = this.app.graph.editor.offsetHeight / 2;
-        const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-        this.app.graph.addNode(`Set_${variable.name}`, worldPos.x, worldPos.y);
-      })
-    );
-
-    // Add separator
-    const separator = document.createElement("div");
-    separator.className = "separator-h";
-    menu.appendChild(separator);
-
-    // Rename
-    menu.appendChild(
-      createMenuItem(`Rename`, "fas fa-edit", () => {
-        this.renamingVarId = variable.id;
-        this.renderPanel();
-      })
-    );
-
-    // Delete
-    menu.appendChild(
-      createMenuItem(`Delete`, "fas fa-trash", () => {
-        this.deleteVariable(variable);
-      })
-    );
-
-    // Add separator for type-specific options
-    const separator2 = document.createElement("div");
-    separator2.className = "separator-h";
-    menu.appendChild(separator2);
-
-    // Make/Break options for complex types
-    if (variable.type === "vector") {
-      menu.appendChild(
-        createMenuItem("Make Vector", "fas fa-plus", () => {
-          const centerX = this.app.graph.editor.offsetWidth / 2;
-          const centerY = this.app.graph.editor.offsetHeight / 2;
-          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-          this.app.graph.addNode("MakeVector", worldPos.x, worldPos.y);
-        })
-      );
-      menu.appendChild(
-        createMenuItem("Break Vector", "fas fa-minus", () => {
-          const centerX = this.app.graph.editor.offsetWidth / 2;
-          const centerY = this.app.graph.editor.offsetHeight / 2;
-          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-          this.app.graph.addNode("BreakVector", worldPos.x, worldPos.y);
-        })
-      );
-    } else if (variable.type === "rotator") {
-      menu.appendChild(
-        createMenuItem("Make Rotator", "fas fa-sync", () => {
-          const centerX = this.app.graph.editor.offsetWidth / 2;
-          const centerY = this.app.graph.editor.offsetHeight / 2;
-          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-          this.app.graph.addNode("MakeRotator", worldPos.x, worldPos.y);
-        })
-      );
-      menu.appendChild(
-        createMenuItem("Break Rotator", "fas fa-sync", () => {
-          const centerX = this.app.graph.editor.offsetWidth / 2;
-          const centerY = this.app.graph.editor.offsetHeight / 2;
-          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-          this.app.graph.addNode("BreakRotator", worldPos.x, worldPos.y);
-        })
-      );
-    } else if (variable.type === "transform") {
-      menu.appendChild(
-        createMenuItem("Make Transform", "fas fa-cube", () => {
-          const centerX = this.app.graph.editor.offsetWidth / 2;
-          const centerY = this.app.graph.editor.offsetHeight / 2;
-          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-          this.app.graph.addNode("MakeTransform", worldPos.x, worldPos.y);
-        })
-      );
-      menu.appendChild(
-        createMenuItem("Break Transform", "fas fa-cube", () => {
-          const centerX = this.app.graph.editor.offsetWidth / 2;
-          const centerY = this.app.graph.editor.offsetHeight / 2;
-          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
-          this.app.graph.addNode("BreakTransform", worldPos.x, worldPos.y);
-        })
-      );
+    // Add type-specific Make/Break options
+    if (["vector", "rotator", "transform"].includes(variable.type)) {
+      items.push({ separator: true });
+      const typeConfig = {
+        vector: { make: "MakeVector", break: "BreakVector", icon: "fa-plus" },
+        rotator: {
+          make: "MakeRotator",
+          break: "BreakRotator",
+          icon: "fa-sync",
+        },
+        transform: {
+          make: "MakeTransform",
+          break: "BreakTransform",
+          icon: "fa-cube",
+        },
+      };
+      const cfg = typeConfig[variable.type];
+      items.push({
+        label: `Make ${
+          variable.type.charAt(0).toUpperCase() + variable.type.slice(1)
+        }`,
+        icon: `fas ${cfg.icon}`,
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(cfg.make, pos.x, pos.y);
+        },
+      });
+      items.push({
+        label: `Break ${
+          variable.type.charAt(0).toUpperCase() + variable.type.slice(1)
+        }`,
+        icon: `fas ${cfg.icon}`,
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(cfg.break, pos.x, pos.y);
+        },
+      });
     }
 
-    // Close menu on click outside
-    const closeMenu = () => {
-      if (document.body.contains(menu)) {
-        document.body.removeChild(menu);
-      }
-      document.removeEventListener("click", closeMenu);
-    };
-    setTimeout(() => document.addEventListener("click", closeMenu), 0);
-
-    document.body.appendChild(menu);
+    ContextMenuHelper.show(
+      e.clientX,
+      e.clientY,
+      items,
+      "context-menu variable-context-menu"
+    );
   }
 
   /**
