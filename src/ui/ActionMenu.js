@@ -6,6 +6,7 @@ import { Utils } from "../utils.js";
 import { buildCategoryTree, renderCategoryTree } from "./ui-helpers.js";
 import { MenuContentProvider } from "./menu/MenuContentProvider.js";
 import { BaseController } from "./BaseController.js";
+import { debounce } from "../utils/debounce.js";
 
 export class ActionMenu extends BaseController {
   constructor(app) {
@@ -28,7 +29,11 @@ export class ActionMenu extends BaseController {
 
     // Event Bindings
     this.addListener(this.element, "click", (e) => e.stopPropagation());
-    this.addListener(this.searchInput, "input", this.filter.bind(this));
+    this.addListener(
+      this.searchInput,
+      "input",
+      debounce(this.filter.bind(this), 150)
+    );
 
     // Enter key
     this.addListener(this.searchInput, "keydown", (e) => {

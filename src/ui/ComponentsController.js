@@ -328,6 +328,9 @@ export class ComponentsController extends BaseController {
       this.expandedComponents = new Set(["root"]); // Root is expanded by default
     }
 
+    // Use DocumentFragment to batch DOM updates
+    const fragment = document.createDocumentFragment();
+
     // Render Root Component (Self) with expand/collapse
     const rootItem = this.createComponentTreeItem(
       {
@@ -339,13 +342,16 @@ export class ComponentsController extends BaseController {
       0,
       true
     );
-    this.listContainer.appendChild(rootItem);
+    fragment.appendChild(rootItem);
 
     // Render component hierarchy recursively
-    this.renderComponentChildren("root", 1);
+    this.renderComponentChildren("root", 1, fragment);
+
+    // Single DOM update
+    this.listContainer.appendChild(fragment);
   }
 
-  renderComponentChildren(parentId, depth) {
+  renderComponentChildren(parentId, depth, fragment) {
     if (!this.app.components) return;
 
     // Find all children of this parent
@@ -355,11 +361,11 @@ export class ComponentsController extends BaseController {
 
     children.forEach((comp) => {
       const item = this.createComponentTreeItem(comp, depth, false);
-      this.listContainer.appendChild(item);
+      fragment.appendChild(item);
 
       // Recursively render children if expanded
       if (this.expandedComponents.has(comp.id)) {
-        this.renderComponentChildren(comp.id, depth + 1);
+        this.renderComponentChildren(comp.id, depth + 1, fragment);
       }
     });
   }
