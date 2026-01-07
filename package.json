@@ -6,7 +6,11 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "echo \"Tests run in browser - open index.html and run window.runTests()\"",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch",
     "serve": "python -m http.server 8000",
     "preview": "npm run serve && start http://localhost:8000",
     "check-sizes": "node scripts/file-size-monitor.js",
@@ -23,9 +27,13 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.1",
+    "@vitest/ui": "^1.6.1",
     "eslint": "^9.39.1",
     "husky": "^9.1.7",
     "jscpd": "^4.0.5",
-    "knip": "^5.77.0"
+    "jsdom": "^23.2.0",
+    "knip": "^5.77.0",
+    "vitest": "^1.6.1"
   }
 }
