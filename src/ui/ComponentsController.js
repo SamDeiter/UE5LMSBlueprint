@@ -1,10 +1,11 @@
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { ComponentSelector } from "./ComponentSelector.js";
+import { BaseController } from "./BaseController.js";
 
-export class ComponentsController {
+export class ComponentsController extends BaseController {
   constructor(app) {
+    super(app); // Call BaseController constructor
     console.log("ComponentsController initialized (v2)");
-    this.app = app;
     this.selectedComponentIds = new Set(); // Changed to Set for multi-selection
     this.panel = document.getElementById("components-panel");
     this.listContainer = this.panel
@@ -22,7 +23,7 @@ export class ComponentsController {
 
   initEvents() {
     if (this.addBtn) {
-      this.addBtn.addEventListener("click", (e) => {
+      this.addListener(this.addBtn, "click", (e) => {
         e.stopPropagation();
         this.showComponentSelector();
       });
@@ -30,7 +31,7 @@ export class ComponentsController {
 
     // Deselect when clicking on empty space in the panel
     if (this.panel) {
-      this.panel.addEventListener("click", (e) => {
+      this.addListener(this.panel, "click", (e) => {
         // If clicking directly on the panel or content area (not on an item)
         // More robust check: if we didn't click inside a tree-item, deselect.
         if (!e.target.closest(".tree-item")) {
@@ -181,13 +182,13 @@ export class ComponentsController {
     const newNo = noBtn.cloneNode(true);
     noBtn.parentNode.replaceChild(newNo, noBtn);
 
-    newYes.addEventListener("click", () => {
+    this.addListener(newYes, "click", () => {
       this.executeDeletion();
       modal.classList.add("hidden");
       modal.classList.remove("visible-flex");
     });
 
-    newNo.addEventListener("click", () => {
+    this.addListener(newNo, "click", () => {
       modal.classList.add("hidden");
       modal.classList.remove("visible-flex");
     });
@@ -246,7 +247,6 @@ export class ComponentsController {
     // Force immediate save to history and persistence
     this.app.history.saveState("component delete");
     this.app.persistence.save();
-
   }
 
   // Legacy method for backward compatibility if called directly
@@ -402,7 +402,7 @@ export class ComponentsController {
     // Expand/collapse functionality
     if (hasChildren) {
       const arrow = item.querySelector(".expand-arrow");
-      arrow.addEventListener("click", (e) => {
+      this.addListener(arrow, "click", (e) => {
         e.stopPropagation();
         if (this.expandedComponents.has(comp.id)) {
           this.expandedComponents.delete(comp.id);
@@ -416,7 +416,7 @@ export class ComponentsController {
     // Make draggable - serves both for graph (Get node) and reparenting
     if (!isRoot) {
       item.draggable = true;
-      item.addEventListener("dragstart", (e) => {
+      this.addListener(item, "dragstart", (e) => {
         // We use COMPONENT_REPARENT as the universal type.
         // The GraphInteraction handles this by creating a Get node.
         // The ComponentsController handles this by reparenting.
@@ -427,18 +427,18 @@ export class ComponentsController {
     }
 
     // Allow dropping components onto this item to reparent
-    item.addEventListener("dragover", (e) => {
+    this.addListener(item, "dragover", (e) => {
       e.preventDefault();
       e.stopPropagation();
       item.classList.add("component-item-selected");
     });
 
-    item.addEventListener("dragleave", (e) => {
+    this.addListener(item, "dragleave", (e) => {
       e.stopPropagation();
       item.classList.remove("component-item-selected");
     });
 
-    item.addEventListener("drop", (e) => {
+    this.addListener(item, "drop", (e) => {
       e.preventDefault();
       e.stopPropagation();
       item.classList.remove("component-item-selected");
@@ -464,7 +464,7 @@ export class ComponentsController {
 
     // Selection functionality
     if (!isRoot) {
-      item.addEventListener("click", (e) => {
+      this.addListener(item, "click", (e) => {
         // Don't select if clicking arrow
         if (e.target.classList.contains("expand-arrow")) return;
 
@@ -499,5 +499,11 @@ export class ComponentsController {
       current = this.app.components.get(current.parentId);
     }
     return false;
+  }
+
+  // Cleanup method - called when controller is destroyed
+  cleanup() {
+    super.cleanup(); // Remove all event listeners and timers
+    console.log("ComponentsController cleaned up");
   }
 }

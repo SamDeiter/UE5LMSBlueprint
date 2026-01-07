@@ -1,20 +1,6 @@
 /**
  * WiringController class - Manages wire connections, rendering, and interaction.
  */
-import { Utils } from "../utils.js";
-import { generateGUID } from "../utils/guid.js";
-import { PinTypeValidator } from "../utils/PinTypeValidator.js";
-import { GRAPH_CONSTANTS, STRUCT_TYPES } from "../config/Constants.js";
-
-// UE5 Wire Thickness Specifications (from GraphEditorSettings.cpp)
-const WIRE_THICKNESS = {
-  data: 1.5, // DefaultDataWireThickness
-  exec: 2.5, // DefaultExecutionWireThickness
-  container: 2.5, // Containers use exec thickness (line 579)
-  attack: 6.0, // TraceAttackWireThickness (for pulse animation)
-  sustain: 3.5, // TraceSustainWireThickness
-  release: 1.5, // TraceReleaseWireThickness
-};
 
 /**
  * WiringController
@@ -162,10 +148,6 @@ export class WiringController {
 
   updatePinVisualState(pin) {
     this.renderer.updatePinVisualState(pin);
-  }
-
-  updateGhostWire(e, startPin) {
-    this.renderer.drawGhostWire(e, startPin);
   }
 
   setWireActive(linkId) {
