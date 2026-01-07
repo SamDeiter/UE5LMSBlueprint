@@ -1,11 +1,12 @@
 // import { Utils } from "../../utils.js";
 import { DetailsRenderer } from "../DetailsRenderer.js";
 import { setupToggle } from "../ui-helpers.js";
+import { BaseController } from "../BaseController.js";
 
-export class VariableDetails {
+export class VariableDetails extends BaseController {
   constructor(controller) {
+    super(controller.app); // Call BaseController with app reference
     this.controller = controller;
-    this.app = controller.app;
     this.panel = controller.panel;
   }
 
@@ -94,7 +95,7 @@ export class VariableDetails {
     // Bind Custom Dropdown Triggers
     const typeTrigger = this.panel.querySelector("#var-type-trigger");
     if (typeTrigger) {
-      typeTrigger.addEventListener("click", (e) => {
+      this.addListener(typeTrigger, "click", (e) => {
         e.stopPropagation();
         const rect = typeTrigger.getBoundingClientRect();
         this.controller.typeSelector.showTypeMenu(
@@ -113,7 +114,7 @@ export class VariableDetails {
 
     const containerTrigger = this.panel.querySelector("#var-container-trigger");
     if (containerTrigger) {
-      containerTrigger.addEventListener("click", (e) => {
+      this.addListener(containerTrigger, "click", (e) => {
         e.stopPropagation();
         const rect = containerTrigger.getBoundingClientRect();
         this.controller.typeSelector.showContainerTypeMenu(
@@ -133,12 +134,12 @@ export class VariableDetails {
 
     // Bind generic handlers (for inputs and standard selects)
     this.panel.querySelectorAll("[data-prop]").forEach((input) => {
-      input.addEventListener("change", (e) => {
+      this.addListener(input, "change", (e) => {
         this.handleInputChange(e, variable);
       });
 
       if (input.tagName === "INPUT" || input.tagName === "TEXTAREA") {
-        input.addEventListener("input", (e) => {
+        this.addListener(input, "input", (e) => {
           this.handleInputLiveUpdate(e, variable);
         });
       }
@@ -405,5 +406,11 @@ export class VariableDetails {
     if (type === "rotator") return "(0,0,0)";
     if (type === "transform") return "(0,0,0|0,0,0|1,1,1)";
     return "";
+  }
+
+  // Cleanup method - called when controller is destroyed
+  cleanup() {
+    super.cleanup(); // Remove all event listeners and timers
+    console.log("VariableDetails cleaned up");
   }
 }

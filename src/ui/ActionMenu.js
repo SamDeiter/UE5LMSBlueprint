@@ -5,10 +5,11 @@
 import { Utils } from "../utils.js";
 import { buildCategoryTree, renderCategoryTree } from "./ui-helpers.js";
 import { MenuContentProvider } from "./menu/MenuContentProvider.js";
+import { BaseController } from "./BaseController.js";
 
-export class ActionMenu {
+export class ActionMenu extends BaseController {
   constructor(app) {
-    this.app = app;
+    super(app); // Call BaseController constructor
     this.element = document.getElementById("action-menu");
     this.searchInput = document.getElementById("action-menu-search");
     this.list = document.getElementById("action-menu-list");
@@ -26,11 +27,11 @@ export class ActionMenu {
     this.provider = new MenuContentProvider(app);
 
     // Event Bindings
-    this.element.addEventListener("click", (e) => e.stopPropagation());
-    this.searchInput.addEventListener("input", this.filter.bind(this));
+    this.addListener(this.element, "click", (e) => e.stopPropagation());
+    this.addListener(this.searchInput, "input", this.filter.bind(this));
 
     // Enter key
-    this.searchInput.addEventListener("keydown", (e) => {
+    this.addListener(this.searchInput, "keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         this.selectFirstItem();
@@ -38,7 +39,7 @@ export class ActionMenu {
     });
 
     // Outer Click Hide
-    document.addEventListener("click", (e) => {
+    this.addListener(document, "click", (e) => {
       if (!this.isHideDelayActive) {
         if (
           !this.element.classList.contains("hidden") &&
@@ -193,7 +194,7 @@ export class ActionMenu {
 
     // Bind Checkbox
     const checkbox = header.querySelector("#context-sensitive-check");
-    checkbox.addEventListener("change", (e) => {
+    this.addListener(checkbox, "change", (e) => {
       this.isContextSensitive = e.target.checked;
       localStorage.setItem("ue5_context_sensitive", this.isContextSensitive);
       this.filter(); // Re-render
@@ -220,7 +221,7 @@ export class ActionMenu {
       el.innerHTML = `<span class="text-muted">${displayName}</span>`;
     }
 
-    el.addEventListener("click", (e) => {
+    this.addListener(el, "click", (e) => {
       e.stopPropagation();
       this._executeAction(item);
     });
@@ -317,5 +318,11 @@ export class ActionMenu {
     const match = text.substring(index, index + filter.length);
     const after = text.substring(index + filter.length);
     return `${before}<span class="search-highlight">${match}</span>${after}`;
+  }
+
+  // Cleanup method - called when controller is destroyed
+  cleanup() {
+    super.cleanup(); // Remove all event listeners and timers
+    console.log("ActionMenu cleaned up");
   }
 }
