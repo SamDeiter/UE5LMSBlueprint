@@ -336,6 +336,13 @@ export class SimulationEngine {
 
     // Stub for functionality preservation:
     this._runAssessment(needNodes);
+
+    // Trigger task validation after simulation assessment completes
+    // This ensures tasks complete based on runtime behavior, not just compile
+    if (this.app.taskController) {
+      this.app.taskController.runValidation();
+      this.app.taskController.switchToStatusTab();
+    }
   }
 
   _runAssessment(nodes) {
