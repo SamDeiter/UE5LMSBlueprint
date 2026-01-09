@@ -28,6 +28,7 @@ import { TraceExecutor } from "./executors/TraceExecutor.js";
 import { InputExecutor } from "./executors/InputExecutor.js";
 import { AudioExecutor } from "./executors/AudioExecutor.js";
 import { VFXExecutor } from "./executors/VFXExecutor.js";
+import { CollectionExecutor } from "./executors/CollectionExecutor.js";
 import { timerManager } from "./TimerManager.js";
 import { NodeDefinitions } from "../data/nodes/index.js";
 
@@ -97,6 +98,7 @@ export class SimulationEngine {
       Input: new InputExecutor(this),
       Audio: new AudioExecutor(this),
       VFX: new VFXExecutor(this),
+      Collection: new CollectionExecutor(this),
     };
 
     // Auto-Register Static Nodes
@@ -113,6 +115,9 @@ export class SimulationEngine {
     this.executorRegistry.registerPattern(/^Conv_/, executors["Conversion"]);
     this.executorRegistry.registerPattern(/^Func_/, executors["Function"]);
     this.executorRegistry.registerPattern(/^Macro_/, executors["Macro"]);
+    this.executorRegistry.registerPattern(/^Array_/, executors["Collection"]);
+    this.executorRegistry.registerPattern(/^Set_/, executors["Collection"]);
+    this.executorRegistry.registerPattern(/^Map_/, executors["Collection"]);
   }
 
   addWatch(pin) {
