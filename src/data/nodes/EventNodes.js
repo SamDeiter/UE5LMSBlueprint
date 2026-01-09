@@ -300,7 +300,7 @@ export const EventNodes = {
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "event_in", name: "Event", type: "delegate", dir: "in" },
+      { id: "event_in", name: "Event", type: "object", dir: "in" },
     ],
   },
   UnbindEventDispatcher: {
@@ -312,7 +312,7 @@ export const EventNodes = {
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "event_in", name: "Event", type: "delegate", dir: "in" },
+      { id: "event_in", name: "Event", type: "object", dir: "in" },
     ],
   },
   UnbindAllEventDispatchers: {
