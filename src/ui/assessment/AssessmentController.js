@@ -6,9 +6,9 @@ import {
   TEST_SCENARIOS,
   getScenario,
   getScenariosByDifficulty,
-} from "../data/assessment/TestScenarios.js";
-import { graphAnalyzer, IssueSeverity } from "../core/GraphAnalyzer.js";
-import { EventBus } from "../core/EventBus.js";
+} from "../../data/assessment/TestScenarios.js";
+import { graphAnalyzer, IssueSeverity } from "../../core/GraphAnalyzer.js";
+import { EventBus } from "../../core/EventBus.js";
 
 /**
  * Assessment modes
