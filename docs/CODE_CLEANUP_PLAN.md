@@ -1,49 +1,54 @@
-# Code Cleanup Plan
+# Code Cleanup Progress
 
-## 1. DOM Helper Utility ✅
+## Completed Modules ✅
 
-Created `src/utils/DOMHelper.js` with:
+### DOMHelper.js
 
-- `el(tag, attrs, children)` - Create elements
-- `icon(class)` - Create FontAwesome icons
-- `iconButton(icon, text, onClick)` - Button with icon
-- `sectionHeader(title, expanded, onToggle)` - Collapsible headers
+- `el(tag, attrs, children)` - Element creation
+- `icon(class)` - FontAwesome icons
+- `iconButton()` - Button with icon
+- `sectionHeader()` - Collapsible headers
 
-## 2. File Split Plan
+### VariableItemRenderer.js
 
-### VariableController.js (820 lines) → 4 files
+- `renderVariableItem()` - Extracted from VariableController
 
-- `VariableController.js` - Core logic (add, delete, rename) ~200 lines
-- `VariableRenderer.js` - DOM rendering ~300 lines
-- `VariableDragDrop.js` - Drag/drop handling ~150 lines
-- `VariableContextMenu.js` - Right-click menu ~100 lines
+### GraphSerializer.js
 
-### GraphInteraction.js (804 lines) → 3 files
+- `loadGraphState()` - ~170 lines extracted
+- `exportGraph()` - ~25 lines extracted
 
-- `GraphInteraction.js` - Core (selection, zoom, pan) ~300 lines
-- `NodeDragHandler.js` - Node dragging ~250 lines
-- `WireDragHandler.js` - Wire dragging/connection ~250 lines
+### GraphClipboard.js
 
-### GraphController.js (779 lines) → 3 files
+- `duplicateSelectedNodes()` - ~100 lines extracted
 
-- `GraphController.js` - Core (addNode, deleteNode) ~300 lines
-- `GraphSerializer.js` - Save/load logic ~200 lines
-- `GraphClipboard.js` - Copy/paste/duplicate ~200 lines
+## Remaining Work
 
-### Node.js (729 lines) → 3 files
+### VariableController.js (920 lines → target 400)
 
-- `Node.js` - Core properties ~200 lines
-- `NodeRenderer.js` - DOM rendering ~300 lines
-- `NodePinManager.js` - Pin operations ~200 lines
+- [ ] Integrate VariableItemRenderer
+- [ ] Extract VariableDragDrop.js
 
-## 3. Migration Order
+### GraphController.js (920 lines → target 400)
 
-1. VariableController (biggest file)
-2. GraphController
-3. GraphInteraction
-4. Node.js
+- [x] GraphSerializer.js extracted
+- [x] GraphClipboard.js extracted
+- [ ] Integrate modules into GraphController
 
-## 4. Success Metrics
+### GraphInteraction.js (804 lines → target 400)
 
-- No file > 400 lines
-- 48 tests still pass after each split
+- [ ] NodeDragHandler.js
+- [ ] WireDragHandler.js
+
+### Node.js (729 lines → target 400)
+
+- [ ] NodeRenderer.js
+- [ ] NodePinManager.js
+
+## Integration Strategy
+
+1. Create modules first (done above)
+2. Import modules into parent
+3. Replace inline code with module calls
+4. Run tests after each integration
+5. Delete dead code
