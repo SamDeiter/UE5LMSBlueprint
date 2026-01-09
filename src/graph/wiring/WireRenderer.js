@@ -45,20 +45,30 @@ export class WireRenderer {
   drawWire(link) {
     const { startPin, endPin } = link;
 
-    console.log("[WireRenderer] drawWire called:", {
-      linkId: link.id,
-      startPin: startPin?.id,
-      endPin: endPin?.id,
-      startElConnected: startPin?.element?.isConnected,
-      endElConnected: endPin?.element?.isConnected,
-    });
+    // Lookup pin elements fresh from DOM (cached references can become stale after re-renders)
+    const startEl = startPin.element?.isConnected
+      ? startPin.element
+      : document.querySelector(`[data-pin-id="${startPin.id}"] .pin-dot`);
+    const endEl = endPin.element?.isConnected
+      ? endPin.element
+      : document.querySelector(`[data-pin-id="${endPin.id}"] .pin-dot`);
+
+    // Update cached references if we had to look them up
+    if (startEl && startEl !== startPin.element) startPin.element = startEl;
+    if (endEl && endEl !== endPin.element) endPin.element = endEl;
 
     // Safety Check: Ensure elements exist
-    if (!startPin.element?.isConnected || !endPin.element?.isConnected) {
-      // If pins are missing from DOM, let the manager clean up
-      // This implies a sync issue
-      console.warn("[WireRenderer] Deleting link - pin elements not connected");
-      this.manager.deleteLink(link.id);
+    if (!startEl || !endEl) {
+      console.warn(
+        "[WireRenderer] Cannot draw wire - pin elements not found:",
+        {
+          startPinId: startPin.id,
+          endPinId: endPin.id,
+          startElFound: !!startEl,
+          endElFound: !!endEl,
+        }
+      );
+      // Don't delete the link - maybe the node just hasn't rendered yet
       return;
     }
 
@@ -70,7 +80,6 @@ export class WireRenderer {
       wireEl.id = link.id;
       this.svgGroup.appendChild(wireEl);
       this._bindEvents(wireEl, link);
-      console.log("[WireRenderer] Created new wire SVG element");
     } else {
       wireEl.classList.remove("hidden");
     }
@@ -79,9 +88,8 @@ export class WireRenderer {
     this._applyStyle(wireEl, startPin, link.id);
 
     // Geometry
-    const p1 = Utils.getPinPosition(startPin.element, this.app);
-    const p2 = Utils.getPinPosition(endPin.element, this.app);
-    console.log("[WireRenderer] Wire geometry:", { p1, p2 });
+    const p1 = Utils.getPinPosition(startEl, this.app);
+    const p2 = Utils.getPinPosition(endEl, this.app);
     wireEl.setAttribute("d", Utils.getWirePath(p1.x, p1.y, p2.x, p2.y));
   }
 
@@ -197,10 +205,38 @@ export class WireRenderer {
   updateNodeVisuals(node) {
     if (!node || !node.element || !node.element.parentNode) return;
 
-    const isSelected = node.element.classList.contains("selected");
-    const newEl = node.render(); // Re-render node DOM
-    node.element.replaceWith(newEl);
+    const oldEl = node.element;
+    const isSelected = oldEl.classList.contains("selected");
+    const newEl = node.render();
+
+    oldEl.replaceWith(newEl);
     node.element = newEl;
+
+    // CRITICAL: Update pin.element references to the new DOM elements
+    // After render(), the old pin.element references are stale (no longer in DOM)
+    for (const pin of node.pins) {
+      const pinEl = newEl.querySelector(
+        `[data-pin-id="${pin.id}"] .pin-dot, [data-pin-id="${pin.id}"]`
+      );
+      if (pinEl) {
+        pin.element = pinEl.classList.contains("pin-dot")
+          ? pinEl
+          : pinEl.querySelector(".pin-dot");
+      }
+      // Also update sub-pin elements if split
+      if (pin.isSplit && pin.subPins) {
+        for (const subPin of pin.subPins) {
+          const subPinEl = newEl.querySelector(
+            `[data-pin-id="${subPin.id}"] .pin-dot, [data-pin-id="${subPin.id}"]`
+          );
+          if (subPinEl) {
+            subPin.element = subPinEl.classList.contains("pin-dot")
+              ? subPinEl
+              : subPinEl.querySelector(".pin-dot");
+          }
+        }
+      }
+    }
 
     if (isSelected) newEl.classList.add("selected");
   }

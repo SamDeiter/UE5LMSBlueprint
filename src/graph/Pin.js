@@ -86,16 +86,15 @@ class Pin {
 
     components.forEach((comp) => {
       const subPinId = `${this.id}_${comp.name}`;
+      // Use comp.default if defined, otherwise fallback to 0 for numeric types
+      const defaultVal = comp.default !== undefined ? comp.default : 0;
       const subPin = new Pin(this.node, {
         id: subPinId,
         name: comp.name,
         type: comp.type,
         dir: this.dir,
-        defaultValue: comp.default,
+        defaultValue: defaultVal,
       });
-      // Override ID to ensure it matches exactly what we want (Pin constructor might prefix node id again if we aren't careful, but we passed full ID)
-      // Actually Pin constructor does: this.id = pinData.id.includes(node.id) ? pinData.id : `${node.id}-${pinData.id}`;
-      // So if we pass `${this.id}_${comp.name}`, it includes node.id (since this.id does), so it should be fine.
 
       this.subPins.push(subPin);
     });
