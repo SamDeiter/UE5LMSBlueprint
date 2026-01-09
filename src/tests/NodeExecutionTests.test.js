@@ -17,9 +17,12 @@ export const registerNodeExecutionTests = (runner) => {
     const addNode = app.graph.addNode("AddFloat", 100, 100);
     assert(addNode !== null, "AddFloat node should be created");
 
-    // Set input values
-    addNode.pinLiterals.set("a_in", 5.0);
-    addNode.pinLiterals.set("b_in", 3.0);
+    // Set input values using tempValues (simulating wired input)
+    addNode.tempValues = { a_in: 5.0, b_in: 3.0 };
+
+    // Also set pinLiterals with full ID format
+    addNode.pinLiterals.set(`${addNode.id}-a_in`, 5.0);
+    addNode.pinLiterals.set(`${addNode.id}-b_in`, 3.0);
 
     // Evaluate result
     const executor = app.sim.executorRegistry.getExecutor("AddFloat");
@@ -32,8 +35,9 @@ export const registerNodeExecutionTests = (runner) => {
     const mulNode = app.graph.addNode("MultiplyFloat", 100, 100);
     assert(mulNode !== null, "MultiplyFloat node should be created");
 
-    mulNode.pinLiterals.set("a_in", 4.0);
-    mulNode.pinLiterals.set("b_in", 2.5);
+    mulNode.tempValues = { a_in: 4.0, b_in: 2.5 };
+    mulNode.pinLiterals.set(`${mulNode.id}-a_in`, 4.0);
+    mulNode.pinLiterals.set(`${mulNode.id}-b_in`, 2.5);
 
     const executor = app.sim.executorRegistry.getExecutor("MultiplyFloat");
     const result = executor.evaluateValue(mulNode, { id: "result_out" });
@@ -50,7 +54,8 @@ export const registerNodeExecutionTests = (runner) => {
     const executor = app.sim.executorRegistry.getExecutor("Branch");
 
     // Test True condition
-    branchNode.pinLiterals.set("cond_in", true);
+    branchNode.tempValues = { cond_in: true };
+    branchNode.pinLiterals.set(`${branchNode.id}-cond_in`, true);
     let result = await executor.execute(branchNode, null);
     assert(
       result === "exec_true",
@@ -58,7 +63,8 @@ export const registerNodeExecutionTests = (runner) => {
     );
 
     // Test False condition
-    branchNode.pinLiterals.set("cond_in", false);
+    branchNode.tempValues = { cond_in: false };
+    branchNode.pinLiterals.set(`${branchNode.id}-cond_in`, false);
     result = await executor.execute(branchNode, null);
     assert(
       result === "exec_false",
