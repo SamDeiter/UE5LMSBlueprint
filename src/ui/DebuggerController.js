@@ -28,9 +28,9 @@ export class DebuggerController {
 
     list.innerHTML = "";
 
-    const stack = this.app.sim.callStack;
+    const stack = this.app.sim?.callStack || [];
     // Only show if we are paused or have a stack
-    if (stack.length === 0 && !this.app.sim.isPaused) {
+    if (stack.length === 0 && !this.app.sim?.isPaused) {
       this.panel.classList.add("hidden");
       return;
     }
