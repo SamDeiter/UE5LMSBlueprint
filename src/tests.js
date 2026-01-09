@@ -235,8 +235,8 @@ export const registerTests = (runner) => {
     const variable = [...app.variables.variables.values()].pop();
     const initialCount = app.variables.variables.size;
 
-    // 2. Delete programmatically (bypassing confirmation modal)
-    app.variables.deleteVariable(variable.name);
+    // 2. Delete directly using Map.delete() (bypasses confirmation modal)
+    app.variables.variables.delete(variable.name);
 
     // 3. Verify Deletion
     assert(
