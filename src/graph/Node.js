@@ -707,9 +707,13 @@ class Node {
     pin.element = pinDot;
 
     let effectiveHideLabel = hideLabel;
-    // Hide labels for all exec pins to match UE5 style
+    // Hide labels for single exec pins (like BeginPlay) but show for multiple exec pins (Timeline, Multi-Gate)
+    // In UE5, nodes with multiple exec pins display their labels
     if (pin.type === "exec") {
-      effectiveHideLabel = true;
+      const execPinsCount = this.pins.filter(
+        (p) => p.type === "exec" && p.dir === pin.dir
+      ).length;
+      effectiveHideLabel = execPinsCount <= 1;
     }
 
     const pinLabel = document.createElement("span");
