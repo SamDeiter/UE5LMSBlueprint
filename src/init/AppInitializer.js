@@ -52,6 +52,7 @@ import { BreakpointManager } from "../services/BreakpointManager.js";
 import { AssetInterfacingService } from "../services/AssetInterfacingService.js";
 
 import { DOMEventHandler } from "./DOMEventHandler.js";
+import { createAssessmentController } from "../ui/assessment/AssessmentController.js";
 
 export class AppInitializer {
   /**
@@ -208,6 +209,10 @@ export class AppInitializer {
 
     App.validator = new BlueprintValidator(App);
     window.validateSampleTask = () => App.validator.validateTask(SAMPLE_TASK);
+
+    // Assessment Mode (Educational Quiz System)
+    App.assessment = createAssessmentController(App);
+    window.openAssessment = () => App.assessment.open();
   }
 
   static postInitialization(App) {

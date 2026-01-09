@@ -48,6 +48,11 @@ export class DOMEventHandler {
     this._bindClick("class-defaults-btn", () => {
       if (this.app.details) this.app.details.showClassDefaults();
     });
+
+    // Assessment Mode
+    this._bindClick("assessment-btn", () => {
+      if (this.app.assessment) this.app.assessment.open();
+    });
   }
 
   bindMenuEvents() {
