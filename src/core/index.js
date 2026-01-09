@@ -10,6 +10,9 @@ export {
   BLUEPRINT_TYPES,
 } from "./BlueprintAssetManager.js";
 
+// Content Browser
+export { AssetFolder, ContentBrowser } from "./ContentBrowser.js";
+
 // Validation
 export {
   ValidationResult,
