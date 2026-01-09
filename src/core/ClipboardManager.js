@@ -61,10 +61,10 @@ export class ClipboardManager {
     this.data = clipboard;
 
     // Also copy to system clipboard if enabled
-    if (this.systemClipboardEnabled && navigator.clipboard) {
+    if (this.systemClipboardEnabled && window.navigator?.clipboard) {
       try {
-        navigator.clipboard.writeText(JSON.stringify(clipboard));
-      } catch (e) {
+        window.navigator.clipboard.writeText(JSON.stringify(clipboard));
+      } catch (_e) {
         console.warn("ClipboardManager: Could not write to system clipboard");
       }
     }
