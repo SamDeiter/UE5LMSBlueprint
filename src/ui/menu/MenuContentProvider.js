@@ -91,15 +91,23 @@ export class MenuContentProvider {
     ];
   }
 
-  _getComponentDropActions(compName) {
-    // simplified for now, usually just "Get Component"
-    // Logic from ActionMenu.showComponentDropOptions
+  _getComponentDropActions(droppedComponent) {
+    // droppedComponent is the component object from app.components
+    const compName = droppedComponent.name || droppedComponent;
+    const compId = droppedComponent.id || droppedComponent;
+
+    // Match structure of variable drop actions - empty category for flat display
     return [
       {
         name: `Get ${compName}`,
-        category: "Components",
-        nodeKey: "GetComponent", // Special handling needed likely
-        customData: { componentName: compName },
+        category: "", // Empty category = flat display at top level
+        nodeKey: `GetComponent_${compId}`,
+        isComponentOp: true,
+      },
+      {
+        name: `Set ${compName}`,
+        category: "", // Empty category = flat display at top level
+        nodeKey: `SetComponent_${compId}`,
         isComponentOp: true,
       },
     ];

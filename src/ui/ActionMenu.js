@@ -147,10 +147,22 @@ export class ActionMenu extends BaseController {
       return;
     }
 
-    // 3. Build Tree
+    // 3. Special case: Variable or Component drop - render directly without tree
+    if (this.droppedVarName || this.droppedComponent) {
+      items.forEach((item) => {
+        const el = this._createMenuItemElement(item);
+        if (el) {
+          el.style.paddingLeft = "12px";
+          this.list.appendChild(el);
+        }
+      });
+      return;
+    }
+
+    // 4. Build Tree for normal menu
     const treeRoot = buildCategoryTree(items, (item) => item.category);
 
-    // 4. Render Tree
+    // 5. Render Tree
     // renderCategoryTree appends directly to the container
     renderCategoryTree(
       treeRoot,
@@ -218,12 +230,18 @@ export class ActionMenu extends BaseController {
 
     if (item.isVariableOp) {
       el.innerHTML = `<span class="var-pill" style="background-color:${item.color}"></span>${displayName}`;
+    } else if (item.isComponentOp) {
+      // Component operations - use a cube icon like UE5
+      el.innerHTML = `<i class="fas fa-cube mr-1" style="color:#4fc3f7;"></i>${displayName}`;
     } else if (item.isCustomEventCall) {
       el.innerHTML = `<span>${displayName}</span>`;
     } else if (item.isStandardNode || item.isSuggested) {
       el.innerHTML = `<span>${displayName}</span>`;
     } else if (item.isDebug) {
       el.innerHTML = `<span class="text-muted">${displayName}</span>`;
+    } else {
+      // Fallback - ensure all items are displayed
+      el.innerHTML = `<span>${displayName}</span>`;
     }
 
     this.addListener(el, "click", (e) => {
