@@ -21,10 +21,13 @@ export const registerCollectionTests = (runner) => {
     const node = app.graph.addNode("Array_Length", 100, 100);
     assert(node !== null, "Array_Length node should be created");
 
-    node.tempValues = { array_in: [1, 2, 3, 4, 5] };
+    // Set tempValues with correct pin local ID
+    node.tempValues = { array: [1, 2, 3, 4, 5] };
 
     const executor = app.sim.executorRegistry.getExecutor("Array_Length");
-    const result = executor.evaluateValue(node, { id: "length_out" });
+    const result = executor.evaluateValue(node, {
+      id: `${node.id}-length_out`,
+    });
 
     assert(result === 5, `Array_Length should return 5, got ${result}`);
   });
@@ -33,10 +36,11 @@ export const registerCollectionTests = (runner) => {
     const node = app.graph.addNode("Array_Contains", 100, 100);
     assert(node !== null, "Array_Contains node should be created");
 
-    node.tempValues = { array_in: ["a", "b", "c"], item_in: "b" };
+    // Set tempValues with correct pin local IDs
+    node.tempValues = { array: ["a", "b", "c"], item: "b" };
 
     const executor = app.sim.executorRegistry.getExecutor("Array_Contains");
-    const result = executor.evaluateValue(node, { id: "found_out" });
+    const result = executor.evaluateValue(node, { id: `${node.id}-found_out` });
 
     assert(result === true, `Array_Contains should find 'b'`);
   });
@@ -47,10 +51,12 @@ export const registerCollectionTests = (runner) => {
     const node = app.graph.addNode("Set_Length", 100, 100);
     assert(node !== null, "Set_Length node should be created");
 
-    node.tempValues = { set_in: new Set([1, 2, 3]) };
+    node.tempValues = { set: new Set([1, 2, 3]) };
 
     const executor = app.sim.executorRegistry.getExecutor("Set_Length");
-    const result = executor.evaluateValue(node, { id: "length_out" });
+    const result = executor.evaluateValue(node, {
+      id: `${node.id}-length_out`,
+    });
 
     assert(result === 3, `Set_Length should return 3, got ${result}`);
   });
@@ -65,10 +71,12 @@ export const registerCollectionTests = (runner) => {
       ["a", 1],
       ["b", 2],
     ]);
-    node.tempValues = { map_in: testMap };
+    node.tempValues = { map: testMap };
 
     const executor = app.sim.executorRegistry.getExecutor("Map_Length");
-    const result = executor.evaluateValue(node, { id: "length_out" });
+    const result = executor.evaluateValue(node, {
+      id: `${node.id}-length_out`,
+    });
 
     assert(result === 2, `Map_Length should return 2, got ${result}`);
   });
@@ -81,10 +89,10 @@ export const registerCollectionTests = (runner) => {
       ["x", 1],
       ["y", 2],
     ]);
-    node.tempValues = { map_in: testMap };
+    node.tempValues = { map: testMap };
 
     const executor = app.sim.executorRegistry.getExecutor("Map_Keys");
-    const result = executor.evaluateValue(node, { id: "keys_out" });
+    const result = executor.evaluateValue(node, { id: `${node.id}-keys_out` });
 
     assert(Array.isArray(result), "Map_Keys should return an array");
     assert(
