@@ -1,8 +1,10 @@
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { UE5Renderer } from "../utils/UE5Renderer.js";
+import { graphAnalyzer, IssueSeverity } from "../core/GraphAnalyzer.js";
 
 /**
- * Simple compiler to validate the graph for errors.
+ * Compiler - Validates graph and detects Blueprint pitfalls
+ * Integrates with GraphAnalyzer for educational feedback
  */
 export class Compiler {
   constructor(app) {
@@ -238,6 +240,94 @@ export class Compiler {
       // We no longer flag unconnected data pins as errors, because they have default/literal values.
     }
 
+    // === PITFALL ANALYSIS (Educational) ===
+    // Run GraphAnalyzer to detect common Blueprint mistakes
+    const graphData = {
+      nodes: [...this.app.graph.nodes.values()].map((n) => ({
+        id: n.id,
+        nodeKey: n.nodeKey,
+        title: n.title,
+        type: n.type,
+        x: n.x,
+        y: n.y,
+        pins:
+          n.pins?.map((p) => ({
+            id: p.id,
+            name: p.name,
+            localId: p.localId,
+            type: p.type,
+            dir: p.dir,
+            links: p.links || [],
+          })) || [],
+      })),
+      links: [...this.app.wiring.links.values()].map((l) => ({
+        id: l.id,
+        startPinId: l.startPin?.id,
+        endPinId: l.endPin?.id,
+      })),
+    };
+
+    const analysisResult = graphAnalyzer.analyze(graphData, {
+      graphName: this.app.activeGraph || "EventGraph",
+      app: this.app,
+    });
+
+    // Log analysis issues
+    if (analysisResult.issues.length > 0) {
+      this.log(
+        `--- Blueprint Quality Analysis (Score: ${analysisResult.score}/100) ---`
+      );
+
+      analysisResult.issues.forEach((issue) => {
+        const typeMap = {
+          [IssueSeverity.ERROR]: "error",
+          [IssueSeverity.WARNING]: "error", // Show warnings as errors for visibility
+          [IssueSeverity.INFO]: "log",
+          [IssueSeverity.HINT]: "log",
+        };
+
+        const prefix =
+          issue.severity === IssueSeverity.ERROR
+            ? "❌"
+            : issue.severity === IssueSeverity.WARNING
+            ? "⚠️"
+            : issue.severity === IssueSeverity.INFO
+            ? "ℹ️"
+            : "💡";
+
+        this.log(
+          `${prefix} [${issue.category}] ${issue.title}: ${issue.message}`,
+          typeMap[issue.severity]
+        );
+
+        if (issue.suggestion) {
+          this.log(`   → Suggestion: ${issue.suggestion}`, "log");
+        }
+
+        // Highlight problem nodes visually
+        if (issue.nodeId && issue.severity === IssueSeverity.ERROR) {
+          this.highlightProblemNode(issue.nodeId, "error");
+        } else if (issue.nodeId && issue.severity === IssueSeverity.WARNING) {
+          this.highlightProblemNode(issue.nodeId, "warning");
+        }
+      });
+
+      // Only count ERROR severity as actual compilation errors
+      const analysisErrors = analysisResult.issues.filter(
+        (i) => i.severity === IssueSeverity.ERROR
+      ).length;
+      errorCount += analysisErrors;
+
+      this.log(
+        `Found ${analysisResult.stats.errors} errors, ${analysisResult.stats.warnings} warnings, ${analysisResult.stats.infos} suggestions.`
+      );
+    } else {
+      this.log("✅ No Blueprint pitfalls detected!", "success");
+    }
+
+    // Store analysis result for external access
+    this.lastAnalysisResult = analysisResult;
+
     this.lastValidationErrors = errorCount;
 
     // Update status
@@ -255,5 +345,35 @@ export class Compiler {
     }
 
     return errorCount === 0;
+  }
+
+  /**
+   * Highlight a problem node with visual indicator
+   * @param {string} nodeId - Node ID to highlight
+   * @param {string} type - 'error' or 'warning'
+   */
+  highlightProblemNode(nodeId, type = "error") {
+    const node = this.app.graph.nodes.get(nodeId);
+    if (!node || !node.element) return;
+
+    // Add highlight class
+    const className = type === "error" ? "node-error" : "node-warning";
+    node.element.classList.add(className);
+
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+      node.element?.classList.remove(className);
+    }, 10000);
+  }
+
+  /**
+   * Clear all problem highlights
+   */
+  clearProblemHighlights() {
+    this.app.graph.nodes.forEach((node) => {
+      if (node.element) {
+        node.element.classList.remove("node-error", "node-warning");
+      }
+    });
   }
 }
