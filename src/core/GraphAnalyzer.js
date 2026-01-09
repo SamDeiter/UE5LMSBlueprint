@@ -169,27 +169,61 @@ function validateUnconnectedExecPins(nodes, links) {
 
 function validateOrphanedNodes(nodes, links) {
   const issues = [];
-  const connectedNodeIds = new Set();
+
+  // Build a forward adjacency map for exec connections
+  const execForward = new Map(); // nodeId -> Set of connected nodeIds
 
   links.forEach((link) => {
     const isExecLink =
-      link.startPinId?.includes("exec") || link.endPinId?.includes("exec");
+      link.startPinId?.includes("exec") ||
+      link.endPinId?.includes("exec") ||
+      link.startPinId?.includes("then") ||
+      link.endPinId?.includes("body");
+
     if (isExecLink) {
       const startId = extractNodeId(link.startPinId);
       const endId = extractNodeId(link.endPinId);
-      if (startId) connectedNodeIds.add(startId);
-      if (endId) connectedNodeIds.add(endId);
+
+      if (startId && endId) {
+        if (!execForward.has(startId)) {
+          execForward.set(startId, new Set());
+        }
+        execForward.get(startId).add(endId);
+      }
     }
   });
 
-  nodes.forEach((node) => {
-    if (node.nodeKey?.startsWith("Event")) connectedNodeIds.add(node.id);
-  });
+  // Find all Event nodes (entry points)
+  const eventNodes = nodes.filter(
+    (n) => n.nodeKey?.startsWith("Event") || n.type === "event"
+  );
 
+  // BFS from all event nodes to find reachable nodes
+  const reachable = new Set();
+  const queue = eventNodes.map((n) => n.id);
+
+  while (queue.length > 0) {
+    const nodeId = queue.shift();
+    if (reachable.has(nodeId)) continue;
+    reachable.add(nodeId);
+
+    const neighbors = execForward.get(nodeId);
+    if (neighbors) {
+      neighbors.forEach((n) => {
+        if (!reachable.has(n)) {
+          queue.push(n);
+        }
+      });
+    }
+  }
+
+  // Check for orphaned nodes (flow nodes not reachable from any event)
   const pureTypes = ["pure-node", "variable-getter", "variable-setter"];
   nodes.forEach((node) => {
     if (pureTypes.includes(node.type) || node.nodeKey === "Comment") return;
-    if (!connectedNodeIds.has(node.id)) {
+    if (node.nodeKey?.startsWith("Event") || node.type === "event") return;
+
+    if (!reachable.has(node.id)) {
       issues.push(
         new AnalysisIssue({
           nodeId: node.id,
