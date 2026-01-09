@@ -540,6 +540,9 @@ class Node {
     element.style.left = `${this.x}px`; // Dynamic position
     element.style.top = `${this.y}px`; // Dynamic position
 
+    // Note: Background styling is now handled by CSS (nodes.css .node.compact-node)
+    // The type color is indicated by the pin connector color, not the node background
+
     const container = document.createElement("div");
     container.className = "compact-node-container";
 
@@ -703,7 +706,13 @@ class Node {
     const isConnectionOnly =
       connectionOnlyTypes.includes(pin.type) || pin.isArray || hasContainerType;
 
-    if (pin.dir === "in" && isDataPin && !isConnected && !isConnectionOnly) {
+    if (
+      pin.dir === "in" &&
+      isDataPin &&
+      !isConnected &&
+      !isConnectionOnly &&
+      !pin.noDefaultValue
+    ) {
       inputWidget = NodeWidgets.createInputWidget(pin, this);
     }
 

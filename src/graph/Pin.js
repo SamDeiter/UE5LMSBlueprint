@@ -22,6 +22,7 @@ class Pin {
     this.isCustom = pinData.isCustom || false;
     this.isReference = pinData.isReference || pinData.byRef || false; // Pass-by-reference diamond pin
     this.isSplit = pinData.isSplit || false;
+    this.noDefaultValue = pinData.noDefaultValue || false; // Prevent input widget for this pin
     this.enumValues = pinData.options || pinData.enumValues;
     this.subPins = [];
 

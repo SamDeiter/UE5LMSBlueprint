@@ -96,19 +96,29 @@ export class MenuContentProvider {
     const compName = droppedComponent.name || droppedComponent;
     const compId = droppedComponent.id || droppedComponent;
 
-    // Match structure of variable drop actions - empty category for flat display
+    // Extract the type name for the header (e.g., "PointLight" -> "POINTLIGHT")
+    const typeName = (droppedComponent.type || compName)
+      .replace(/Component$/, "")
+      .toUpperCase();
+
+    // UE5 style: Header with component type, then simple Get/Set options (no icons)
     return [
       {
+        name: typeName,
+        category: "",
+        isHeader: true, // Special header item
+      },
+      {
         name: `Get ${compName}`,
-        category: "", // Empty category = flat display at top level
+        category: "",
         nodeKey: `GetComponent_${compId}`,
-        isComponentOp: true,
+        isPlainText: true, // Simple text, no icons
       },
       {
         name: `Set ${compName}`,
-        category: "", // Empty category = flat display at top level
+        category: "",
         nodeKey: `SetComponent_${compId}`,
-        isComponentOp: true,
+        isPlainText: true, // Simple text, no icons
       },
     ];
   }

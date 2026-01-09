@@ -222,14 +222,26 @@ export class ActionMenu extends BaseController {
 
   _createMenuItemElement(item) {
     const el = document.createElement("div");
-    el.className = "menu-item tree-item-indent-1";
 
     // Highlight Logic
     const filter = this.searchInput.value;
     const displayName = this._highlightText(item.name, filter);
 
+    // Handle header items (component type headers like "POINTLIGHT")
+    if (item.isHeader) {
+      el.className = "menu-header";
+      el.innerHTML = `<span style="color:#888; font-size:11px; text-transform:uppercase;">${displayName}</span>
+                      <hr style="margin:4px 0; border:0; border-top:1px solid #444;">`;
+      return el; // No click handler for headers
+    }
+
+    el.className = "menu-item tree-item-indent-1";
+
     if (item.isVariableOp) {
       el.innerHTML = `<span class="var-pill" style="background-color:${item.color}"></span>${displayName}`;
+    } else if (item.isPlainText) {
+      // Simple text for component Get/Set options (no icons)
+      el.innerHTML = `<span>${displayName}</span>`;
     } else if (item.isComponentOp) {
       // Component operations - use a cube icon like UE5
       el.innerHTML = `<i class="fas fa-cube mr-1" style="color:#4fc3f7;"></i>${displayName}`;

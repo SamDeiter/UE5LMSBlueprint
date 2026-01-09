@@ -750,7 +750,7 @@ export class VariableController extends BaseController {
         variableId: variable.id,
         icon: "fa-arrow-up",
         pins: [
-          { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+          { id: "exec_in", name: "", type: "exec", dir: "in" },
           {
             id: "val_in",
             name: variable.name,
@@ -759,10 +759,10 @@ export class VariableController extends BaseController {
             containerType: variable.containerType,
             ...pinDefault,
           },
-          { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+          { id: "exec_out", name: "", type: "exec", dir: "out" },
           {
             id: "val_out",
-            name: variable.name,
+            name: "", // UE5 style: output pin has no label, only input shows the name
             type: variable.type,
             dir: "out",
             containerType: variable.containerType,

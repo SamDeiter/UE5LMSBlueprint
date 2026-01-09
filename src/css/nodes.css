@@ -1,240 +1,254 @@
 /* --- NODE STYLES --- */
 .node {
-    position: absolute;
-    background-color: rgba(15, 15, 15, 0.98); /* UE5 darker node body */
-    border: 1px solid rgba(0, 0, 0, 0.9);
-    border-radius: 8px;
-    /* UE5 shadow spec: 18/64 margin shadow */
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.7),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-        0 0 0 1px rgba(0, 0, 0, 0.9);
-    min-width: 120px; /* Reduced from 180px */
-    z-index: 10;
-    pointer-events: all;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: box-shadow 0.15s ease;
+  position: absolute;
+  background-color: rgba(15, 15, 15, 0.98); /* UE5 darker node body */
+  border: 1px solid rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  /* UE5 shadow spec: 18/64 margin shadow */
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 0 0 1px rgba(0, 0, 0, 0.9);
+  min-width: 120px; /* Reduced from 180px */
+  z-index: 10;
+  pointer-events: all;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: box-shadow 0.15s ease;
 }
 
 /* Selected Node - UE5 Standard */
 .node.selected {
-    box-shadow: 0 0 0 2px rgba(255, 200, 100, 0.5),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-        0 4px 20px rgba(0, 0, 0, 0.9);
-    z-index: 100;
+  box-shadow: 0 0 0 2px rgba(255, 200, 100, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 20px rgba(0, 0, 0, 0.9);
+  z-index: 100;
 }
 
 /* --- NODE TITLE --- */
 .node-title {
-    padding: 5px 10px;  /* UE5 spec padding */
-    font-weight: 600;   /* UE5 uses Bold (600) */
-    font-size: 10px;    /* UE5 spec: DEFAULT_FONT("Bold", 10) */
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    color: rgba(218, 218, 218, 1.0);  /* UE5 Foreground color */
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-shadow: none;  /* UE5 uses zero shadow offset */
-    position: relative;
-    overflow: visible;
-    min-height: 22px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+  padding: 5px 10px; /* UE5 spec padding */
+  font-weight: 600; /* UE5 uses Bold (600) */
+  font-size: 10px; /* UE5 spec: DEFAULT_FONT("Bold", 10) */
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  color: rgba(218, 218, 218, 1); /* UE5 Foreground color */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-shadow: none; /* UE5 uses zero shadow offset */
+  position: relative;
+  overflow: visible;
+  min-height: 22px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.7);
 }
-
 
 /* Breakpoint Icon */
 .breakpoint-icon {
-    width: 14px;
-    height: 14px;
-    background: #d32f2f;
-    border-radius: 50%;
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    z-index: 10;
-    pointer-events: none;
+  width: 14px;
+  height: 14px;
+  background: #d32f2f;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  pointer-events: none;
 }
-
 
 /* UE5 SVG Icon Support */
 .ue5-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .ue5-icon-svg {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    /* Make SVG icons white to match UE5 style */
-    filter: brightness(0) invert(1);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Make SVG icons white to match UE5 style */
+  filter: brightness(0) invert(1);
 }
 
 .node-title:hover .ue5-icon-svg {
-    filter: brightness(0) invert(1) brightness(1.2);
+  filter: brightness(0) invert(1) brightness(1.2);
 }
 
 /* UE5 Pin SVG Styling */
 .ue5-pin-svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .ue5-container-svg {
-    display: block;
-    width: 12px;
-    height: 12px;
-    pointer-events: none;
+  display: block;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
 }
 
 .node-title::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 1;
-    border-top-left-radius: inherit;
-    border-top-right-radius: inherit;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 .node-title::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 8px;
-    right: 8px;
-    height: 1px;
-    background-color: var(--node-accent-color, rgba(255, 255, 255, 0.3));
-    z-index: 2;
-    border-radius: 0 0 2px 2px;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: 1px;
+  background-color: var(--node-accent-color, rgba(255, 255, 255, 0.3));
+  z-index: 2;
+  border-radius: 0 0 2px 2px;
 }
 
 .node.event-node .node-title {
-    background: linear-gradient(to bottom, var(--header-event-start), var(--header-event-end));
+  background: linear-gradient(
+    to bottom,
+    var(--header-event-start),
+    var(--header-event-end)
+  );
 }
 
 .node.flow-node .node-title {
-    background: linear-gradient(to bottom, var(--header-flow-start), var(--header-flow-end));
+  background: linear-gradient(
+    to bottom,
+    var(--header-flow-start),
+    var(--header-flow-end)
+  );
 }
 
 .node.function-node .node-title {
-    background: linear-gradient(to bottom, var(--header-function-start), var(--header-function-end));
+  background: linear-gradient(
+    to bottom,
+    var(--header-function-start),
+    var(--header-function-end)
+  );
 }
 
 .node.variable-node .node-title,
 .node.pure-node .node-title {
-    background: linear-gradient(to bottom, #306030, #153015);
+  background: linear-gradient(to bottom, #306030, #153015);
 }
 
 .node.cast-node .node-title {
-    background: linear-gradient(to bottom, var(--header-cast-start), var(--header-cast-end));
+  background: linear-gradient(
+    to bottom,
+    var(--header-cast-start),
+    var(--header-cast-end)
+  );
 }
 .node-content {
-    padding: 8px 0;
-    min-height: 24px;
+  padding: 8px 0;
+  min-height: 24px;
 }
 
 .node-content.pure-node-content {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .pin-column {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .pin-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    min-height: 24px;
-    box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 24px;
+  box-sizing: border-box;
 }
 
 .pin-row.exec-row {
-    min-height: 24px;
-    margin-bottom: 2px;
+  min-height: 24px;
+  margin-bottom: 2px;
 }
 
 .pin.out {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .pin-column.in {
-    align-items: flex-start;
+  align-items: flex-start;
 }
 
 .pin-column.out {
-    align-items: flex-end;
+  align-items: flex-end;
 }
 
 /* --- PIN CONTAINER --- */
 .pin-container {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 0 6px;
-    min-height: 18px;
-    position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  min-height: 18px;
+  position: relative;
 }
 
 .pin-container.in {
-    flex-direction: row;
-    justify-content: flex-start;
+  flex-direction: row;
+  justify-content: flex-start;
 }
 
 .pin-container.out {
-    flex-direction: row;
-    justify-content: flex-end;
-    margin-left: auto;
-    padding-right: 10px;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-left: auto;
+  padding-right: 10px;
 }
 
 /* --- PIN WRAPPER (for label + input) --- */
 .pin-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* --- PIN DOT (Base) --- */
 .pin-dot {
-    width: 18px; /* Increased to accommodate beak SVGs */
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: transform 0.1s;
-    position: relative;
-    box-sizing: border-box;
-    background: transparent !important; /* Disable legacy coloring */
-    border: none !important;
-    box-shadow: none !important;
+  width: 18px; /* Increased to accommodate beak SVGs */
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.1s;
+  position: relative;
+  box-sizing: border-box;
+  background: transparent !important; /* Disable legacy coloring */
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .pin-dot:hover {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
-
-
 
 /* Legacy Exec styles removed - handled by UE5Renderer SVGs */
 
@@ -242,686 +256,699 @@
 
 /* Pin Colors */
 .pin-dot.bool-pin {
-    color: var(--color-bool);
+  color: var(--color-bool);
 }
 
 .pin-dot.byte-pin {
-    color: var(--color-byte);
+  color: var(--color-byte);
 }
 
 .pin-dot.int-pin {
-    color: var(--color-int);
+  color: var(--color-int);
 }
 
 .pin-dot.int64-pin {
-    color: var(--color-int64);
+  color: var(--color-int64);
 }
 
 .pin-dot.float-pin {
-    color: var(--color-float);
+  color: var(--color-float);
 }
 
 .pin-dot.double-pin {
-    color: var(--color-double);
+  color: var(--color-double);
 }
 
 .pin-dot.name-pin {
-    color: var(--color-name);
+  color: var(--color-name);
 }
 
 .pin-dot.string-pin {
-    color: var(--color-string);
+  color: var(--color-string);
 }
 
 .pin-dot.text-pin {
-    color: var(--color-text);
+  color: var(--color-text);
 }
 
 .pin-dot.vector-pin {
-    color: var(--color-vector);
+  color: var(--color-vector);
 }
 
 .pin-dot.rotator-pin {
-    color: var(--color-rotator);
+  color: var(--color-rotator);
 }
 
 .pin-dot.transform-pin {
-    color: var(--color-transform);
+  color: var(--color-transform);
 }
 
 .pin-dot.object-pin {
-    color: var(--color-object);
+  color: var(--color-object);
 }
 
 .pin-dot.enum-pin {
-    color: var(--color-enum);
+  color: var(--color-enum);
 }
 
 .pin-dot.hitresult-pin {
-    color: #001A99; /* UE5 HitResult Struct Color */
+  color: #001a99; /* UE5 HitResult Struct Color */
 }
 
 .pin-dot.array-pin {
-    border: none;
-    box-shadow: none;
-    background-color: transparent;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
 }
 
 /* Container pins */
 .pin-dot.container-pin {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px !important;
-    height: 16px !important;
-    margin: 0 4px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 4px;
 }
 
 .pin-dot.container-pin i,
 .pin-dot.container-pin span {
-    font-size: 10px !important;
+  font-size: 10px !important;
 }
 
 /* Set Container Pin - Bracket style { } */
 .pin-dot.set-pin {
-    border: none;
-    box-shadow: none;
-    background: transparent !important;
-    border-radius: 0 !important;
+  border: none;
+  box-shadow: none;
+  background: transparent !important;
+  border-radius: 0 !important;
 }
 
 .pin-dot.set-pin::before {
-    content: '{ }';
-    font-size: 10px;
-    font-weight: bold;
-    color: currentColor;
+  content: "{ }";
+  font-size: 10px;
+  font-weight: bold;
+  color: currentColor;
 }
 
 /* Map Container Pin - Key→Value arrow style */
 .pin-dot.map-pin {
-    border: none;
-    box-shadow: none;
-    background: transparent !important;
-    border-radius: 0 !important;
+  border: none;
+  box-shadow: none;
+  background: transparent !important;
+  border-radius: 0 !important;
 }
 
 .pin-dot.map-pin::before {
-    content: '⟼';
-    font-size: 14px;
-    font-weight: bold;
-    color: currentColor;
+  content: "⟼";
+  font-size: 14px;
+  font-weight: bold;
+  color: currentColor;
 }
 
 /* Reference Pin - Diamond shape (pass by reference) */
 .pin-dot.reference-pin {
-    border-radius: 0 !important;
-    transform: rotate(45deg);
-    width: 10px;
-    height: 10px;
+  border-radius: 0 !important;
+  transform: rotate(45deg);
+  width: 10px;
+  height: 10px;
 }
 /* --- PIN ELEMENTS (from Node.js) --- */
 .pin {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 8px;
-    min-height: 22px;
-    position: relative;
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  min-height: 22px;
+  position: relative;
+  white-space: nowrap;
 }
 
 .pin.in {
-    flex-direction: row;
-    justify-content: flex-start;
+  flex-direction: row;
+  justify-content: flex-start;
 }
 
 .pin.out {
-    flex-direction: row-reverse; /* Pin dot on right */
-    justify-content: flex-start;
-    text-align: right;
+  flex-direction: row-reverse; /* Pin dot on right */
+  justify-content: flex-start;
+  text-align: right;
 }
 
 .pin.out .pin-label {
-    margin-right: 0;
-    margin-left: auto;
+  margin-right: 0;
+  margin-left: auto;
 }
 
 .pin-label {
-    font-size: 11px;
-    color: #ccc;
-    user-select: none;
-    font-weight: 500;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  font-size: 11px;
+  color: #ccc;
+  user-select: none;
+  font-weight: 500;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 }
 
 .pin .hidden {
-    display: none !important;
+  display: none !important;
 }
 
-/* --- COMPACT NODES (Getters, Math) --- */
+/* --- COMPACT NODES (Getters, Math) - UE5 Exact Match --- */
 .node.compact-node,
 .node.getter-node {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    background: linear-gradient(to bottom, #333 0%, #111 100%) !important;
-    border-radius: 50px !important;
-    padding: 8px 16px 8px 20px !important;
-    border: 1px solid #000 !important;
-    gap: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
-    font-size: 13px;
-    font-weight: 500;
-    color: white;
-    min-width: auto !important;
-    width: max-content !important;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  /* Background: subtle vertical gradient - darker at bottom, lighter at top */
+  background: linear-gradient(to bottom, #2d2d2f 0%, #1a1a1c 100%);
+  /* Rounded pill shape - large radius */
+  border-radius: 20px;
+  /* Padding: vertical 10px, left 18px to offset text slightly, right for connector */
+  padding: 10px 12px 10px 18px;
+  /* 1px dark border - slightly inset appearance */
+  border: 1px solid #0a0a0c;
+  /* Soft outer shadow */
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  /* Typography */
+  font-size: 13px;
+  font-weight: 400;
+  color: #e0e0e0;
+  letter-spacing: 0.2px;
+  /* Size constraints */
+  min-width: auto;
+  width: max-content;
+  height: 36px;
+  box-sizing: border-box;
+  gap: 10px;
 }
 
+/* Inner highlight at top edge - very subtle */
 .node.compact-node::after,
 .node.getter-node::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    height: 45%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25) 0%, transparent 100%);
-    border-radius: 50px 50px 20px 20px;
-    pointer-events: none;
-    z-index: 1;
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 8px;
+  right: 8px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent 100%
+  );
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .node.compact-node.selected,
 .node.getter-node.selected {
-    box-shadow: 0 0 0 2px var(--node-selection-outline), 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 0 0 2px var(--node-selection-outline),
+    0 4px 10px rgba(0, 0, 0, 0.5) !important;
 }
 
 .node.compact-node .node-title,
 .node.getter-node .node-title {
-    display: none !important;
+  display: none !important;
 }
 
 .node.compact-node .node-content,
 .node.getter-node .node-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0 !important;
-    gap: 8px;
-    width: 100%;
-    justify-content: space-between !important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 !important;
+  gap: 8px;
+  width: 100%;
+  justify-content: space-between !important;
 }
 
 .compact-node-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .compact-node-label {
-    font-weight: 600;
-    color: white;
-    text-shadow: 0 1px 2px black;
-    white-space: nowrap;
-    font-size: 13px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px black;
+  white-space: nowrap;
+  font-size: 13px;
 }
 
 /* --- SET NODE STYLES --- */
 .node.set-node {
-    min-width: 160px;
-    background-color: rgba(15, 15, 15, 0.9);
+  min-width: 160px;
+  background-color: rgba(15, 15, 15, 0.9);
 }
 
 .node.set-node .node-title {
-    justify-content: center !important;
-    font-style: italic !important;
-    font-weight: 800 !important;
-    font-size: 14px !important;
-    letter-spacing: 1px;
-    background: transparent;
-    border-bottom: none !important;
+  justify-content: center !important;
+  font-style: italic !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  letter-spacing: 1px;
+  background: transparent;
+  border-bottom: none !important;
 }
 
 .node.set-node .pin-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 8px;
-    background: rgba(0, 0, 0, 0.2);
-    margin: 2px 4px;
-    border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 2px 4px;
+  border-radius: 3px;
 }
 
 /* --- EVENT DELEGATE ICON --- */
 .event-delegate-icon {
-    width: 10px;
-    height: 10px;
-    background-color: #000000;  /* Black interior for UE5 delegate icon */
-    border: 2px solid #ff4444;
-    border-radius: 3px;
-    margin-left: auto;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    position: relative;
-    z-index: 2;
+  width: 10px;
+  height: 10px;
+  background-color: #000000; /* Black interior for UE5 delegate icon */
+  border: 2px solid #ff4444;
+  border-radius: 3px;
+  margin-left: auto;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
 }
 
 /* --- INPUT WIDGETS --- */
 /* .ue5-checkbox moved to ui-elements.css */
 
 .node-literal-input {
-    background-color: rgba(0, 0, 0, 0.5) !important;
-    color: #eee !important;
-    border: 1px solid transparent !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-    border-radius: 2px !important;
-    padding: 1px 3px;
-    font-family: inherit;
-    font-size: 9px;
-    outline: none;
-    transition: border-color 0.2s;
-    height: 14px;
-    line-height: 12px;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  color: #eee !important;
+  border: 1px solid transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 2px !important;
+  padding: 1px 3px;
+  font-family: inherit;
+  font-size: 9px;
+  outline: none;
+  transition: border-color 0.2s;
+  height: 14px;
+  line-height: 12px;
 }
 
 .node-literal-input:focus {
-    border-bottom-color: #fca50f !important;
-    background-color: rgba(0, 0, 0, 0.8) !important;
+  border-bottom-color: #fca50f !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
 /* --- SPLIT PINS --- */
 .pin-split-group {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .pin-container.sub-pin {
-    padding-left: 12px;
-    font-size: 11px;
+  padding-left: 12px;
+  font-size: 11px;
 }
 
 .pin-container.sub-pin .pin-dot {
-    width: 14px;
-    height: 14px;
+  width: 14px;
+  height: 14px;
 }
 
 /* --- COMPLEX INPUT WIDGETS --- */
 .pin-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .ue-vector-widget {
-    display: flex;
-    gap: 2px;  /* UE5 spec: 2px padding between components */
-    align-items: center;
-    margin-bottom: 4px;
+  display: flex;
+  gap: 2px; /* UE5 spec: 2px padding between components */
+  align-items: center;
+  margin-bottom: 4px;
 }
 
 .pin-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    flex: 1;
+  display: flex;
+  flex-direction: row; /* Changed from column to row for inline label + input */
+  align-items: center;
+  gap: 4px;
+  flex: 1;
 }
 
 .pin.out .pin-wrapper {
-    align-items: flex-end;
+  align-items: flex-end;
 }
 
-.pin-label-in, .pin-label-out {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.8);
-    white-space: nowrap;
-    pointer-events: none;
-    line-height: 1.2;
+.pin-label-in,
+.pin-label-out {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  pointer-events: none;
+  line-height: 1.2;
 }
 
 .val-group {
-    display: flex;
-    align-items: center;
-    gap: 2px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .val-label {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.4);  /* UE5 spec: 40% opacity */
-    font-family: monospace;
-    font-weight: bold;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4); /* UE5 spec: 40% opacity */
+  font-family: monospace;
+  font-weight: bold;
 }
 
 .small-input {
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    padding: 1px 4px;
-    color: #ddd;
-    font-size: 10px;
-    width: 28px;
-    text-align: right;
-    outline: none;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  padding: 1px 4px;
+  color: #ddd;
+  font-size: 10px;
+  width: 28px;
+  text-align: right;
+  outline: none;
 }
 
 .small-input:focus {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.8);
 }
 
 /* Pin Row Layout - ensures proper alignment of execution pins */
 .pin-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    min-height: 22px;
-    padding: 2px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 22px;
+  padding: 2px 0;
 }
 
 .pin-row.has-widget {
-    height: auto;
-    align-items: flex-start;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  height: auto;
+  align-items: flex-start;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .pin-row.has-widget .pin-icon {
-    margin-top: 2px;
+  margin-top: 2px;
 }
 
 /* --- ENUM & SELECTION WIDGETS --- */
 .enum-widget,
 .object-selection-widget,
 .ue-enum-select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #eee;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 2px;
-    padding: 2px 20px 2px 6px;
-    font-size: 10px;
-    min-width: 80px;
-    max-width: 160px;
-    cursor: pointer;
-    outline: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23dddddd' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 4px center;
-    margin-left: 4px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #eee;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  padding: 2px 20px 2px 6px;
+  font-size: 10px;
+  min-width: 80px;
+  max-width: 160px;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23dddddd' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  margin-left: 4px;
 }
 
 .enum-widget:hover,
 .object-selection-widget:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    background-color: rgba(0, 0, 0, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(0, 0, 0, 0.9);
 }
 
 .ue-enum-select:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .ue-enum-select:focus {
-    border-color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* --- COLOR PICKER --- */
 .ue-color-picker-container {
-    display: inline-block;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-    padding: 1px;
-    background: rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  padding: 1px;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .ue-color-picker {
-    width: 24px;
-    height: 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 1px;
+  width: 24px;
+  height: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 1px;
 }
 
 .ue-color-picker::-webkit-color-swatch-wrapper {
-    padding: 0;
+  padding: 0;
 }
 
 .ue-color-picker::-webkit-color-swatch {
-    border: none;
-    border-radius: 1px;
-}/* Cache bust: 20251221202155 */
+  border: none;
+  border-radius: 1px;
+} /* Cache bust: 20251221202155 */
 
 /* --- ADVANCED PINS TOGGLE --- */
 .advanced-toggle-container {
-    display: flex;
-    justify-content: center;
-    padding: 4px 0;
-    cursor: pointer;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    margin-top: 4px;
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+  cursor: pointer;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .node-content {
-    background: rgba(15, 15, 15, 0.95);
-    padding: 2px 0 8px 0;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
+  background: rgba(15, 15, 15, 0.95);
+  padding: 2px 0 8px 0;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .advanced-toggle-icon {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid rgba(255, 255, 255, 0.6);
-    transition: transform 0.2s ease;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(255, 255, 255, 0.6);
+  transition: transform 0.2s ease;
 }
 
 .advanced-toggle-container.expanded .advanced-toggle-icon {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .advanced-toggle-container:hover .advanced-toggle-icon {
-    border-top-color: white;
+  border-top-color: white;
 }
 
 /* Hide advanced pins by default */
 .pin.advanced {
-    display: none;
+  display: none;
 }
 
 .node.advanced-expanded .pin.advanced {
-    display: flex;
+  display: flex;
 }
 
 /* Always show connected advanced pins */
 .pin.advanced.connected {
-    display: flex;
+  display: flex;
 }
 /* --- REROUTE NODE --- */
 .node.reroute-node {
-    width: 16px !important;
-    height: 16px !important;
-    min-width: unset !important;
-    min-height: unset !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: visible;
-    z-index: 5;
-    border-radius: 50%;
-    cursor: move;
-
+  width: 16px !important;
+  height: 16px !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  z-index: 5;
+  border-radius: 50%;
+  cursor: move;
 }
 
-
 .node.reroute-node .node-content {
-    padding: 0;
-    min-height: unset;
-    background: transparent !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
+  padding: 0;
+  min-height: unset;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 /* --- REROUTE NODE PINS --- */
 .node.reroute-node .pin-row {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 0;
-    height: 0;
-    pointer-events: none;
-    background: transparent !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  background: transparent !important;
 }
 
 .node.reroute-node .pin-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    background: transparent !important;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  background: transparent !important;
+  pointer-events: none;
 }
-
-
 
 .node.reroute-node .visual-knot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    z-index: 2;
-    pointer-events: auto;
-    cursor: move;
-    box-shadow: none;
-    transition: box-shadow 0.1s;
-    background: transparent !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: auto;
+  cursor: move;
+  box-shadow: none;
+  transition: box-shadow 0.1s;
+  background: transparent !important;
 }
-
 
 /* Exec Reroute Styling - Circle with Arrow Overlay (UE5 style) */
 /* Default: HOLLOW state (unconnected) - transparent center, white border */
 .node.reroute-node .visual-knot.is-exec {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: transparent !important;
-    border: 2px solid white;
-    transform: translate(-50%, -50%);
-    box-shadow: none;
-    position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: transparent !important;
+  border: 2px solid white;
+  transform: translate(-50%, -50%);
+  box-shadow: none;
+  position: relative;
 }
-
 
 /* CONNECTED state - fully white filled */
 .node.reroute-node .visual-knot.is-exec:not(.hollow) {
-    background-color: white !important;
+  background-color: white !important;
 }
 
 /* Back connection area for exec reroute (input side) - LARGER HIT AREA */
 .node.reroute-node .visual-knot.is-exec::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    pointer-events: auto;
-    cursor: crosshair;
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  pointer-events: auto;
+  cursor: crosshair;
 }
 
 /* Arrow overlay for exec reroute - positioned OUTSIDE circle - LARGER HIT AREA */
 .node.reroute-node .visual-knot.is-exec::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 100%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-left: 10px solid white;
-    border-top: 7px solid transparent;
-    border-bottom: 7px solid transparent;
-    pointer-events: auto;
-    cursor: crosshair;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid white;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  pointer-events: auto;
+  cursor: crosshair;
 }
-
 
 /* Provide visual feedback when selected */
 .node.reroute-node.selected .visual-knot {
-    box-shadow: 0 0 0 2px #fff, 0 0 4px 2px rgba(255, 165, 0, 0.8) !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 4px 2px rgba(255, 165, 0, 0.8) !important;
 }
 /* Adjust selection for Exec shape */
 .node.reroute-node.selected .visual-knot.is-exec {
-    box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.8) !important;
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.8) !important;
 }
 
-
 .node.reroute-node .pin-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    /* Opacity 0 makes it invisible but clickable */
-    opacity: 0;
-    z-index: 10;
-    /* Ensure internal pin-dot is centered */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto; /* Ensure clickable even if row is none */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* Opacity 0 makes it invisible but clickable */
+  opacity: 0;
+  z-index: 10;
+  /* Ensure internal pin-dot is centered */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto; /* Ensure clickable even if row is none */
 }
 
 .node.reroute-node .pin-dot {
-    /* valid layout needed for getBoundingClientRect() */
-    display: block !important;
-    /* FIX: Visibility hidden prevents mouse events! Use opacity 0 instead. */
-    visibility: visible;
-    opacity: 0;
-    width: 0px; /* Collapse size so it doesn't offset */
-    height: 0px;
-    padding: 0; /* No padding */
-    margin: 0;
-    border: none !important;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    /* Connects to exact enter */
+  /* valid layout needed for getBoundingClientRect() */
+  display: block !important;
+  /* FIX: Visibility hidden prevents mouse events! Use opacity 0 instead. */
+  visibility: visible;
+  opacity: 0;
+  width: 0px; /* Collapse size so it doesn't offset */
+  height: 0px;
+  padding: 0; /* No padding */
+  margin: 0;
+  border: none !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Connects to exact enter */
 }
 
 .node.reroute-node .pin-dot svg {
-    display: none !important;
+  display: none !important;
 }
 
 .node.reroute-node .pin-label {
-    display: none;
+  display: none;
 }

@@ -282,19 +282,26 @@ export class ComponentsController extends BaseController {
           customData: { componentId: comp.id },
         });
 
-        // Register Set node
+        // Register Set node - UE5 style: title is just "SET", component name on pins
         const setKey = `SetComponent_${comp.id}`;
         registry.register(setKey, {
-          title: `Set ${comp.name}`,
+          title: "SET",
           category: "Components",
           type: "function-node",
-          variableType: "object", // Ensure correct header color (blue)
+          variableType: "object", // Ensure correct header color (blue/cyan)
+          customData: { componentId: comp.id, componentName: comp.name },
           pins: [
-            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-            { id: "comp_in", name: comp.name, type: comp.type, dir: "in" },
-            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+            { id: "exec_in", name: "", type: "exec", dir: "in" },
+            {
+              id: "comp_in",
+              name: comp.name,
+              type: comp.type,
+              dir: "in",
+              noDefaultValue: true,
+            },
+            { id: "exec_out", name: "", type: "exec", dir: "out" },
+            { id: "comp_out", name: "", type: comp.type, dir: "out" },
           ],
-          customData: { componentId: comp.id },
         });
       });
     }
