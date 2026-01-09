@@ -2,6 +2,7 @@
  * BlueprintAssetManager.js - Manages Blueprint assets for multi-Blueprint support
  * This module will be the foundation for the Content Browser and tab system
  */
+import { generateGUID } from "../utils/guid.js";
 
 /**
  * Blueprint asset types
@@ -20,7 +21,7 @@ export const BLUEPRINT_TYPES = {
  */
 export class BlueprintAsset {
   constructor(name, type = BLUEPRINT_TYPES.CLASS) {
-    this.id = crypto.randomUUID();
+    this.id = generateGUID();
     this.name = name;
     this.type = type;
     this.created = new Date().toISOString();
