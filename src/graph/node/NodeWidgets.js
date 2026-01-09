@@ -62,7 +62,10 @@ export class NodeWidgets {
     }
 
     let inputEl;
-    const pinValue = node.pinLiterals.get(pin.id);
+    // Get value from pinLiterals, or fallback to pin's defaultValue
+    const pinValue = node.pinLiterals.has(pin.id)
+      ? node.pinLiterals.get(pin.id)
+      : pin.defaultValue;
     const updateLiteral = (e) => {
       let newValue = e.target.value;
       if (["int", "int64", "byte"].includes(pin.type)) {
