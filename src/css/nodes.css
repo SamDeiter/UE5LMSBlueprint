@@ -566,38 +566,25 @@
 }
 
 /* --- SPLIT PINS --- */
-.pin-split-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0;  /* No gap between sub-pins */
-}
-
+/* Sub-pins are now rendered as individual rows, not inside a split-group */
 .pin-container.sub-pin {
-  padding-left: 12px;
+  padding-left: 8px;
   font-size: 11px;
 }
 
-.pin-container.sub-pin .pin-dot {
-  width: 14px;
-  height: 14px;
-}
+/* Note: Pin dots keep their normal size - no size reduction for sub-pins */
 
-/* Align input boxes in split pin groups */
-.pin-split-group .sub-pin .pin-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
-}
-
-.pin-split-group .sub-pin .pin-label-in {
-  min-width: 60px;  /* Fixed width for alignment */
+/* Fixed label width for sub-pins to align input boxes */
+.pin-container.sub-pin .pin-label-in {
+  min-width: 45px;
   text-align: left;
 }
 
-.pin-split-group .sub-pin .node-literal-input {
-  width: 40px !important;
-  flex-shrink: 0;
+/* Ensure consistent input width for sub-pins (not too wide) */
+.pin-container.sub-pin .node-literal-input {
+  width: 35px !important;
+  min-width: 35px;
+  max-width: 35px;
 }
 
 /* --- COMPLEX INPUT WIDGETS --- */

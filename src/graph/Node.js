@@ -380,18 +380,72 @@ class Node {
     }
 
     // 2. Render Data Rows
-    for (let i = 0; i < dataRows; i++) {
+    // Flatten split pins into individual pin elements for proper row alignment
+    const flattenPins = (pins) => {
+      const result = [];
+      for (const pin of pins) {
+        if (pin.isSplit && pin.subPins && pin.subPins.length > 0) {
+          // Add each sub-pin as a separate row item
+          pin.subPins.forEach((subPin) => {
+            result.push({ pin: subPin, isSubPin: true, parentPin: pin });
+          });
+        } else {
+          result.push({ pin, isSubPin: false });
+        }
+      }
+      return result;
+    };
+
+    const flatDataIn = flattenPins(dataIn);
+    const flatDataOut = flattenPins(dataOut);
+    const flatDataRows = Math.max(flatDataIn.length, flatDataOut.length);
+
+    for (let i = 0; i < flatDataRows; i++) {
       const row = document.createElement("div");
       row.className = "pin-row data-row";
 
-      const pinIn = dataIn[i];
-      const pinOut = dataOut[i];
+      const itemIn = flatDataIn[i];
+      const itemOut = flatDataOut[i];
 
-      const pInEl = processPin(pinIn);
-      const pOutEl = processPin(pinOut);
+      let pInEl = null;
+      let pOutEl = null;
 
-      // Handle advanced row logic: if both are advanced, hide entire row?
-      // For now, let the pins handle their own visibility via CSS.
+      if (itemIn) {
+        pInEl = this.renderPin(itemIn.pin);
+        if (itemIn.isSubPin) {
+          // Add sub-pin prefix to name for display
+          const displayName = `${itemIn.parentPin.name} ${itemIn.pin.name}`;
+          const labelEl = pInEl.querySelector(".pin-label-in");
+          if (labelEl) labelEl.textContent = displayName;
+          pInEl.classList.add("sub-pin");
+          pInEl.dataset.parentPinId = itemIn.parentPin.id;
+        }
+        if (itemIn.pin.advanced) {
+          pInEl.classList.add("advanced");
+          hasAdvanced = true;
+          if (itemIn.pin.links && itemIn.pin.links.length > 0)
+            pInEl.classList.add("connected");
+        }
+      }
+
+      if (itemOut) {
+        pOutEl = this.renderPin(itemOut.pin);
+        if (itemOut.isSubPin) {
+          // Add sub-pin prefix to name for display
+          const displayName = `${itemOut.parentPin.name} ${itemOut.pin.name}`;
+          const labelEl = pOutEl.querySelector(".pin-label-out");
+          if (labelEl) labelEl.textContent = displayName;
+          pOutEl.classList.add("sub-pin");
+          pOutEl.dataset.parentPinId = itemOut.parentPin.id;
+        }
+        if (itemOut.pin.advanced) {
+          pOutEl.classList.add("advanced");
+          hasAdvanced = true;
+          if (itemOut.pin.links && itemOut.pin.links.length > 0)
+            pOutEl.classList.add("connected");
+        }
+      }
+
       if (pInEl) row.appendChild(pInEl);
       if (pOutEl) row.appendChild(pOutEl);
 
@@ -641,31 +695,8 @@ class Node {
    * @param {boolean} hideLabel - Whether to hide the pin label
    */
   renderPin(pin, hideLabel = false) {
-    // Handle Split Pins
-    if (pin.isSplit) {
-      const splitGroup = document.createElement("div");
-      splitGroup.className = "pin-split-group";
-      splitGroup.classList.add(pin.dir === "in" ? "align-start" : "align-end");
-
-      if (pin.subPins) {
-        pin.subPins.forEach((subPin) => {
-          // Temporarily rename sub-pin for display to include parent name context
-          const originalName = subPin.name;
-          subPin.name = `${pin.name} ${subPin.name}`;
-
-          const subPinEl = this.renderPin(subPin, false);
-          subPin.name = originalName; // Restore name
-
-          subPinEl.classList.add("sub-pin");
-          // Add data attribute pointing to PARENT pin ID for context menu handling
-          subPinEl.dataset.parentPinId = pin.id;
-
-          splitGroup.appendChild(subPinEl);
-        });
-      }
-
-      return splitGroup;
-    }
+    // Note: Split pins are now handled by flattening in the main render loop,
+    // so renderPin is only called for individual pins or sub-pins, never for a split parent
 
     const pinContainer = document.createElement("div");
     const typeClass = Utils.getPinTypeClass(pin.type);
