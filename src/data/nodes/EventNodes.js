@@ -56,7 +56,7 @@ export const EventNodes = {
     title: "Call Custom Event",
     type: "function-node",
     category: "Events",
-    executor: "CustomEventCall",
+    executor: "Event",
     icon: "f",
     allowAddPin: true, // User can add data input pins (must match CustomEvent)
     pins: [
