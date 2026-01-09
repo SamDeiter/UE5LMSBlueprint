@@ -522,8 +522,27 @@ function validateAnimationPatterns(nodes, _links) {
 
 function extractNodeId(pinId) {
   if (!pinId) return null;
+
+  // Handle simple IDs like "node-1-exec" -> "node-1"
+  // Handle GUIDs like "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee-exec" -> "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
   const parts = pinId.split("-");
-  return parts.length >= 5 ? parts.slice(0, 5).join("-") : null;
+
+  // Simple node IDs: node-1-exec, node-2-return
+  if (parts[0] === "node" && parts.length >= 2) {
+    return `${parts[0]}-${parts[1]}`;
+  }
+
+  // GUID format: 5 parts for a GUID
+  if (parts.length >= 5) {
+    return parts.slice(0, 5).join("-");
+  }
+
+  // Fallback: return first two parts
+  if (parts.length >= 2) {
+    return `${parts[0]}-${parts[1]}`;
+  }
+
+  return pinId;
 }
 
 function getFollowingNodes(nodeId, links, nodes) {

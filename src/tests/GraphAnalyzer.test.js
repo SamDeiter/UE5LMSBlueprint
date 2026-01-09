@@ -11,7 +11,7 @@ import {
 } from "../data/assessment/TestScenarios.js";
 
 export function registerGraphAnalyzerTests(runner) {
-  runner.registerTest("GraphAnalyzer - Detects Null Reference Risks", () => {
+  runner.register("GraphAnalyzer - Detects Null Reference Risks", () => {
     const result = graphAnalyzer.analyze(SCENARIO_NULL_REFERENCE);
 
     const nullRefIssue = result.issues.find(
@@ -25,7 +25,7 @@ export function registerGraphAnalyzerTests(runner) {
     return true;
   });
 
-  runner.registerTest("GraphAnalyzer - Detects Unhandled Cast Failure", () => {
+  runner.register("GraphAnalyzer - Detects Unhandled Cast Failure", () => {
     const result = graphAnalyzer.analyze(SCENARIO_CAST_FAILED);
 
     const castIssue = result.issues.find(
@@ -39,49 +39,39 @@ export function registerGraphAnalyzerTests(runner) {
     return true;
   });
 
-  runner.registerTest(
-    "GraphAnalyzer - Detects Expensive Tick Operations",
-    () => {
-      const result = graphAnalyzer.analyze(SCENARIO_TICK_ABUSE);
+  runner.register("GraphAnalyzer - Detects Expensive Tick Operations", () => {
+    const result = graphAnalyzer.analyze(SCENARIO_TICK_ABUSE);
 
-      const tickIssues = result.issues.filter(
-        (i) => i.category === "Performance"
-      );
+    const tickIssues = result.issues.filter(
+      (i) => i.category === "Performance"
+    );
 
-      if (tickIssues.length === 0) {
-        throw new Error("Expected to detect performance issues in tick");
-      }
-
-      // Should have at least one ERROR severity for expensive operations
-      const hasError = tickIssues.some(
-        (i) => i.severity === IssueSeverity.ERROR
-      );
-      if (!hasError) {
-        throw new Error("Expected ERROR severity for tick abuse");
-      }
-
-      return true;
+    if (tickIssues.length === 0) {
+      throw new Error("Expected to detect performance issues in tick");
     }
-  );
 
-  runner.registerTest(
-    "GraphAnalyzer - Detects Network Authority Issues",
-    () => {
-      const result = graphAnalyzer.analyze(SCENARIO_NETWORK_AUTHORITY);
-
-      const networkIssue = result.issues.find(
-        (i) => i.category === "Networking"
-      );
-
-      if (!networkIssue) {
-        throw new Error("Expected to detect network authority issues");
-      }
-
-      return true;
+    // Should have at least one ERROR severity for expensive operations
+    const hasError = tickIssues.some((i) => i.severity === IssueSeverity.ERROR);
+    if (!hasError) {
+      throw new Error("Expected ERROR severity for tick abuse");
     }
-  );
 
-  runner.registerTest("GraphAnalyzer - Detects Orphaned Nodes", () => {
+    return true;
+  });
+
+  runner.register("GraphAnalyzer - Detects Network Authority Issues", () => {
+    const result = graphAnalyzer.analyze(SCENARIO_NETWORK_AUTHORITY);
+
+    const networkIssue = result.issues.find((i) => i.category === "Networking");
+
+    if (!networkIssue) {
+      throw new Error("Expected to detect network authority issues");
+    }
+
+    return true;
+  });
+
+  runner.register("GraphAnalyzer - Detects Orphaned Nodes", () => {
     const result = graphAnalyzer.analyze(SCENARIO_ORPHANED_NODES);
 
     const orphanIssue = result.issues.find((i) => i.title === "Orphaned Node");
@@ -93,7 +83,7 @@ export function registerGraphAnalyzerTests(runner) {
     return true;
   });
 
-  runner.registerTest("GraphAnalyzer - Quality Score Calculation", () => {
+  runner.register("GraphAnalyzer - Quality Score Calculation", () => {
     const result = graphAnalyzer.analyze(SCENARIO_TICK_ABUSE);
 
     // Score should be less than 100 due to issues
@@ -109,7 +99,7 @@ export function registerGraphAnalyzerTests(runner) {
     return true;
   });
 
-  runner.registerTest("GraphAnalyzer - Clean Graph Returns High Score", () => {
+  runner.register("GraphAnalyzer - Clean Graph Returns High Score", () => {
     const cleanGraph = {
       nodes: [
         {
