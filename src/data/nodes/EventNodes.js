@@ -45,20 +45,24 @@ export const EventNodes = {
     category: "Events",
     executor: "Event",
     icon: "fa-bolt",
+    isRenameable: true, // User can rename the event
+    allowAddPin: true, // User can add data output pins
     pins: [
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      // Removed delegate_out
+      // User-defined output pins are added dynamically
     ],
   },
   CallCustomEvent: {
     title: "Call Custom Event",
     type: "function-node",
     category: "Events",
-    executor: "Event",
+    executor: "CustomEventCall",
     icon: "f",
+    allowAddPin: true, // User can add data input pins (must match CustomEvent)
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      // User-defined input pins are added dynamically
     ],
   },
   EventActorBeginOverlap: {
@@ -257,6 +261,69 @@ export const EventNodes = {
         type: "int",
         dir: "out",
       },
+    ],
+  },
+  // --- Event Dispatchers (Delegates) ---
+  EventDispatcherEvent: {
+    title: "Event Dispatcher",
+    type: "event-node",
+    category: "Events|Dispatchers",
+    executor: "Event",
+    icon: "fa-broadcast-tower",
+    isRenameable: true,
+    allowAddPin: true, // User can add data output pins
+    pins: [
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      // Signature pins added dynamically by user
+    ],
+  },
+  CallEventDispatcher: {
+    title: "Call",
+    type: "function-node",
+    category: "Events|Dispatchers",
+    executor: "DispatcherCall",
+    icon: "fa-bullhorn",
+    isRenameable: true,
+    allowAddPin: true, // User can add data input pins to match signature
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      // Signature pins added dynamically by user
+    ],
+  },
+  BindEventDispatcher: {
+    title: "Bind Event",
+    type: "function-node",
+    category: "Events|Dispatchers",
+    executor: "DispatcherBind",
+    icon: "fa-link",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "event_in", name: "Event", type: "delegate", dir: "in" },
+    ],
+  },
+  UnbindEventDispatcher: {
+    title: "Unbind Event",
+    type: "function-node",
+    category: "Events|Dispatchers",
+    executor: "DispatcherUnbind",
+    icon: "fa-unlink",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "event_in", name: "Event", type: "delegate", dir: "in" },
+    ],
+  },
+  UnbindAllEventDispatchers: {
+    title: "Unbind All",
+    type: "function-node",
+    category: "Events|Dispatchers",
+    executor: "DispatcherUnbindAll",
+    icon: "fa-times-circle",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
     ],
   },
 };
