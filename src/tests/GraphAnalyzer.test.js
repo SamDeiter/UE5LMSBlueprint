@@ -1,14 +1,14 @@
 /**
  * GraphAnalyzer.test.js - Tests for Blueprint pitfall detection
  */
-import { graphAnalyzer, IssueSeverity } from "../../core/GraphAnalyzer.js";
+import { graphAnalyzer, IssueSeverity } from "../core/GraphAnalyzer.js";
 import {
   SCENARIO_NULL_REFERENCE,
   SCENARIO_CAST_FAILED,
   SCENARIO_TICK_ABUSE,
   SCENARIO_NETWORK_AUTHORITY,
   SCENARIO_ORPHANED_NODES,
-} from "../../data/assessment/TestScenarios.js";
+} from "../data/assessment/TestScenarios.js";
 
 export function registerGraphAnalyzerTests(runner) {
   runner.registerTest("GraphAnalyzer - Detects Null Reference Risks", () => {
