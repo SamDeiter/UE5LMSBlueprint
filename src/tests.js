@@ -5,6 +5,7 @@ import { registerNeedNodeTests } from "./tests/NeedNode.test.js";
 import "./tests/NodeRegistryTests.js";
 import { registerRefactorTests } from "./tests/test_refactor.js";
 import { registerNodeExecutionTests } from "./tests/NodeExecutionTests.test.js";
+import { registerCollectionTests } from "./tests/CollectionNodes.test.js";
 
 export class TestRunner {
   constructor(app) {
@@ -131,6 +132,7 @@ export const registerTests = (runner) => {
   registerNeedNodeTests(runner);
   registerRefactorTests(runner);
   registerNodeExecutionTests(runner);
+  registerCollectionTests(runner);
 
   // --- Variable Tests ---
 
