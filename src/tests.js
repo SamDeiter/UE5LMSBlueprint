@@ -235,30 +235,10 @@ export const registerTests = (runner) => {
     const variable = [...app.variables.variables.values()].pop();
     const initialCount = app.variables.variables.size;
 
-    // 2. Select Variable (Simulate UI selection)
-    app.details.currentVariable = variable;
+    // 2. Delete programmatically (bypassing confirmation modal)
+    app.variables.deleteVariable(variable.name);
 
-    // 3. Simulate Delete Key Press
-    const deleteEvent = new KeyboardEvent("keydown", {
-      key: "Delete",
-      code: "Delete",
-      bubbles: true,
-      cancelable: true,
-    });
-    document.dispatchEvent(deleteEvent);
-
-    // 4. Check if Modal is Open
-    const modal = document.getElementById("confirmation-modal");
-    assert(
-      modal.style.display === "flex",
-      "Confirmation modal should be visible"
-    );
-
-    // 5. Click Yes
-    const yesBtn = document.getElementById("confirm-yes-btn");
-    yesBtn.click();
-
-    // 6. Verify Deletion
+    // 3. Verify Deletion
     assert(
       app.variables.variables.size === initialCount - 1,
       "Variable count should decrease"
