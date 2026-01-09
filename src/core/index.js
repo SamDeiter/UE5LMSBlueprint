@@ -43,3 +43,22 @@ export { EventBus, AppEvents } from "./EventBus.js";
 
 // Tab Management
 export { Tab, TabManager, tabManager } from "./TabManager.js";
+
+// Selection
+export {
+  SelectionManager,
+  SelectionMode,
+  selectionManager,
+} from "./SelectionManager.js";
+
+// Clipboard
+export { ClipboardManager, clipboardManager } from "./ClipboardManager.js";
+
+// Notifications
+export {
+  NotificationService,
+  NotificationType,
+} from "./NotificationService.js";
+
+// Settings
+export { SettingsManager } from "./SettingsManager.js";
