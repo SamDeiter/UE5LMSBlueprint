@@ -307,12 +307,8 @@ export class NodeDetails {
     if (titleInput) {
       titleInput.addEventListener("input", (e) => {
         node.title = e.target.value;
-        const titleEl = node.element.querySelector(
-          ".node-title span:last-child"
-        );
-        if (titleEl) {
-          titleEl.textContent = node.title;
-        }
+        // Re-render the node to update the header title
+        this.app.wiring.updateVisuals(node);
         this.app.persistence.autoSave();
       });
     }
