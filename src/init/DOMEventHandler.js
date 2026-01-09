@@ -48,11 +48,6 @@ export class DOMEventHandler {
     this._bindClick("class-defaults-btn", () => {
       if (this.app.details) this.app.details.showClassDefaults();
     });
-
-    // Assessment Mode
-    this._bindClick("assessment-btn", () => {
-      if (this.app.assessment) this.app.assessment.open();
-    });
   }
 
   bindMenuEvents() {
@@ -61,6 +56,16 @@ export class DOMEventHandler {
       if (this.app.parentClassModal) {
         this.app.parentClassModal.open();
       }
+    });
+
+    // Tools Menu - Assessment Mode
+    this._bindClick("assessment-menu-item", () => {
+      if (this.app.assessment) this.app.assessment.open();
+    });
+
+    // Tools Menu - Run Tests
+    this._bindClick("run-tests-menu-item", () => {
+      if (window.runTests) window.runTests();
     });
   }
 

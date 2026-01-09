@@ -56,6 +56,49 @@ class GraphController {
     this.renderer.clearActiveWires();
   }
 
+  /**
+   * Clear all nodes from the graph
+   */
+  clear() {
+    // Remove all nodes (which also breaks their wires)
+    const nodeIds = [...this.nodes.keys()];
+    nodeIds.forEach((id) => this.removeNode(id));
+    this.selectedNodes.clear();
+    this.app.wiring.clearAll();
+  }
+
+  /**
+   * Create a node from pre-defined data (for loading scenarios)
+   * @param {Object} nodeData - Node data with id, nodeKey, x, y, pins, etc.
+   * @returns {Node} The created node
+   */
+  createNodeFromData(nodeData) {
+    const node = this.addNode(
+      nodeData.nodeKey,
+      nodeData.x || 0,
+      nodeData.y || 0
+    );
+    if (!node) return null;
+
+    // Override the auto-generated ID if one is provided
+    if (nodeData.id && nodeData.id !== node.id) {
+      this.nodes.delete(node.id);
+      node.id = nodeData.id;
+      this.nodes.set(node.id, node);
+    }
+
+    // Update pin IDs to match scenario data
+    if (nodeData.pins && node.pins) {
+      nodeData.pins.forEach((pinData, index) => {
+        if (node.pins[index]) {
+          node.pins[index].id = pinData.id;
+        }
+      });
+    }
+
+    return node;
+  }
+
   addNode(nodeKey, x, y) {
     let nodeData = nodeRegistry.get(nodeKey);
 

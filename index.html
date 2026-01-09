@@ -105,7 +105,18 @@
               </div>
             </div>
           </div>
-          <div class="menu-item">Tools</div>
+          <div class="menu-item dropdown-menu">
+            Tools
+            <div class="dropdown-content">
+              <div class="dropdown-item" id="assessment-menu-item">
+                <i class="fas fa-graduation-cap"></i> Assessment Mode
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item" id="run-tests-menu-item">
+                <i class="fas fa-flask"></i> Run Tests
+              </div>
+            </div>
+          </div>
           <div class="menu-item">Help</div>
         </div>
         <div class="menu-right">
@@ -184,14 +195,6 @@
             <i class="fas fa-outdent"></i>
           </button>
         </div>
-
-        <div class="group">
-          <button id="assessment-btn" title="Assessment Mode - Test Your Blueprint Knowledge" class="assessment-btn">
-            <i class="fas fa-graduation-cap"></i>
-            <span>Assessment</span>
-          </button>
-        </div>
-
 
         <div class="group">
           <label for="task-selector" class="task-selector-label">Task:</label>

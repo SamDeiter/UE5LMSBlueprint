@@ -129,6 +129,15 @@ export class WiringController {
     this.cleanupOrphanWires();
   }
 
+  /**
+   * Clear all links from the graph
+   */
+  clearAll() {
+    const linkIds = [...this.links.keys()];
+    linkIds.forEach((id) => this.breakLink(id));
+    this.cleanupOrphanWires();
+  }
+
   // --- RENDERING / UPDATES ---
 
   drawWire(link) {
