@@ -62,3 +62,13 @@ export {
 
 // Settings
 export { SettingsManager } from "./SettingsManager.js";
+
+// Graph Analysis (Educational Pitfall Detection)
+export {
+  GraphAnalyzer,
+  graphAnalyzer,
+  AnalysisIssue,
+  AnalysisResult,
+  IssueSeverity,
+  IssueCategory,
+} from "./GraphAnalyzer.js";
