@@ -38,17 +38,16 @@ export class NodeLibraryHelper {
       ],
     });
 
-    // Set node (function node with exec pins)
+    // Set node (variable-node with exec pins)
     nodeRegistry.register(`Set_${variable.name}`, {
-      title: "SET",
+      title: `Set ${variable.name}`,
       category: "Variables",
-      type: "function-node",
+      type: "variable-node",
       variableType: variable.type,
       variableId: variable.id,
       icon: "fa-arrow-up",
       pins: [
         { id: "exec_in", name: "", type: "exec", dir: "in" },
-        { id: "exec_out", name: "", type: "exec", dir: "out" },
         {
           id: "val_in",
           name: variable.name,
@@ -57,9 +56,10 @@ export class NodeLibraryHelper {
           containerType: variable.containerType,
           ...pinDefault,
         },
+        { id: "exec_out", name: "", type: "exec", dir: "out" },
         {
           id: "val_out",
-          name: "",
+          name: "", // UE5 style: output pin has no label
           type: variable.type,
           dir: "out",
           containerType: variable.containerType,
@@ -82,62 +82,57 @@ export class NodeLibraryHelper {
    * @param {Object} component - Component object with id, name, type
    */
   static registerComponentNodes(component) {
+    // Use component.id for keys (matching original implementation)
     // Get component node (compact)
-    nodeRegistry.register(`GetComponent_${component.name}`, {
+    nodeRegistry.register(`GetComponent_${component.id}`, {
       title: `Get ${component.name}`,
       category: "Components",
       type: "pure-node",
       variableType: "object",
       componentType: component.type,
+      customData: { componentId: component.id },
       icon: "fa-cube",
       pins: [
         {
-          id: "comp_out",
+          id: "out",
           name: component.name,
-          type: "object",
+          type: component.type,
           dir: "out",
-          subType: component.type,
         },
       ],
     });
 
     // Set component node
-    nodeRegistry.register(`SetComponent_${component.name}`, {
+    nodeRegistry.register(`SetComponent_${component.id}`, {
       title: "SET",
       category: "Components",
       type: "function-node",
       variableType: "object",
       componentType: component.type,
+      customData: { componentId: component.id, componentName: component.name },
       icon: "fa-cube",
       pins: [
         { id: "exec_in", name: "", type: "exec", dir: "in" },
-        { id: "exec_out", name: "", type: "exec", dir: "out" },
         {
           id: "comp_in",
           name: component.name,
-          type: "object",
+          type: component.type,
           dir: "in",
-          subType: component.type,
           noDefaultValue: true,
         },
-        {
-          id: "comp_out",
-          name: "",
-          type: "object",
-          dir: "out",
-          subType: component.type,
-        },
+        { id: "exec_out", name: "", type: "exec", dir: "out" },
+        { id: "comp_out", name: "", type: component.type, dir: "out" },
       ],
     });
   }
 
   /**
    * Unregister Get and Set nodes for a component
-   * @param {string} componentName - Name of the component
+   * @param {Object} component - Component object with id
    */
-  static unregisterComponentNodes(componentName) {
-    nodeRegistry.unregister(`GetComponent_${componentName}`);
-    nodeRegistry.unregister(`SetComponent_${componentName}`);
+  static unregisterComponentNodes(component) {
+    nodeRegistry.unregister(`GetComponent_${component.id}`);
+    nodeRegistry.unregister(`SetComponent_${component.id}`);
   }
 
   /**
@@ -180,7 +175,7 @@ export class NodeLibraryHelper {
   static unregisterAllComponents(components) {
     const items = components instanceof Map ? components.values() : components;
     for (const component of items) {
-      this.unregisterComponentNodes(component.name);
+      this.unregisterComponentNodes(component);
     }
   }
 }
