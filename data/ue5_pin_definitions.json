@@ -1,0 +1,949 @@
+{
+  "AssignmentStatement": {
+    "nodeClass": "K2Node_AssignmentStatement",
+    "nodeName": "AssignmentStatement",
+    "title": "Assign",
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "VariablePinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "ValuePinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "MissingPins_Error",
+        "display": "Missing pin(s) on @@; expected a pin named Variable and a pin named Value"
+      },
+      {
+        "key": "NoVariableConnected_Error",
+        "display": "A variable needs to be connected to @@"
+      },
+      {
+        "key": "NoVariableOrValueNets_Error",
+        "display": "Expected Variable and Value pins to have valid connections in @@"
+      },
+      {
+        "key": "AssignmentStatementTooltip",
+        "display": "Assigns Value to Variable"
+      },
+      {
+        "key": "Assign",
+        "display": "Assign"
+      }
+    ]
+  },
+  "CastByteToEnum": {
+    "nodeClass": "K2Node_CastByteToEnum",
+    "nodeName": "CastByteToEnum",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "ByteInputPinName",
+        "direction": "input",
+        "type": "PC_Byte",
+        "subType": null
+      }
+    ],
+    "loctext": []
+  },
+  "DelegateSet": {
+    "nodeClass": "K2Node_DelegateSet",
+    "nodeName": "DelegateSet",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "DelegatePropertyName",
+        "direction": "input",
+        "type": "PC_Object",
+        "subType": "DelegatePropertyClass"
+      }
+    ],
+    "loctext": [
+      {
+        "key": "DeprecatedDelegateSet_Warning",
+        "display": "DelegateSet node @@ is Deprecated. It should be replaced by an EventCaller Bind node"
+      },
+      {
+        "key": "FindDynamicallyBoundDelegate_Error",
+        "display": "Couldn't find target for dynamically bound delegate node @@"
+      },
+      {
+        "key": "FindDynamicallyBoundDelegate_Error",
+        "display": "Couldn't find target for dynamically bound delegate node @@"
+      },
+      {
+        "key": "DelegateSet_SubtitledTooltip",
+        "display": "{0}\\n{1}"
+      },
+      {
+        "key": "DelegateSigNotFound_Error",
+        "display": "Set Delegate node @@ unable to find function."
+      }
+    ]
+  },
+  "Event": {
+    "nodeClass": "K2Node_Event",
+    "nodeName": "Event",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "DelegateOutputName",
+        "direction": "output",
+        "type": "PC_Delegate",
+        "subType": null
+      },
+      {
+        "name": "DelegateOutputName",
+        "direction": "output",
+        "type": "PC_Delegate",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "EventFromInterface",
+        "display": "{Title}\\nFrom {InterfaceClass}"
+      },
+      {
+        "key": "Event_SubtitledTooltip",
+        "display": "{FunctionTooltip}\\n\\n{ClientString}"
+      },
+      {
+        "key": "Event_SubtitledTooltip",
+        "display": "{FunctionTooltip}\\n\\n{ClientString}"
+      },
+      {
+        "key": "CallFunction_SubtitledTooltip",
+        "display": "{DefaultTooltip}\\n\\n{LatentString}"
+      },
+      {
+        "key": "EventDelegateName_Error",
+        "display": "Event node @@ has no name of function."
+      }
+    ]
+  },
+  "ExecutionSequence": {
+    "nodeClass": "K2Node_ExecutionSequence",
+    "nodeName": "ExecutionSequence",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "NewPinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "NoValidExecutionPinForExecSeq_Error",
+        "display": "@@ must have a valid execution pin @@"
+      },
+      {
+        "key": "NodeNeverExecuted_Warning",
+        "display": "@@ will never be executed"
+      }
+    ]
+  },
+  "ForEachElementInEnum": {
+    "nodeClass": "K2Node_ForEachElementInEnum",
+    "nodeName": "ForEachElementInEnum",
+    "title": "ForEach UNKNOWN",
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "SkipHiddenPinName",
+        "direction": "input",
+        "type": "PC_Boolean",
+        "subType": null
+      },
+      {
+        "name": "InsideLoopPinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "EnumOuputPinName",
+        "direction": "output",
+        "type": "PC_Byte",
+        "subType": "Enum"
+      }
+    ],
+    "loctext": [
+      {
+        "key": "SkipHiddenPinToolTip",
+        "display": "Controls whether or not the loop will skip over hidden enumeration values."
+      },
+      {
+        "key": "Completed",
+        "display": "Completed"
+      },
+      {
+        "key": "ForEachElementInUnknownEnum_Title",
+        "display": "ForEach UNKNOWN"
+      },
+      {
+        "key": "ForEachElementInEnum_Title",
+        "display": "ForEach {EnumName}"
+      }
+    ]
+  },
+  "FormatText": {
+    "nodeClass": "K2Node_FormatText",
+    "nodeName": "FormatText",
+    "title": "Format Text",
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "PinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "ParamName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "PinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "NodeTooltip",
+        "display": "Builds a formatted string using available format argument values.\\n  \\u2022 Use {} to denote format arguments.\\n  \\u2022 Argument types may be Byte, Integer, Float, Text, String, Name, Boolean, Object or ETextGender."
+      },
+      {
+        "key": "FormatText_Title",
+        "display": "Format Text"
+      },
+      {
+        "key": "Error_UnexpectedPinType",
+        "display": "Pin '{0}' has an unexpected type: {1}"
+      },
+      {
+        "key": "Error_InvalidArgumentType",
+        "display": "Format arguments may only be Byte, Integer, Int64, Float, Double, Text, String, Name, Boolean, Object, Wildcard or ETextGender."
+      }
+    ]
+  },
+  "GetEnumeratorName": {
+    "nodeClass": "K2Node_GetEnumeratorName",
+    "nodeName": "GetEnumeratorName",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "EnumeratorPinName",
+        "direction": "input",
+        "type": "PC_Byte",
+        "subType": null
+      }
+    ],
+    "loctext": []
+  },
+  "GetEnumeratorNameAsString": {
+    "nodeClass": "K2Node_GetEnumeratorNameAsString",
+    "nodeName": "GetEnumeratorNameAsString",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "EnumeratorPinName",
+        "direction": "input",
+        "type": "PC_Byte",
+        "subType": null
+      }
+    ],
+    "loctext": []
+  },
+  "Knot": {
+    "nodeClass": "K2Node_Knot",
+    "nodeName": "Knot",
+    "title": "Add Reroute Node...",
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "InputPinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "OutputPinName",
+        "direction": "output",
+        "type": "PC_Wildcard",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "KnotTooltip",
+        "display": "Reroute Node (reroutes wires)"
+      },
+      {
+        "key": "KnotListTitle",
+        "display": "Add Reroute Node..."
+      },
+      {
+        "key": "KnotTitle",
+        "display": "Reroute Node"
+      }
+    ]
+  },
+  "Literal": {
+    "nodeClass": "K2Node_Literal",
+    "nodeName": "Literal",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "ValuePinName",
+        "direction": "output",
+        "type": "PC_Object",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "InvalidLevelActor_Warning",
+        "display": "Node @@ is not referencing a valid level actor"
+      }
+    ]
+  },
+  "MapForEach": {
+    "nodeClass": "K2Node_MapForEach",
+    "nodeName": "MapForEach",
+    "title": "For Each Loop (Map)",
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "PinParams",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": "MapPinName"
+      },
+      {
+        "name": "BreakPinName",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "KeyPinName",
+        "direction": "output",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "ValuePinName",
+        "direction": "output",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "CompletedPinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "KeyPin_FriendlyName",
+        "display": "Map Key"
+      },
+      {
+        "key": "ValuePin_FriendlyName",
+        "display": "Map Value"
+      },
+      {
+        "key": "NodeMenu",
+        "display": "Utilities|Map"
+      },
+      {
+        "key": "MapPin_FriendlyName",
+        "display": "Map"
+      },
+      {
+        "key": "BreakPin_FriendlyName",
+        "display": "Break"
+      }
+    ]
+  },
+  "PromotableOperator": {
+    "nodeClass": "K2Node_PromotableOperator",
+    "nodeName": "PromotableOperator",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "TolerancePin_Name",
+        "direction": "input",
+        "type": "ToleranceType",
+        "subType": null
+      },
+      {
+        "name": "TolerancePin_Name",
+        "direction": "input",
+        "type": "ToleranceType",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "PromotableOperatorNode",
+        "display": "Operator Node"
+      },
+      {
+        "key": "ConvertComparisonOp",
+        "display": "Convert Operator"
+      },
+      {
+        "key": "ConvertOpName_Tooltip",
+        "display": "Convert to {NewOpName}"
+      },
+      {
+        "key": "ConvertOperator_ToType_Tooltip",
+        "display": "Convert this node operation from '{CurrentOpName}' to '{NewOpName}'"
+      },
+      {
+        "key": "RemovePin",
+        "display": "Remove pin"
+      }
+    ]
+  },
+  "PureAssignmentStatement": {
+    "nodeClass": "K2Node_PureAssignmentStatement",
+    "nodeName": "PureAssignmentStatement",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "VariablePinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "ValuePinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "OutputPinName",
+        "direction": "output",
+        "type": "PC_Wildcard",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "NoVariableConnected_Error",
+        "display": "A variable needs to be connected to @@"
+      },
+      {
+        "key": "NoOutputConnected_Error",
+        "display": "A output pin needs to be connected to @@"
+      },
+      {
+        "key": "NoVarriableTerm_Error",
+        "display": "ICE: no variable term found in @@"
+      }
+    ]
+  },
+  "Select": {
+    "nodeClass": "K2Node_Select",
+    "nodeName": "Select",
+    "title": "Select",
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "PinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "PinName",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "Error_NoReturnPin",
+        "display": "No return pin in @@"
+      },
+      {
+        "key": "Error_ReturnTermAlreadyRegistered",
+        "display": "ICE: Return term is already registered @@"
+      },
+      {
+        "key": "Error_NoOptionPin",
+        "display": "No option pin in @@"
+      },
+      {
+        "key": "Error_InvalidSelect",
+        "display": "ICE: invalid select node @@"
+      },
+      {
+        "key": "Error_InvalidOptionValueFmt",
+        "display": "Invalid option value '{0}' in @@"
+      }
+    ]
+  },
+  "SetForEach": {
+    "nodeClass": "K2Node_SetForEach",
+    "nodeName": "SetForEach",
+    "title": "For Each Loop (Set)",
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "PinParams",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": "SetPinName"
+      },
+      {
+        "name": "BreakPinName",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "ValuePinName",
+        "direction": "output",
+        "type": "PC_Wildcard",
+        "subType": null
+      },
+      {
+        "name": "CompletedPinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "ValuePin_FriendlyName",
+        "display": "Set Value"
+      },
+      {
+        "key": "NodeMenu",
+        "display": "Utilities|Set"
+      },
+      {
+        "key": "SetPin_FriendlyName",
+        "display": "Set"
+      },
+      {
+        "key": "BreakPin_FriendlyName",
+        "display": "Break"
+      },
+      {
+        "key": "ForEachPin_FriendlyName",
+        "display": "Loop Body"
+      }
+    ]
+  },
+  "SpawnActor": {
+    "nodeClass": "K2Node_SpawnActor",
+    "nodeName": "SpawnActor",
+    "title": null,
+    "pinNames": [
+      {
+        "variable": "BlueprintParamName",
+        "name": "Blueprint"
+      },
+      {
+        "variable": "WorldContextParamName",
+        "name": "WorldContextObject"
+      },
+      {
+        "variable": "ActorParamName",
+        "name": "Actor"
+      },
+      {
+        "variable": "TransformParamName",
+        "name": "SpawnTransform"
+      },
+      {
+        "variable": "NoCollisionFailParamName",
+        "name": "bNoCollisionFail"
+      },
+      {
+        "variable": "ObjectParamName",
+        "name": "Object"
+      },
+      {
+        "variable": "ValueParamName",
+        "name": "Value"
+      },
+      {
+        "variable": "PropertyNameParamName",
+        "name": "PropertyName"
+      }
+    ],
+    "pins": [],
+    "loctext": [
+      {
+        "key": "NodeTooltip",
+        "display": "Attempts to spawn a new Actor with the specified transform"
+      },
+      {
+        "key": "BlueprintPinDescription",
+        "display": "The blueprint Actor you want to spawn"
+      },
+      {
+        "key": "TransformPinDescription",
+        "display": "The transform to spawn the Actor with"
+      },
+      {
+        "key": "NoCollisionFailPinDescription",
+        "display": "Determines if the Actor should be spawned when the location is blocked by a collision"
+      },
+      {
+        "key": "ResultPinDescription",
+        "display": "The spawned Actor"
+      }
+    ]
+  },
+  "Switch": {
+    "nodeClass": "K2Node_Switch",
+    "nodeName": "Switch",
+    "title": null,
+    "pinNames": [
+      {
+        "variable": "DefaultPinName",
+        "name": "Default"
+      },
+      {
+        "variable": "SelectionPinName",
+        "name": "Selection"
+      }
+    ],
+    "pins": [
+      {
+        "name": "Default",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "NewPinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "FunctionName",
+        "direction": "input",
+        "type": "PC_Object",
+        "subType": "FunctionClass"
+      }
+    ],
+    "loctext": [
+      {
+        "key": "NoValidExecutionPinForSwitch_Error",
+        "display": "@@ must have a valid execution pin @@"
+      },
+      {
+        "key": "NoValidSelectionPinForSwitch_Error",
+        "display": "@@ must have a valid execution pin @@"
+      },
+      {
+        "key": "ResolveTermPassed_Error",
+        "display": "Failed to resolve term passed into @@"
+      },
+      {
+        "key": "ActionMenuCategory",
+        "display": "Switch"
+      }
+    ]
+  },
+  "SwitchInteger": {
+    "nodeClass": "K2Node_SwitchInteger",
+    "nodeName": "SwitchInteger",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "NewPinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      }
+    ],
+    "loctext": []
+  },
+  "SwitchName": {
+    "nodeClass": "K2Node_SwitchName",
+    "nodeName": "SwitchName",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "PinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "PinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      }
+    ],
+    "loctext": []
+  },
+  "SwitchString": {
+    "nodeClass": "K2Node_SwitchString",
+    "nodeName": "SwitchString",
+    "title": null,
+    "pinNames": [],
+    "pins": [
+      {
+        "name": "PinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "PinName",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      }
+    ],
+    "loctext": []
+  },
+  "Timeline": {
+    "nodeClass": "K2Node_Timeline",
+    "nodeName": "Timeline",
+    "title": "Timeline node allows values to be keyframed over time.\\nDouble click to open timeline editor.",
+    "pinNames": [
+      {
+        "variable": "PlayPinName",
+        "name": "Play"
+      },
+      {
+        "variable": "PlayFromStartPinName",
+        "name": "PlayFromStart"
+      },
+      {
+        "variable": "StopPinName",
+        "name": "Stop"
+      },
+      {
+        "variable": "UpdatePinName",
+        "name": "Update"
+      },
+      {
+        "variable": "ReversePinName",
+        "name": "Reverse"
+      },
+      {
+        "variable": "ReverseFromEndPinName",
+        "name": "ReverseFromEnd"
+      },
+      {
+        "variable": "FinishedPinName",
+        "name": "Finished"
+      },
+      {
+        "variable": "NewTimePinName",
+        "name": "NewTime"
+      },
+      {
+        "variable": "SetNewTimePinName",
+        "name": "SetNewTime"
+      },
+      {
+        "variable": "DirectionPinName",
+        "name": "Direction"
+      }
+    ],
+    "pins": [
+      {
+        "name": "Play",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "PlayFromStart",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "Stop",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "Reverse",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "ReverseFromEnd",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "Update",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "Finished",
+        "direction": "output",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "SetNewTime",
+        "direction": "input",
+        "type": "PC_Exec",
+        "subType": null
+      },
+      {
+        "name": "NewTime",
+        "direction": "input",
+        "type": "PC_Real",
+        "subType": "PC_Float"
+      }
+    ],
+    "loctext": [
+      {
+        "key": "Error_InvalidNewTimePin",
+        "display": "ICE: missing one or more 'New Time'-related pins on node @@"
+      },
+      {
+        "key": "NoTimelineTitle",
+        "display": "Add Timeline..."
+      },
+      {
+        "key": "DIF_TimelineNumTracksToolTip",
+        "display": "The number of {TrackType} tracks in Timeline '{NodeName}' has changed"
+      },
+      {
+        "key": "DIF_TimelineNumTracks",
+        "display": "{TrackType} Track Count '{NodeName}'"
+      },
+      {
+        "key": "DIF_TimelineTrackModifiedToolTip",
+        "display": "Track '{TrackName}' of Timeline '{NodeName}' was Modified"
+      }
+    ]
+  },
+  "Variable": {
+    "nodeClass": "K2Node_Variable",
+    "nodeName": "Variable",
+    "title": null,
+    "pinNames": [
+      {
+        "variable": "OldVariableName",
+        "name": "UpdatedComponent"
+      },
+      {
+        "variable": "NewVariableName",
+        "name": "UpdatedPrimitive"
+      }
+    ],
+    "pins": [],
+    "loctext": [
+      {
+        "key": "Target",
+        "display": "Target"
+      },
+      {
+        "key": "VariableDeprecatedFmt",
+        "display": "Variable '{0}' for @@ was deprecated.  Please update it."
+      },
+      {
+        "key": "StaticArray_Warning",
+        "display": "@@ - the native property is a static array, which is not supported by blueprints"
+      },
+      {
+        "key": "ReplicatedEditorOnlyVar",
+        "display": "Editor-Only | Replicated"
+      },
+      {
+        "key": "ReplicatedVar",
+        "display": "Replicated"
+      }
+    ]
+  },
+  "VariableSetRef": {
+    "nodeClass": "K2Node_VariableSetRef",
+    "nodeName": "VariableSetRef",
+    "title": null,
+    "pinNames": [
+      {
+        "variable": "TargetVarPinName",
+        "name": "Target"
+      },
+      {
+        "variable": "VarValuePinName",
+        "name": "Value"
+      }
+    ],
+    "pins": [
+      {
+        "name": "PinParams",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": "TargetVarPinName"
+      },
+      {
+        "name": "Value",
+        "direction": "input",
+        "type": "PC_Wildcard",
+        "subType": null
+      }
+    ],
+    "loctext": [
+      {
+        "key": "WriteConst_Error",
+        "display": "Cannot write to const @@"
+      },
+      {
+        "key": "ResolveValueIntoVariablePin_Error",
+        "display": "Failed to resolve term @@ passed into @@"
+      },
+      {
+        "key": "ResolveTermPassed_Error",
+        "display": "Failed to resolve term passed into @@"
+      }
+    ]
+  }
+}
