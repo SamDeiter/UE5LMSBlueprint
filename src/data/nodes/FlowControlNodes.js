@@ -1,7 +1,11 @@
 /**
- * FlowControlNodes - Auto-generated from NodeDefinitions.js
- * Contains node definitions for this category.
+ * FlowControlNodes - Node definitions for Flow Control category
+ * Contains Branch, Sequence, loops, gates, and other control flow nodes.
+ * @module FlowControlNodes
  */
+/** @typedef {import('./types.js').NodeDefinition} NodeDefinition */
+
+/** @type {Object.<string, NodeDefinition>} */
 export const FlowControlNodes = {
   Branch: {
     title: "Branch",
