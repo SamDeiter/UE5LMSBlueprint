@@ -57,7 +57,14 @@ export const TYPE_HEADER_COLORS = {
  */
 export function getTypeColor(type) {
   if (!type) return TYPE_COLORS.DEFAULT;
-  return TYPE_COLORS[type.toLowerCase()] || TYPE_COLORS.DEFAULT;
+  const lowerType = type.toLowerCase();
+
+  // Component types (AudioComponent, SceneComponent, etc.) use object/blue color
+  if (lowerType.endsWith("component")) {
+    return TYPE_COLORS.object;
+  }
+
+  return TYPE_COLORS[lowerType] || TYPE_COLORS.DEFAULT;
 }
 
 /**
