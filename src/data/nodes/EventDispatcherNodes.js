@@ -38,7 +38,7 @@ export const EventDispatcherNodes = {
     icon: "fa-link",
     pins: [
       { id: "exec_in", name: "", type: "exec", dir: "in" },
-      { id: "event_in", name: "Event", type: "delegate", dir: "in" },
+      { id: "event_in", name: "Event", type: "object", dir: "in" },
       { id: "exec_out", name: "", type: "exec", dir: "out" },
     ],
     customData: {
@@ -57,7 +57,7 @@ export const EventDispatcherNodes = {
     icon: "fa-unlink",
     pins: [
       { id: "exec_in", name: "", type: "exec", dir: "in" },
-      { id: "event_in", name: "Event", type: "delegate", dir: "in" },
+      { id: "event_in", name: "Event", type: "object", dir: "in" },
       { id: "exec_out", name: "", type: "exec", dir: "out" },
     ],
     customData: {

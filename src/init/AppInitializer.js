@@ -35,6 +35,7 @@ import {
   Persistence,
   GridController,
   HistoryManager,
+  StateManager,
   SimulationEngine,
 } from "../services.js";
 import { TestRunner, registerTests } from "../tests.js?v=4";
@@ -149,6 +150,7 @@ export class AppInitializer {
     App.variables = new VariableController(App);
     App.eventDispatchers = new EventDispatcherController(App);
     App.history = new HistoryManager(App);
+    App.stateManager = new StateManager(App);
 
     // Main Graph
     App.graph = new GraphController(
