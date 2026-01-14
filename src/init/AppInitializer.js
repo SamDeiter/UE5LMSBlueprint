@@ -29,6 +29,7 @@ import {
   GraphsController,
   EventDispatcherController,
   SearchController,
+  ContentBrowserPanel,
 } from "../ui.js";
 import {
   Compiler,
@@ -189,6 +190,9 @@ export class AppInitializer {
     App.functionsController = new FunctionsController(App);
     App.macrosController = new MacrosController(App);
     App.graphsController = new GraphsController(App);
+    App.layoutController = new LayoutController(App);
+    App.searchController = new SearchController(App);
+    App.contentBrowserPanel = new ContentBrowserPanel(App);
     App.localVariablesController = new LocalVariablesController(App);
 
     App.palette = new PaletteController(App);

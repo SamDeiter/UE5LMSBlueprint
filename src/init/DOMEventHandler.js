@@ -123,6 +123,14 @@ export class DOMEventHandler {
           if (findTab) findTab.click();
           return;
         }
+        // Content Browser toggle: Ctrl+Shift+C
+        if (e.shiftKey && (e.key === "c" || e.key === "C")) {
+          e.preventDefault();
+          if (this.app.contentBrowserPanel) {
+            this.app.contentBrowserPanel.toggle();
+          }
+          return;
+        }
       }
 
       // Function Keys
