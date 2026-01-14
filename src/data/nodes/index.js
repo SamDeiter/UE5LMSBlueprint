@@ -21,6 +21,7 @@ import { VariableNodes } from "./VariableNodes.js";
 
 import { UserInterfaceNodes } from "./UserInterfaceNodes.js";
 import { DataTableNodes } from "./DataTableNodes.js";
+import { EventDispatcherNodes } from "./EventDispatcherNodes.js";
 
 // Aggregate all node definitions
 export const NodeDefinitions = {
@@ -41,4 +42,5 @@ export const NodeDefinitions = {
   ...AudioVisualNodes,
   ...UserInterfaceNodes,
   ...DataTableNodes,
+  ...EventDispatcherNodes,
 };

@@ -29,6 +29,7 @@ import { InputExecutor } from "./executors/InputExecutor.js";
 import { AudioExecutor } from "./executors/AudioExecutor.js";
 import { VFXExecutor } from "./executors/VFXExecutor.js";
 import { CollectionExecutor } from "./executors/CollectionExecutor.js";
+import { EventDispatcherExecutor } from "./executors/EventDispatcherExecutor.js";
 import { timerManager } from "./TimerManager.js";
 import { NodeDefinitions } from "../data/nodes/index.js";
 
@@ -99,7 +100,11 @@ export class SimulationEngine {
       Audio: new AudioExecutor(this),
       VFX: new VFXExecutor(this),
       Collection: new CollectionExecutor(this),
+      EventDispatcher: new EventDispatcherExecutor(this),
     };
+
+    // Store dispatcher executor reference for simulation stop cleanup
+    this.dispatcherExecutor = executors["EventDispatcher"];
 
     // Auto-Register Static Nodes
     for (const [key, def] of Object.entries(NodeDefinitions)) {
@@ -118,6 +123,20 @@ export class SimulationEngine {
     this.executorRegistry.registerPattern(/^Array_/, executors["Collection"]);
     this.executorRegistry.registerPattern(/^Set_/, executors["Collection"]);
     this.executorRegistry.registerPattern(/^Map_/, executors["Collection"]);
+
+    // Event Dispatcher patterns
+    this.executorRegistry.registerPattern(
+      /^CallDispatcher_/,
+      executors["EventDispatcher"]
+    );
+    this.executorRegistry.registerPattern(
+      /^BindToDispatcher_/,
+      executors["EventDispatcher"]
+    );
+    this.executorRegistry.registerPattern(
+      /^UnbindFromDispatcher_/,
+      executors["EventDispatcher"]
+    );
   }
 
   addWatch(pin) {
