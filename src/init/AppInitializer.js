@@ -51,6 +51,7 @@ import { DirtyStateTracker } from "../services/DirtyStateTracker.js";
 import { NodeDefinitionValidator } from "../utils/NodeDefinitionValidator.js";
 import { BreakpointManager } from "../services/BreakpointManager.js";
 import { AssetInterfacingService } from "../services/AssetInterfacingService.js";
+import { BlueprintAssetManager, ContentBrowser } from "../core/index.js";
 
 import { DOMEventHandler } from "./DOMEventHandler.js";
 import { createAssessmentController } from "../ui/assessment/AssessmentController.js";
@@ -171,6 +172,11 @@ export class AppInitializer {
 
     // Task System
     App.taskManager = new TaskManager(App);
+
+    // Content Browser
+    App.assetManager = new BlueprintAssetManager();
+    App.contentBrowser = new ContentBrowser(App.assetManager);
+    App.contentBrowser.initialize();
 
     // Expose global task helpers
     window.setTask = (taskId) => App.taskManager.setCurrentTask(taskId);
