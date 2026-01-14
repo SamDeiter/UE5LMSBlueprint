@@ -523,21 +523,15 @@ export class VariableController extends BaseController {
           item.setAttribute("tabindex", "0");
           item.dataset.componentId = comp.id;
 
-          // Create output circle indicator
+          // Create output circle indicator (cyan/scenecomponent color like UE5)
           const outputCircle = document.createElement("span");
           outputCircle.className = "component-output-circle";
 
-          const iconClass = this.app.componentsController
-            ? this.app.componentsController.getIconForType(comp.type)
-            : "fa-cube";
-          const icon = document.createElement("i");
-          icon.className = `fas ${iconClass} icon-sm mr-2`;
-
+          // UE5 Style: No icon, just circle + name
           const nameSpan = document.createElement("span");
           nameSpan.textContent = comp.name;
 
           item.appendChild(outputCircle);
-          item.appendChild(icon);
           item.appendChild(nameSpan);
 
           // Drag Logic
