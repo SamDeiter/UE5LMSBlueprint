@@ -33,7 +33,19 @@ export class Utils {
    * @returns {string} The CSS color variable string.
    */
   static getPinColor(type) {
-    return PIN_COLORS[type.toLowerCase()] || PIN_COLORS.DEFAULT;
+    const lowerType = type.toLowerCase();
+    // Component types (AudioComponent, SceneComponent, etc.) use blue color
+    if (lowerType.endsWith("component")) {
+      return "#0066ff"; // UE5 Object/Component blue
+    }
+    return PIN_COLORS[lowerType] || PIN_COLORS.DEFAULT;
+  }
+
+  /**
+   * Alias for getPinColor - used by TypeSystem compatibility
+   */
+  static getTypeColor(type) {
+    return this.getPinColor(type);
   }
 
   /**
