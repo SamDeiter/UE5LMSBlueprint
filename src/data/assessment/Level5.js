@@ -367,4 +367,110 @@ export const LEVEL_5_TASKS = [
       },
     ],
   },
+  {
+    taskId: "task_21_set_timer",
+    level: 5,
+    title: "Timer-Based Delay",
+    description:
+      "Use SetTimerByEvent to execute code after a 2-second delay. Print 'Timer Started' immediately, then 'Timer Fired!' when the timer completes.",
+    requirements: [
+      {
+        type: "node_exists",
+        nodeType: "EventBeginPlay",
+        description: "Add Event BeginPlay node",
+      },
+      {
+        type: "node_exists",
+        nodeType: "SetTimerByEvent",
+        description: "Add a SetTimerByEvent node",
+      },
+      {
+        type: "connection",
+        from: { nodeType: "EventBeginPlay", pin: "exec_out" },
+        to: { nodeType: "SetTimerByEvent", pin: "exec_in" },
+        description: "Connect BeginPlay to SetTimerByEvent",
+      },
+      {
+        type: "node_exists",
+        nodeType: "PrintString",
+        count: 2,
+        description: "Print messages for start and timer fire",
+      },
+    ],
+  },
+  {
+    taskId: "task_22_timer_control",
+    level: 5,
+    title: "Timer Lifecycle",
+    description:
+      "Create a looping timer that fires every 1 second. Use IsTimerActive to check status and ClearTimer to stop it after 5 iterations.",
+    requirements: [
+      {
+        type: "node_exists",
+        nodeType: "SetTimerByEvent",
+        description: "Add SetTimerByEvent for looping timer",
+      },
+      {
+        type: "node_exists",
+        nodeType: "IsTimerActive",
+        description: "Add IsTimerActive node to check status",
+      },
+      {
+        type: "node_exists",
+        nodeType: "ClearTimer",
+        description: "Add ClearTimer to stop the timer",
+      },
+      {
+        type: "variable_exists",
+        name: "TimerCount",
+        varType: "int",
+        description: "Create Integer variable 'TimerCount'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Branch",
+        description: "Branch to check if timer should stop",
+      },
+      {
+        type: "node_exists",
+        nodeType: "PrintString",
+        description: "Print timer count",
+      },
+    ],
+  },
+  {
+    taskId: "task_23_event_dispatcher",
+    level: 5,
+    title: "Custom Event Broadcasting",
+    description:
+      "Use Event Dispatchers to broadcast a 'OnHealthChanged' event. Bind to the dispatcher and print 'Health Updated!' when it fires.",
+    requirements: [
+      {
+        type: "node_exists",
+        nodeType: "EventBeginPlay",
+        description: "Add Event BeginPlay node",
+      },
+      {
+        type: "node_exists",
+        nodeType: "BindToDispatcher_Example",
+        description: "Add BindToDispatcher node",
+      },
+      {
+        type: "node_exists",
+        nodeType: "CallDispatcher_Example",
+        description: "Add CallDispatcher node",
+      },
+      {
+        type: "connection",
+        from: { nodeType: "EventBeginPlay", pin: "exec_out" },
+        to: { nodeType: "BindToDispatcher_Example", pin: "exec_in" },
+        description: "Connect BeginPlay to Bind dispatcher",
+      },
+      {
+        type: "node_exists",
+        nodeType: "PrintString",
+        description: "Print when dispatcher fires",
+      },
+    ],
+  },
 ];
