@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/924</span>
+                <span class='fraction'>0/918</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/924</span>
+                <span class='fraction'>0/918</span>
             </div>
         
             
@@ -981,19 +981,7 @@
 <a name='L916'></a><a href='#L916'>916</a>
 <a name='L917'></a><a href='#L917'>917</a>
 <a name='L918'></a><a href='#L918'>918</a>
-<a name='L919'></a><a href='#L919'>919</a>
-<a name='L920'></a><a href='#L920'>920</a>
-<a name='L921'></a><a href='#L921'>921</a>
-<a name='L922'></a><a href='#L922'>922</a>
-<a name='L923'></a><a href='#L923'>923</a>
-<a name='L924'></a><a href='#L924'>924</a>
-<a name='L925'></a><a href='#L925'>925</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L919'></a><a href='#L919'>919</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2436,21 +2424,15 @@
 <span class="cstat-no" title="statement not covered" >          item.setAttribute("tabindex", "0");</span>
 <span class="cstat-no" title="statement not covered" >          item.dataset.componentId = comp.id;</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          // Create output circle indicator</span>
+<span class="cstat-no" title="statement not covered" >          // Create output circle indicator (cyan/scenecomponent color like UE5)</span>
 <span class="cstat-no" title="statement not covered" >          const outputCircle = document.createElement("span");</span>
 <span class="cstat-no" title="statement not covered" >          outputCircle.className = "component-output-circle";</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >          const iconClass = this.app.componentsController</span>
-<span class="cstat-no" title="statement not covered" >            ? this.app.componentsController.getIconForType(comp.type)</span>
-<span class="cstat-no" title="statement not covered" >            : "fa-cube";</span>
-<span class="cstat-no" title="statement not covered" >          const icon = document.createElement("i");</span>
-<span class="cstat-no" title="statement not covered" >          icon.className = `fas ${iconClass} icon-sm mr-2`;</span>
-<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >          // UE5 Style: No icon, just circle + name</span>
 <span class="cstat-no" title="statement not covered" >          const nameSpan = document.createElement("span");</span>
 <span class="cstat-no" title="statement not covered" >          nameSpan.textContent = comp.name;</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >          item.appendChild(outputCircle);</span>
-<span class="cstat-no" title="statement not covered" >          item.appendChild(icon);</span>
 <span class="cstat-no" title="statement not covered" >          item.appendChild(nameSpan);</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >          // Drag Logic</span>
@@ -2663,7 +2645,7 @@
 <span class="cstat-no" title="statement not covered" >        variableId: variable.id,</span>
 <span class="cstat-no" title="statement not covered" >        icon: "fa-arrow-up",</span>
 <span class="cstat-no" title="statement not covered" >        pins: [</span>
-<span class="cstat-no" title="statement not covered" >          { id: "exec_in", name: "Exec", type: "exec", dir: "in" },</span>
+<span class="cstat-no" title="statement not covered" >          { id: "exec_in", name: "", type: "exec", dir: "in" },</span>
 <span class="cstat-no" title="statement not covered" >          {</span>
 <span class="cstat-no" title="statement not covered" >            id: "val_in",</span>
 <span class="cstat-no" title="statement not covered" >            name: variable.name,</span>
@@ -2672,10 +2654,10 @@
 <span class="cstat-no" title="statement not covered" >            containerType: variable.containerType,</span>
 <span class="cstat-no" title="statement not covered" >            ...pinDefault,</span>
 <span class="cstat-no" title="statement not covered" >          },</span>
-<span class="cstat-no" title="statement not covered" >          { id: "exec_out", name: "Exec", type: "exec", dir: "out" },</span>
+<span class="cstat-no" title="statement not covered" >          { id: "exec_out", name: "", type: "exec", dir: "out" },</span>
 <span class="cstat-no" title="statement not covered" >          {</span>
 <span class="cstat-no" title="statement not covered" >            id: "val_out",</span>
-<span class="cstat-no" title="statement not covered" >            name: variable.name,</span>
+<span class="cstat-no" title="statement not covered" >            name: "", // UE5 style: output pin has no label, only input shows the name</span>
 <span class="cstat-no" title="statement not covered" >            type: variable.type,</span>
 <span class="cstat-no" title="statement not covered" >            dir: "out",</span>
 <span class="cstat-no" title="statement not covered" >            containerType: variable.containerType,</span>
@@ -2842,7 +2824,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-07T23:38:43.995Z
+                at 2026-01-16T16:29:06.601Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

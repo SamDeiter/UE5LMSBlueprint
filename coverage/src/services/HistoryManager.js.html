@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/235</span>
+                <span class='fraction'>0/266</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/235</span>
+                <span class='fraction'>0/266</span>
             </div>
         
             
@@ -298,7 +298,69 @@
 <a name='L233'></a><a href='#L233'>233</a>
 <a name='L234'></a><a href='#L234'>234</a>
 <a name='L235'></a><a href='#L235'>235</a>
-<a name='L236'></a><a href='#L236'>236</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -537,236 +599,267 @@
 <span class="cstat-no" title="statement not covered" > * Manages the history stack for undo/redo and handles application state persistence.</span>
 <span class="cstat-no" title="statement not covered" > */</span>
 <span class="cstat-no" title="statement not covered" >export class HistoryManager {</span>
-<span class="cstat-no" title="statement not covered" >    constructor(app, maxHistory = 50) {</span>
-<span class="cstat-no" title="statement not covered" >        this.app = app;</span>
-<span class="cstat-no" title="statement not covered" >        this.maxHistory = maxHistory;</span>
-<span class="cstat-no" title="statement not covered" >        this.undoStack = [];</span>
-<span class="cstat-no" title="statement not covered" >        this.redoStack = [];</span>
-<span class="cstat-no" title="statement not covered" >        this.isPerformingHistoryAction = false;</span>
-<span class="cstat-no" title="statement not covered" >        this.undoBtn = document.getElementById('undo-btn');</span>
-<span class="cstat-no" title="statement not covered" >        this.redoBtn = document.getElementById('redo-btn');</span>
-<span class="cstat-no" title="statement not covered" >        this.updateButtons(); // Initialize button states</span>
+<span class="cstat-no" title="statement not covered" >  constructor(app, maxHistory = 50) {</span>
+<span class="cstat-no" title="statement not covered" >    this.app = app;</span>
+<span class="cstat-no" title="statement not covered" >    this.maxHistory = maxHistory;</span>
+<span class="cstat-no" title="statement not covered" >    this.undoStack = [];</span>
+<span class="cstat-no" title="statement not covered" >    this.redoStack = [];</span>
+<span class="cstat-no" title="statement not covered" >    this.isPerformingHistoryAction = false;</span>
+<span class="cstat-no" title="statement not covered" >    this.undoBtn = document.getElementById("undo-btn");</span>
+<span class="cstat-no" title="statement not covered" >    this.redoBtn = document.getElementById("redo-btn");</span>
+<span class="cstat-no" title="statement not covered" >    this.updateButtons(); // Initialize button states</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  /**</span>
+<span class="cstat-no" title="statement not covered" >   * Captures the current application state (graph, links, variables) and pushes it to the undo stack.</span>
+<span class="cstat-no" title="statement not covered" >   * Clears the redo stack.</span>
+<span class="cstat-no" title="statement not covered" >   */</span>
+<span class="cstat-no" title="statement not covered" >  saveState(actionType = "action") {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.isPerformingHistoryAction) return;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 1. Capture current graph state into the graphs map</span>
+<span class="cstat-no" title="statement not covered" >    // Use Persistence helper to ensure consistent serialization</span>
+<span class="cstat-no" title="statement not covered" >    if (!this.app.graphs) {</span>
+<span class="cstat-no" title="statement not covered" >      this.app.graphs = {};</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >    if (!this.app.activeGraph) {</span>
+<span class="cstat-no" title="statement not covered" >      this.app.activeGraph = "EventGraph";</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Captures the current application state (graph, links, variables) and pushes it to the undo stack.</span>
-<span class="cstat-no" title="statement not covered" >     * Clears the redo stack.</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    saveState(actionType = 'action') {</span>
-<span class="cstat-no" title="statement not covered" >        if (this.isPerformingHistoryAction) return;</span>
+<span class="cstat-no" title="statement not covered" >    this.app.graphs[this.app.activeGraph] = {</span>
+<span class="cstat-no" title="statement not covered" >      nodes: this.app.persistence.serializeNodes(),</span>
+<span class="cstat-no" title="statement not covered" >      links: this.app.persistence.serializeLinks(),</span>
+<span class="cstat-no" title="statement not covered" >    };</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 1. Capture current graph state into the graphs map</span>
-<span class="cstat-no" title="statement not covered" >        // Use Persistence helper to ensure consistent serialization</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.app.graphs) {</span>
-<span class="cstat-no" title="statement not covered" >            this.app.graphs = {};</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >        if (!this.app.activeGraph) {</span>
-<span class="cstat-no" title="statement not covered" >            this.app.activeGraph = 'EventGraph';</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    const variablesArray =</span>
+<span class="cstat-no" title="statement not covered" >      this.app.variables &amp;&amp; this.app.variables.variables</span>
+<span class="cstat-no" title="statement not covered" >        ? [...this.app.variables.variables.values()]</span>
+<span class="cstat-no" title="statement not covered" >        : [];</span>
+<span class="cstat-no" title="statement not covered" >    const functionsArray = this.app.functionRegistry</span>
+<span class="cstat-no" title="statement not covered" >      ? this.app.functionRegistry.getAll().map((f) =&gt; f.toJSON())</span>
+<span class="cstat-no" title="statement not covered" >      : [];</span>
+<span class="cstat-no" title="statement not covered" >    const macrosArray = this.app.macroRegistry</span>
+<span class="cstat-no" title="statement not covered" >      ? this.app.macroRegistry.getAll().map((m) =&gt; m.toJSON())</span>
+<span class="cstat-no" title="statement not covered" >      : [];</span>
+<span class="cstat-no" title="statement not covered" >    const componentsArray = this.app.components</span>
+<span class="cstat-no" title="statement not covered" >      ? [...this.app.components.values()]</span>
+<span class="cstat-no" title="statement not covered" >      : [];</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.app.graphs[this.app.activeGraph] = {</span>
-<span class="cstat-no" title="statement not covered" >            nodes: this.app.persistence.serializeNodes(),</span>
-<span class="cstat-no" title="statement not covered" >            links: this.app.persistence.serializeLinks()</span>
-<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" >    const state = {</span>
+<span class="cstat-no" title="statement not covered" >      activeGraph: this.app.activeGraph,</span>
+<span class="cstat-no" title="statement not covered" >      graphs: this.app.graphs,</span>
+<span class="cstat-no" title="statement not covered" >      variables: variablesArray,</span>
+<span class="cstat-no" title="statement not covered" >      components: componentsArray,</span>
+<span class="cstat-no" title="statement not covered" >      functions: functionsArray,</span>
+<span class="cstat-no" title="statement not covered" >      macros: macrosArray,</span>
+<span class="cstat-no" title="statement not covered" >      classDefaults: this.app.classDefaults,</span>
+<span class="cstat-no" title="statement not covered" >      // Persist pending renames so they aren't lost on reload</span>
+<span class="cstat-no" title="statement not covered" >      pendingRenames: this.app.compiler ? this.app.compiler.pendingRenames : [],</span>
+<span class="cstat-no" title="statement not covered" >    };</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const variablesArray = (this.app.variables &amp;&amp; this.app.variables.variables) ? [...this.app.variables.variables.values()] : [];</span>
-<span class="cstat-no" title="statement not covered" >        const functionsArray = (this.app.functionRegistry) ? this.app.functionRegistry.getAll().map(f =&gt; f.toJSON()) : [];</span>
-<span class="cstat-no" title="statement not covered" >        const macrosArray = (this.app.macroRegistry) ? this.app.macroRegistry.getAll().map(m =&gt; m.toJSON()) : [];</span>
-<span class="cstat-no" title="statement not covered" >        const componentsArray = (this.app.components) ? [...this.app.components.values()] : [];</span>
+<span class="cstat-no" title="statement not covered" >    const stateJSON = JSON.stringify(state);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const state = {</span>
-<span class="cstat-no" title="statement not covered" >            activeGraph: this.app.activeGraph,</span>
-<span class="cstat-no" title="statement not covered" >            graphs: this.app.graphs,</span>
-<span class="cstat-no" title="statement not covered" >            variables: variablesArray,</span>
-<span class="cstat-no" title="statement not covered" >            components: componentsArray,</span>
-<span class="cstat-no" title="statement not covered" >            functions: functionsArray,</span>
-<span class="cstat-no" title="statement not covered" >            macros: macrosArray,</span>
-<span class="cstat-no" title="statement not covered" >            classDefaults: this.app.classDefaults,</span>
-<span class="cstat-no" title="statement not covered" >            // Persist pending renames so they aren't lost on reload</span>
-<span class="cstat-no" title="statement not covered" >            pendingRenames: this.app.compiler ? this.app.compiler.pendingRenames : []</span>
-<span class="cstat-no" title="statement not covered" >        };</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        const stateJSON = JSON.stringify(state);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 2. Check if the state is actually different from the last saved state</span>
-<span class="cstat-no" title="statement not covered" >        if (this.undoStack.length &gt; 0 &amp;&amp; this.undoStack[this.undoStack.length - 1].state === stateJSON) {</span>
-<span class="cstat-no" title="statement not covered" >            return;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 3. Push to undo stack</span>
-<span class="cstat-no" title="statement not covered" >        this.undoStack.push({ state: stateJSON, action: actionType });</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 4. Truncate undo stack if necessary</span>
-<span class="cstat-no" title="statement not covered" >        if (this.undoStack.length &gt; this.maxHistory) {</span>
-<span class="cstat-no" title="statement not covered" >            this.undoStack.shift();</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 5. Clear redo stack</span>
-<span class="cstat-no" title="statement not covered" >        this.redoStack = [];</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.updateButtons();</span>
-<span class="cstat-no" title="statement not covered" >        // Automatically save the latest state to localStorage when the history state changes</span>
-<span class="cstat-no" title="statement not covered" >        this.app.persistence.save();</span>
+<span class="cstat-no" title="statement not covered" >    // 2. Check if the state is actually different from the last saved state</span>
+<span class="cstat-no" title="statement not covered" >    if (</span>
+<span class="cstat-no" title="statement not covered" >      this.undoStack.length &gt; 0 &amp;&amp;</span>
+<span class="cstat-no" title="statement not covered" >      this.undoStack[this.undoStack.length - 1].state === stateJSON</span>
+<span class="cstat-no" title="statement not covered" >    ) {</span>
+<span class="cstat-no" title="statement not covered" >      return;</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /**</span>
-<span class="cstat-no" title="statement not covered" >     * Applies a state retrieved from a stack to the application.</span>
-<span class="cstat-no" title="statement not covered" >     * @param {string} stateJSON - The serialized state to load.</span>
-<span class="cstat-no" title="statement not covered" >     */</span>
-<span class="cstat-no" title="statement not covered" >    applyState(stateJSON) {</span>
-<span class="cstat-no" title="statement not covered" >        this.isPerformingHistoryAction = true;</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            const state = JSON.parse(stateJSON);</span>
+<span class="cstat-no" title="statement not covered" >    // 3. Push to undo stack</span>
+<span class="cstat-no" title="statement not covered" >    this.undoStack.push({ state: stateJSON, action: actionType });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // 1. Clear current state (ULTRA-DEFENSIVE CHECKS: Resolves previous TypeErrors)</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graph &amp;&amp; this.app.graph.nodes) this.app.graph.nodes.clear();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.wiring &amp;&amp; this.app.wiring.links) this.app.wiring.links.clear();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.variables &amp;&amp; this.app.variables.variables) this.app.variables.variables.clear();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.components) this.app.components.clear();</span>
+<span class="cstat-no" title="statement not covered" >    // 4. Truncate undo stack if necessary</span>
+<span class="cstat-no" title="statement not covered" >    if (this.undoStack.length &gt; this.maxHistory) {</span>
+<span class="cstat-no" title="statement not covered" >      this.undoStack.shift();</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Clear DOM elements</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graph &amp;&amp; this.app.graph.nodesContainer) this.app.graph.nodesContainer.innerHTML = '';</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.wiring &amp;&amp; this.app.wiring.svgGroup) {</span>
-<span class="cstat-no" title="statement not covered" >                // Ensure ghost wire path remains</span>
-<span class="cstat-no" title="statement not covered" >                this.app.wiring.svgGroup.innerHTML = '&lt;path id="ghost-wire" class="wire" style="pointer-events: none;"&gt;&lt;/path&gt;';</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >    // 5. Clear redo stack</span>
+<span class="cstat-no" title="statement not covered" >    this.redoStack = [];</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // 2. Load the state. Must ensure variables load first to populate NodeLibrary</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.variables) this.app.variables.loadState(state); // Loads variables &amp; updates NodeLibrary</span>
+<span class="cstat-no" title="statement not covered" >    this.updateButtons();</span>
+<span class="cstat-no" title="statement not covered" >    // Automatically save the latest state to localStorage when the history state changes</span>
+<span class="cstat-no" title="statement not covered" >    this.app.persistence.save();</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Restore Functions</span>
-<span class="cstat-no" title="statement not covered" >            if (state.functions &amp;&amp; this.app.functionRegistry) {</span>
-<span class="cstat-no" title="statement not covered" >                this.app.functionRegistry.clear();</span>
-<span class="cstat-no" title="statement not covered" >                state.functions.forEach(_fData =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                    // We need to import FunctionDefinition class or have a static helper, </span>
-<span class="cstat-no" title="statement not covered" >                    // but we can't import here easily if not already imported.</span>
-<span class="cstat-no" title="statement not covered" >                    // However, FunctionRegistry stores FunctionDefinition objects.</span>
-<span class="cstat-no" title="statement not covered" >                    // Let's assume we can reconstruct them or just store the data if Registry handles it.</span>
-<span class="cstat-no" title="statement not covered" >                    // Actually, we should use FunctionDefinition.fromJSON if available, or just pass data if registry handles it.</span>
-<span class="cstat-no" title="statement not covered" >                    // Let's check FunctionRegistry.register. It expects a FunctionDefinition object.</span>
-<span class="cstat-no" title="statement not covered" >                    // We need to reconstruct it.</span>
-<span class="cstat-no" title="statement not covered" >                    // Since we can't easily import FunctionDefinition here without changing imports at top,</span>
-<span class="cstat-no" title="statement not covered" >                    // let's check if we can access it via app? No.</span>
-<span class="cstat-no" title="statement not covered" >                    // But wait, FunctionRegistry is imported in app.js.</span>
-<span class="cstat-no" title="statement not covered" >                    // Maybe we can add a loadState method to FunctionsController?</span>
-<span class="cstat-no" title="statement not covered" >                    // Or just manually reconstruct if it's simple data.</span>
-<span class="cstat-no" title="statement not covered" >                    // FunctionDefinition has methods like addInput.</span>
-<span class="cstat-no" title="statement not covered" >                    // If we just store raw JSON, we lose methods.</span>
-<span class="cstat-no" title="statement not covered" >                    // Ideally, FunctionsController should handle loading.</span>
-<span class="cstat-no" title="statement not covered" >                });</span>
-<span class="cstat-no" title="statement not covered" >                // Better approach: Delegate to FunctionsController</span>
-<span class="cstat-no" title="statement not covered" >                if (this.app.functionsController) {</span>
-<span class="cstat-no" title="statement not covered" >                    this.app.functionsController.loadState(state.functions);</span>
-<span class="cstat-no" title="statement not covered" >                }</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >  /**</span>
+<span class="cstat-no" title="statement not covered" >   * Applies a state retrieved from a stack to the application.</span>
+<span class="cstat-no" title="statement not covered" >   * @param {string} stateJSON - The serialized state to load.</span>
+<span class="cstat-no" title="statement not covered" >   */</span>
+<span class="cstat-no" title="statement not covered" >  applyState(stateJSON) {</span>
+<span class="cstat-no" title="statement not covered" >    this.isPerformingHistoryAction = true;</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      const state = JSON.parse(stateJSON);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Restore Macros</span>
-<span class="cstat-no" title="statement not covered" >            if (state.macros &amp;&amp; this.app.macrosController) {</span>
-<span class="cstat-no" title="statement not covered" >                this.app.macrosController.loadState(state.macros);</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >      // 1. Clear current state (ULTRA-DEFENSIVE CHECKS: Resolves previous TypeErrors)</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graph &amp;&amp; this.app.graph.nodes) this.app.graph.nodes.clear();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.wiring &amp;&amp; this.app.wiring.links)</span>
+<span class="cstat-no" title="statement not covered" >        this.app.wiring.links.clear();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.variables &amp;&amp; this.app.variables.variables)</span>
+<span class="cstat-no" title="statement not covered" >        this.app.variables.variables.clear();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.components) this.app.components.clear();</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Restore Components</span>
-<span class="cstat-no" title="statement not covered" >            if (state.components &amp;&amp; this.app.components) {</span>
-<span class="cstat-no" title="statement not covered" >                state.components.forEach(c =&gt; this.app.components.set(c.id, c));</span>
-<span class="cstat-no" title="statement not covered" >                if (this.app.componentsController) {</span>
-<span class="cstat-no" title="statement not covered" >                    this.app.componentsController.render();</span>
-<span class="cstat-no" title="statement not covered" >                    this.app.componentsController.updateNodeLibrary();</span>
-<span class="cstat-no" title="statement not covered" >                }</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
+<span class="cstat-no" title="statement not covered" >      // Clear DOM elements</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graph &amp;&amp; this.app.graph.nodesContainer)</span>
+<span class="cstat-no" title="statement not covered" >        this.app.graph.nodesContainer.innerHTML = "";</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.wiring &amp;&amp; this.app.wiring.svgGroup) {</span>
+<span class="cstat-no" title="statement not covered" >        // Ensure ghost wire path remains</span>
+<span class="cstat-no" title="statement not covered" >        this.app.wiring.svgGroup.innerHTML =</span>
+<span class="cstat-no" title="statement not covered" >          '&lt;path id="ghost-wire" class="wire" style="pointer-events: none;"&gt;&lt;/path&gt;';</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Restore Class Defaults</span>
-<span class="cstat-no" title="statement not covered" >            this.app.classDefaults = state.classDefaults || {</span>
-<span class="cstat-no" title="statement not covered" >                parentClass: 'Actor',</span>
-<span class="cstat-no" title="statement not covered" >                tickInterval: 0.0,</span>
-<span class="cstat-no" title="statement not covered" >                replicates: false,</span>
-<span class="cstat-no" title="statement not covered" >                autoReceiveInput: 'Disabled'</span>
-<span class="cstat-no" title="statement not covered" >            };</span>
+<span class="cstat-no" title="statement not covered" >      // 2. Load the state. Must ensure variables load first to populate NodeLibrary</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.variables) this.app.variables.loadState(state); // Loads variables &amp; updates NodeLibrary</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Restore graphs map and active graph</span>
-<span class="cstat-no" title="statement not covered" >            this.app.graphs = state.graphs || { 'EventGraph': { nodes: [], links: [] } };</span>
-<span class="cstat-no" title="statement not covered" >            // Ensure ConstructionScript exists</span>
-<span class="cstat-no" title="statement not covered" >            if (!this.app.graphs['ConstructionScript']) {</span>
-<span class="cstat-no" title="statement not covered" >                this.app.graphs['ConstructionScript'] = { nodes: [], links: [] };</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            this.app.activeGraph = state.activeGraph || 'EventGraph';</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Load the active graph data</span>
-<span class="cstat-no" title="statement not covered" >            const activeGraphData = this.app.graphs[this.app.activeGraph] || { nodes: [], links: [] };</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graph) this.app.graph.loadState(activeGraphData);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // 3. Restore Compiler State (Pending Renames)</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.compiler &amp;&amp; state.pendingRenames) {</span>
-<span class="cstat-no" title="statement not covered" >                this.app.compiler.pendingRenames = state.pendingRenames;</span>
-<span class="cstat-no" title="statement not covered" >                if (state.pendingRenames.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >                    this.app.compiler.markDirty();</span>
-<span class="cstat-no" title="statement not covered" >                }</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // 4. Re-render UI</span>
-<span class="cstat-no" title="statement not covered" >            // The remaining checks here ensure that if any component fails to initialize (like graph), </span>
-<span class="cstat-no" title="statement not covered" >            // we don't attempt to call methods on it, preventing the cascading 'renderAllNodes' error.</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graph) this.app.graph.renderAllNodes();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graph) this.app.graph.drawAllWires();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graph) this.app.graph.updateTransform();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.details) this.app.details.clear();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.compiler) this.app.compiler.validate();</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graph) this.app.graph.clearSelection();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >            // Update tabs to reflect the active graph</span>
-<span class="cstat-no" title="statement not covered" >            if (this.app.graphSwitcher) {</span>
-<span class="cstat-no" title="statement not covered" >                this.app.graphSwitcher.updateTabs(this.app.activeGraph);</span>
-<span class="cstat-no" title="statement not covered" >            }</span>
-<span class="cstat-no" title="statement not covered" >        } catch (e) {</span>
-<span class="cstat-no" title="statement not covered" >            this.app.compiler.log(`Error performing history action: ${e.message}`, 'error');</span>
-<span class="cstat-no" title="statement not covered" >            console.error("History Application Error:", e);</span>
-<span class="cstat-no" title="statement not covered" >        } finally {</span>
-<span class="cstat-no" title="statement not covered" >            this.isPerformingHistoryAction = false;</span>
+<span class="cstat-no" title="statement not covered" >      // Restore Functions</span>
+<span class="cstat-no" title="statement not covered" >      if (state.functions &amp;&amp; this.app.functionRegistry) {</span>
+<span class="cstat-no" title="statement not covered" >        this.app.functionRegistry.clear();</span>
+<span class="cstat-no" title="statement not covered" >        state.functions.forEach((_fData) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >          // We need to import FunctionDefinition class or have a static helper,</span>
+<span class="cstat-no" title="statement not covered" >          // but we can't import here easily if not already imported.</span>
+<span class="cstat-no" title="statement not covered" >          // However, FunctionRegistry stores FunctionDefinition objects.</span>
+<span class="cstat-no" title="statement not covered" >          // Let's assume we can reconstruct them or just store the data if Registry handles it.</span>
+<span class="cstat-no" title="statement not covered" >          // Actually, we should use FunctionDefinition.fromJSON if available, or just pass data if registry handles it.</span>
+<span class="cstat-no" title="statement not covered" >          // Let's check FunctionRegistry.register. It expects a FunctionDefinition object.</span>
+<span class="cstat-no" title="statement not covered" >          // We need to reconstruct it.</span>
+<span class="cstat-no" title="statement not covered" >          // Since we can't easily import FunctionDefinition here without changing imports at top,</span>
+<span class="cstat-no" title="statement not covered" >          // let's check if we can access it via app? No.</span>
+<span class="cstat-no" title="statement not covered" >          // But wait, FunctionRegistry is imported in app.js.</span>
+<span class="cstat-no" title="statement not covered" >          // Maybe we can add a loadState method to FunctionsController?</span>
+<span class="cstat-no" title="statement not covered" >          // Or just manually reconstruct if it's simple data.</span>
+<span class="cstat-no" title="statement not covered" >          // FunctionDefinition has methods like addInput.</span>
+<span class="cstat-no" title="statement not covered" >          // If we just store raw JSON, we lose methods.</span>
+<span class="cstat-no" title="statement not covered" >          // Ideally, FunctionsController should handle loading.</span>
+<span class="cstat-no" title="statement not covered" >        });</span>
+<span class="cstat-no" title="statement not covered" >        // Better approach: Delegate to FunctionsController</span>
+<span class="cstat-no" title="statement not covered" >        if (this.app.functionsController) {</span>
+<span class="cstat-no" title="statement not covered" >          this.app.functionsController.loadState(state.functions);</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /** Rolls back the state by one step. */</span>
-<span class="cstat-no" title="statement not covered" >    undo() {</span>
-<span class="cstat-no" title="statement not covered" >        if (this.undoStack.length &lt; 2) return; // Need at least two states (current + previous)</span>
+<span class="cstat-no" title="statement not covered" >      // Restore Macros</span>
+<span class="cstat-no" title="statement not covered" >      if (state.macros &amp;&amp; this.app.macrosController) {</span>
+<span class="cstat-no" title="statement not covered" >        this.app.macrosController.loadState(state.macros);</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 1. Move current state from undo to redo</span>
-<span class="cstat-no" title="statement not covered" >        const currentState = this.undoStack.pop();</span>
-<span class="cstat-no" title="statement not covered" >        this.redoStack.push(currentState);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 2. Load the previous state</span>
-<span class="cstat-no" title="statement not covered" >        const prevState = this.undoStack[this.undoStack.length - 1];</span>
-<span class="cstat-no" title="statement not covered" >        if (prevState) {</span>
-<span class="cstat-no" title="statement not covered" >            this.applyState(prevState.state);</span>
-<span class="cstat-no" title="statement not covered" >            this.app.compiler.log(`Undo successful: Rolled back one ${prevState.action}.`);</span>
+<span class="cstat-no" title="statement not covered" >      // Restore Components</span>
+<span class="cstat-no" title="statement not covered" >      if (state.components &amp;&amp; this.app.components) {</span>
+<span class="cstat-no" title="statement not covered" >        state.components.forEach((c) =&gt; this.app.components.set(c.id, c));</span>
+<span class="cstat-no" title="statement not covered" >        if (this.app.componentsController) {</span>
+<span class="cstat-no" title="statement not covered" >          this.app.componentsController.render();</span>
+<span class="cstat-no" title="statement not covered" >          this.app.componentsController.updateNodeLibrary();</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.updateButtons();</span>
-<span class="cstat-no" title="statement not covered" >        this.app.persistence.save(); // Save current state to local storage</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >      // Restore Class Defaults</span>
+<span class="cstat-no" title="statement not covered" >      this.app.classDefaults = state.classDefaults || {</span>
+<span class="cstat-no" title="statement not covered" >        parentClass: "Actor",</span>
+<span class="cstat-no" title="statement not covered" >        tickInterval: 0.0,</span>
+<span class="cstat-no" title="statement not covered" >        replicates: false,</span>
+<span class="cstat-no" title="statement not covered" >        autoReceiveInput: "Disabled",</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /** Rolls forward the state by one step. */</span>
-<span class="cstat-no" title="statement not covered" >    redo() {</span>
-<span class="cstat-no" title="statement not covered" >        if (this.redoStack.length === 0) return;</span>
+<span class="cstat-no" title="statement not covered" >      // Restore graphs map and active graph</span>
+<span class="cstat-no" title="statement not covered" >      this.app.graphs = state.graphs || {</span>
+<span class="cstat-no" title="statement not covered" >        EventGraph: { nodes: [], links: [] },</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
+<span class="cstat-no" title="statement not covered" >      // Ensure ConstructionScript exists</span>
+<span class="cstat-no" title="statement not covered" >      if (!this.app.graphs["ConstructionScript"]) {</span>
+<span class="cstat-no" title="statement not covered" >        this.app.graphs["ConstructionScript"] = { nodes: [], links: [] };</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 1. Move state from redo back to undo</span>
-<span class="cstat-no" title="statement not covered" >        const nextState = this.redoStack.pop();</span>
-<span class="cstat-no" title="statement not covered" >        this.undoStack.push(nextState);</span>
+<span class="cstat-no" title="statement not covered" >      this.app.activeGraph = state.activeGraph || "EventGraph";</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // 2. Apply the state</span>
-<span class="cstat-no" title="statement not covered" >        this.applyState(nextState.state);</span>
-<span class="cstat-no" title="statement not covered" >        this.app.compiler.log(`Redo successful: Reverted one ${nextState.action}.`);</span>
+<span class="cstat-no" title="statement not covered" >      // Load the active graph data</span>
+<span class="cstat-no" title="statement not covered" >      const activeGraphData = this.app.graphs[this.app.activeGraph] || {</span>
+<span class="cstat-no" title="statement not covered" >        nodes: [],</span>
+<span class="cstat-no" title="statement not covered" >        links: [],</span>
+<span class="cstat-no" title="statement not covered" >      };</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graph) this.app.graph.loadState(activeGraphData);</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        this.updateButtons();</span>
-<span class="cstat-no" title="statement not covered" >        this.app.persistence.save(); // Save current state to local storage</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    /** Enables/disables the undo/redo buttons based on stack size. */</span>
-<span class="cstat-no" title="statement not covered" >    updateButtons() {</span>
-<span class="cstat-no" title="statement not covered" >        if (this.undoBtn &amp;&amp; this.redoBtn) {</span>
-<span class="cstat-no" title="statement not covered" >            this.undoBtn.disabled = this.undoStack.length &lt;= 1;</span>
-<span class="cstat-no" title="statement not covered" >            this.redoBtn.disabled = this.redoStack.length === 0;</span>
+<span class="cstat-no" title="statement not covered" >      // 3. Restore Compiler State (Pending Renames)</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.compiler &amp;&amp; state.pendingRenames) {</span>
+<span class="cstat-no" title="statement not covered" >        this.app.compiler.pendingRenames = state.pendingRenames;</span>
+<span class="cstat-no" title="statement not covered" >        if (state.pendingRenames.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >          this.app.compiler.markDirty();</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      // 4. Re-render UI</span>
+<span class="cstat-no" title="statement not covered" >      // The remaining checks here ensure that if any component fails to initialize (like graph),</span>
+<span class="cstat-no" title="statement not covered" >      // we don't attempt to call methods on it, preventing the cascading 'renderAllNodes' error.</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graph) this.app.graph.renderAllNodes();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graph) this.app.graph.drawAllWires();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graph) this.app.graph.updateTransform();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.details) this.app.details.clear();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.compiler) this.app.compiler.validate();</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graph) this.app.graph.clearSelection();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      // Update tabs to reflect the active graph</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.graphSwitcher) {</span>
+<span class="cstat-no" title="statement not covered" >        this.app.graphSwitcher.updateTabs(this.app.activeGraph);</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      // Notify StateManager subscribers of all changes</span>
+<span class="cstat-no" title="statement not covered" >      if (this.app.stateManager) {</span>
+<span class="cstat-no" title="statement not covered" >        this.app.stateManager.notifyAll();</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >    } catch (e) {</span>
+<span class="cstat-no" title="statement not covered" >      this.app.compiler.log(</span>
+<span class="cstat-no" title="statement not covered" >        `Error performing history action: ${e.message}`,</span>
+<span class="cstat-no" title="statement not covered" >        "error"</span>
+<span class="cstat-no" title="statement not covered" >      );</span>
+<span class="cstat-no" title="statement not covered" >      console.error("History Application Error:", e);</span>
+<span class="cstat-no" title="statement not covered" >    } finally {</span>
+<span class="cstat-no" title="statement not covered" >      this.isPerformingHistoryAction = false;</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  /** Rolls back the state by one step. */</span>
+<span class="cstat-no" title="statement not covered" >  undo() {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.undoStack.length &lt; 2) return; // Need at least two states (current + previous)</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 1. Move current state from undo to redo</span>
+<span class="cstat-no" title="statement not covered" >    const currentState = this.undoStack.pop();</span>
+<span class="cstat-no" title="statement not covered" >    this.redoStack.push(currentState);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 2. Load the previous state</span>
+<span class="cstat-no" title="statement not covered" >    const prevState = this.undoStack[this.undoStack.length - 1];</span>
+<span class="cstat-no" title="statement not covered" >    if (prevState) {</span>
+<span class="cstat-no" title="statement not covered" >      this.applyState(prevState.state);</span>
+<span class="cstat-no" title="statement not covered" >      this.app.compiler.log(</span>
+<span class="cstat-no" title="statement not covered" >        `Undo successful: Rolled back one ${prevState.action}.`</span>
+<span class="cstat-no" title="statement not covered" >      );</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    this.updateButtons();</span>
+<span class="cstat-no" title="statement not covered" >    this.app.persistence.save(); // Save current state to local storage</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  /** Rolls forward the state by one step. */</span>
+<span class="cstat-no" title="statement not covered" >  redo() {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.redoStack.length === 0) return;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 1. Move state from redo back to undo</span>
+<span class="cstat-no" title="statement not covered" >    const nextState = this.redoStack.pop();</span>
+<span class="cstat-no" title="statement not covered" >    this.undoStack.push(nextState);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // 2. Apply the state</span>
+<span class="cstat-no" title="statement not covered" >    this.applyState(nextState.state);</span>
+<span class="cstat-no" title="statement not covered" >    this.app.compiler.log(`Redo successful: Reverted one ${nextState.action}.`);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    this.updateButtons();</span>
+<span class="cstat-no" title="statement not covered" >    this.app.persistence.save(); // Save current state to local storage</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  /** Enables/disables the undo/redo buttons based on stack size. */</span>
+<span class="cstat-no" title="statement not covered" >  updateButtons() {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.undoBtn &amp;&amp; this.redoBtn) {</span>
+<span class="cstat-no" title="statement not covered" >      this.undoBtn.disabled = this.undoStack.length &lt;= 1;</span>
+<span class="cstat-no" title="statement not covered" >      this.redoBtn.disabled = this.redoStack.length === 0;</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;</pre></td></tr></table></pre>
 
@@ -775,7 +868,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-07T23:38:43.995Z
+                at 2026-01-16T16:29:06.601Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

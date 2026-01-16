@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/236</span>
+                <span class='fraction'>0/253</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/236</span>
+                <span class='fraction'>0/253</span>
             </div>
         
             
@@ -299,7 +299,41 @@
 <a name='L234'></a><a href='#L234'>234</a>
 <a name='L235'></a><a href='#L235'>235</a>
 <a name='L236'></a><a href='#L236'>236</a>
-<a name='L237'></a><a href='#L237'>237</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -566,12 +600,14 @@
 <span class="cstat-no" title="statement not covered" >  GraphsController,</span>
 <span class="cstat-no" title="statement not covered" >  EventDispatcherController,</span>
 <span class="cstat-no" title="statement not covered" >  SearchController,</span>
+<span class="cstat-no" title="statement not covered" >  ContentBrowserPanel,</span>
 <span class="cstat-no" title="statement not covered" >} from "../ui.js";</span>
 <span class="cstat-no" title="statement not covered" >import {</span>
 <span class="cstat-no" title="statement not covered" >  Compiler,</span>
 <span class="cstat-no" title="statement not covered" >  Persistence,</span>
 <span class="cstat-no" title="statement not covered" >  GridController,</span>
 <span class="cstat-no" title="statement not covered" >  HistoryManager,</span>
+<span class="cstat-no" title="statement not covered" >  StateManager,</span>
 <span class="cstat-no" title="statement not covered" >  SimulationEngine,</span>
 <span class="cstat-no" title="statement not covered" >} from "../services.js";</span>
 <span class="cstat-no" title="statement not covered" >import { TestRunner, registerTests } from "../tests.js?v=4";</span>
@@ -587,8 +623,10 @@
 <span class="cstat-no" title="statement not covered" >import { NodeDefinitionValidator } from "../utils/NodeDefinitionValidator.js";</span>
 <span class="cstat-no" title="statement not covered" >import { BreakpointManager } from "../services/BreakpointManager.js";</span>
 <span class="cstat-no" title="statement not covered" >import { AssetInterfacingService } from "../services/AssetInterfacingService.js";</span>
+<span class="cstat-no" title="statement not covered" >import { BlueprintAssetManager, ContentBrowser } from "../core/index.js";</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >import { DOMEventHandler } from "./DOMEventHandler.js";</span>
+<span class="cstat-no" title="statement not covered" >import { createAssessmentController } from "../ui/assessment/AssessmentController.js";</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >export class AppInitializer {</span>
 <span class="cstat-no" title="statement not covered" >  /**</span>
@@ -685,6 +723,7 @@
 <span class="cstat-no" title="statement not covered" >    App.variables = new VariableController(App);</span>
 <span class="cstat-no" title="statement not covered" >    App.eventDispatchers = new EventDispatcherController(App);</span>
 <span class="cstat-no" title="statement not covered" >    App.history = new HistoryManager(App);</span>
+<span class="cstat-no" title="statement not covered" >    App.stateManager = new StateManager(App);</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    // Main Graph</span>
 <span class="cstat-no" title="statement not covered" >    App.graph = new GraphController(</span>
@@ -706,6 +745,11 @@
 <span class="cstat-no" title="statement not covered" >    // Task System</span>
 <span class="cstat-no" title="statement not covered" >    App.taskManager = new TaskManager(App);</span>
 <span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Content Browser</span>
+<span class="cstat-no" title="statement not covered" >    App.assetManager = new BlueprintAssetManager();</span>
+<span class="cstat-no" title="statement not covered" >    App.contentBrowser = new ContentBrowser(App.assetManager);</span>
+<span class="cstat-no" title="statement not covered" >    App.contentBrowser.initialize();</span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    // Expose global task helpers</span>
 <span class="cstat-no" title="statement not covered" >    window.setTask = (taskId) =&gt; App.taskManager.setCurrentTask(taskId);</span>
 <span class="cstat-no" title="statement not covered" >    window.validateTask = () =&gt; App.taskManager.validateCurrentTask();</span>
@@ -717,6 +761,9 @@
 <span class="cstat-no" title="statement not covered" >    App.functionsController = new FunctionsController(App);</span>
 <span class="cstat-no" title="statement not covered" >    App.macrosController = new MacrosController(App);</span>
 <span class="cstat-no" title="statement not covered" >    App.graphsController = new GraphsController(App);</span>
+<span class="cstat-no" title="statement not covered" >    App.layoutController = new LayoutController(App);</span>
+<span class="cstat-no" title="statement not covered" >    App.searchController = new SearchController(App);</span>
+<span class="cstat-no" title="statement not covered" >    App.contentBrowserPanel = new ContentBrowserPanel(App);</span>
 <span class="cstat-no" title="statement not covered" >    App.localVariablesController = new LocalVariablesController(App);</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    App.palette = new PaletteController(App);</span>
@@ -745,6 +792,10 @@
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    App.validator = new BlueprintValidator(App);</span>
 <span class="cstat-no" title="statement not covered" >    window.validateSampleTask = () =&gt; App.validator.validateTask(SAMPLE_TASK);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // Assessment Mode (Educational Quiz System)</span>
+<span class="cstat-no" title="statement not covered" >    App.assessment = createAssessmentController(App);</span>
+<span class="cstat-no" title="statement not covered" >    window.openAssessment = () =&gt; App.assessment.open();</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >  static postInitialization(App) {</span>
@@ -778,7 +829,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-07T23:38:43.995Z
+                at 2026-01-16T16:29:06.601Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

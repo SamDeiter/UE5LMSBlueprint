@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/515</span>
+                <span class='fraction'>0/522</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/515</span>
+                <span class='fraction'>0/522</span>
             </div>
         
             
@@ -578,7 +578,21 @@
 <a name='L513'></a><a href='#L513'>513</a>
 <a name='L514'></a><a href='#L514'>514</a>
 <a name='L515'></a><a href='#L515'>515</a>
-<a name='L516'></a><a href='#L516'>516</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L516'></a><a href='#L516'>516</a>
+<a name='L517'></a><a href='#L517'>517</a>
+<a name='L518'></a><a href='#L518'>518</a>
+<a name='L519'></a><a href='#L519'>519</a>
+<a name='L520'></a><a href='#L520'>520</a>
+<a name='L521'></a><a href='#L521'>521</a>
+<a name='L522'></a><a href='#L522'>522</a>
+<a name='L523'></a><a href='#L523'>523</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1377,19 +1391,26 @@
 <span class="cstat-no" title="statement not covered" >          customData: { componentId: comp.id },</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
 <span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >        // Register Set node</span>
+<span class="cstat-no" title="statement not covered" >        // Register Set node - UE5 style: title is just "SET", component name on pins</span>
 <span class="cstat-no" title="statement not covered" >        const setKey = `SetComponent_${comp.id}`;</span>
 <span class="cstat-no" title="statement not covered" >        registry.register(setKey, {</span>
-<span class="cstat-no" title="statement not covered" >          title: `Set ${comp.name}`,</span>
+<span class="cstat-no" title="statement not covered" >          title: "SET",</span>
 <span class="cstat-no" title="statement not covered" >          category: "Components",</span>
 <span class="cstat-no" title="statement not covered" >          type: "function-node",</span>
-<span class="cstat-no" title="statement not covered" >          variableType: "object", // Ensure correct header color (blue)</span>
+<span class="cstat-no" title="statement not covered" >          variableType: "object", // Ensure correct header color (blue/cyan)</span>
+<span class="cstat-no" title="statement not covered" >          customData: { componentId: comp.id, componentName: comp.name },</span>
 <span class="cstat-no" title="statement not covered" >          pins: [</span>
-<span class="cstat-no" title="statement not covered" >            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },</span>
-<span class="cstat-no" title="statement not covered" >            { id: "comp_in", name: comp.name, type: comp.type, dir: "in" },</span>
-<span class="cstat-no" title="statement not covered" >            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },</span>
+<span class="cstat-no" title="statement not covered" >            { id: "exec_in", name: "", type: "exec", dir: "in" },</span>
+<span class="cstat-no" title="statement not covered" >            {</span>
+<span class="cstat-no" title="statement not covered" >              id: "comp_in",</span>
+<span class="cstat-no" title="statement not covered" >              name: comp.name,</span>
+<span class="cstat-no" title="statement not covered" >              type: comp.type,</span>
+<span class="cstat-no" title="statement not covered" >              dir: "in",</span>
+<span class="cstat-no" title="statement not covered" >              noDefaultValue: true,</span>
+<span class="cstat-no" title="statement not covered" >            },</span>
+<span class="cstat-no" title="statement not covered" >            { id: "exec_out", name: "", type: "exec", dir: "out" },</span>
+<span class="cstat-no" title="statement not covered" >            { id: "comp_out", name: "", type: comp.type, dir: "out" },</span>
 <span class="cstat-no" title="statement not covered" >          ],</span>
-<span class="cstat-no" title="statement not covered" >          customData: { componentId: comp.id },</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
 <span class="cstat-no" title="statement not covered" >      });</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
@@ -1615,7 +1636,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-07T23:38:43.995Z
+                at 2026-01-16T16:29:06.601Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
