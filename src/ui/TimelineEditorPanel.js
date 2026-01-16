@@ -440,6 +440,7 @@ export class TimelineEditorPanel {
 
   _startKeyframeDrag(e) {
     e.preventDefault();
+    e.stopPropagation(); // Prevent graph selection box
     const kfEl = e.target;
     const trackId = kfEl.dataset.trackId;
     const keyframeId = kfEl.dataset.keyframeId;
@@ -461,15 +462,36 @@ export class TimelineEditorPanel {
 
       const rect = trackCurve.getBoundingClientRect();
       const x = moveE.clientX - rect.left;
+      const y = moveE.clientY - rect.top;
+      const height = rect.height || 50;
 
-      // Convert X to time using pixelsPerSecond (no offset needed for track-curve)
+      // Convert X to time
       const pixelsPerSecond = 80 * this.zoom;
       const newTime = Math.max(
         0,
         Math.min(this.timeline.length, x / pixelsPerSecond)
       );
 
+      // Convert Y to value (inverted: top = high value, bottom = low value)
+      const normalizedValue = Math.max(0, Math.min(1, 1 - y / height));
+
+      // Update keyframe time
       keyframe.time = newTime;
+
+      // Update keyframe value based on track type
+      if (track.type === "float") {
+        keyframe.value = normalizedValue;
+      } else if (track.type === "vector") {
+        // Scale all components
+        keyframe.value = {
+          x: normalizedValue,
+          y: normalizedValue,
+          z: normalizedValue,
+        };
+      } else if (track.type === "event") {
+        keyframe.value = normalizedValue > 0.5 ? 1 : 0;
+      }
+
       track.keyframes.sort((a, b) => a.time - b.time);
       this._render();
     };
