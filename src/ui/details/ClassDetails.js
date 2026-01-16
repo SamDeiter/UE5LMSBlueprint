@@ -238,7 +238,7 @@ export class ClassDetails {
     this._bindEvents(settings);
   }
 
-  _bindEvents(settings) {
+  _bindEvents(_settings) {
     // Helper to bind input changes
     const bindInput = (id, prop, isCheckbox = false) => {
       const el = this.panel.querySelector(id);
