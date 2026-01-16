@@ -100,9 +100,9 @@ export class TimelineEditorPanel {
           </label>
           <div class="tl-length">
             <label>Length:</label>
-            <input type="number" id="tl-length-input" value="${
+            <input type="number" id="tl-length-input" value="${Math.round(
               tl.length
-            }" min="0.1" step="0.5">s
+            )}" min="1" step="1">s
           </div>
         </div>
       </div>
@@ -406,6 +406,20 @@ export class TimelineEditorPanel {
         }
       });
     });
+
+    // Mouse wheel zoom on timeline (prevent graph zoom)
+    this.panel.querySelector(".timeline-body")?.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+        this.zoom = Math.max(0.25, Math.min(4, this.zoom * zoomFactor));
+        this._render();
+      },
+      { passive: false }
+    );
 
     // Keyboard handling for delete
     document.addEventListener("keydown", (e) => {
