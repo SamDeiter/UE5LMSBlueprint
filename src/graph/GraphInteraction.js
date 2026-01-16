@@ -54,6 +54,23 @@ export class GraphInteraction {
     this.editor.addEventListener("drop", this.handleDrop.bind(this));
     document.addEventListener("keydown", this.handleKeyDown.bind(this));
     document.addEventListener("keyup", this.handleKeyUp.bind(this));
+
+    // Double-click handler for Timeline nodes (opens Timeline Editor)
+    this.nodesContainer.addEventListener("dblclick", (e) => {
+      const nodeEl = e.target.closest(".node");
+      if (!nodeEl) return;
+
+      const node = this.controller.nodes.get(nodeEl.id);
+      if (node && node.nodeKey === "Timeline") {
+        e.preventDefault();
+        e.stopPropagation();
+        // Dynamically import and open Timeline Editor
+        import("../ui/TimelineEditorPanel.js").then(({ timelineEditor }) => {
+          timelineEditor.app = this.app;
+          timelineEditor.open(node);
+        });
+      }
+    });
   }
 
   handleKeyDown(e) {

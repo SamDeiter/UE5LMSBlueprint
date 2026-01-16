@@ -41,6 +41,11 @@ export class ClassDetails {
         // Actor Settings
         actorLabel: "",
         generatesOverlapEvents: true,
+        // Replication Settings
+        replicates: false,
+        replicateMovement: false,
+        netLoadOnClient: true,
+        netUpdateFrequency: 100,
       };
     }
     const settings = this.app.classSettings;
@@ -233,6 +238,40 @@ export class ClassDetails {
           </div>
         </div>
       </div>
+
+      <div class="details-group">
+        <h4>Replication</h4>
+        <div class="detail-row">
+          <label>Replicates</label>
+          <div style="width: 60%;">
+            <input type="checkbox" id="replicates-checkbox" class="ue5-checkbox" ${
+              settings.replicates ? "checked" : ""
+            }>
+          </div>
+        </div>
+        <div class="detail-row">
+          <label>Replicate Movement</label>
+          <div style="width: 60%;">
+            <input type="checkbox" id="replicate-movement-checkbox" class="ue5-checkbox" ${
+              settings.replicateMovement ? "checked" : ""
+            }>
+          </div>
+        </div>
+        <div class="detail-row">
+          <label>Net Load on Client</label>
+          <div style="width: 60%;">
+            <input type="checkbox" id="net-load-client-checkbox" class="ue5-checkbox" ${
+              settings.netLoadOnClient !== false ? "checked" : ""
+            }>
+          </div>
+        </div>
+        <div class="detail-row">
+          <label>Net Update Frequency</label>
+          <input type="number" id="net-update-freq-input" class="details-input" value="${
+            settings.netUpdateFrequency || 100
+          }" min="0" step="10">
+        </div>
+      </div>
     `;
 
     this._bindEvents(settings);
@@ -272,6 +311,12 @@ export class ClassDetails {
     // Actor Settings
     bindInput("#actor-label-input", "actorLabel");
     bindInput("#overlap-events-checkbox", "generatesOverlapEvents", true);
+
+    // Replication Settings
+    bindInput("#replicates-checkbox", "replicates", true);
+    bindInput("#replicate-movement-checkbox", "replicateMovement", true);
+    bindInput("#net-load-client-checkbox", "netLoadOnClient", true);
+    bindInput("#net-update-freq-input", "netUpdateFrequency");
 
     // Parent class trigger
     const parentTrigger = this.panel.querySelector("#parent-class-trigger");
