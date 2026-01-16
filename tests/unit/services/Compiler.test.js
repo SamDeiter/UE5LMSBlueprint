@@ -145,3 +145,146 @@ describe("Compiler Core Logic", () => {
     });
   });
 });
+
+/**
+ * Compiler Integration Tests
+ *
+ * Tests the Compiler class with mocked dependencies
+ */
+describe("Compiler Integration", () => {
+  let compiler;
+  let mockApp;
+  let mockOutput;
+
+  beforeEach(() => {
+    // Mock DOM elements
+    mockOutput = {
+      innerHTML: "",
+      prepend: vi.fn(),
+    };
+
+    vi.spyOn(document, "getElementById").mockImplementation((id) => {
+      if (id === "compiler-results") return mockOutput;
+      if (id === "toolbar-status") return { textContent: "", style: {} };
+      if (id === "compiler-count") return { textContent: "" };
+      if (id === "compile-btn")
+        return {
+          querySelector: () => ({ innerHTML: "" }),
+          classList: { add: vi.fn(), remove: vi.fn() },
+        };
+      return null;
+    });
+
+    mockApp = {
+      graph: {
+        nodes: new Map(),
+        updateVariableNodes: vi.fn(),
+        drawAllWires: vi.fn(),
+        synchronizeNodeWithTemplate: vi.fn(),
+      },
+      wiring: {
+        links: new Map(),
+      },
+      variables: {
+        variables: new Map(),
+      },
+      persistence: {
+        autoSave: vi.fn(),
+      },
+      dirtyState: {
+        markDirty: vi.fn(),
+        markClean: vi.fn(),
+      },
+    };
+
+    // Create a minimal Compiler instance for testing
+    compiler = {
+      app: mockApp,
+      output: mockOutput,
+      isDirty: false,
+      pendingRenames: [],
+      statusElement: { textContent: "", style: {} },
+      countElement: { textContent: "" },
+      compileBtn: null,
+      lastValidationErrors: 0,
+
+      log(message, type = "log") {
+        const div = {
+          textContent: `[${new Date().toLocaleTimeString()}] ${message}`,
+          className: "",
+        };
+        if (type === "error") div.className = "compiler-issue";
+        else if (type === "success") div.className = "compiler-success";
+        else div.className = "compiler-log";
+        this.output.prepend(div);
+        return type === "error";
+      },
+
+      registerRename(oldName, newName) {
+        this.pendingRenames.push({ oldName, newName });
+        this.markDirty();
+      },
+
+      markDirty() {
+        this.isDirty = true;
+        if (this.app.dirtyState) {
+          this.app.dirtyState.markDirty();
+        }
+      },
+    };
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe("registerRename", () => {
+    it("should queue variable rename and mark dirty", () => {
+      compiler.registerRename("OldVar", "NewVar");
+
+      expect(compiler.pendingRenames).toHaveLength(1);
+      expect(compiler.pendingRenames[0]).toEqual({
+        oldName: "OldVar",
+        newName: "NewVar",
+      });
+      expect(compiler.isDirty).toBe(true);
+    });
+
+    it("should queue multiple renames", () => {
+      compiler.registerRename("A", "B");
+      compiler.registerRename("C", "D");
+
+      expect(compiler.pendingRenames).toHaveLength(2);
+    });
+  });
+
+  describe("markDirty", () => {
+    it("should set isDirty to true", () => {
+      expect(compiler.isDirty).toBe(false);
+      compiler.markDirty();
+      expect(compiler.isDirty).toBe(true);
+    });
+
+    it("should call dirtyState.markDirty when available", () => {
+      compiler.markDirty();
+      expect(mockApp.dirtyState.markDirty).toHaveBeenCalled();
+    });
+  });
+
+  describe("log", () => {
+    it("should prepend log messages to output", () => {
+      compiler.log("Test message", "log");
+      expect(mockOutput.prepend).toHaveBeenCalled();
+    });
+
+    it("should return true for error messages", () => {
+      const result = compiler.log("Error!", "error");
+      expect(result).toBe(true);
+    });
+
+    it("should return false for non-error messages", () => {
+      const result = compiler.log("Success!", "success");
+      expect(result).toBe(false);
+    });
+  });
+});

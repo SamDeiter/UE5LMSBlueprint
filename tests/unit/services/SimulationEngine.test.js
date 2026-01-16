@@ -342,4 +342,170 @@ describe("SimulationEngine", () => {
       expect(scormClient.setPassed).toHaveBeenCalledWith(true);
     });
   });
+
+  describe("evaluateInput", () => {
+    it("should return null if pin not found", () => {
+      const mockNode = createMockNode();
+      mockNode.findPinById = vi.fn(() => null);
+
+      const result = engine.evaluateInput(mockNode, "nonexistent-pin");
+      expect(result).toBeNull();
+    });
+
+    it("should call evaluatePin when pin is found", () => {
+      const mockNode = createMockNode();
+      const mockPin = {
+        id: "test-node-id-input",
+        name: "Input",
+        defaultValue: 42,
+      };
+      mockNode.findPinById = vi.fn(() => mockPin);
+      mockNode.pinLiterals = new Map();
+
+      // Mock the evaluatePin to return a value
+      const evaluatePinSpy = vi
+        .spyOn(engine, "evaluatePin")
+        .mockReturnValue(42);
+
+      const result = engine.evaluateInput(mockNode, "input");
+      expect(mockNode.findPinById).toHaveBeenCalledWith("test-node-id-input");
+      expect(evaluatePinSpy).toHaveBeenCalledWith(mockPin);
+      expect(result).toBe(42);
+    });
+  });
+
+  describe("evaluatePin", () => {
+    it("should return default value when pin is not connected", () => {
+      const mockPin = {
+        id: "pin-1",
+        name: "Value",
+        defaultValue: 100,
+        isConnected: () => false,
+        links: [],
+        node: { pinLiterals: new Map() },
+      };
+
+      const result = engine.evaluatePin(mockPin);
+      expect(result).toBe(100);
+    });
+
+    it("should return literal value when set", () => {
+      const pinLiterals = new Map();
+      pinLiterals.set("pin-1", 999);
+
+      const mockPin = {
+        id: "pin-1",
+        name: "Value",
+        defaultValue: 100,
+        isConnected: () => false,
+        links: [],
+        node: { pinLiterals },
+      };
+
+      const result = engine.evaluatePin(mockPin);
+      expect(result).toBe(999);
+    });
+
+    it("should handle split pins for vectors", () => {
+      const mockSubPins = [
+        {
+          id: "x",
+          defaultValue: 1,
+          isConnected: () => false,
+          links: [],
+          node: { pinLiterals: new Map() },
+        },
+        {
+          id: "y",
+          defaultValue: 2,
+          isConnected: () => false,
+          links: [],
+          node: { pinLiterals: new Map() },
+        },
+        {
+          id: "z",
+          defaultValue: 3,
+          isConnected: () => false,
+          links: [],
+          node: { pinLiterals: new Map() },
+        },
+      ];
+
+      const mockPin = {
+        id: "vector-pin",
+        type: "vector",
+        isSplit: true,
+        subPins: mockSubPins,
+        isConnected: () => false,
+        links: [],
+        node: { pinLiterals: new Map() },
+      };
+
+      const result = engine.evaluatePin(mockPin);
+      expect(result).toBe("(1, 2, 3)");
+    });
+  });
+
+  describe("evaluateNeedNodes", () => {
+    it("should log message when no NeedNodes exist", () => {
+      mockApp.graph.nodes = new Map();
+      const logSpy = vi.spyOn(engine.ui, "log");
+
+      engine.evaluateNeedNodes();
+
+      expect(logSpy).toHaveBeenCalledWith("No NeedNodes found.");
+    });
+
+    it("should call taskController.runValidation after assessment", () => {
+      const mockNeedNode = createMockNode({ nodeKey: "NeedNode" });
+      mockApp.graph.nodes = new Map([["need-1", mockNeedNode]]);
+      mockApp.taskController = {
+        runValidation: vi.fn(),
+        switchToStatusTab: vi.fn(),
+      };
+
+      engine.evaluateNeedNodes();
+
+      expect(mockApp.taskController.runValidation).toHaveBeenCalled();
+      expect(mockApp.taskController.switchToStatusTab).toHaveBeenCalled();
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should resume instead of run when paused", () => {
+      engine.isRunning = true;
+      engine.isPaused = true;
+      const resumeSpy = vi.spyOn(engine, "resume");
+
+      engine.run();
+
+      expect(resumeSpy).toHaveBeenCalled();
+    });
+
+    it("should halt simulation if compile fails", () => {
+      mockApp.compiler.isDirty = true;
+      // Mock compile to leave isDirty true (compile failed)
+      mockApp.compiler.compile = vi.fn(() => {
+        // isDirty stays true = failure
+      });
+
+      const logSpy = vi.spyOn(engine.ui, "log");
+      engine.run();
+
+      expect(logSpy).toHaveBeenCalledWith(
+        "Simulation halted: Compile failed.",
+        "error"
+      );
+      expect(engine.isRunning).toBe(false);
+    });
+
+    it("should add paused-node class when pausing", () => {
+      const mockElement = { classList: { add: vi.fn(), remove: vi.fn() } };
+      const mockNode = createMockNode({ element: mockElement });
+
+      engine.pause(mockNode);
+
+      expect(mockElement.classList.add).toHaveBeenCalledWith("paused-node");
+    });
+  });
 });

@@ -4,6 +4,7 @@
  */
 import { DetailsTypeSelector } from "./DetailsTypeSelector.js";
 import { ClassDefaultsRenderer } from "./ClassDefaultsRenderer.js";
+import { BaseController } from "./BaseController.js";
 
 // Sub-controllers
 import { VariableDetails } from "./details/VariableDetails.js";
@@ -12,9 +13,9 @@ import { ComponentDetails } from "./details/ComponentDetails.js";
 import { NodeDetails } from "./details/NodeDetails.js";
 import { ClassDetails } from "./details/ClassDetails.js";
 
-export class DetailsController {
+export class DetailsController extends BaseController {
   constructor(app) {
-    this.app = app;
+    super(app); // Initialize BaseController for memory leak prevention
     this.panel = document.getElementById("details-panel");
     this.currentVariable = null;
     this.typeSelector = new DetailsTypeSelector(this);

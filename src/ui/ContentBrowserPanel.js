@@ -246,7 +246,7 @@ export class ContentBrowserPanel extends BaseController {
    * Create a new asset
    */
   createAsset() {
-    const name = prompt("Enter asset name:", "NewBlueprint");
+    const name = window.prompt("Enter asset name:", "NewBlueprint");
     if (!name) return;
 
     const cb = this.app.contentBrowser;

@@ -3,17 +3,18 @@
  */
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { buildCategoryTree, renderCategoryTree } from "./ui-helpers.js";
+import { BaseController } from "./BaseController.js";
 
-export class PaletteController {
+export class PaletteController extends BaseController {
   constructor(app) {
-    this.app = app;
+    super(app); // Initialize BaseController for memory leak prevention
     // Right panel palette (tabbed view)
     this.container = document.getElementById("right-palette-content");
     this.filterInput = document.getElementById("right-palette-filter");
 
-    // Set up filter input event listener
+    // Set up filter input event listener using BaseController's tracked method
     if (this.filterInput) {
-      this.filterInput.addEventListener("input", () => this.populateList());
+      this.addListener(this.filterInput, "input", () => this.populateList());
     }
   }
 

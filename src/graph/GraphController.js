@@ -10,13 +10,14 @@ import { Node } from "./Node.js";
 import { GraphInteraction } from "./GraphInteraction.js";
 import { GraphRenderer } from "./GraphRenderer.js";
 import { GRAPH_CONSTANTS, LATENT_NODE_TYPES } from "../config/Constants.js";
+import { BaseController } from "../ui/BaseController.js";
 
-class GraphController {
+class GraphController extends BaseController {
   constructor(editor, svg, nodesContainer, app) {
+    super(app); // Initialize BaseController for memory leak prevention
     this.editor = editor;
     this.svg = svg;
     this.nodesContainer = nodesContainer;
-    this.app = app;
     this.nodes = new Map();
     this.zoomReadout = document.getElementById(DOMElements.ZOOM_READOUT);
     this.pan = { x: 0, y: 0 };

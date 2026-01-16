@@ -14,10 +14,11 @@
 import { WireManager } from "./wiring/WireManager.js";
 import { WireRenderer } from "./wiring/WireRenderer.js";
 import { WireInteraction } from "./wiring/WireInteraction.js";
+import { BaseController } from "../ui/BaseController.js";
 
-export class WiringController {
+export class WiringController extends BaseController {
   constructor(svg, app) {
-    this.app = app;
+    super(app); // Initialize BaseController for memory leak prevention
     this.svg = svg;
 
     // Sub-Systems
