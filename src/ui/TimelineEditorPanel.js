@@ -219,6 +219,7 @@ export class TimelineEditorPanel {
   _renderKeyframes(track) {
     const pixelsPerSecond = 80 * this.zoom;
     const height = 50; // Match SVG height
+    const trackColor = this._getTrackColor(track.type);
 
     return track.keyframes
       .map((kf) => {
@@ -244,7 +245,9 @@ export class TimelineEditorPanel {
         <div class="keyframe ${isSelected ? "selected" : ""}"
              data-keyframe-id="${kf.id}"
              data-track-id="${track.id}"
-             style="left: ${x}px; top: ${y}px"
+             style="left: ${x}px; top: ${y}px; border-color: ${trackColor}; ${
+          isSelected ? `background: ${trackColor};` : ""
+        }"
              title="Time: ${kf.time.toFixed(2)}s, Value: ${this._formatValue(
           kf.value
         )}">
