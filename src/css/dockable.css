@@ -166,3 +166,38 @@
 .panel-toggle.panel-visible .panel-check {
   visibility: visible;
 }
+
+/* Interfaces List */
+.interfaces-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.interface-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--input-bg, #1a1a1a);
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.interface-item span {
+  flex: 1;
+}
+
+/* Details Textarea */
+.details-textarea {
+  width: 100%;
+  background: var(--input-bg, #1a1a1a);
+  border: 1px solid var(--border-color, #333);
+  color: var(--text-color, #ddd);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 3px;
+  resize: vertical;
+}
