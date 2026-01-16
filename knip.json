@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": ["src/app.js", "src/main.js", "index.html"],
+  "project": ["src/**/*.js", "tests/**/*.js"],
+  "ignore": [
+    "coverage/**",
+    "dist/**",
+    "node_modules/**",
+    "*.config.js",
+    "scripts/**"
+  ],
+  "ignoreDependencies": ["@eslint/js"],
+  "ignoreBinaries": ["python", "start"],
+  "vitest": {
+    "entry": ["tests/**/*.test.js"],
+    "config": ["vitest.config.js"]
+  }
+}

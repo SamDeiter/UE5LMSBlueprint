@@ -327,7 +327,7 @@
   bottom: 0;
   width: 2px;
   background: #e74c3c;
-  z-index: 15; /* Behind sidebar (20) but above curves */
+  z-index: 30; /* On top of sidebar (20) and ruler (10) */
   pointer-events: none;
 }
 
@@ -340,7 +340,7 @@
   height: 10px;
   background: #e74c3c;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  z-index: 16;
+  z-index: 31;
 }
 
 /* Footer */

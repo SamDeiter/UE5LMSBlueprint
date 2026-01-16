@@ -11,6 +11,7 @@ class ReviewHighlightOverlay extends HTMLElement {
     this.isDrawing = false;
     this.startPos = { x: 0, y: 0 };
     this.active = false;
+    this.onFinish = null;
   }
 
   connectedCallback() {
@@ -87,31 +88,57 @@ class ReviewHighlightOverlay extends HTMLElement {
           stroke-width: 2;
           stroke-dasharray: 4;
         }
+        .highlight-num {
+          fill: #fff;
+          font-family: sans-serif;
+          font-size: 14px;
+          font-weight: bold;
+        }
         .guide-text {
           position: fixed;
           top: 20px;
           left: 50%;
           transform: translateX(-50%);
-          background: rgba(0,0,0,0.8);
+          background: rgba(0,0,0,0.9);
           color: white;
-          padding: 8px 16px;
-          border-radius: 4px;
+          padding: 12px 24px;
+          border-radius: 8px;
           font-family: 'Inter', sans-serif;
           font-size: 14px;
           pointer-events: none;
-          display: ${this.active ? "block" : "none"};
+          display: ${this.active ? "flex" : "none"};
+          align-items: center;
+          gap: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+          border: 1px solid #444;
+        }
+        .finish-btn {
+          background: #10b981;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          pointer-events: auto;
         }
       </style>
-      <div class="guide-text">Click and drag to highlight areas with issues. Press ESC when done.</div>
+      <div class="guide-text">
+        <span>Click and drag to highlight issues.</span>
+        <button class="finish-btn" id="finish-btn">Finish (ESC)</button>
+      </div>
       <svg>
         ${this.highlights
           .map(
-            (h) => `
+            (h, i) => `
           <rect class="highlight" 
             x="${Math.min(h.x1, h.x2)}" 
             y="${Math.min(h.y1, h.y2)}" 
             width="${Math.abs(h.x2 - h.x1)}" 
             height="${Math.abs(h.y2 - h.y1)}" />
+          <text class="highlight-num" 
+            x="${Math.min(h.x1, h.x2) + 5}" 
+            y="${Math.min(h.y1, h.y2) + 20}">${i + 1}</text>
         `,
           )
           .join("")}
@@ -128,6 +155,11 @@ class ReviewHighlightOverlay extends HTMLElement {
         }
       </svg>
     `;
+
+    if (this.active) {
+      this.shadowRoot.getElementById("finish-btn").onclick = () =>
+        this.onFinish?.();
+    }
   }
 }
 window.customElements.define(
@@ -142,6 +174,7 @@ class ReviewIssueDialog extends HTMLElement {
     this.onConfirm = null;
     this.onCancel = null;
     this.onHighlight = null;
+    this.onRemoveHighlight = null;
   }
 
   show(initialNote = "", highlights = []) {
@@ -164,7 +197,7 @@ class ReviewIssueDialog extends HTMLElement {
           left: 0;
           width: 100vw;
           height: 100vh;
-          background: rgba(0,0,0,0.8);
+          background: rgba(0,0,0,0.85);
           z-index: 10002;
           align-items: center;
           justify-content: center;
@@ -173,52 +206,103 @@ class ReviewIssueDialog extends HTMLElement {
         .dialog {
           background: #1a1a1a;
           border: 1px solid #333;
-          border-radius: 8px;
-          width: 500px;
+          border-radius: 12px;
+          width: 550px;
           padding: 24px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.7);
         }
-        h2 { margin: 0 0 16px 0; color: #fff; font-size: 18px; }
+        h2 { margin: 0 0 16px 0; color: #fff; font-size: 20px; }
         textarea {
           width: 100%;
           background: #0a0a0a;
           border: 1px solid #444;
           color: #eee;
           padding: 12px;
-          border-radius: 4px;
-          height: 150px;
+          border-radius: 6px;
+          height: 120px;
           resize: vertical;
-          margin-bottom: 16px;
+          margin-bottom: 20px;
           box-sizing: border-box;
           font-family: inherit;
+          line-height: 1.5;
         }
+        .highlight-section {
+          margin-bottom: 20px;
+          background: #252525;
+          padding: 12px;
+          border-radius: 6px;
+          border: 1px solid #333;
+        }
+        .highlight-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 8px;
+        }
+        .highlight-item {
+          background: #ef4444;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .remove-highlight {
+          cursor: pointer;
+          font-weight: bold;
+          opacity: 0.8;
+          margin-left: 4px;
+        }
+        .remove-highlight:hover { opacity: 1; text-decoration: underline; }
         .actions { display: flex; justify-content: flex-end; gap: 12px; }
         .btn {
-          padding: 8px 16px;
-          border-radius: 4px;
+          padding: 10px 20px;
+          border-radius: 6px;
           cursor: pointer;
           font-size: 14px;
+          font-weight: 600;
           border: 1px solid #444;
           background: #333;
           color: #ccc;
+          transition: all 0.2s;
         }
-        .btn:hover { background: #444; color: #fff; }
+        .btn:hover { background: #444; color: #fff; border-color: #666; }
         .btn-danger { background: #ef4444; border-color: #dc2626; color: white; }
         .btn-danger:hover { background: #dc2626; }
-        .highlight-count {
-          font-size: 11px;
-          color: #888;
-          margin-bottom: 8px;
-          display: block;
-        }
+        .btn-highlight { background: #3b82f6; border-color: #2563eb; color: white; }
+        .btn-highlight:hover { background: #2563eb; }
       </style>
       <div class="dialog">
         <h2>Report Issue</h2>
-        <span class="highlight-count">${highlights.length} areas highlighted</span>
-        <textarea placeholder="Describe the issue in detail...">${note}</textarea>
+        
+        <div class="highlight-section">
+          <div style="font-size: 12px; color: #888; text-transform: uppercase;">Visual Highlights</div>
+          <div class="highlight-list">
+            ${
+              highlights.length === 0
+                ? '<span style="color: #666; font-size: 12px;">No highlights.</span>'
+                : highlights
+                    .map(
+                      (h, i) => `
+                <div class="highlight-item">
+                  #${i + 1}
+                  <span class="remove-highlight" data-index="${i}">[x]</span>
+                </div>
+              `,
+                    )
+                    .join("")
+            }
+          </div>
+        </div>
+
+        <textarea placeholder="Describe what is wrong here...">${note}</textarea>
+        
         <div class="actions">
           <button class="btn" id="cancel-dlg">Cancel</button>
-          <button class="btn" id="highlight-dlg">🖌️ Highlight Area</button>
+          <button class="btn btn-highlight" id="highlight-dlg">🖌️ Add Highlight</button>
           <button class="btn btn-danger" id="submit-dlg">Save Issue</button>
         </div>
       </div>
@@ -234,6 +318,13 @@ class ReviewIssueDialog extends HTMLElement {
       const note = this.shadowRoot.querySelector("textarea").value;
       this.onConfirm?.(note);
     };
+    this.shadowRoot.querySelectorAll(".remove-highlight").forEach((btn) => {
+      btn.onclick = () => {
+        const index = parseInt(btn.getAttribute("data-index"));
+        const currentNote = this.shadowRoot.querySelector("textarea").value;
+        this.onRemoveHighlight?.(index, currentNote);
+      };
+    });
   }
 }
 window.customElements.define("review-issue-dialog", ReviewIssueDialog);
@@ -458,17 +549,28 @@ window.ReviewUI = {
       dialog.hide();
       overlay.active = true;
       overlay.render();
-
-      const escListener = (e) => {
-        if (e.key === "Escape") {
-          overlay.active = false;
-          overlay.render();
-          dialog.show(currentNote, overlay.getHighlights());
-          window.removeEventListener("keydown", escListener);
-        }
-      };
-      window.addEventListener("keydown", escListener);
     };
+    dialog.onRemoveHighlight = (index, currentNote) => {
+      const h = overlay.getHighlights();
+      h.splice(index, 1);
+      overlay.setHighlights(h);
+      dialog.render(currentNote, h);
+    };
+
+    // Wire up Overlay
+    overlay.onFinish = () => {
+      overlay.active = false;
+      overlay.render();
+      const currentNote = dialog.shadowRoot.querySelector("textarea").value;
+      dialog.show(currentNote, overlay.getHighlights());
+    };
+
+    const escListener = (e) => {
+      if (e.key === "Escape" && overlay.active) {
+        overlay.onFinish();
+      }
+    };
+    window.addEventListener("keydown", escListener);
 
     // When core shows a new item, update everything
     core.onShowItemInternal = (item) => {

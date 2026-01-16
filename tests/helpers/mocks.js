@@ -13,30 +13,43 @@ export function createMockApp() {
       selectNode: vi.fn(),
       deselectNode: vi.fn(),
       getSelectedNodes: vi.fn(() => []),
+      redrawNodeWires: vi.fn(),
     },
     wiring: {
       links: new Map(),
       createConnection: vi.fn(),
       breakConnection: vi.fn(),
+      breakLinkById: vi.fn(),
       getConnectionsForPin: vi.fn(() => []),
+      findLinksByNodeId: vi.fn(() => []),
+      updateVisuals: vi.fn(),
     },
     compiler: {
       markDirty: vi.fn(),
       isDirty: false,
       compile: vi.fn(() => ({ success: true, errors: [] })),
+      registerRename: vi.fn(),
+      log: vi.fn(),
     },
     persistence: {
       autoSave: vi.fn(),
       save: vi.fn(),
       load: vi.fn(),
     },
-    variables: {
-      variables: new Map(),
-      addVariable: vi.fn(),
-      removeVariable: vi.fn(),
-      getVariable: vi.fn(),
-    },
+    variables: new Map(), // Changed from object to Map
     components: new Map(),
+    details: {
+      currentVariable: null,
+      clear: vi.fn(),
+      showVariableDetails: vi.fn(),
+      showComponentDetails: vi.fn(),
+    },
+    palette: {
+      populateList: vi.fn(),
+    },
+    history: {
+      saveState: vi.fn(),
+    },
     taskManager: {
       currentTask: null,
       validateCurrentTask: vi.fn(),
@@ -48,6 +61,8 @@ export function createMockApp() {
       stop: vi.fn(),
       step: vi.fn(),
     },
+    componentsController: null, // Will be set by test if needed
+    variableController: null, // Will be set by test if needed
   };
 }
 

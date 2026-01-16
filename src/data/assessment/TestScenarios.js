@@ -59,10 +59,31 @@ export const SCENARIO_NULL_REFERENCE = {
         { id: "node-4-string", localId: "string", type: "string", dir: "in" },
       ],
     },
+    {
+      id: "node-5",
+      nodeKey: "IsValid",
+      title: "Is Valid",
+      type: "flow-node",
+      x: 300,
+      y: 250,
+      pins: [
+        { id: "node-5-exec", localId: "exec", type: "exec", dir: "in" },
+        { id: "node-5-valid", localId: "is_valid", type: "exec", dir: "out" },
+        {
+          id: "node-5-invalid",
+          localId: "not_valid",
+          type: "exec",
+          dir: "out",
+        },
+        { id: "node-5-input", localId: "input", type: "object", dir: "in" },
+      ],
+    },
   ],
   links: [
     { id: "link-1", startPinId: "node-1-exec", endPinId: "node-4-exec" },
     { id: "link-2", startPinId: "node-2-return", endPinId: "node-3-target" },
+    // Manual check node added for verification
+    { id: "link-3", startPinId: "node-2-return", endPinId: "node-5-input" },
   ],
 };
 

@@ -226,4 +226,16 @@ export const FlowControlNodes = {
       { id: "out", name: "", type: "wildcard", dir: "out" },
     ],
   },
+  IsValid: {
+    title: "Is Valid",
+    type: "flow-node",
+    category: "Flow Control",
+    icon: "fa-question-circle",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "input_object", name: "Input Object", type: "object", dir: "in" },
+      { id: "is_valid", name: "Is Valid", type: "exec", dir: "out" },
+      { id: "is_not_valid", name: "Is Not Valid", type: "exec", dir: "out" },
+    ],
+  },
 };

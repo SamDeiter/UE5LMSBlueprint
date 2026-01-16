@@ -4,8 +4,8 @@
  */
 export const VariableNodes = {
   customData: {
-      startIndex: 0,
-    },
+    startIndex: 0,
+  },
   Set_bool: {
     title: "Set (Boolean)",
     type: "variable-node",
@@ -184,6 +184,59 @@ export const VariableNodes = {
       { id: "val_in", name: "Value", type: "object", dir: "in" },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
       { id: "val_out", name: "Output", type: "object", dir: "out" },
+    ],
+  },
+  GetHealth: {
+    title: "Get Health",
+    type: "variable-node",
+    category: "Variables|Health",
+    icon: "fa-heart",
+    pins: [{ id: "val_out", name: "Health", type: "float", dir: "out" }],
+  },
+  SetHealth: {
+    title: "Set Health",
+    type: "variable-node",
+    category: "Variables|Health",
+    icon: "fa-heart",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "val_in",
+        name: "Health",
+        type: "float",
+        dir: "in",
+        defaultValue: 100.0,
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+    ],
+  },
+  GetScore: {
+    title: "Get Score",
+    type: "variable-node",
+    category: "Variables|Score",
+    icon: "fa-star",
+    pins: [{ id: "val_out", name: "Score", type: "int", dir: "out" }],
+  },
+  SetScore: {
+    title: "Set Score",
+    type: "variable-node",
+    category: "Variables|Score",
+    icon: "fa-star",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Score", type: "int", dir: "in", defaultValue: 0 },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+    ],
+  },
+  AddScore: {
+    title: "Add Score",
+    type: "variable-node",
+    category: "Variables|Score",
+    icon: "fa-plus",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "val_in", name: "Amount", type: "int", dir: "in", defaultValue: 1 },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
     ],
   },
 };

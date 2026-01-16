@@ -3,16 +3,9 @@
  * Handles persistence for the ReviewCore SDK.
  */
 class ReviewStorage {
-  /**
-   * Base method for loading data
-   */
   async load(appId) {
     throw new Error("Load method not implemented");
   }
-
-  /**
-   * Base method for saving data
-   */
   async save(appId, data) {
     throw new Error("Save method not implemented");
   }
@@ -86,6 +79,7 @@ class JSONFileAdapter extends ReviewStorage {
 
 // Export adapters
 window.ReviewStorage = {
+  Base: ReviewStorage,
   LocalStorage: LocalStorageAdapter,
   JSONFile: JSONFileAdapter,
 };

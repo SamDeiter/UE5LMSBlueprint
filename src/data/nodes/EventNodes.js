@@ -491,4 +491,21 @@ export const EventNodes = {
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
     ],
   },
+  EventAnyDamage: {
+    title: "Event Any Damage",
+    type: "event-node",
+    category: "Events",
+    executor: "Event",
+    icon: "fa-heart-broken",
+    pins: [
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "damage_out", name: "Damage", type: "float", dir: "out" },
+      {
+        id: "instigator_out",
+        name: "Instigated By",
+        type: "object",
+        dir: "out",
+      },
+    ],
+  },
 };

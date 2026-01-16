@@ -1,42 +1,51 @@
 import { describe, it, expect } from "vitest";
 import { generateGUID } from "../../../src/utils/guid.js";
 
-describe("generateGUID", () => {
-  it("should generate a valid GUID format", () => {
-    const guid = generateGUID();
+describe("GUID Generation", () => {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-    // UUID v4 format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    expect(guid).toMatch(uuidRegex);
-  });
+  describe("generateGUID", () => {
+    it("should generate non-empty GUIDs", () => {
+      const id1 = generateGUID();
+      const id2 = generateGUID();
 
-  it("should generate unique GUIDs", () => {
-    const guid1 = generateGUID();
-    const guid2 = generateGUID();
-    const guid3 = generateGUID();
+      expect(id1).toBeTruthy();
+      expect(id2).toBeTruthy();
+    });
 
-    expect(guid1).not.toBe(guid2);
-    expect(guid2).not.toBe(guid3);
-    expect(guid1).not.toBe(guid3);
-  });
+    it("should generate unique GUIDs", () => {
+      const id1 = generateGUID();
+      const id2 = generateGUID();
 
-  it("should generate GUIDs with correct version (4) and variant bits", () => {
-    const guid = generateGUID();
-    const parts = guid.split("-");
+      expect(id1).not.toBe(id2);
+    });
 
-    // Version should be 4 (13th character)
-    expect(parts[2][0]).toBe("4");
+    it("should match UUID v4 format", () => {
+      const id = generateGUID();
+      expect(uuidRegex.test(id)).toBe(true);
+    });
 
-    // Variant should be 8, 9, a, or b (17th character)
-    expect(["8", "9", "a", "b", "A", "B"]).toContain(parts[3][0]);
-  });
+    it("should generate multiple unique UUIDs in sequence", () => {
+      const ids = new Set();
+      for (let i = 0; i < 100; i++) {
+        ids.add(generateGUID());
+      }
+      expect(ids.size).toBe(100);
+    });
 
-  it("should consistently produce 36-character strings", () => {
-    for (let i = 0; i < 10; i++) {
-      const guid = generateGUID();
-      expect(guid).toHaveLength(36);
-      expect(guid.split("-")).toHaveLength(5);
-    }
+    it("should have correct version nibble (4)", () => {
+      const id = generateGUID();
+      const parts = id.split("-");
+      const versionChar = parts[2][0];
+      expect(versionChar).toBe("4");
+    });
+
+    it("should have correct variant bits", () => {
+      const id = generateGUID();
+      const parts = id.split("-");
+      const variantChar = parts[3][0].toLowerCase();
+      expect(["8", "9", "a", "b"]).toContain(variantChar);
+    });
   });
 });

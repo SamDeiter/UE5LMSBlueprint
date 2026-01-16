@@ -12,6 +12,7 @@ import { LEVEL_5_TASKS } from "./assessment/Level5.js";
 import { LEVEL_6_TASKS } from "./assessment/Level6.js";
 import { LEVEL_7_TASKS } from "./assessment/Level7.js";
 import { VALIDATION_TASKS } from "./assessment/ValidationTasks.js";
+import { BLUEPRINT_PITFALL_TASKS } from "./assessment/BlueprintPitfalls.js";
 
 export const ASSESSMENT_TASKS = [
   ...LEVEL_1_TASKS,
@@ -22,4 +23,5 @@ export const ASSESSMENT_TASKS = [
   ...VALIDATION_TASKS,
   ...LEVEL_6_TASKS,
   ...LEVEL_7_TASKS,
+  ...BLUEPRINT_PITFALL_TASKS,
 ];
