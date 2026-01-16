@@ -2,6 +2,8 @@
  * ClassDetails - Handles Class Settings panel rendering
  * Enhanced with UE5-style Interfaces, Class Options, and Display Options
  */
+import { interfaceRegistry } from "../../interfaces/InterfaceRegistry.js";
+
 export class ClassDetails {
   constructor(controller) {
     this.controller = controller;
@@ -43,26 +45,39 @@ export class ClassDetails {
     }
     const settings = this.app.classSettings;
 
-    // Available interfaces for the dropdown
-    const availableInterfaces = [
-      "IInteractable",
-      "IDamageable",
-      "ISaveable",
-      "IPoolable",
-      "IAnimNotify",
-      "IGameplayTagAsset",
-    ];
+    // Get interfaces from registry
+    const availableInterfaces = interfaceRegistry.getAllNames();
 
+    // Build interface list with functions
     const interfacesList = (settings.interfaces || [])
-      .map(
-        (iface, idx) => `
+      .map((ifaceName, idx) => {
+        const iface = interfaceRegistry.get(ifaceName);
+        const funcs = iface
+          ? iface.functions
+              .map(
+                (f) =>
+                  `<div class="interface-function" data-interface="${ifaceName}" data-function="${
+                    f.name
+                  }">
+            <i class="fas fa-${f.isPure ? "circle" : "bolt"}" style="color: ${
+                    f.isPure ? "#27ae60" : "#e74c3c"
+                  }; font-size: 10px;"></i>
+            <span>${f.name}</span>
+          </div>`
+              )
+              .join("")
+          : "";
+        return `
         <div class="interface-item" data-index="${idx}">
-          <i class="fas fa-puzzle-piece" style="color: #9b59b6;"></i>
-          <span>${iface}</span>
-          <i class="fas fa-times interface-remove" data-index="${idx}" style="cursor: pointer; color: #e74c3c;"></i>
+          <div class="interface-header">
+            <i class="fas fa-puzzle-piece" style="color: #9b59b6;"></i>
+            <span>${ifaceName}</span>
+            <i class="fas fa-times interface-remove" data-index="${idx}" style="cursor: pointer; color: #e74c3c;"></i>
+          </div>
+          <div class="interface-functions">${funcs}</div>
         </div>
-      `
-      )
+      `;
+      })
       .join("");
 
     this.panel.innerHTML = `

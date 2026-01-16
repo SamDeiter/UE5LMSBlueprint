@@ -189,6 +189,40 @@
   flex: 1;
 }
 
+.interface-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.interface-header span {
+  flex: 1;
+  font-weight: 500;
+}
+
+.interface-functions {
+  margin-left: 20px;
+  margin-top: 4px;
+  border-left: 1px solid #444;
+  padding-left: 8px;
+}
+
+.interface-function {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  font-size: 11px;
+  color: #aaa;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.interface-function:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
 /* Details Textarea */
 .details-textarea {
   width: 100%;
