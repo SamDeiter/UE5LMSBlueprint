@@ -18,7 +18,7 @@
 | Phase 8 | UE5 Panel Layout System | ✅ 100% |
 | **Phase 9** | **Blueprint Interfaces & Events** | **✅ 100%** |
 
-**Overall UE5 Parity**: ~93% ✅
+**Overall UE5 Parity**: ~95% ✅
 
 ---
 
@@ -59,8 +59,9 @@ LineTraceByChannel, LineTraceByProfile, BoxTrace, SphereTrace, CapsuleTrace, Bre
 
 | Feature | Status | Priority |
 |---------|--------|----------|
-| Timeline Editor UI | ❌ | Low |
+| Timeline Editor UI | ⚠️ Partial (Track bugs) | Low |
 | Animation nodes | ❌ | Out of Scope |
+| Palette Favorites | ❌ | Low |
 
 ---
 
