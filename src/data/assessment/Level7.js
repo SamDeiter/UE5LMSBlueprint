@@ -12,42 +12,37 @@ export const LEVEL_7_TASKS = [
     level: 7,
     title: "Create Your First Macro",
     description:
-      "Create a macro called 'DebugLog' that prints a message. Macros allow you to reuse Blueprint logic.",
+      "Macros are reusable Blueprint snippets. Create a macro called 'DebugLog' - you'll use this to add quick debug messages anywhere in your Blueprint.",
     requirements: [
       {
         type: "macro_exists",
         name: "DebugLog",
-        description: "Create a macro named 'DebugLog'",
-      },
-      {
-        type: "node_exists_in_macro",
-        macroName: "DebugLog",
-        nodeType: "PrintString",
-        description: "Add a PrintString node inside the macro",
+        description:
+          "Create a macro named 'DebugLog' using the + button in My Blueprint > Macros",
       },
     ],
   },
   {
     taskId: "task_702_use_macro",
     level: 7,
-    title: "Use a Macro in Event Graph",
+    title: "Call Your Macro",
     description:
-      "Call the 'DebugLog' macro from Event BeginPlay to execute reusable logic.",
+      "Now use your DebugLog macro! Drag it into the Event Graph and connect it to BeginPlay. When the game starts, your macro will execute.",
     requirements: [
       {
         type: "macro_exists",
         name: "DebugLog",
-        description: "Macro 'DebugLog' must exist",
+        description: "Your 'DebugLog' macro must still exist",
       },
       {
         type: "node_exists",
         nodeType: "EventBeginPlay",
-        description: "Add Event BeginPlay",
+        description: "Add Event BeginPlay node",
       },
       {
         type: "node_exists",
         nodeType: "Macro_DebugLog",
-        description: "Add the DebugLog macro node",
+        description: "Drag your DebugLog macro into the graph",
       },
       {
         type: "link_exists",
@@ -55,21 +50,40 @@ export const LEVEL_7_TASKS = [
         sourcePin: "exec_out",
         targetNode: "Macro_DebugLog",
         targetPin: "exec_in",
-        description: "Connect BeginPlay to the macro",
+        description: "Connect BeginPlay → DebugLog macro",
       },
     ],
   },
   {
-    taskId: "task_703_macro_with_inputs",
+    taskId: "task_703_practical_macro",
     level: 7,
-    title: "Macro with Input Parameters",
+    title: "Create a Damage Flash Macro",
     description:
-      "Create a macro 'LogMessage' with a String input parameter called 'Message'. This teaches you how to pass data into macros.",
+      "Create a practical macro called 'DamageFlash' that you could use to flash the screen when the player takes damage. This is a common game pattern!",
     requirements: [
       {
         type: "macro_exists",
-        name: "LogMessage",
-        description: "Create macro 'LogMessage'",
+        name: "DamageFlash",
+        description: "Create macro 'DamageFlash'",
+      },
+    ],
+  },
+  {
+    taskId: "task_704_multiple_macros",
+    level: 7,
+    title: "Build a Macro Library",
+    description:
+      "Good developers create libraries of reusable macros. Create a 'ClampHealth' macro that could be used to keep health between 0-100.",
+    requirements: [
+      {
+        type: "macro_exists",
+        name: "DamageFlash",
+        description: "DamageFlash macro must exist (from previous task)",
+      },
+      {
+        type: "macro_exists",
+        name: "ClampHealth",
+        description: "Create new macro 'ClampHealth'",
       },
     ],
   },
