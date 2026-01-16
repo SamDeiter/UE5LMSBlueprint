@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 /**
  * Utils Class Unit Tests
@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
  */
 
 // Mock dependencies
-vi.mock("../../../src/config/Constants.js", () => ({
+vi.mock("../../src/config/Constants.js", () => ({
   PIN_COLORS: {
     exec: "var(--pin-color-exec)",
     boolean: "var(--pin-color-bool)",
@@ -35,7 +35,7 @@ vi.mock("../../../src/config/Constants.js", () => ({
 }));
 
 // Import after mocks
-import { Utils } from "../../../src/utils.js";
+import { Utils } from "../../src/utils.js";
 
 describe("Utils", () => {
   describe("uniqueId", () => {
