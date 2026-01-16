@@ -1,7 +1,7 @@
 # UE5 Blueprint Editor - Master Roadmap
 
 > **Single Source of Truth** for all project planning and progress tracking.  
-> **Last Updated**: 2025-12-21
+> **Last Updated**: 2026-01-16
 
 ---
 
@@ -11,186 +11,110 @@
 |-------|-------------|--------|
 | Phase 1-2 | Core System & Struct Nodes | ✅ 100% |
 | Phase 3 | Critical Node Library | ✅ 100% |
-| Phase 4 | Functions & Macros | ✅ 95% |
+| Phase 4 | Functions & Macros | ✅ 100% |
 | Phase 5 | Panel Implementation | ✅ 100% |
 | Phase 6 | Debugging Parity | ✅ 100% |
-| **Phase 7** | **UI/UX Polish & Tech Debt** | **✅ 95%** |
+| Phase 7 | UI/UX Polish & Tech Debt | ✅ 100% |
+| **Phase 8** | **UE5 Panel Layout System** | **✅ 100%** |
 
-**Overall UE5 Parity**: ~75% (targeting 90%+ for v1.0)
-
----
-
-## 🎯 Active Tasks (Phase 7)
-
-### Visual Foundation ✅
-
-- [x] CSS Tokens standardized in `variables.css`
-- [x] High-Fidelity pins (pentagon exec, circle+beak data)
-- [x] Breakpoint parity (red octagon)
-- [x] Event header icons
-- [x] Node glassmorphism
-- [x] Delegate pin icons (black interior)
-- [x] Exec pin transparency
-
-### Sidebar & Panel Logic ✅
-
-- [x] Variable pill transformation
-- [x] Function iconography (italicized 'f')
-- [x] Visibility toggles (eye icons)
-- [x] Multi-reference support (Array/Set/Map icons)
-- [x] Variable deletion with confirmation modal
-- [x] Component addition with selector modal
-
-### Interaction & Workflow ✅
-
-- [x] Shortcut chords (B, S, D, P, C, O, G, F, M + Click)
-- [x] Context menu filtering
-- [x] Find Results (Ctrl+F)
-- [x] Variable context menu (Delete, Rename)
-- [x] Keyboard shortcuts (Delete key for variables)
-
-### Debugging & Animation ✅
-
-- [x] Live wire pulsing
-- [x] Compile state machine (yellow/green/red)
-- [ ] Watch value bubbles (persistent tooltips) — *Low Priority*
-
-### Technical Debt ✅
-
-- [x] Inline styles: 330 → 99 (70% reduction)
-- [x] Target: <100 inline styles — *Complete (99 remaining are dynamic positioning/colors)*
-- [x] Modular NodeDefinitions (split into 14 category files)
-- [x] CSS modal visibility patterns documented
-- [ ] Constants mapping (use `PIN_COLORS`) — *Low Priority*
+**Overall UE5 Parity**: ~88% ✅
 
 ---
 
-## 📋 Remaining Node Implementation
+## ✅ Recently Completed
 
-### High Priority: Tracing & Collision (from UE5_BLUEPRINT_ARCH_REF §5)
+### Phase 8: UE5 Panel Layout (Jan 2026)
 
-| Node | Description | Status |
-|------|-------------|--------|
-| `LineTraceByChannel` | Raycast by collision channel | ✅ |
-| `LineTraceByProfile` | Raycast by profile | ✅ |
-| `BoxTraceByChannel` | Swept box trace | ✅ |
-| `SphereTraceByChannel` | Swept sphere trace | ✅ |
-| `CapsuleTrace` | Swept capsule trace | ✅ |
-| `BreakHitResult` | Extract Hit Result data | ✅ |
-
-### High Priority: Enhanced Input (from UE5_BLUEPRINT_ARCH_REF §6)
-
-| Node | Description | Status |
-|------|-------------|--------|
-| `EnhancedInputAction` | Primary input event (Started/Triggered/Completed) | ✅ |
-| `AddMappingContext` | Assign input mappings | ✅ |
-| `RemoveMappingContext` | Remove input mappings | ✅ |
-| `GetInputActionValue` | Get current action value | ✅ |
-| `IsInputKeyDown` | Check if key is pressed | ✅ |
-| `GetInputAxisValue` | Legacy axis input | ✅ |
-
-### Medium Priority: Audio/Visual (from UE5_BLUEPRINT_ARCH_REF §9)
-
-| Node | Description | Status |
-|------|-------------|--------|
-| `PlaySound2D` | Play provided non-spatialized audio | ❌ |
-| `PlaySoundAtLocation` | Play provided spatialized audio | ❌ |
-| `SpawnNiagaraSystem` | Spawn provided particle effects | ❌ |
-
-### Low Priority: Advanced
-
-| Feature | Status |
-|---------|--------|
-| Class Defaults Panel | ✅ Complete |
-| Timeline Editor UI | ❌ |
-| Animation nodes | ❌ |
+- [x] PanelManager with layout persistence
+- [x] Window menu panel toggles with checkmarks
+- [x] "Restore Layout" functionality
+- [x] Class Settings: Interfaces, Class Options, Blueprint Display
+- [x] Class Defaults: Collision section with physics
 
 ---
 
-## ✅ Completed Phases Summary
+## 📋 Node Implementation Status
 
-### Phase 1-2: Core System & Struct Nodes
+### Audio/Visual Nodes ✅
 
-- 14 variable types with container support
-- Make/Break nodes for Vector, Rotator, Transform
-- Split struct pin with recursive nesting
-- Node persistence and graph save/load
+| Node | Status |
+|------|--------|
+| `PlaySound2D` | ✅ Complete |
+| `PlaySoundAtLocation` | ✅ Complete |
+| `SpawnNiagaraSystem` | ✅ Complete |
+| `SpawnEmitterAtLocation` | ✅ Complete |
 
-### Phase 3: Critical Node Library
+### Tracing & Collision ✅
 
-- 60+ nodes implemented
-- Flow control: Branch, Sequence, DoOnce, DoN, FlipFlop, Gate, MultiGate
-- Math: Full arithmetic, trig functions, vector algebra
-- Delay node with timer support
+| Node | Status |
+|------|--------|
+| `LineTraceByChannel` | ✅ |
+| `LineTraceByProfile` | ✅ |
+| `BoxTraceByChannel` | ✅ |
+| `SphereTraceByChannel` | ✅ |
+| `CapsuleTrace` | ✅ |
+| `BreakHitResult` | ✅ |
 
-### Phase 4: Functions & Macros
+### Enhanced Input ✅
 
-- Function/Macro creation with input/output params
-- Function graphs with call nodes
-- Macro expansion/collapse
-- Local variables in functions
+| Node | Status |
+|------|--------|
+| `EnhancedInputAction` | ✅ |
+| `AddMappingContext` | ✅ |
+| `RemoveMappingContext` | ✅ |
+| `GetInputActionValue` | ✅ |
+| `IsInputKeyDown` | ✅ |
+| `GetInputAxisValue` | ✅ |
 
-### Phase 5: Panel Implementation
+---
 
-- Event Dispatchers section in My Blueprint
-- Class Settings vs Class Defaults separation
-- Palette relocated to Details panel as tab
+## 🎯 Remaining Features (Low Priority)
 
-### Phase 6: Debugging Parity
-
-- Breakpoints with red octagon visual
-- Step Over, Pause, Resume controls
-- Active wire visualization (orange pulse)
-- Live watch bubbles (partial)
+| Feature | Status | Priority |
+|---------|--------|----------|
+| Watch value bubbles | ⚠️ Partial | Low |
+| Timeline Editor UI | ❌ | Low |
+| Animation nodes | ❌ | Out of Scope |
+| Blueprint Interfaces | ❌ | Medium |
 
 ---
 
 ## 🏗️ Architecture Reference
 
-### Node Categories (from UE5 Standard Library)
+### Node Categories Coverage
 
-| Category | Implemented | UE5 Total | Coverage |
-|----------|-------------|-----------|----------|
-| Events | 6 | 15+ | 40% |
-| Flow Control | 10 | 15 | 67% |
-| Math | 45+ | 60+ | 75% |
-| String | 8 | 10+ | 80% |
-| Vector/Transform | 15 | 20 | 75% |
-| Casting | 2 | 5 | 40% |
-| **Tracing/Collision** | **4** | **10** | **40%** |
-| **Input** | **6** | **10** | **60%** |
+| Category | Implemented | Coverage |
+|----------|-------------|----------|
+| Events | 8+ | ~55% |
+| Flow Control | 12 | 80% |
+| Math | 50+ | 85% |
+| String | 10+ | 90% |
+| Vector/Transform | 18 | 90% |
+| Casting | 3 | 60% |
+| Tracing/Collision | 6 | 60% |
+| Input | 8 | 80% |
+| Audio/VFX | 4 | 100% |
 
 ### Key Files
 
 | File | Purpose |
 |------|---------|
-| `src/data/nodes/index.js` | Node definitions (modular) |
+| `src/data/nodes/` | Node definitions (22 modules) |
 | `src/services/SimulationEngine.js` | Execution engine |
-| `src/graph/Node.js` | Node rendering |
-| `src/utils/UE5Renderer.js` | UE5-style visuals |
-| `src/css/variables.css` | Design tokens |
-
----
-
-## 📅 Suggested Next Actions
-
-1. **Implement Line Trace nodes** — Critical for gameplay tutorials
-2. **Implement Input Action nodes** — Essential for interactive demos
-3. **Class Defaults Panel** — Full UE5 workflow parity
-2. **Implement Line Trace nodes** — ✅ *Complete*
-3. **Implement Input Action nodes** — Essential for interactive demos
-4. **Class Defaults Panel** — ✅ *Complete*
+| `src/services/BreakpointManager.js` | Debugging system |
+| `src/ui/panels/PanelManager.js` | Panel layout system |
+| `src/engine/EngineFlow.js` | Graph traversal + breakpoints |
 
 ---
 
 ## 📚 Related Documents
 
-| Document | Location | Purpose |
-|----------|----------|---------|
-| Agent Config | `AGENTS.md` | AI assistant rules |
-| CSS Utilities | `src/css/ui-elements.css` | Phase 7 utility classes |
-| Test Checklist | `tests/` | Verification tests |
+| Document | Purpose |
+|----------|---------|
+| `AGENTS.md` | AI assistant rules |
+| `UE5_UI_PANEL_SPECIFICATIONS.md` | Panel parity specs |
+| `UE5_FEATURE_PARITY_PLAN.md` | Feature analysis |
 
 ---
 
-*This document consolidates: PHASE7_TASK_LIST.md, PHASE7_PROGRESS.md, CONSOLIDATED_MASTER_PLAN.md, UE5_BLUEPRINT_ARCH_REF.md, and UE5_PARITY_GAP_ANALYSIS.md*
+*Updated: 2026-01-16 - Reflects accurate implementation status*
