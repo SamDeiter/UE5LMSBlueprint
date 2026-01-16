@@ -7,7 +7,7 @@
  * - Default layout restoration
  */
 
-import { EventBus, AppEvents } from "../core/EventBus.js";
+import { EventBus, AppEvents } from "../../core/EventBus.js";
 
 /**
  * Panel configuration object

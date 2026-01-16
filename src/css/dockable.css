@@ -145,3 +145,24 @@
   color: var(--text-color, #ddd);
   border-bottom-color: var(--accent-color, #4a9eff);
 }
+
+/* Panel Toggle Checkmarks in Window Menu */
+.panel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-check {
+  font-size: 10px;
+  color: var(--accent-color, #4a9eff);
+  width: 14px;
+}
+
+.panel-toggle:not(.panel-visible) .panel-check {
+  visibility: hidden;
+}
+
+.panel-toggle.panel-visible .panel-check {
+  visibility: visible;
+}

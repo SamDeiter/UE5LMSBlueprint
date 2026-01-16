@@ -57,6 +57,7 @@ import { BlueprintAssetManager, ContentBrowser } from "../core/index.js";
 import { DOMEventHandler } from "./DOMEventHandler.js";
 import { createAssessmentController } from "../ui/assessment/AssessmentController.js";
 import { panelManager } from "../ui/panels/PanelManager.js";
+import { WindowMenuController } from "../ui/menu/WindowMenuController.js";
 
 export class AppInitializer {
   /**
@@ -216,6 +217,9 @@ export class AppInitializer {
     App.graphSwitcher = new GraphSwitcher(App);
     App.switchGraph = (n) => App.graphSwitcher.switchGraph(n);
     App.graphSwitcher.ensureDefaultTabs();
+
+    // Window Menu Controller
+    App.windowMenu = new WindowMenuController();
   }
 
   static initializeTools(App) {
