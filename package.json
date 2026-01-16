@@ -30,6 +30,7 @@
     "@vitest/coverage-v8": "^1.6.1",
     "@vitest/ui": "^1.6.1",
     "eslint": "^9.39.1",
+    "gh-pages": "^6.3.0",
     "husky": "^9.1.7",
     "jsdom": "^23.2.0",
     "knip": "^5.77.0",
