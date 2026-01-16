@@ -579,6 +579,7 @@ export class TimelineEditorPanel {
     if (!keyframe) return;
 
     this.selectedKeyframe = keyframe;
+    this._selectedTrack = track;
 
     const onMove = (moveE) => {
       // Get the track curve container for this track
@@ -626,6 +627,7 @@ export class TimelineEditorPanel {
     const onUp = () => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
+      this._render(); // Re-render to show Time/Value inputs
     };
 
     document.addEventListener("mousemove", onMove);
