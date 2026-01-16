@@ -453,14 +453,23 @@ export class TimelineEditorPanel {
     this.selectedKeyframe = keyframe;
 
     const onMove = (moveE) => {
-      const rect = this.panel
-        .querySelector(".timeline-body")
-        .getBoundingClientRect();
-      const x = moveE.clientX - rect.left;
-      keyframe.time = Math.max(
-        0,
-        Math.min(this.timeline.length, this._xToTime(x))
+      // Get the track curve container for this track
+      const trackCurve = this.panel.querySelector(
+        `.track-curve[data-track-id="${trackId}"]`
       );
+      if (!trackCurve) return;
+
+      const rect = trackCurve.getBoundingClientRect();
+      const x = moveE.clientX - rect.left;
+
+      // Convert X to time using pixelsPerSecond (no offset needed for track-curve)
+      const pixelsPerSecond = 80 * this.zoom;
+      const newTime = Math.max(
+        0,
+        Math.min(this.timeline.length, x / pixelsPerSecond)
+      );
+
+      keyframe.time = newTime;
       track.keyframes.sort((a, b) => a.time - b.time);
       this._render();
     };
