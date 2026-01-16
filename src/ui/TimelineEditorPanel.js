@@ -110,6 +110,23 @@ export class TimelineEditorPanel {
             }>
             Use Last Keyframe
           </label>
+          <div class="tl-tick-group">
+            <label>Tick Group:</label>
+            <select id="tl-tick-group-select">
+              <option value="PrePhysics" ${
+                tl.tickGroup === "PrePhysics" ? "selected" : ""
+              }>TG_PrePhysics</option>
+              <option value="DuringPhysics" ${
+                tl.tickGroup === "DuringPhysics" ? "selected" : ""
+              }>TG_DuringPhysics</option>
+              <option value="PostPhysics" ${
+                tl.tickGroup === "PostPhysics" ? "selected" : ""
+              }>TG_PostPhysics</option>
+              <option value="PostUpdateWork" ${
+                tl.tickGroup === "PostUpdateWork" ? "selected" : ""
+              }>TG_PostUpdateWork</option>
+            </select>
+          </div>
           <div class="tl-length">
             <label>Length:</label>
             <input type="number" id="tl-length-input" value="${Math.round(
@@ -191,16 +208,46 @@ export class TimelineEditorPanel {
         return `
         <div class="timeline-track" data-track-id="${track.id}">
           <div class="track-header">
-            <span class="track-color" style="background: ${color}"></span>
-            <span class="track-name">${track.name}</span>
-            <span class="track-type">(${track.type})</span>
-            <button class="track-delete-btn" data-track-id="${
-              track.id
-            }" title="Delete">
-              <i class="fas fa-trash"></i>
-            </button>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="track-color" style="background: ${color}"></div>
+              <span class="track-name">${track.name}</span>
+            </div>
+
+            <div class="track-sidebar-item">
+              <span>External Curve</span>
+              <select class="tl-external-curve">
+                <option value="">None</option>
+              </select>
+            </div>
+
+            <label class="tl-checkbox" style="font-size: 10px;">
+              <input type="checkbox" class="tl-sync-view" checked>
+              Synchronize View
+            </label>
+
+            <div class="track-sidebar-controls">
+              <button class="track-sidebar-btn tl-reorder-up" title="Move Up">
+                <i class="fas fa-arrow-up"></i>
+              </button>
+              <button class="track-sidebar-btn tl-reorder-down" title="Move Down">
+                <i class="fas fa-arrow-down"></i>
+              </button>
+              <button class="track-sidebar-btn delete" title="Delete Track">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
           </div>
           <div class="track-curve" data-track-id="${track.id}">
+            <div class="track-axis">
+              <div class="track-axis-line" style="top: 4px;"></div>
+              <span class="axis-label" style="top: 4px;">1.00</span>
+
+              <div class="track-axis-line" style="top: 25px;"></div>
+              <span class="axis-label" style="top: 25px;">0.50</span>
+
+              <div class="track-axis-line" style="top: 46px;"></div>
+              <span class="axis-label" style="top: 46px;">0.00</span>
+            </div>
             <svg class="curve-svg" width="100%" height="50">
               ${this._renderCurve(track, color)}
             </svg>
@@ -361,6 +408,14 @@ export class TimelineEditorPanel {
       .querySelector("#tl-use-last-keyframe")
       ?.addEventListener("change", (e) => {
         this.timeline.useLastKeyframe = e.target.checked;
+      });
+
+    // Tick Group dropdown
+    this.panel
+      .querySelector("#tl-tick-group-select")
+      ?.addEventListener("change", (e) => {
+        this.timeline.tickGroup = e.target.value;
+        console.log(`[Timeline] Tick Group changed to: ${e.target.value}`);
       });
 
     // Length input (integer)

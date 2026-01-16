@@ -162,54 +162,91 @@
 }
 
 .track-header {
-  width: 100px;
-  min-width: 100px;
+  width: 150px;
+  min-width: 150px;
   background: #252525;
   padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   border-right: 1px solid #3a3a3a;
+  overflow: hidden;
 }
 
-.track-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-}
-
-.track-name {
-  color: #fff;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.track-type {
-  color: #666;
+.track-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 10px;
+  color: #aaa;
 }
 
-.track-delete-btn {
+.track-sidebar-item select {
+  flex: 1;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px;
+}
+
+.track-sidebar-controls {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.track-sidebar-btn {
   background: none;
   border: none;
   color: #666;
   cursor: pointer;
   padding: 2px;
   font-size: 10px;
-  align-self: flex-start;
+  transition: color 0.1s;
 }
 
-.track-delete-btn:hover {
+.track-sidebar-btn:hover {
+  color: #fff;
+}
+
+.track-sidebar-btn.delete:hover {
   color: #e74c3c;
 }
 
-/* Curve Area */
+/* Curve Area Axis */
+.track-axis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.track-axis-line {
+  position: absolute;
+  left: 0;
+  right: -5000px; /* Long line across tracks */
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.axis-label {
+  position: absolute;
+  left: 2px;
+  font-size: 9px;
+  color: #555;
+  transform: translateY(-50%);
+}
+
 .track-curve {
   flex: 1;
   position: relative;
   min-height: 50px;
   background: linear-gradient(90deg,
-    rgba(50, 50, 50, 0.3) 1px,
+    rgba(50, 50, 50, 0.2) 1px,
     transparent 1px
   );
   background-size: 80px 100%;
