@@ -58,6 +58,7 @@ import { DOMEventHandler } from "./DOMEventHandler.js";
 import { createAssessmentController } from "../ui/assessment/AssessmentController.js";
 import { panelManager } from "../ui/panels/PanelManager.js";
 import { WindowMenuController } from "../ui/menu/WindowMenuController.js";
+import { ReviewInitializer } from "./ReviewInitializer.js";
 
 export class AppInitializer {
   /**
@@ -93,7 +94,7 @@ export class AppInitializer {
     if (versionEl) {
       versionEl.textContent = `v${APP_VERSION}`;
       console.log(
-        `BlueprintApp v${APP_VERSION} initialized at ${new Date().toISOString()}`
+        `BlueprintApp v${APP_VERSION} initialized at ${new Date().toISOString()}`,
       );
     }
   }
@@ -140,7 +141,7 @@ export class AppInitializer {
     // DOM Refs
     const graphEditorEl = document.getElementById(DOMElements.GRAPH_EDITOR);
     const nodesContainerEl = document.getElementById(
-      DOMElements.NODES_CONTAINER
+      DOMElements.NODES_CONTAINER,
     );
     const graphSvgEl = document.getElementById(DOMElements.GRAPH_SVG);
     const graphCanvasEl = document.getElementById(DOMElements.GRAPH_CANVAS);
@@ -161,7 +162,7 @@ export class AppInitializer {
       graphEditorEl,
       graphSvgEl,
       nodesContainerEl,
-      App
+      App,
     );
   }
 
@@ -258,5 +259,8 @@ export class AppInitializer {
     App.componentsController.render();
     App.compiler.validate();
     App.grid.draw();
+
+    // Review System Initialization
+    ReviewInitializer.init(App);
   }
 }

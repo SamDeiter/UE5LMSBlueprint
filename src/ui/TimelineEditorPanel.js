@@ -77,6 +77,12 @@ export class TimelineEditorPanel {
     }
 
     const tl = this.timeline;
+    if (!tl) return;
+
+    // Save scroll position
+    const body = this.panel?.querySelector(".timeline-body");
+    const scrollX = body ? body.scrollLeft : 0;
+    const scrollY = body ? body.scrollTop : 0;
 
     this.panel.innerHTML = `
       <div class="timeline-header">
@@ -138,14 +144,17 @@ export class TimelineEditorPanel {
 
       <div class="timeline-body">
         <div class="timeline-ruler">
-          ${this._renderRuler()}
+          <div class="ruler-sidebar-corner"></div>
+          <div class="ruler-ticks">
+            ${this._renderRuler()}
+          </div>
         </div>
         <div class="timeline-tracks-container">
           ${this._renderTracks()}
+          <div class="timeline-playhead" style="left: ${
+            150 + this._timeToX(this.currentTime)
+          }px"></div>
         </div>
-        <div class="timeline-playhead" style="left: ${this._timeToX(
-          this.currentTime
-        )}px"></div>
       </div>
 
       <div class="timeline-footer">
@@ -179,6 +188,13 @@ export class TimelineEditorPanel {
         )}s</span>
       </div>
     `;
+
+    // Restore scroll position
+    const newBody = this.panel.querySelector(".timeline-body");
+    if (newBody) {
+      newBody.scrollLeft = scrollX;
+      newBody.scrollTop = scrollY;
+    }
 
     this._bindEvents();
   }
@@ -340,12 +356,12 @@ export class TimelineEditorPanel {
 
   _timeToX(time) {
     const pixelsPerSecond = 80 * this.zoom;
-    return 100 + time * pixelsPerSecond - this.scrollX;
+    return time * pixelsPerSecond;
   }
 
   _xToTime(x) {
     const pixelsPerSecond = 80 * this.zoom;
-    return (x - 100 + this.scrollX) / pixelsPerSecond;
+    return x / pixelsPerSecond;
   }
 
   _getTrackColor(type) {
@@ -482,10 +498,11 @@ export class TimelineEditorPanel {
         }
       });
 
-    // Delete track buttons
-    this.panel.querySelectorAll(".track-delete-btn").forEach((btn) => {
+    // Track sidebar buttons (Delete, Reorder)
+    this.panel.querySelectorAll(".track-sidebar-btn.delete").forEach((btn) => {
       btn.addEventListener("click", (e) => {
-        const trackId = e.currentTarget.dataset.trackId;
+        const trackEl = e.currentTarget.closest(".timeline-track");
+        const trackId = trackEl.dataset.trackId;
         this.timeline.removeTrack(trackId);
         this._render();
         try {
@@ -496,17 +513,43 @@ export class TimelineEditorPanel {
       });
     });
 
+    this.panel.querySelectorAll(".tl-reorder-up").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const trackEl = e.currentTarget.closest(".timeline-track");
+        const trackId = trackEl.dataset.trackId;
+        const index = this.timeline.tracks.findIndex((t) => t.id === trackId);
+        if (index > 0) {
+          const temp = this.timeline.tracks[index];
+          this.timeline.tracks[index] = this.timeline.tracks[index - 1];
+          this.timeline.tracks[index - 1] = temp;
+          this._updateNodePins();
+          this._render();
+        }
+      });
+    });
+
+    this.panel.querySelectorAll(".tl-reorder-down").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const trackEl = e.currentTarget.closest(".timeline-track");
+        const trackId = trackEl.dataset.trackId;
+        const index = this.timeline.tracks.findIndex((t) => t.id === trackId);
+        if (index < this.timeline.tracks.length - 1) {
+          const temp = this.timeline.tracks[index];
+          this.timeline.tracks[index] = this.timeline.tracks[index + 1];
+          this.timeline.tracks[index + 1] = temp;
+          this._updateNodePins();
+          this._render();
+        }
+      });
+    });
+
     // Keyframe interaction
     this.panel.querySelectorAll(".keyframe").forEach((kf) => {
-      kf.addEventListener("mousedown", (e) => {
-        this._startKeyframeDrag(e);
-      });
-
+      kf.addEventListener("mousedown", (e) => this._startKeyframeDrag(e));
       kf.addEventListener("dblclick", (e) => {
+        e.stopPropagation();
         this._editKeyframe(e);
       });
-
-      // Right-click context menu for keyframes
       kf.addEventListener("contextmenu", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -514,20 +557,35 @@ export class TimelineEditorPanel {
       });
     });
 
-    // Click on track to add keyframe (Shift+click or double-click)
+    // Add keyframe on track (Shift+Click or Double-Click)
     this.panel.querySelectorAll(".track-curve").forEach((curve) => {
-      curve.addEventListener("dblclick", (e) => {
-        if (e.target.classList.contains("keyframe")) return;
-        this._addKeyframeAtClick(e);
+      curve.addEventListener("mousedown", (e) => {
+        if (e.shiftKey && e.button === 0) {
+          this._addKeyframeAtClick(e);
+        }
       });
-
-      // Shift+click to add keyframe (UE5 style)
-      curve.addEventListener("click", (e) => {
-        if (e.shiftKey && !e.target.classList.contains("keyframe")) {
+      curve.addEventListener("dblclick", (e) => {
+        if (!e.target.classList.contains("keyframe")) {
           this._addKeyframeAtClick(e);
         }
       });
     });
+
+    // Scrubbing on ruler
+    this.panel
+      .querySelector(".timeline-ruler")
+      ?.addEventListener("mousedown", (e) => {
+        this._startScrubbing(e);
+      });
+
+    // Scrubbing on tracks container (if not clicking keyframe)
+    this.panel
+      .querySelector(".timeline-tracks-container")
+      ?.addEventListener("mousedown", (e) => {
+        if (!e.target.classList.contains("keyframe") && !e.shiftKey) {
+          this._startScrubbing(e);
+        }
+      });
 
     // Mouse wheel zoom on timeline (prevent graph zoom)
     this.panel.querySelector(".timeline-body")?.addEventListener(
@@ -592,7 +650,7 @@ export class TimelineEditorPanel {
       // Update playhead
       const playhead = this.panel?.querySelector(".timeline-playhead");
       if (playhead) {
-        playhead.style.left = `${this._timeToX(this.currentTime)}px`;
+        playhead.style.left = `${150 + this._timeToX(this.currentTime)}px`;
       }
 
       const timeDisplay = this.panel?.querySelector(".tl-time-display");
@@ -689,6 +747,42 @@ export class TimelineEditorPanel {
     document.addEventListener("mouseup", onUp);
   }
 
+  _startScrubbing(e) {
+    if (e.target.classList.contains("keyframe")) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const updateScrub = (moveE) => {
+      const body = this.panel.querySelector(".timeline-body");
+      const rect = body.getBoundingClientRect();
+      const x = moveE.clientX - rect.left + body.scrollLeft - 150;
+      const time = Math.max(
+        0,
+        Math.min(this.timeline.length, this._xToTime(x))
+      );
+      this.currentTime = time;
+
+      // Update node temp values so graph updates while scrubbing
+      if (this.node) {
+        const values = this.timeline.evaluateAll(this.currentTime);
+        this.node.tempValues = this.node.tempValues || {};
+        Object.assign(this.node.tempValues, values);
+      }
+
+      this._render();
+    };
+
+    const stopScrub = () => {
+      document.removeEventListener("mousemove", updateScrub);
+      document.removeEventListener("mouseup", stopScrub);
+    };
+
+    document.addEventListener("mousemove", updateScrub);
+    document.addEventListener("mouseup", stopScrub);
+    updateScrub(e);
+  }
+
   _editKeyframe(e) {
     const trackId = e.target.dataset.trackId;
     const keyframeId = e.target.dataset.keyframeId;
@@ -726,9 +820,7 @@ export class TimelineEditorPanel {
     const track = this.timeline.tracks.find((t) => t.id === trackId);
     if (!track) return;
 
-    const rect = this.panel
-      .querySelector(".timeline-body")
-      .getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const time = Math.max(0, Math.min(this.timeline.length, this._xToTime(x)));
 
