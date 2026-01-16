@@ -98,6 +98,18 @@ export class TimelineEditorPanel {
             <input type="checkbox" id="tl-loop" ${tl.loop ? "checked" : ""}>
             Loop
           </label>
+          <label class="tl-checkbox">
+            <input type="checkbox" id="tl-autoplay" ${
+              tl.autoPlay ? "checked" : ""
+            }>
+            AutoPlay
+          </label>
+          <label class="tl-checkbox">
+            <input type="checkbox" id="tl-use-last-keyframe" ${
+              tl.useLastKeyframe !== false ? "checked" : ""
+            }>
+            Use Last Keyframe
+          </label>
           <div class="tl-length">
             <label>Length:</label>
             <input type="number" id="tl-length-input" value="${Math.round(
@@ -321,11 +333,25 @@ export class TimelineEditorPanel {
       this.timeline.loop = e.target.checked;
     });
 
-    // Length input
+    // AutoPlay checkbox
+    this.panel
+      .querySelector("#tl-autoplay")
+      ?.addEventListener("change", (e) => {
+        this.timeline.autoPlay = e.target.checked;
+      });
+
+    // Use Last Keyframe checkbox
+    this.panel
+      .querySelector("#tl-use-last-keyframe")
+      ?.addEventListener("change", (e) => {
+        this.timeline.useLastKeyframe = e.target.checked;
+      });
+
+    // Length input (integer)
     this.panel
       .querySelector("#tl-length-input")
       ?.addEventListener("change", (e) => {
-        this.timeline.length = parseFloat(e.target.value) || 5.0;
+        this.timeline.length = parseInt(e.target.value, 10) || 5;
         this._render();
       });
 
