@@ -57,6 +57,13 @@ export class ClassDefaultsRenderer {
 
         // Rendering Category
         hiddenInGame: false,
+
+        // Collision Category
+        collisionPresets: "BlockAllDynamic",
+        objectType: "WorldDynamic",
+        simulatePhysics: false,
+        enableGravity: true,
+        massInKg: 1.0,
       };
     }
     const defaults = this.app.classDefaults;
@@ -105,6 +112,12 @@ export class ClassDefaultsRenderer {
         false
       )}
       ${createSection("Rendering", "rendering", renderingContent, false)}
+      ${createSection(
+        "Collision",
+        "collision",
+        this._buildCollisionSection(defaults),
+        false
+      )}
       ${createSection("Variables", "variables", variablesContent, true)}
       ${createSection("Events", "events", eventsContent, false)}
     `;
@@ -399,6 +412,92 @@ export class ClassDefaultsRenderer {
     `;
   }
 
+  _buildCollisionSection(defaults) {
+    return `
+      <div class="detail-row">
+        <label>Collision Presets</label>
+        <select id="collision-presets-select" class="details-select">
+          <option value="NoCollision" ${
+            defaults.collisionPresets === "NoCollision" ? "selected" : ""
+          }>No Collision</option>
+          <option value="BlockAll" ${
+            defaults.collisionPresets === "BlockAll" ? "selected" : ""
+          }>Block All</option>
+          <option value="BlockAllDynamic" ${
+            defaults.collisionPresets === "BlockAllDynamic" ? "selected" : ""
+          }>Block All Dynamic</option>
+          <option value="BlockAllStatic" ${
+            defaults.collisionPresets === "BlockAllStatic" ? "selected" : ""
+          }>Block All Static</option>
+          <option value="OverlapAll" ${
+            defaults.collisionPresets === "OverlapAll" ? "selected" : ""
+          }>Overlap All</option>
+          <option value="OverlapAllDynamic" ${
+            defaults.collisionPresets === "OverlapAllDynamic" ? "selected" : ""
+          }>Overlap All Dynamic</option>
+          <option value="Pawn" ${
+            defaults.collisionPresets === "Pawn" ? "selected" : ""
+          }>Pawn</option>
+          <option value="Spectator" ${
+            defaults.collisionPresets === "Spectator" ? "selected" : ""
+          }>Spectator</option>
+          <option value="Custom" ${
+            defaults.collisionPresets === "Custom" ? "selected" : ""
+          }>Custom...</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <label>Object Type</label>
+        <select id="object-type-select" class="details-select">
+          <option value="WorldStatic" ${
+            defaults.objectType === "WorldStatic" ? "selected" : ""
+          }>World Static</option>
+          <option value="WorldDynamic" ${
+            defaults.objectType === "WorldDynamic" ? "selected" : ""
+          }>World Dynamic</option>
+          <option value="Pawn" ${
+            defaults.objectType === "Pawn" ? "selected" : ""
+          }>Pawn</option>
+          <option value="PhysicsBody" ${
+            defaults.objectType === "PhysicsBody" ? "selected" : ""
+          }>Physics Body</option>
+          <option value="Vehicle" ${
+            defaults.objectType === "Vehicle" ? "selected" : ""
+          }>Vehicle</option>
+          <option value="Destructible" ${
+            defaults.objectType === "Destructible" ? "selected" : ""
+          }>Destructible</option>
+        </select>
+      </div>
+      <div class="detail-row">
+        <label>Simulate Physics</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="simulate-physics-checkbox" class="ue5-checkbox" ${
+            defaults.simulatePhysics ? "checked" : ""
+          }>
+        </div>
+      </div>
+      <div class="detail-row physics-dependent" ${
+        !defaults.simulatePhysics ? 'style="opacity: 0.5;"' : ""
+      }>
+        <label>Enable Gravity</label>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="enable-gravity-checkbox" class="ue5-checkbox" ${
+            defaults.enableGravity ? "checked" : ""
+          } ${!defaults.simulatePhysics ? "disabled" : ""}>
+        </div>
+      </div>
+      <div class="detail-row physics-dependent" ${
+        !defaults.simulatePhysics ? 'style="opacity: 0.5;"' : ""
+      }>
+        <label>Mass (kg)</label>
+        <input type="number" id="mass-input" class="details-input" value="${
+          defaults.massInKg
+        }" step="0.1" min="0" ${!defaults.simulatePhysics ? "disabled" : ""}>
+      </div>
+    `;
+  }
+
   _buildVariablesSection() {
     let variablesContent = "";
     if (this.app.variables && this.app.variables.variables.size > 0) {
@@ -528,6 +627,29 @@ export class ClassDefaultsRenderer {
     bindInput("#runtime-grid-select", "runtimeGrid");
     bindInput("#hlod-layer-select", "hlodLayer");
     bindInput("#hidden-in-game-checkbox", "hiddenInGame", true);
+
+    // Collision section bindings
+    bindInput("#collision-presets-select", "collisionPresets");
+    bindInput("#object-type-select", "objectType");
+    bindInput("#simulate-physics-checkbox", "simulatePhysics", true);
+    bindInput("#enable-gravity-checkbox", "enableGravity", true);
+    bindInput("#mass-input", "massInKg", false, true);
+
+    // Physics dependent toggle
+    const physicsCheckbox = this.panel.querySelector(
+      "#simulate-physics-checkbox"
+    );
+    if (physicsCheckbox) {
+      physicsCheckbox.addEventListener("change", (e) => {
+        const enabled = e.target.checked;
+        this.panel.querySelectorAll(".physics-dependent").forEach((row) => {
+          row.style.opacity = enabled ? "1" : "0.5";
+          row.querySelectorAll("input, select").forEach((input) => {
+            input.disabled = !enabled;
+          });
+        });
+      });
+    }
 
     // Parent class trigger
     const parentTrigger = this.panel.querySelector("#parent-class-trigger");
