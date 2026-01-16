@@ -124,15 +124,14 @@ describe("VariableController", () => {
     it("should include boolean type", () => {
       const types = controller.getVariableTypes();
 
-      expect(
-        types.some((t) => t.value === "bool" || t.value === "boolean")
-      ).toBe(true);
+      // Implementation returns string array, not objects
+      expect(types.includes("bool")).toBe(true);
     });
 
     it("should include float type", () => {
       const types = controller.getVariableTypes();
 
-      expect(types.some((t) => t.value === "float")).toBe(true);
+      expect(types.includes("float")).toBe(true);
     });
   });
 
@@ -156,19 +155,23 @@ describe("VariableController", () => {
 
   describe("isNameTaken", () => {
     it("should return false for unique name", () => {
-      mockApp.variables = [{ id: "var1", name: "Health" }];
+      // Implementation uses this.variables (Map), not app.variables
+      controller.variables = new Map();
+      controller.variables.set("var1", { id: "var1", name: "Health" });
 
       expect(controller.isNameTaken("Speed")).toBe(false);
     });
 
     it("should return true for taken name", () => {
-      mockApp.variables = [{ id: "var1", name: "Health" }];
+      controller.variables = new Map();
+      controller.variables.set("var1", { id: "var1", name: "Health" });
 
       expect(controller.isNameTaken("Health")).toBe(true);
     });
 
     it("should exclude current variable from check", () => {
-      mockApp.variables = [{ id: "var1", name: "Health" }];
+      controller.variables = new Map();
+      controller.variables.set("var1", { id: "var1", name: "Health" });
 
       expect(controller.isNameTaken("Health", "var1")).toBe(false);
     });
@@ -176,19 +179,23 @@ describe("VariableController", () => {
 
   describe("generateUniqueVarName", () => {
     it("should return base name if not taken", () => {
-      mockApp.variables = [];
+      // Implementation uses controller.variables (Map)
+      controller.variables = new Map();
 
       const name = controller.generateUniqueVarName("Health");
 
       expect(name).toBe("Health");
     });
 
-    it("should append number if name taken", () => {
-      mockApp.variables = [{ name: "NewVar" }];
+    it("should append underscore and number if name taken", () => {
+      // Need to set variables on the controller itself
+      controller.variables = new Map();
+      controller.variables.set("v1", { id: "v1", name: "NewVar" });
 
       const name = controller.generateUniqueVarName("NewVar");
 
-      expect(name).toMatch(/NewVar\d+/);
+      // Implementation uses underscore format: NewVar_0, NewVar_1, etc.
+      expect(name).toMatch(/NewVar_\d+/);
     });
   });
 
