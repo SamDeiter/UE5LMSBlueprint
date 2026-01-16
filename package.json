@@ -15,7 +15,9 @@
     "preview": "npm run serve && start http://localhost:8000",
     "check-sizes": "node scripts/file-size-monitor.js",
     "validate": "npm run lint && npm run check-sizes",
-    "build": "npm run validate",
+    "build": "npm run validate && node scripts/build.js",
+    "build:prod": "npm run lint && node scripts/build.js",
+    "deploy": "npm run lint && gh-pages -d . --dotfiles",
     "precommit": "npm run validate",
     "prepare": "husky"
   },
