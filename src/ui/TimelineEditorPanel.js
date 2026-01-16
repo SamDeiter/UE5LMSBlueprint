@@ -141,6 +141,22 @@ export class TimelineEditorPanel {
           <option value="event">Event</option>
           <option value="color">Color</option>
         </select>
+        ${
+          this.selectedKeyframe
+            ? `
+          <div class="tl-keyframe-inputs">
+            <label>Time: <input type="number" id="tl-kf-time" value="${this.selectedKeyframe.time.toFixed(
+              2
+            )}" step="0.1" min="0"></label>
+            <label>Value: <input type="number" id="tl-kf-value" value="${
+              typeof this.selectedKeyframe.value === "number"
+                ? this.selectedKeyframe.value.toFixed(2)
+                : 0
+            }" step="0.1"></label>
+          </div>
+        `
+            : ""
+        }
         <span class="tl-time-display">Time: ${this.currentTime.toFixed(
           2
         )}s</span>
@@ -355,6 +371,31 @@ export class TimelineEditorPanel {
         this._render();
       });
 
+    // Keyframe Time input
+    this.panel.querySelector("#tl-kf-time")?.addEventListener("change", (e) => {
+      if (this.selectedKeyframe && this._selectedTrack) {
+        this.selectedKeyframe.time = Math.max(
+          0,
+          parseFloat(e.target.value) || 0
+        );
+        this._selectedTrack.keyframes.sort((a, b) => a.time - b.time);
+        this._render();
+      }
+    });
+
+    // Keyframe Value input
+    this.panel
+      .querySelector("#tl-kf-value")
+      ?.addEventListener("change", (e) => {
+        if (this.selectedKeyframe) {
+          const newVal = parseFloat(e.target.value) || 0;
+          if (typeof this.selectedKeyframe.value === "number") {
+            this.selectedKeyframe.value = newVal;
+          }
+          this._render();
+        }
+      });
+
     // Add track button
     this.panel
       .querySelector("#tl-add-track-btn")
@@ -446,6 +487,22 @@ export class TimelineEditorPanel {
       },
       { passive: false }
     );
+
+    // Prevent middle-mouse pan from affecting graph
+    this.panel
+      .querySelector(".timeline-body")
+      ?.addEventListener("mousedown", (e) => {
+        if (e.button === 1) {
+          // Middle mouse button
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+
+    // Prevent general mouse events from bubbling to graph
+    this.panel.addEventListener("mousedown", (e) => {
+      e.stopPropagation();
+    });
 
     // Keyboard handling for delete
     document.addEventListener("keydown", (e) => {
