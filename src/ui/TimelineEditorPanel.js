@@ -192,8 +192,14 @@ export class TimelineEditorPanel {
     const height = 50;
     const pixelsPerSecond = 80 * this.zoom;
 
+    // Use actual keyframe range, not just timeline.length
+    const sortedKfs = [...track.keyframes].sort((a, b) => a.time - b.time);
+    const minTime = sortedKfs[0].time;
+    const maxTime = sortedKfs[sortedKfs.length - 1].time;
+    const timeRange = maxTime - minTime;
+
     for (let i = 0; i <= steps; i++) {
-      const t = (i / steps) * this.timeline.length;
+      const t = minTime + (i / steps) * timeRange;
       let val = track.evaluate(t);
 
       // Normalize value for display
@@ -377,14 +383,35 @@ export class TimelineEditorPanel {
       kf.addEventListener("dblclick", (e) => {
         this._editKeyframe(e);
       });
+
+      // Right-click context menu for keyframes
+      kf.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this._showKeyframeContextMenu(e);
+      });
     });
 
-    // Click on track to add keyframe
+    // Click on track to add keyframe (Shift+click or double-click)
     this.panel.querySelectorAll(".track-curve").forEach((curve) => {
       curve.addEventListener("dblclick", (e) => {
         if (e.target.classList.contains("keyframe")) return;
         this._addKeyframeAtClick(e);
       });
+
+      // Shift+click to add keyframe (UE5 style)
+      curve.addEventListener("click", (e) => {
+        if (e.shiftKey && !e.target.classList.contains("keyframe")) {
+          this._addKeyframeAtClick(e);
+        }
+      });
+    });
+
+    // Keyboard handling for delete
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Delete" && this.selectedKeyframe && this.panel) {
+        this._deleteSelectedKeyframe();
+      }
     });
   }
 
@@ -597,6 +624,152 @@ export class TimelineEditorPanel {
       this.node.element = newElement;
       this.node.app.graph?.requestRedraw();
     }
+  }
+
+  _showKeyframeContextMenu(e) {
+    // Remove any existing context menu
+    const existing = document.querySelector(".keyframe-context-menu");
+    if (existing) existing.remove();
+
+    const kfEl = e.target;
+    const trackId = kfEl.dataset.trackId;
+    const keyframeId = kfEl.dataset.keyframeId;
+
+    const track = this.timeline.tracks.find((t) => t.id === trackId);
+    if (!track) return;
+
+    const keyframe = track.keyframes.find((k) => k.id === keyframeId);
+    if (!keyframe) return;
+
+    this.selectedKeyframe = keyframe;
+    this._selectedTrack = track;
+
+    const menu = document.createElement("div");
+    menu.className = "keyframe-context-menu";
+    menu.style.cssText = `
+      position: fixed;
+      left: ${e.clientX}px;
+      top: ${e.clientY}px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 4px 0;
+      min-width: 150px;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    `;
+
+    const menuItems = [
+      {
+        label: "Delete Key",
+        action: () => this._deleteSelectedKeyframe(),
+        icon: "fa-trash",
+      },
+      { type: "separator" },
+      {
+        label: "Key Interpolation",
+        type: "submenu",
+        items: [
+          {
+            label: "Auto",
+            action: () => this._setKeyframeInterpolation("auto"),
+          },
+          {
+            label: "Linear",
+            action: () => this._setKeyframeInterpolation("linear"),
+          },
+          {
+            label: "Constant",
+            action: () => this._setKeyframeInterpolation("constant"),
+          },
+        ],
+      },
+    ];
+
+    menuItems.forEach((item) => {
+      if (item.type === "separator") {
+        const sep = document.createElement("div");
+        sep.style.cssText = "border-top: 1px solid #444; margin: 4px 0;";
+        menu.appendChild(sep);
+      } else if (item.type === "submenu") {
+        const submenu = document.createElement("div");
+        submenu.style.cssText =
+          "padding: 6px 12px; color: #aaa; font-size: 12px; cursor: default;";
+        submenu.textContent = item.label;
+        menu.appendChild(submenu);
+        item.items.forEach((subItem) => {
+          const btn = document.createElement("div");
+          btn.style.cssText =
+            "padding: 4px 24px; color: #ddd; font-size: 12px; cursor: pointer;";
+          btn.textContent = subItem.label;
+          btn.addEventListener(
+            "mouseenter",
+            () => (btn.style.background = "#3a3a3a")
+          );
+          btn.addEventListener(
+            "mouseleave",
+            () => (btn.style.background = "none")
+          );
+          btn.addEventListener("click", () => {
+            subItem.action();
+            menu.remove();
+          });
+          menu.appendChild(btn);
+        });
+      } else {
+        const btn = document.createElement("div");
+        btn.style.cssText =
+          "padding: 6px 12px; color: #ddd; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;";
+        if (item.icon)
+          btn.innerHTML = `<i class="fas ${item.icon}"></i> ${item.label}`;
+        else btn.textContent = item.label;
+        btn.addEventListener(
+          "mouseenter",
+          () => (btn.style.background = "#3a3a3a")
+        );
+        btn.addEventListener(
+          "mouseleave",
+          () => (btn.style.background = "none")
+        );
+        btn.addEventListener("click", () => {
+          item.action();
+          menu.remove();
+        });
+        menu.appendChild(btn);
+      }
+    });
+
+    document.body.appendChild(menu);
+
+    // Close menu on click outside
+    const closeMenu = (evt) => {
+      if (!menu.contains(evt.target)) {
+        menu.remove();
+        document.removeEventListener("click", closeMenu);
+      }
+    };
+    setTimeout(() => document.addEventListener("click", closeMenu), 0);
+  }
+
+  _deleteSelectedKeyframe() {
+    if (!this.selectedKeyframe || !this._selectedTrack) return;
+
+    const track = this._selectedTrack;
+    const index = track.keyframes.findIndex(
+      (k) => k.id === this.selectedKeyframe.id
+    );
+    if (index > -1) {
+      track.keyframes.splice(index, 1);
+      this.selectedKeyframe = null;
+      this._selectedTrack = null;
+      this._render();
+    }
+  }
+
+  _setKeyframeInterpolation(type) {
+    if (!this.selectedKeyframe) return;
+    this.selectedKeyframe.interpolation = type;
+    this._render();
   }
 }
 
