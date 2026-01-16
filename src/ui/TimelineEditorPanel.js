@@ -67,7 +67,14 @@ export class TimelineEditorPanel {
   }
 
   _render() {
-    if (!this.panel || !this.timeline) return;
+    console.log(
+      "[Timeline] _render called, tracks:",
+      this.timeline?.tracks?.length
+    );
+    if (!this.panel || !this.timeline) {
+      console.log("[Timeline] _render aborted: panel or timeline missing");
+      return;
+    }
 
     const tl = this.timeline;
 
@@ -142,6 +149,10 @@ export class TimelineEditorPanel {
   }
 
   _renderTracks() {
+    console.log(
+      "[Timeline] _renderTracks called, count:",
+      this.timeline.tracks.length
+    );
     if (this.timeline.tracks.length === 0) {
       return '<div class="no-tracks">No tracks. Add a track to begin.</div>';
     }
@@ -207,16 +218,33 @@ export class TimelineEditorPanel {
 
   _renderKeyframes(track) {
     const pixelsPerSecond = 80 * this.zoom;
+    const height = 50; // Match SVG height
+
     return track.keyframes
       .map((kf) => {
-        // Use local coordinates (relative to track-curve container)
+        // Calculate X position from time
         const x = kf.time * pixelsPerSecond;
+
+        // Calculate Y position from value (same formula as curve)
+        let normalizedVal = 0;
+        if (track.type === "float") {
+          normalizedVal = Math.max(0, Math.min(1, kf.value));
+        } else if (track.type === "vector") {
+          normalizedVal = Math.max(
+            0,
+            Math.min(1, (kf.value.x + kf.value.y + kf.value.z) / 3)
+          );
+        } else {
+          normalizedVal = kf.value > 0 ? 1 : 0;
+        }
+        const y = height - normalizedVal * (height - 4) - 6; // -6 to center 12px keyframe
+
         const isSelected = this.selectedKeyframe?.id === kf.id;
         return `
         <div class="keyframe ${isSelected ? "selected" : ""}"
              data-keyframe-id="${kf.id}"
              data-track-id="${track.id}"
-             style="left: ${x}px"
+             style="left: ${x}px; top: ${y}px"
              title="Time: ${kf.time.toFixed(2)}s, Value: ${this._formatValue(
           kf.value
         )}">
@@ -296,9 +324,12 @@ export class TimelineEditorPanel {
     this.panel
       .querySelector("#tl-add-track-btn")
       ?.addEventListener("click", () => {
+        console.log("[Timeline] Add Track clicked");
         const type = this.panel.querySelector("#tl-track-type-select").value;
         const name = `Track${this.timeline.tracks.length + 1}`;
+        console.log(`[Timeline] Adding track: ${name} (${type})`);
         const track = this.timeline.addTrack(name, type);
+        console.log("[Timeline] Track created:", track);
 
         // Add default keyframes
         track.addKeyframe(0, track.getDefaultValue());
@@ -306,9 +337,18 @@ export class TimelineEditorPanel {
           this.timeline.length,
           type === "float" ? 1 : track.getDefaultValue()
         );
+        console.log("[Timeline] Tracks count:", this.timeline.tracks.length);
 
-        this._updateNodePins();
+        // Render UI first so tracks appear immediately
         this._render();
+        console.log("[Timeline] Render complete");
+
+        // Then try to update node pins (may fail if node doesn't support it)
+        try {
+          this._updateNodePins();
+        } catch (err) {
+          console.warn("[Timeline] Failed to update node pins:", err);
+        }
       });
 
     // Delete track buttons
@@ -316,8 +356,12 @@ export class TimelineEditorPanel {
       btn.addEventListener("click", (e) => {
         const trackId = e.currentTarget.dataset.trackId;
         this.timeline.removeTrack(trackId);
-        this._updateNodePins();
         this._render();
+        try {
+          this._updateNodePins();
+        } catch (err) {
+          console.warn("[Timeline] Failed to update node pins:", err);
+        }
       });
     });
 
