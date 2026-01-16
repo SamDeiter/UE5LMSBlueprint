@@ -1,0 +1,1864 @@
+[
+  {
+    "key": "LightingRendering_Beginner",
+    "scenario": {
+      "scenario_id": "BlackMetallicObject",
+      "title": "Metallic Asset Appears Pitch Black in Dynamic Scene",
+      "problem_description": "A highly reflective metallic statue has been placed into the level. Despite the level being well-lit using a dynamic directional light and having Lumen enabled, the statue appears uniformly pitch black in the viewport and in PIE. Other nearby non-metallic objects reflect light and shadows correctly. The material instance applied to the statue has Metallic set to 1.0 and Roughness set to 0.1. The object is clearly not receiving any environmental reflections or indirect light.",
+      "estimated_hours": 0.73,
+      "focus_area": "Lighting & Rendering",
+      "correct_solution_steps": [
+        {
+          "step_description": "Select the problematic black metallic Static Mesh Actor in the viewport or World Outliner.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Verify the material applied to the mesh component's slot 0. Confirm the Material Instance has Metallic=1.0 and Roughness is a low value (e.g., 0.1), ruling out material setup as the primary cause.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Details panel for the Static Mesh Component, verify the 'Mobility' setting is set to 'Movable' to ensure full compatibility with dynamic systems like Lumen and runtime reflections.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Expand the 'Rendering' category in the Details panel and verify 'Visible' and 'Cast Shadows' are checked.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Check the 'Rendering' property 'Affects Global Illumination' and ensure it is enabled, allowing the object to interact with GI systems.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Locate the specific toggle 'Visible in Ray Tracing' (usually found near the bottom of the Rendering section) and confirm it is checked. If unchecked, metallic/reflective objects often appear black when using hardware ray tracing or high-quality Lumen reflections.",
+          "time_cost": 0.08
+        },
+        {
+          "step_description": "If checking the Ray Tracing visibility property solved the issue, instruct the user to hit 'Save All' and verify the statue is now correctly reflecting the scene.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "If the issue persists, open Project Settings (Edit -> Project Settings) and navigate to the 'Rendering' section to globally confirm 'Global Illumination Method' is set to 'Lumen' and 'Reflection Method' is set to 'Lumen'.",
+          "time_cost": 0.07
+        },
+        {
+          "step_description": "Check the Sky Light actor in the scene. Ensure its 'Source Type' is set to 'SLS Captured Scene' and confirm its 'Intensity' is a visible value (e.g., 1.0).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Editor Viewport, switch the view mode to 'Buffer Visualization -> World Reflection' to visually confirm if the object is receiving any reflection data from the Sky Light or Lumen.",
+          "time_cost": 0.06
+        },
+        {
+          "step_description": "If a dedicated Reflection Capture actor is present near the statue (despite using Lumen), check its influence bounds to ensure the statue is fully contained within it.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Select the Post Process Volume in the scene and ensure the 'Unbound' property is checked, or that the statue is within the volume's bounds.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "In the Post Process Volume settings, search for 'Lumen' and confirm that both 'Global Illumination' and 'Reflections' settings are explicitly set to 'Lumen' or 'Final Gather', and that the intensity values are not zero.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Return to the problematic Static Mesh Actor and specifically review the 'Visible in Ray Tracing' setting one last time. If it was disabled, re-enable it.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Final verification: Ensure the Static Mesh Component's 'Hidden In Game' property is not checked, and the statue renders correctly in the Play In Editor mode.",
+          "time_cost": 0.06
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Attempting to change the Material's roughness parameter to 1.0 (matte) to confirm light interaction, thus removing the metallic visual requirement for reflections, which misdiagnoses the problem.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Manually placing multiple Sphere Reflection Capture actors across the scene and running 'Build Reflection Captures,' assuming Lumen is disabled or misconfigured, wasting time on legacy techniques.",
+          "time_penalty": 0.1
+        },
+        {
+          "step_description": "Deleting the directional light and replacing it, or modifying its intensity to extreme values, mistakenly assuming the issue is primary lighting source intensity rather than reflection setup.",
+          "time_penalty": 0.2
+        }
+      ]
+    }
+  },
+  {
+    "key": "LightingRendering_Intermediate",
+    "scenario": {
+      "scenario_id": "EmissiveGILightingFix",
+      "title": "Missing Lumen Global Illumination from Emissive Materials",
+      "problem_description": "The scene contains several custom meshes textured with a powerful emissive material (acting as futuristic wall lights). While the materials themselves glow brightly when viewed directly, they cast absolutely no dynamic light or bounce light onto nearby static geometry, even though Lumen Global Illumination is enabled. If the primary Directional Light is disabled, the level becomes completely dark, proving the emissive sources are not being registered as light contributors. The intent is for the emissive material to provide soft, dynamic indirect lighting.",
+      "estimated_hours": 1.75,
+      "focus_area": "Lighting & Rendering",
+      "correct_solution_steps": [
+        {
+          "step_description": "Verify the project is using a compatible rendering method. Navigate to Project Settings > Rendering > Dynamic Global Illumination Method and confirm it is set to 'Lumen'.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Verify the project is using a compatible reflection method. Navigate to Project Settings > Rendering > Reflection Method and confirm it is set to 'Lumen'.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Open the material used for the lighting meshes (e.g., M_NeonStrip). Check that the 'Shading Model' in the Material Details panel is set to 'Default Lit'.",
+          "time_cost": 0.08
+        },
+        {
+          "step_description": "In the Material Details panel, under the 'Lighting' category, ensure the flag 'Use Emissive for Dynamic Area Lighting' is checked.",
+          "time_cost": 0.08
+        },
+        {
+          "step_description": "Verify the Emissive color intensity in the material graph is connected to the 'Emissive Color' output and is sufficiently high (e.g., multiplied by a Scalar Parameter with a value of 50.0 or more).",
+          "time_cost": 0.07
+        },
+        {
+          "step_description": "Select the Static Mesh Actor (SM_WallLight) in the level viewport. Check the Details panel for the 'Static Mesh' component.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "In the mesh component details, search for 'Lighting'. Ensure 'Cast Shadows' is checked for the mesh component, as Lumen GI often requires this for contribution, even if the shadow is soft or minor.",
+          "time_cost": 0.07
+        },
+        {
+          "step_description": "Locate the Post Process Volume in the level (or add a new infinite one if missing).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Post Process Volume, enable the 'Global Illumination' category override.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Under Global Illumination, ensure 'Method' is explicitly set to 'Lumen'.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Under Global Illumination > Lumen, check the 'Emissive Light Contribution' slider and ensure it is set to 1.0 (or higher if the scene requires a boost).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Under Global Illumination > Lumen, confirm 'Final Gather Quality' is set to a reasonable value (e.g., 2.0 or 3.0) for better light integration.",
+          "time_cost": 0.06
+        },
+        {
+          "step_description": "Review the mesh UVs: open the Static Mesh Editor for SM_WallLight and ensure UV Channel 0 (used for lightmap/GI sampling) is appropriately unwrapped without overlapping regions.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Back in the level, adjust the 'Emissive Light Source: Scale' property on the mesh component. If the scale is 0, Lumen may ignore the source, so set it to 1.0 or higher.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Search the Project Settings (Rendering) for the 'Lumen Global Illumination' section.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Ensure the setting 'Hardware Ray Tracing' is set to 'Enabled' or 'Support Global Illumination and Reflections' if the project targets high-end PCs (to ensure maximum path support for emissive GI).",
+          "time_cost": 0.07
+        },
+        {
+          "step_description": "If using Software Ray Tracing, ensure the 'Software Ray Tracing Mode' is set to 'Global' for proper Scene Trace coverage.",
+          "time_cost": 0.07
+        },
+        {
+          "step_description": "Open the console (~) and type 'r.Lumen.EmissiveRadiance 1' to ensure emissive contribution calculation is enabled at the engine level (it should be 1 by default, but verify).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Type 'r.Lumen.EmissiveLightSourceSurfaceCacheResolution 1' into the console to verify that the surface cache resolution is sufficient for the small light sources.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Check the Material Instance applied to the mesh to ensure no parameter (like Emissive Multiplier) was overridden and set back to zero accidentally in the instance.",
+          "time_cost": 0.08
+        },
+        {
+          "step_description": "Hit 'Build' > 'Build Reflection Captures' to update indirect lighting cache, although Lumen is dynamic, sometimes this helps reset certain visualization aspects.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Save the level, close the editor, restart UE5, and reload the level to clear any potential transient rendering bugs.",
+          "time_cost": 0.08
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Attempting to solve the issue by adjusting the Sky Light or Directional Light intensity, which are unrelated to the emissive material GI contribution.",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Changing the material blend mode to 'Translucent' or 'Masked', which often disables the ability for the material to contribute to Lumen Global Illumination, compounding the original issue.",
+          "time_penalty": 0.25
+        },
+        {
+          "step_description": "Placing a standard Point Light adjacent to the emissive object and setting its 'Visibility' to false in an attempt to fake the lighting effect, bypassing the necessary Emissive GI pipeline fix.",
+          "time_penalty": 0.2
+        },
+        {
+          "step_description": "Attempting to manually build lighting (Build > Build Lighting Only), as Lumen is a dynamic GI system and baked lighting is irrelevant to this specific problem.",
+          "time_penalty": 0.15
+        }
+      ]
+    }
+  },
+  {
+    "key": "LightingRendering_Advanced",
+    "scenario": {
+      "scenario_id": "NaniteVSMInstabilityOnMovement",
+      "title": "Dynamic Nanite Geometry Flickering and Blocky VSM Shadows on Rapid Camera Movement",
+      "problem_description": "In a highly detailed, large interior environment using Lumen Global Illumination, two distinct rendering artifacts occur specifically when the camera is moved quickly:\r\n1. The Nanite-enabled tiled floor material exhibits severe flickering (patches of pure white or black) when viewed from intermediate distances.\r\n2. The high-poly Nanite geometric wall molding casts extremely blocky, low-resolution shadows that jump and update visibly as the camera speeds up. The blockiness persists even at high-end scalability settings. Both issues disappear when the camera is completely static.",
+      "estimated_hours": 3,
+      "focus_area": "Lighting & Rendering",
+      "correct_solution_steps": [
+        {
+          "step_description": "Use the console command 'stat virtualshadowmap' to confirm VSM is active and check the 'Page Pool Used' metric. If utilization is very high (near 100%), insufficient VSM resources are likely the cause of the blocky shadows.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "In Project Settings > Rendering > Virtual Shadow Maps, increase the 'VSM Page Table Size' setting from the default (likely 4096) to 8192 or 16384 to reserve more memory for shadow mapping detail, addressing the blocky shadow issue directly.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Use the console command 'r.VSM.PageTableSize 16384' or 'r.VSM.PageTableSize 8192' to apply the change immediately and test if the shadows resolve their blocky appearance when moving the camera.",
+          "time_cost": 0.4
+        },
+        {
+          "step_description": "Open the problematic floor Static Mesh asset in the Static Mesh Editor. Verify that Nanite is enabled, and examine the 'Nanite Settings' to ensure the 'Fallback Relative Error' is not excessively high, which could cause aggressive detail culling leading to depth buffer instability (flickering).",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Check the Material assigned to the flickering floor mesh. Ensure the Blend Mode is set to 'Opaque.' Nanite meshes using 'Masked' can cause depth sorting issues or instability with VSM/Lumen when viewed dynamically.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Examine the Material Function used within the floor material (if applicable). Look for temporal effects, World Position Offset logic, or complicated opacity masks that might be destabilizing the depth buffer calculation during camera motion.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Verify the high-resolution textures used by the floor material. Ensure the 'Virtual Texture Streaming' checkbox is enabled on the textures if the project is heavily utilizing Virtual Textures (which is recommended for Nanite) to avoid streaming bottlenecks.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In the World Settings or the main Post Process Volume, navigate to Rendering Features > Global Illumination. Verify that the 'Max Trace Distance' for Lumen is sufficient for the scale of the environment.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Use the 'Nanite Overview' visualization mode (Show > Visualize > Nanite Overview) while moving the camera rapidly to observe how Nanite cluster density changes on the floor mesh, looking for dramatic and erratic switching that coincides with the flickering.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Increase the console variable 'r.Nanite.MaxPixelsPerEdge' slightly (e.g., from 4.0 to 6.0) to force Nanite to render slightly smaller clusters at distance, improving overall detail stability for the GI and shadow systems.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "In Project Settings > Rendering > Nanite, ensure 'Streaming Cache Size GB' is appropriate for the complexity of the scene. Increasing this slightly can reduce streaming latency during fast movement, helping texture stability.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Check the console variable 'r.Lumen.Temporal.MaxFramesToAccumulate' (default is 16). If this value is too high, rapid camera motion might expose temporal artifacts more severely. Test lowering it slightly (e.g., to 12) if the flickering persists after addressing VSM and Nanite settings.",
+          "time_cost": 0.2
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Disabling Nanite on the meshes to test if the issue persists, which avoids solving the core stability issues inherent to Nanite/VSM interaction.",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Adjusting the engine scalability settings (View Distance, Shadow Quality) instead of debugging the specific resource limits of Virtual Shadow Maps (VSM Page Table Size).",
+          "time_penalty": 0.35
+        },
+        {
+          "step_description": "Attempting to fix the shadow blockiness by adjusting the Directional Light's 'Shadow Bias' or 'Slope Scale,' which are properties for standard shadow maps and are not the root cause of VSM resource exhaustion.",
+          "time_penalty": 0.4
+        },
+        {
+          "step_description": "Modifying Texture Pool Size in Project Settings, assuming it's a standard texture streaming issue, when the instability is specifically related to Nanite's depth buffer interaction with VSM and Lumen.",
+          "time_penalty": 0.25
+        }
+      ]
+    }
+  },
+  {
+    "key": "BlueprintsLogic_Beginner",
+    "scenario": {
+      "scenario_id": "DestroyActorStopsExecutionFlow",
+      "title": "Pickup Despawns Prematurely, Preventing Buff Application",
+      "problem_description": "A PowerUp pickup (BP_SpeedBoost) is designed to grant the player a temporary speed increase upon overlap and then destroy itself. When testing, the player overlaps the item, and the item immediately vanishes. However, the player's movement speed never changes. Debugging shows the initial 'On Component Begin Overlap' event fires successfully, and the character reference is valid right before the logic path splits, but the 'Set Max Walk Speed' node is never reached or executed.",
+      "estimated_hours": 0.75,
+      "focus_area": "Blueprints & Logic",
+      "correct_solution_steps": [
+        {
+          "step_description": "Enter the BP_SpeedBoost Blueprint and navigate to the Event Graph, focusing on the 'On Component Begin Overlap' node logic.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Trace the execution flow starting from the successful 'Cast To Player Character' node.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Identify that the execution pin immediately connects to a 'Sequence' node.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Observe that 'Sequence Pin 0' connects directly to the 'Destroy Actor' node.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Observe that 'Sequence Pin 1' connects to the remainder of the logic, including 'Set Max Walk Speed' and any subsequent flow.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Understand and articulate the problem: When 'Destroy Actor' executes, it immediately terminates the execution context of the owning blueprint, preventing any subsequent nodes in the flow (even those running on separate Sequence pins) from executing, thus failing to set the speed.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Remove the existing 'Sequence' node from the execution path.",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "Rewire the execution flow: Connect the successful 'Cast To Player Character' output directly to the first node of the buff application logic (e.g., 'Set Max Walk Speed').",
+          "time_cost": 0.06
+        },
+        {
+          "step_description": "Ensure the 'Set Max Walk Speed' node uses the Player Character reference acquired from the successful cast.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Connect the execution output pin of the 'Set Max Walk Speed' node to the start of any 'Buff Duration Management' logic (e.g., a 'Delay' node or 'Timeline').",
+          "time_cost": 0.06
+        },
+        {
+          "step_description": "Connect the final execution output pin of the Buff Duration logic (or the last node that modifies the character) to the 'Destroy Actor' node.",
+          "time_cost": 0.07
+        },
+        {
+          "step_description": "Verify the new flow: Cast -> Apply Buff -> Manage Duration -> Destroy Actor.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Compile the BP_SpeedBoost Blueprint.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Save the Blueprint and return to the Level Editor.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Run the PIE session and test the overlap, confirming the player receives the speed buff *before* the item successfully despawns.",
+          "time_cost": 0.07
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Checking the Character Blueprint's 'Max Walk Speed' default value, believing the buff isn't high enough.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Replacing the 'Destroy Actor' node with a 'Set Actor Hidden In Game' node and attempting to debug why the blueprint still isn't flowing correctly afterward.",
+          "time_penalty": 0.1
+        },
+        {
+          "step_description": "Adding excessive 'Print String' nodes throughout the logic path without correctly identifying that the execution flow is physically severed by the synchronous destruction call.",
+          "time_penalty": 0.15
+        }
+      ]
+    }
+  },
+  {
+    "key": "BlueprintsLogic_Intermediate",
+    "scenario": {
+      "scenario_id": "SecurityDoorLogicGap",
+      "title": "Security Door Fails to Open After Keycard Collection and Activation",
+      "problem_description": "The player character has collected three unique keycards (Card A, B, and C) which are correctly displayed in the HUD inventory. When the player stands on the designated activation pad, the associated Security Door (BP_SecurityDoor) remains locked and stationary. No error messages appear in the output log, but the door fails to execute its opening timeline, even though the necessary conditions *appear* to be met.",
+      "estimated_hours": 1.5,
+      "focus_area": "Blueprints & Logic",
+      "correct_solution_steps": [
+        {
+          "step_description": "Verify the basic interaction: Open BP_ActivationPad and confirm that the 'On Component Begin Overlap' event is firing and successfully casting to BP_Player and then calling the 'AttemptOpen' function on the target BP_SecurityDoor instance.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Open BP_SecurityDoor and navigate to the 'AttemptOpen' function. Inspect the conditional logic (a large 'Branch' node) that precedes the 'PlayDoorMovement' execution.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Identify that the 'AttemptOpen' function relies on three local Boolean variables (bHasCardA, bHasCardB, bHasCardC) chained through an 'AND' node, and these variables are not being set anywhere within this Blueprint.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Determine the source of the required data: Open BP_Player and examine the KeyCard collection logic (the 'CollectItem' interface call). Confirm that the player successfully tracks the card acquisition internally.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Identify that BP_Player must communicate the collected card state to the specific BP_SecurityDoor instance. Expose a public variable on BP_Player of type BP_SecurityDoor (named 'TargetDoorReference') and set its default value to the door instance in the level viewport.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Create a new Custom Event or Function in BP_SecurityDoor called 'UpdateCardStatus' that accepts a single input parameter (e.g., an Enum defining Card Type A, B, or C).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Implement a 'Select' or 'Switch on Enum' node inside 'UpdateCardStatus' that sets the corresponding internal Boolean variable (bHasCardA, bHasCardB, or bHasCardC) to True based on the received Card Type.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Return to BP_Player's card collection logic. Immediately after the successful card collection event, drag off the 'TargetDoorReference' variable and call the new 'UpdateCardStatus' function, passing the collected Card Type Enum as the input.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Re-test the game (Collect cards, stand on pad). Observe that the logical precondition is now met, but the door still fails to move, indicating a flow issue *after* the successful condition check.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Return to BP_SecurityDoor and examine the 'PlayDoorMovement' function which is called when the keycard check passes.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Locate a final 'Branch' node inside 'PlayDoorMovement' that checks a local Boolean variable, 'bDoorIsMoving', which is intended to prevent re-triggering the animation, but is incorrectly defaulting to True (or being checked without ever being set False).",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Add a 'Set bDoorIsMoving' node immediately before the 'Play' input of the timeline, setting it to True, and ensure the 'Branch' logic is correctly checking if the door is *already* moving (i.e., 'Not bDoorIsMoving'). Alternatively, remove the unnecessary initial check preventing the timeline from starting if the state machine logic handles closing separately.",
+          "time_cost": 0.15
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Checking the collision profiles of the keycards or the door to see if 'Generate Overlap Events' is disabled, assuming the collection detection itself is the failure point.",
+          "time_penalty": 0.25
+        },
+        {
+          "step_description": "Adding print strings or breaking execution points only in BP_ActivationPad and concluding that the overlap logic is faulty because the door function is being called, but ignoring the failure *inside* the door logic.",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Attempting to cast to the BP_SecurityDoor from within the BP_ActivationPad using 'Get All Actors of Class' on every overlap event, instead of relying on a pre-set reference.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Debugging the timeline itself (e.g., keyframes, curves) before verifying that the 'Play' node on the timeline is actually being reached by the execution flow.",
+          "time_penalty": 0.2
+        }
+      ]
+    }
+  },
+  {
+    "key": "BlueprintsLogic_Advanced",
+    "scenario": {
+      "scenario_id": "VaultSequenceLockup",
+      "title": "Asynchronous Sequence Failure in Vault Opening System",
+      "problem_description": "When the player interacts with the Security Console (BP_Console), the vault opening sequence initiates. Audible feedback confirms the system is running (lights flash, countdown SFX begins), and the 8.0-second countdown is internally triggered. However, once the timer expires, the heavy vault door (BP_VaultDoor) remains completely shut, and the final 'Open Door' function (including animation and final SFX) never executes. The Output Log shows no runtime errors related to the failure, indicating a logic or reference breakdown across multiple actors (BP_Console, BP_SecuritySystem, BP_PowerRelay, and BP_VaultDoor).",
+      "estimated_hours": 3.1,
+      "focus_area": "Blueprints & Logic",
+      "correct_solution_steps": [
+        {
+          "step_description": "Place Print String nodes after the interaction event in BP_Console and BP_SecuritySystem to confirm that the sequence successfully starts and the Event Dispatcher (ED_SequenceStart) is called.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In BP_VaultDoor, confirm the binding to ED_SequenceStart is active. Trace the execution flow initiated by the binding, confirming that a Timer is successfully set for the function `HandleOpening` at an interval of 8.0 seconds.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Set a Breakpoint inside BP_VaultDoor's `HandleOpening` function and observe execution. Confirm the flow fails at the initial Branch node checking the Boolean variable `bSecurityFlagReady` (which is currently False).",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Identify the logic that sets `bSecurityFlagReady` to True. Trace it to the Custom Event `ReceiveSecurityGrant`, which is called externally via the BPI_GrantAccess Blueprint Interface.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Inspect BP_PowerRelay (the security authorization actor) and confirm it is also bound to ED_SequenceStart.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Analyze the granting logic in BP_PowerRelay triggered by the dispatcher. Note the presence of a Delay node (set to 10.0 seconds) immediately preceding the Interface Message (BPI_GrantAccess) execution.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Identify the first root cause: a timing race condition. The door attempts to open at 8.0 seconds, but the authorization is delayed until 10.0 seconds, leading to premature failure in the door logic.",
+          "time_cost": 0.4
+        },
+        {
+          "step_description": "Adjust the Delay in BP_PowerRelay from 10.0 seconds to 7.5 seconds to attempt to beat the door timer.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Test the system. Observe that the problem persists, or the Interface Message fails to execute its target, indicating an issue beyond simple timing.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Debug the target reference used by BP_PowerRelay to send BPI_GrantAccess (the variable `TargetVault`). Confirm the variable is NULL or an invalid reference when the BPI call attempts to execute after the delay.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Trace back the initialization of `TargetVault` in BP_PowerRelay. Confirm it relies on an unreliable `Get All Actors of Class (BP_VaultDoor)` node executed during `BeginPlay`.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Identify the second root cause: The reference must be explicitly passed at runtime, not cached using an unreliable method.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Modify the ED_SequenceStart Event Dispatcher in BP_SecuritySystem to include a new input parameter: an Object Reference of type BP_VaultDoor.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In BP_SecuritySystem, update the ED_SequenceStart call site, feeding the explicit reference of the Target Vault Door (obtained via a reliable Get Actor Of Class or stored variable) into the new input pin.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In BP_PowerRelay's binding node for ED_SequenceStart, receive the BP_VaultDoor reference from the execution payload.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Update BP_PowerRelay's logic: Replace the usage of the unreliable `TargetVault` variable with the newly received reference pin when calling BPI_GrantAccess.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Change the Delay node in BP_PowerRelay to a reliable time that visually leads the opening (e.g., 5.0 seconds).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Final Test: Run the system to confirm that the explicit reference ensures reliable communication, and the fixed timing ensures authorization is granted before the door attempts to open.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Adjusting the animation playback speed or blend settings within the BP_VaultDoor's timeline, assuming the animation is hanging up physically.",
+          "time_penalty": 0.75
+        },
+        {
+          "step_description": "Deleting and recreating the Timer node in BP_VaultDoor, assuming the timer handle is corrupt, without investigating the logical failure branch.",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Trying to fix the race condition by changing the door's opening function to use an Event Tick or looping function instead of a single Timer execution.",
+          "time_penalty": 1
+        },
+        {
+          "step_description": "Focusing only on the 8.0s vs 10.0s timing mismatch and failing to diagnose the underlying null reference causing the Interface message failure.",
+          "time_penalty": 1.5
+        }
+      ]
+    }
+  },
+  {
+    "key": "WorldPartition_Beginner",
+    "scenario": {
+      "scenario_id": "DataLayerStreamingOverride",
+      "title": "Decorative Props Popping In Too Close in World Partition",
+      "problem_description": "We have recently completed placing a dense patch of static mesh actors (bushes and rocks) in a new wilderness area using a dedicated Data Layer. When testing in PIE, the surrounding landscape tiles and nearby structural meshes stream in correctly at about 500 meters. However, the newly placed bushes and rocks only become visible when the player is extremely close (approximately 10 meters away), causing obvious and jarring visual popping as the player approaches the area.",
+      "estimated_hours": 0.8,
+      "focus_area": "World Partition & Streaming",
+      "correct_solution_steps": [
+        {
+          "step_description": "Select a subset of the problematic Static Mesh Actors (bushes/rocks) in the Level Viewport or the Outliner.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Examine the Details panel for the selected actors and confirm that the 'Is Spatially Loaded' checkbox is enabled, indicating they should be managed by the spatial grid streaming system.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Data Layers section of the Details panel, identify the specific Data Layer assigned to these assets (e.g., 'DL_GroundCover_Details').",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Open the main World Settings panel (Window -> World Settings) to access the World Partition configuration.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Locate the 'Data Layers' section within the World Settings panel and click the 'Edit Data Layers' button to launch the dedicated Data Layers Editor window.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Data Layers Editor, locate the identified Data Layer (e.g., 'DL_GroundCover_Details').",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Double-click the Data Layer entry or select it and view its properties panel within the Data Layers Editor.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Inspect the Runtime Properties section of the Data Layer configuration.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Identify the 'Streaming Distance Override' property for this specific Data Layer.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Confirm that the 'Streaming Distance Override' is set to an abnormally low value (e.g., 1000.0, representing 10 meters, instead of using the global grid distance).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Reset the 'Streaming Distance Override' property value back to 0.0. This tells the World Partition system to default back to the standard global streaming distance defined by the Runtime Grid settings.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Save the changes in the Data Layers Editor, save the main map, and test in PIE to confirm the bushes and rocks now stream in at the correct distance (500m).",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Modifying the 'HLOD Layer' or generating new Hierarchical Level of Detail meshes, assuming the issue is related to mesh reduction/LOD settings.",
+          "time_penalty": 0.25
+        },
+        {
+          "step_description": "Checking the individual Static Mesh Asset properties (e.g., LOD settings, collision complexity) instead of focusing on the actor instance streaming parameters.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Increasing the global 'Streaming Distance' setting within the World Partition map configuration, which unnecessarily loads all other distant actors sooner.",
+          "time_penalty": 0.3
+        }
+      ]
+    }
+  },
+  {
+    "key": "WorldPartition_Intermediate",
+    "scenario": {
+      "scenario_id": "ForcedDataLayerUnload",
+      "title": "Gameplay-Critical Landmark Streams Out Prematurely",
+      "problem_description": "We have a large, highly visible Clock Tower asset (a Static Mesh Actor placed in the world) that is essential for gameplay navigation and contains a required mission trigger volume at its base. The tower is assigned to the 'DL_KeyLandmarks' Data Layer. When the player moves approximately 50 meters away from the base, the entire Clock Tower and the associated mission trigger volume abruptly unload (stream out), which should not happen because a nearby, pre-placed trigger Blueprint (BP_MissionZone_A) is supposed to keep this entire area loaded until the mission is complete. The goal is to ensure the Clock Tower remains loaded while the player is within the influence of BP_MissionZone_A, regardless of distance to the default World Partition grid boundary.",
+      "estimated_hours": 1.15,
+      "focus_area": "World Partition & Streaming",
+      "correct_solution_steps": [
+        {
+          "step_description": "Validate the issue by performing a Play-In-Editor (PIE) session and observing the abrupt unloading of the Clock Tower asset when moving slightly away from its base.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Open the World Outliner and select the Clock Tower Static Mesh Actor to inspect its properties.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Verify in the Details panel, under the 'World Partition' section, that the Actor is assigned to the 'DL_KeyLandmarks' Data Layer.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Ensure the Actor's 'Is Spatially Loaded' property is checked, confirming it relies on the Data Layer or streaming grid (it should not be set to 'Always Loaded').",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Open the Data Layers Panel (Window -> Data Layers) and confirm the 'DL_KeyLandmarks' Data Layer's 'Runtime State' is set to 'Unloaded' (default behavior for runtime streaming).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Locate the dedicated streaming Blueprint responsible for the area, named 'BP_MissionZone_A', in the World Outliner.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Double-click 'BP_MissionZone_A' to open its Blueprint Editor.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Components tab of the Blueprint Editor, select the 'World Partition Streaming Source' component.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Examine the Streaming Source component's Details panel under the 'Streaming Source' category.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Verify that the 'Target Behavior' property is correctly set to 'Always Loaded' (meaning the area should be loaded when the source is active).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Check the 'Data Layers' array property within the Streaming Source details, noticing that 'DL_KeyLandmarks' is either missing or empty.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Add a new element to the 'Data Layers' array and select the 'DL_KeyLandmarks' Data Layer asset reference from the dropdown list.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Compile and Save the 'BP_MissionZone_A' Blueprint.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Exit the Blueprint Editor and run a new PIE session to confirm that the Clock Tower now remains streamed in and visible while the player is within the trigger zone of 'BP_MissionZone_A'.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Increase the global World Partition Streaming Distance parameter in World Settings or Project Settings, unnecessarily loading far too much of the map and negatively impacting performance.",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Manually set the Clock Tower Actor's 'Is Spatially Loaded' property to unchecked, forcing it to be 'Always Loaded' regardless of Data Layer or Streaming Source, which violates the intended mission control structure.",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Attempting to create a new Blueprint to manually load the Data Layer via an 'Activate Data Layer' node on Begin Play, overlooking the existing, configured World Partition Streaming Source component.",
+          "time_penalty": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "key": "WorldPartition_Advanced",
+    "scenario": {
+      "scenario_id": "WorldPartitionDeepDive",
+      "title": "Distant City Fails to Stream In Along Main Road",
+      "problem_description": "We are using World Partition for a vast desert environment. A large, complex city model cluster (packaged inside a BP_DesertCity Actor) is located several kilometers from the player start. When the player drives down the main highway directly toward the city, the city mesh and collision never appear, resulting in the player driving through empty landscape, even when they reach the standard streaming distance. However, if the player uses the console (e.g., 'teleport 5000 5000 100') to appear suddenly near the city, it streams in correctly within seconds. The issue only occurs when physically traveling the intended path toward the location.",
+      "estimated_hours": 3.2,
+      "focus_area": "World Partition & Streaming",
+      "correct_solution_steps": [
+        {
+          "step_description": "Verify the 'BP_DesertCity' actor's position in the World Partition view (Window > World Partition > World Partition) and confirm it is assigned to the correct cell and marked for spatial loading (green bounding box).",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Identify the Data Layer associated with the 'BP_DesertCity' actor, noted as 'DL_City_Assets', to ensure targeted streaming is possible.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Locate the dedicated streaming mechanism placed along the road intended to preload the city, which is identified as a 'World Streaming Source Volume' actor.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Examine the 'World Streaming Source Volume' actor's Data Layer activation settings in the Details panel, specifically checking the 'Data Layers to Activate' property.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Identify the configuration error: the volume is currently set to activate 'DL_Roads_High' instead of 'DL_City_Assets'.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Modify the 'Data Layers to Activate' list on the Streaming Volume to include 'DL_City_Assets'.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Test the level again. Observe that the failure still occurs, indicating the streaming source volume itself is not active/loaded.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Determine the Data Layer that the 'World Streaming Source Volume' actor belongs to, noted as 'DL_Triggers'.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Open the Data Layer Panel (Window > World Partition > Data Layers) and inspect the properties of the 'DL_Triggers' layer.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Change the Loading Policy property for 'DL_Triggers' from 'On Demand' (which is preventing it from loading early enough) to 'Runtime' to ensure the trigger volume is active when the player approaches.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Test the level again. The city still fails to stream reliably along the path, suggesting an issue with the City BP itself overriding spatial loading.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Open the 'BP_DesertCity' Blueprint and navigate to the Construction Script.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Locate an erroneous node chain in the Construction Script that is using 'Set Is Spatially Loaded' and setting it to 'False', overriding the actor's editor property, likely due to a forgotten initial setup or debugging step.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Remove or bypass the 'Set Is Spatially Loaded' node in the Construction Script entirely, allowing the spatial loading status defined in the Details Panel to control streaming.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Test the level again. Notice a significant improvement, but occasional lag in streaming suggests the player isn't optimally marked as a streaming source.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Open the Player Character Blueprint ('BP_CustomExplorer') used for the test drive.",
+          "time_cost": 0.4
+        },
+        {
+          "step_description": "Select the Root Component (e.g., Capsule Component) and check the 'World Partition' section of the Details Panel.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Enable the checkbox labeled 'Is Streaming Source' on the Root Component of the Player Character to ensure the player reliably generates streaming requests as they move through the world.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Increase the global 'Streaming Distance' for all content in World Settings to an excessively large value (e.g., 500,000 units), which unnecessarily burdens memory and CPU.",
+          "time_penalty": 1
+        },
+        {
+          "step_description": "Attempt to manually migrate the 'BP_DesertCity' to a non-World Partition Level Instance or entirely different sublevel, ignoring the core World Partition methodology.",
+          "time_penalty": 0.75
+        },
+        {
+          "step_description": "Check and modify the 'Always Loaded' status of the main Persistent Level or the Data Layer cells in the World Partition minimap without understanding the source of the trigger failure.",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Rebuild all navigation and lighting, assuming a data corruption issue when the problem is fundamentally related to actor/volume configuration.",
+          "time_penalty": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "key": "MaterialsShaders_Beginner",
+    "scenario": {
+      "scenario_id": "BlackMaterialDueToEmissiveMiswiring",
+      "title": "Lit Material Renders Pure Black in Scene",
+      "problem_description": "A newly created master material (M_Master_Rock) intended for a PBR static mesh rock appears completely black in the main level viewport, regardless of how intense the surrounding lighting (Point Lights, Sky Light, Directional Light) is. The rock object is correctly set to 'Movable' and 'Cast Shadows'. When viewing the material preview sphere inside the Material Editor, the material looks perfectly correct, reflecting light and displaying texture detail, and the Shading Model is confirmed to be 'Default Lit'.",
+      "estimated_hours": 0.7,
+      "focus_area": "Materials & Shaders",
+      "correct_solution_steps": [
+        {
+          "step_description": "Select the black Static Mesh Actor in the Level Editor to verify the assigned material instance (MI_Rock_A).",
+          "time_cost": 0.01
+        },
+        {
+          "step_description": "Double-click the Material Instance (MI_Rock_A) and use the 'Go to Parent Material' button to open M_Master_Rock.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Inspect the Material Details panel (left side) to confirm the Shading Model is indeed 'Default Lit' and the Blend Mode is 'Opaque'.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Examine the final output connection nodes leading into the Material's Main Attributes output node.",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "Identify the primary PBR network (texture samplers combined with color/scalar parameters) intended to define the visual color.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Trace the wire outputting the calculated color from this PBR network.",
+          "time_cost": 0.06
+        },
+        {
+          "step_description": "Observe that this PBR network is incorrectly connected to the 'Emissive Color' input of the main material node.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Observe that the 'Base Color' input is currently disconnected (or driven by a constant zero).",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Understand that since the PBR calculation is driving Emissive Color, and Emissive Color is only visible when the Base Color is non-zero, the material is likely calculating a zero Base Color, resulting in a black output in the scene (even if the Emissive is non-zero, it is being masked out by the lack of Base Color in a Lit shader, or the Emissive output itself is not bright enough to overcome the scene darkness).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Disconnect the PBR network wire from the 'Emissive Color' input.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Reconnect the exact same PBR network output to the 'Base Color' input instead.",
+          "time_cost": 0.06
+        },
+        {
+          "step_description": "Verify that the 'Emissive Color' input is now correctly disconnected (or driven by a constant black/zero if necessary).",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Verify the Roughness, Metallic, and Normal inputs are still connected correctly to ensure PBR calculations remain intact.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Click 'Apply' and 'Save' the M_Master_Rock material and wait for compilation to complete.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Return to the Level Editor and confirm the static mesh now renders correctly with proper lighting interaction and color.",
+          "time_cost": 0.09
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Checking the Mesh Component's 'Hidden in Game' or 'Visible' flags in the Details panel.",
+          "time_penalty": 0.05
+        },
+        {
+          "step_description": "Changing the material Blend Mode from 'Opaque' to 'Masked' or 'Translucent'.",
+          "time_penalty": 0.1
+        },
+        {
+          "step_description": "Adding extra light sources or increasing the intensity of existing scene lights unnecessarily.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Applying a brand new, default material to the mesh to 'confirm the mesh isn't broken', wasting time on replacing the material setup.",
+          "time_penalty": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "key": "MaterialsShaders_Intermediate",
+    "scenario": {
+      "scenario_id": "DecalTextureAlphaMaskFailure",
+      "title": "Deferred Decal Material Renders as Solid Opaque White Square",
+      "problem_description": "A newly implemented Deferred Decal material, intended to display a scorch mark using the texture's alpha channel for opacity masking, is failing. When the decal actor is placed on any surface, it renders as a completely solid, fully opaque, bright white square that obscures the underlying geometry texture, regardless of the Decal Material parameters set in the Material Instance. The visual result suggests the opacity mask is being ignored or treated as 1.0 everywhere.",
+      "estimated_hours": 1.45,
+      "focus_area": "Materials & Shaders",
+      "correct_solution_steps": [
+        {
+          "step_description": "Select the Decal Actor in the level and verify the 'Decal Material' slot is correctly assigned to the Material Instance (MI_ScorchMark_Decal).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Open the Material Instance (MI_ScorchMark_Decal) and verify that the Base Color and Opacity Mask Texture parameters are correctly pointing to T_ScorchMask_Alpha.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In the Material Instance, locate and open the Parent Material (M_Base_Decal_Deferred).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Parent Material, verify the 'Material Domain' is set to 'Deferred Decal'. (This should be correct, but must be checked).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Parent Material, verify the 'Blend Mode' is set to 'Masked'. (If it were Translucent, the color would be affected, but the problem states it is solid white and opaque).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Examine the Material Graph to ensure the Opacity Mask input is correctly receiving the alpha output (A) from the Texture Sample Parameter used for the T_ScorchMask_Alpha texture.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Confirm the 'Opacity Mask Clip Value' is set to a reasonable non-zero value (e.g., 0.333), as this is required for Masked blend mode.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Since the material graph logic appears sound, identify and open the actual texture asset (T_ScorchMask_Alpha) in the Texture Editor.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Verify the texture is being sampled correctly by checking the 'Source Texture' properties and confirming that the alpha channel is present in the imported source file (usually visible in the Texture Editor preview channels).",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "In the Texture Editor Details panel, check the 'Compression Settings' property. The current setting is likely 'Default (DXT1/5)'.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Change the 'Compression Settings' from 'Default' to 'Masks (No SRGB)' or 'UserInterface2D (BC7)' to ensure the alpha channel data is preserved accurately and linearly, as masked opacity relies on binary/linear data.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Crucially, locate the 'sRGB' checkbox in the Texture Editor. Since this texture is being used purely as a data mask (not for color display), uncheck 'sRGB'.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Save the changes to the texture asset (T_ScorchMask_Alpha). This forces a re-import and re-compression of the texture data.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Return to the level viewport and verify the Decal Material now blends correctly, using the texture's alpha channel for opacity, resulting in a scorch mark instead of a white square.",
+          "time_cost": 0.05
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Changing the 'Decal Blend Mode' property on the Decal Actor component itself (this controls projection method, not material output blending).",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Changing the Base Material Blend Mode from 'Masked' to 'Translucent' without solving the texture alpha issue, which introduces incorrect lighting and sorting artifacts.",
+          "time_penalty": 0.45
+        },
+        {
+          "step_description": "Trying to force transparency using a constant value plugged into the opacity mask input in the material graph, rather than checking the input texture asset configuration.",
+          "time_penalty": 0.25
+        },
+        {
+          "step_description": "Replacing the base color texture parameter in the Material Instance with a completely different texture asset, wasting time confirming the parameter system works.",
+          "time_penalty": 0.15
+        }
+      ]
+    }
+  },
+  {
+    "key": "MaterialsShaders_Advanced",
+    "scenario": {
+      "scenario_id": "VolumetricShadowingPerformance",
+      "title": "Translucent Mesh Material Fails Dynamic Self-Shadowing & Causes Severe Overdraw",
+      "problem_description": "A large, translucent mesh (representing a cloud or nebula volume) is placed in the level. It uses World Position Offset (WPO) to simulate internal movement. The problem presents in two ways: 1) The mesh component is set to 'Cast Dynamic Shadows', but it does not receive dynamic self-shadowing or external shadows correctly from nearby movable lights, resulting in a flat, unlit appearance. 2) When viewing the scene in the 'Shader Complexity' view mode, this single mesh renders as bright red/pink, causing a significant frame rate drop (upwards of 15ms) whenever it is on screen, indicating extreme overdraw/expensive calculation.",
+      "estimated_hours": 3,
+      "focus_area": "Materials & Shaders",
+      "correct_solution_steps": [
+        {
+          "step_description": "Use the console command 'stat GPU' to confirm that the GPU time spikes significantly when the problematic mesh is visible, validating that the issue is performance related to draw call complexity.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Switch the viewport to 'Shader Complexity' view mode and visually confirm the material renders in the highest complexity colors (bright pink/red).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Locate the specific Static Mesh Actor in the Outliner and identify the applied Material Instance (e.g., MI_Volumetric_Cloud).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Open the Material Instance and trace it back to the Parent Material (M_Volumetric_Base) to begin analysis of the shader graph.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In M_Volumetric_Base, identify the custom Material Function (MF_Noise_Iterator) used to generate the complex volumetric look and WPO, noting that this function is called multiple times.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Analyze the Material Function (MF_Noise_Iterator) and determine that it contains an expensive custom loop structure whose iteration count is controlled by a scalar parameter ('Iteration_Count').",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Return to the Material Instance (MI_Volumetric_Cloud) and check the exposed parameter 'Iteration_Count', noting it is set to an excessively high value (e.g., 64 or 128).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Reduce the 'Iteration_Count' parameter in the Material Instance to a reasonable real-time value (e.g., 16 or 20) to solve the initial performance spike caused by excessive shader instructions.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Return to M_Volumetric_Base. Since the material uses Translucent Blend Mode and WPO, enable the 'Output Velocity' flag in the Material Details under the Translucency section for proper motion vector generation.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "To address the shadowing failure related to WPO, navigate to the Material Details panel (M_Volumetric_Base), General section, and check the box labeled 'Apply World Position Offset in Ray Tracing'.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "To fundamentally fix the overdraw and enable robust shadowing for the complex shape, change the Material's Blend Mode from 'Translucent' to 'Masked' (or Opaque if complexity allows).",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Because the material is now Masked, we must replicate the soft fading edges. In the Material Graph, reroute the Opacity logic (which was previously connected to the Translucent Opacity input) through the 'DitherTemporalAA' node.",
+          "time_cost": 0.25
+        },
+        {
+          "step_description": "Connect the output of the 'DitherTemporalAA' node to the 'Opacity Mask' input of the main material node, replacing the old Opacity connection.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "In the Material Details panel, locate the 'Masked' section and ensure 'Use Dithered Opacity' is checked (this setting is crucial when using DitherTemporalAA with Masked Blend Mode).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Use the 'Pixel Depth Offset' input (available on Opaque/Masked materials) to slightly offset the depth buffer based on the density calculation, improving shadowing quality near edges and blending the WPO changes more smoothly.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Recompile the material and verify in the 'Lit' view mode that dynamic self-shadowing is now correctly applied to the mesh.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Return to the 'Shader Complexity' view mode and confirm the shader is now rendering in green/yellow, signifying a massively reduced instruction count and fixing the performance hit.",
+          "time_cost": 0.15
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Increasing the Light Source Radius or Light Source Angle to try and soften the missing shadows, incorrectly assuming the light definition is too sharp.",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Trying to solve the performance issue by disabling Ray Tracing in the Project Settings or Post Process Volume, which treats the symptom (slowness) but not the cause (expensive shader iteration and overdraw).",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Checking the mesh component's collision settings or trace channels, incorrectly assuming the shadow failure is due to a misconfigured trace setting.",
+          "time_penalty": 0.2
+        },
+        {
+          "step_description": "Enabling 'Volumetric Translucent Shadows' in Project Settings without realizing that the custom material, due to WPO usage, requires a transition to Masked blend mode for reliable dynamic shadowing.",
+          "time_penalty": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "key": "SequencerCinematics_Beginner",
+    "scenario": {
+      "scenario_id": "SequencerLightRestoreStateIssue",
+      "title": "Cinematic Light Fails to Persist After Sequence Stops",
+      "problem_description": "When testing the short cinematic sequence, the camera cuts and character animation play correctly. However, a tracked Spotlight, which has its intensity and color keyframed to be red at the end of the sequence, immediately turns off and reverts to its initial intensity (or disappears) the moment the sequence finishes playing. The light should remain red and on, illuminating the scene after the cinematic concludes. The actor itself is persistent in the level.",
+      "estimated_hours": 0.75,
+      "focus_area": "Sequencer & Cinematics",
+      "correct_solution_steps": [
+        {
+          "step_description": "Locate the Level Sequence Actor associated with the cinematic in the Outliner (or Content Browser if dynamically played).",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Double-click the Level Sequence Asset within the Level Sequence Actor's Details panel or Content Browser to open the Sequencer editor.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "In the Sequencer editor, identify the specific track binding for the problematic persistent light actor (e.g., 'Spotlight_Environment_01').",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Scrub the timeline to the final frame of the sequence and verify that the keyframes for Intensity and Light Color are correctly set (Intensity > 0, Color = Red) and that the keyframes are present on the final frame.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Confirm that the light actor is listed as a 'Possessable' (green icon) since it is an existing actor in the level and should maintain its state.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "With the light binding track selected, locate the 'Details' panel specific to the Sequencer editor (this panel often needs to be explicitly enabled via the Window menu within Sequencer).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Locate the 'Binding' section within the Sequencer Details panel for the selected light actor.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Expand the 'Binding' section settings to expose advanced cinematic options.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Find the boolean property labeled 'Restore State' or 'Restore State/Keep State'.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Observe that the 'Restore State' checkbox is currently enabled (checked). This setting automatically reverts the actor's properties to their pre-sequence values upon completion or stopping.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Uncheck the 'Restore State' option. This instructs Sequencer to leave the actor's properties at the state defined by the final keyframe.",
+          "time_cost": 0.08
+        },
+        {
+          "step_description": "Click the 'Save All' button in the main Unreal Editor toolbar to ensure both the Level Sequence asset and the current Level are saved.",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "Close the Sequencer editor window.",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "Return to the level viewport and trigger the cinematic playback (e.g., using PIE mode or walking into the trigger volume).",
+          "time_cost": 0.08
+        },
+        {
+          "step_description": "Verify that the light is now red and remains on with the keyframed intensity after the sequence successfully finishes and the playback cursor stops.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Attempting to change the 'When Finished' option on the main Level Sequence Actor in the level to 'Keep State' or 'Keep Last Frame', believing this affects Possessable Actor properties rather than just the sequence playback cursor.",
+          "time_penalty": 0.25
+        },
+        {
+          "step_description": "Checking the mobility settings (e.g., ensuring the light is Movable) on the Light Actor in the Level Details panel, assuming a lighting bake or static issue is causing the behavior.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Trying to use a Level Blueprint to manually set the light color and intensity to red immediately after the 'On Finished' output of the cinematic trigger node.",
+          "time_penalty": 0.3
+        }
+      ]
+    }
+  },
+  {
+    "key": "SequencerCinematics_Intermediate",
+    "scenario": {
+      "scenario_id": "MaterialParameterAndAnimJitter",
+      "title": "Desynchronized Material Effects and Animation Jitter in Cinematic Sequence",
+      "problem_description": "A complex cinematic sequence, 'Pickup_Cinematic', is exhibiting two major flaws. First, a crucial glowing prop (SM_Relic) loses its emissive intensity abruptly just as the character starts the pickup motion, then returns to full intensity after the camera cuts. The desired effect is a slow, smooth fade over 4 seconds during the pickup. Second, the character's right hand slightly clips through the SM_Relic during the final moments of the grab animation, suggesting a subtle transform offset issue.",
+      "estimated_hours": 1.5,
+      "focus_area": "Sequencer & Cinematics",
+      "correct_solution_steps": [
+        {
+          "step_description": "Locate and open the Level Sequence asset named 'Pickup_Cinematic' in the Content Browser.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Sequencer timeline, select the track corresponding to the static mesh 'SM_Relic' (the glowing prop).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Expand the Material Parameter section under the SM_Relic track, specifically targeting the parameter named 'Glow_Intensity'.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Observe the keyframes for 'Glow_Intensity'. Note the unexpected keyframe at Frame 30, which abruptly sets the value to 0.0, causing the instant fade-out.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Delete the erroneous 'Glow_Intensity' keyframe located at Frame 30 to prevent the premature fade.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Scrub the timeline to the start of the required fade (Frame 80) and ensure the Glow_Intensity is keyed to its maximum value (e.g., 5.0).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Scrub the timeline to the end of the required fade (Frame 200, 4 seconds later) and key the 'Glow_Intensity' parameter to 0.0 to achieve the smooth 4-second fade.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Select the track for the Skeletal Mesh Actor (SKM_Hero) and examine the tracks for any conflicting data, focusing on the Transform track.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Identify that the existing 'Transform' track, added on top of the 'Anim_Pickup_Relic' animation, is causing a subtle additive offset resulting in the clipping.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Delete the entire superfluous 'Transform' track on the SKM_Hero actor, relying solely on the underlying animation clip for movement.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "If deleting the Transform track introduces new errors, undo the deletion and instead, right-click the 'Anim_Pickup_Relic' animation clip itself.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Select 'Add Control Rig Track' from the context menu to introduce a layer for fine-tuning bone positions without modifying the base animation asset.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Expand the newly created Control Rig track and select the bone controlling the right hand (e.g., 'hand_r_bone' or similar relevant control).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Scrub to the exact frame where the clipping occurs (around Frame 180).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Using the Sequencer transform controls for the 'hand_r_bone' control, adjust the position slightly along the local X or Z axis (e.g., +1.5 units) to pull the hand away from the relic.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Set a keyframe on the Control Rig track for the adjusted hand position at Frame 180.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Add flanking keyframes (e.g., at Frame 160 and Frame 200) where the hand transform is reset to 0.0 relative offset, ensuring a smooth blend into and out of the correction.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Review the entire sequence playback, checking both the 'Glow_Intensity' fade timing and the hand/relic interaction at the point of pickup.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Save the 'Pickup_Cinematic' Level Sequence asset.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Save the current level to ensure the changes to the possessed actors are retained.",
+          "time_cost": 0.05
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Opening the SM_Relic Material Blueprint and attempting to debug the Glow Intensity logic within the Material Editor, assuming the material itself is flawed.",
+          "time_penalty": 0.4
+        },
+        {
+          "step_description": "In the animation editor (Persona), trying to edit the base 'Anim_Pickup_Relic' animation asset to fix the clipping, thus permanently altering the source data.",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Checking the collision settings of the Skeletal Mesh and the Static Mesh, attempting to use physics/collision response to fix a visual/transform issue.",
+          "time_penalty": 0.2
+        }
+      ]
+    }
+  },
+  {
+    "key": "SequencerCinematics_Advanced",
+    "scenario": {
+      "scenario_id": "LockedCinematicCleanup",
+      "title": "Cinematic Sequence Plays, Locks Input, but Fails Final Camera Cut",
+      "problem_description": "A critical introductory cinematic, triggered via a collision box in the Level Blueprint, begins playing correctly (actor movement and initial camera work fine). However, just before the final intended camera shot (Shot 05), the viewport goes dark or sticks to the static camera from the previous shot. Crucially, when the sequence finishes, the Player Character remains input-locked, requiring a manual console command or map reload to regain control. The 'On Finished' event in the Level Blueprint never seems to execute, even though the sequence clearly ran for its full duration or aborted silently. Previewing the Level Sequence asset independently works perfectly, showing Shot 05 and restoring control.",
+      "estimated_hours": 3,
+      "focus_area": "Sequencer & Cinematics",
+      "correct_solution_steps": [
+        {
+          "step_description": "Enable debug visualization to confirm the Player Controller's input state (e.g., using 'DisplayDebug PlayerController' in the console) and verify that input is indeed locked, confirming the sequence cleanup failed to execute.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Locate and examine the Level Blueprint logic responsible for triggering the cinematic (e.g., the Overlap event for the trigger volume) to ensure the 'Play' node for the Level Sequence Asset (LS_Hero_Intro) is correctly connected.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Inspect the 'On Finished' event delegate connected to the Level Sequence Player node in the Level Blueprint. Confirm that the logic intended to restore player input (e.g., 'Enable Input') is present and connected.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Open the Level Sequence Asset (LS_Hero_Intro) and check its Master Track settings. Specifically, review the 'When Finished' setting. Note that it is currently set to 'Keep State'.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Temporarily change the Level Sequence 'When Finished' setting from 'Keep State' to 'Restore State' to see if it fixes the input lock issue, indicating a failure in the Level Blueprint cleanup path.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Analyze the Camera Cut Track, focusing on the transition into Shot 05. Note the starting frame of Shot 05 (e.g., Frame 500).",
+          "time_cost": 0.25
+        },
+        {
+          "step_description": "Inspect the binding for the Cinematic Camera Actor used in Shot 05. Find the track where the camera is possessed or spawned.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Identify that the camera binding for Shot 05 references a specific Level-placed Static Camera Actor named 'FinalShotCam_A' which is set as a 'Possessable' binding.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Examine the World Outliner and verify the existence and state of 'FinalShotCam_A'. Determine that this actor was previously deleted from the level but the sequence binding was never updated, causing an unhandled null reference when the sequence attempts to possess it.",
+          "time_cost": 0.4
+        },
+        {
+          "step_description": "Replace the broken Possessable binding for 'FinalShotCam_A' by adding a new, valid 'Spawnable' Cinematic Camera Actor to the track at the beginning of Shot 05.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "If step 5 was temporary, revert the Level Sequence 'When Finished' setting back to 'Keep State' and confirm the 'On Finished' delegate in the Level Blueprint now executes correctly because the sequence no longer aborts due to the invalid reference.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Test the level sequence playback in editor to confirm the camera cuts correctly to Shot 05 and that player input is properly restored via the Level Blueprint's 'On Finished' logic.",
+          "time_cost": 0.4
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Spending extensive time checking the Player Controller Blueprint or Game Mode settings, assuming input is being blocked globally rather than locally by the Sequencer system.",
+          "time_penalty": 0.75
+        },
+        {
+          "step_description": "Attempting to troubleshoot the camera black screen issue by rebuilding lighting or reflections, assuming a rendering failure rather than a binding failure.",
+          "time_penalty": 0.4
+        },
+        {
+          "step_description": "Manually adjusting the frame alignment on the Camera Cut track, believing the cut is happening mid-frame and causing the stutter/hang.",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Debugging the Level Blueprint by adding multiple print strings without first verifying if the sequence is successfully executing all its internal possess/spawn logic.",
+          "time_penalty": 0.6
+        }
+      ]
+    }
+  },
+  {
+    "key": "PhysicsCollisions_Beginner",
+    "scenario": {
+      "scenario_id": "ComponentMobilityBlock",
+      "title": "Large Wreckage Ignores Physics Simulation",
+      "problem_description": "We have an environmental Actor Blueprint called 'BP_HeavyDebris' containing a large Static Mesh intended to be pushed or moved dynamically by the player and explosions. In the level, smaller physics objects react correctly, but the BP_HeavyDebris object acts like solid, immovable world geometry. When attempting to apply a radial force or push it, it remains completely stationary, despite having 'Simulate Physics' checked on its mesh component. No physics movement warnings are displayed in the editor viewport or log.",
+      "estimated_hours": 0.75,
+      "focus_area": "Physics & Collisions",
+      "correct_solution_steps": [
+        {
+          "step_description": "Use the 'Simulate Physics' debug visualization (Show > Visualize > Simulation) or use gameplay (PIE) to confirm that the 'BP_HeavyDebris' actor is indeed failing to react to forces, while other nearby physics objects are behaving normally.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Select the problematic 'BP_HeavyDebris' Actor instance in the Level Outliner.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Click the 'Edit BP' button in the Details panel to open the Blueprint Editor for BP_HeavyDebris.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Navigate to the Components panel and select the primary Static Mesh Component (named 'SM_WreckagePile') that is supposed to be simulating physics.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Details panel for the 'SM_WreckagePile' component, scroll down to the 'Physics' category and confirm that the 'Simulate Physics' checkbox is enabled (checked).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Explain the prerequisite: Physics simulation requires the object to be capable of dynamic movement, which is determined by the component's Mobility setting.",
+          "time_cost": 0.08
+        },
+        {
+          "step_description": "Scroll up within the Details panel to the 'Transform' category, which contains the 'Mobility' setting for the component.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Observe that the 'Mobility' setting is currently set to 'Static'.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Change the 'Mobility' dropdown selection from 'Static' to 'Movable'.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Save the changes to the 'BP_HeavyDebris' Blueprint.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Compile the 'BP_HeavyDebris' Blueprint to ensure the mobility change is applied across all instances.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Return to the main level editor and press Play (PIE).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Test the interaction again (e.g., shooting it or walking into it heavily) and verify that the wreckage now correctly simulates physics and moves dynamically.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Spending time investigating the Blueprint Event Graph for misplaced 'Apply Impulse' or 'Add Force' nodes, assuming the physics forces are not being called correctly.",
+          "time_penalty": 0.25
+        },
+        {
+          "step_description": "Changing the 'Collision Preset' from 'BlockAll' to a custom Physics preset, mistakenly believing the collision profile is the issue rather than the component's mobility requirement for simulation.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Adjusting global physics settings in Project Settings (e.g., gravity or substeps) which affects all objects equally, rather than focusing on the single problematic actor.",
+          "time_penalty": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "key": "PhysicsCollisions_Intermediate",
+    "scenario": {
+      "scenario_id": "ConstraintDoorFail",
+      "title": "Immovable Physics Constrained Skeletal Mesh Door",
+      "problem_description": "We have a large, modular steel door modeled as a Skeletal Mesh, anchored to a static door frame using a Physics Constraint component. When a large explosion occurs next to it (triggered by a Blueprint using a Radial Force component), nearby static props are launched across the room correctly. However, the steel door barely moves, ignoring the massive force. It is supposed to break its constraints and ragdoll/fall apart realistically upon impact.",
+      "estimated_hours": 1.5,
+      "focus_area": "Physics & Collisions",
+      "correct_solution_steps": [
+        {
+          "step_description": "Open the Door Blueprint and locate the Skeletal Mesh component to confirm its 'Simulate Physics' setting. Observe that it is currently disabled, relying on the Physics Constraint to hold it in place.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Locate the Blueprint logic that handles damage or explosion application. Confirm that the Radial Force component is being activated correctly upon event trigger.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Examine the Radial Force Component's properties, specifically the 'Force Strength' and 'Impulse Strength' to ensure they are high enough (e.g., 500,000).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Identify the primary trace/query channel used by the Radial Force Component. Note that it is set to 'Force Channel: Visibility'.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Select the Skeletal Mesh Component of the door and navigate to its Collision settings. Find the Collision Responses section.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Verify that the Skeletal Mesh Component's response to the 'Visibility' trace channel is currently set to 'Ignore'. This prevents the radial force trace from hitting the object.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Change the Skeletal Mesh Component's Collision Response for the 'Visibility' channel from 'Ignore' to 'Block', allowing the Radial Force to register the hit.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Test the explosion again. The door should now move slightly, proving the force registers, but it still fails to break the constraint entirely.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Select the Physics Constraint component (or the Blueprint variable referencing it) that links the door to the frame.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "In the Physics Constraint details panel, navigate to the 'Constraint Limits' section and enable the 'Breakable' checkbox for both Linear and Angular limits.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Change the 'Linear Breakable Force' from its excessively high default (e.g., 1,000,000,000) to a realistic, lower value that the explosion can overcome (e.g., 50,000).",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Change the 'Angular Breakable Torque' to a realistic value (e.g., 100,000) to ensure rotation can also break the constraint, fully freeing the door.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Spending time regenerating or modifying the Skeletal Mesh's Physics Asset, assuming the collision shape is the problem, when the channel response is the issue.",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Modifying the default values in Project Settings > Physics, which affects global behavior and is unnecessary for a component-specific issue.",
+          "time_penalty": 0.2
+        },
+        {
+          "step_description": "Replacing the Radial Force Component with a 'Add Impulse' node in Blueprint without first diagnosing why the initial force application failed to register due to collision channel mismatch.",
+          "time_penalty": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "key": "PhysicsCollisions_Advanced",
+    "scenario": {
+      "scenario_id": "PhysicsLeverFailure",
+      "title": "Piston-Driven Physics Constraint Failure (Gate Opener)",
+      "problem_description": "A complex environmental puzzle requires a physics-simulated Piston arm to push a heavy, rotating Lever, which opens a large gate. The system is activated via a Blueprint Timeline driving the Piston's Linear Motor. When triggered, the Piston moves forward successfully, but upon contact with the Lever, the Lever jitters violently, moves less than 5 degrees, and immediately stops or oscillates rapidly, failing to complete its required 80-degree rotation. The system appears to be fighting itself rather than transferring force smoothly. Physics debugging must be used to diagnose the multi-layered failure.",
+      "estimated_hours": 3,
+      "focus_area": "Physics & Collisions",
+      "correct_solution_steps": [
+        {
+          "step_description": "Enable detailed Physics Debug visualization in the viewport using console commands 'pxvis collision' and 'pxvis constraints' to confirm the connection points and constraint limits visually.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Verify the Blueprint logic that controls the Piston activation to ensure the Timeline is fully running and updating the Linear Motor Target Position/Velocity correctly on Tick/Update.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Select the Physics Constraint Component connecting the Piston body (Driver) to the Lever body (Target). Observe the 'Linear Limit' section and confirm the 'Constraint Profile' is set to a custom or appropriate limit (it should be restricted along the axis of movement).",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Identify that the primary mistake is in the Angular Constraint settings: the Constraint Type is incorrectly set to 'Prismatic' when it should allow rotation, or it is set to 'Ball and Socket' but the Angular Drive is locked.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Change the Constraint Profile setup to allow rotational freedom along the correct axis (e.g., set Angular Constraint to 'Limited' or switch to 'Hinge' mode if applicable).",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Examine the Lever Static Mesh Component (the receiver of the force). Navigate to the 'Physics' section and check the 'Mass in KG' property. Note that the mass is set disproportionately high (e.g., 5000.0 kg).",
+          "time_cost": 0.25
+        },
+        {
+          "step_description": "Reduce the 'Mass in KG' of the Lever component significantly (e.g., from 5000.0 kg to 500.0 kg) to make the object feasible to be driven by the Piston's current force settings.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Still on the Lever component, check the 'Physics' settings for Damping. Identify that 'Angular Damping' is set too high (e.g., 5.0), causing the Lever to stop moving rapidly and inducing oscillation.",
+          "time_cost": 0.25
+        },
+        {
+          "step_description": "Reduce the Lever's 'Angular Damping' value drastically (e.g., set it to 0.1 or 0.05) to allow force transfer and smooth rotation.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Select the Piston component's Physics Constraint (the one driving the linear movement). Locate the 'Linear Motor' section.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Increase the 'Target Velocity' in the Piston's Linear Motor settings significantly (e.g., from 50.0 to 500.0) to ensure the Piston has enough momentum to overcome initial inertia of the newly balanced Lever.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Check the collision profiles for both the Piston and the Lever. Ensure their collision presets are set to a profile (e.g., 'PhysicsActor') that *Blocks* the channel used by the other component (usually WorldDynamic or custom channels).",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "If the rotation is still jittery, examine the Physics Constraint that defines the Lever's pivot. Increase the 'Angular Drive' stiffness/damping slightly (e.g., Stiffness 1000) to stabilize the rotation without locking it.",
+          "time_cost": 0.35
+        },
+        {
+          "step_description": "Test the system and confirm the Lever rotates smoothly the full required distance, then disable physics debug visualization.",
+          "time_cost": 0.15
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Attempting to solve the issue by adding large constant radial forces via Blueprint to the Lever instead of trusting the constraint and simulation transfer.",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Attempting to increase the Piston's collision size or use complex per-poly collision settings, incorrectly assuming the jitter is due to collision mesh penetration rather than damping/mass conflict.",
+          "time_penalty": 0.4
+        },
+        {
+          "step_description": "Setting the Lever to 'Kinematic' and trying to move it via a Timeline, ignoring the required physics interaction with the Piston.",
+          "time_penalty": 0.75
+        }
+      ]
+    }
+  },
+  {
+    "key": "AssetManagement_Beginner",
+    "scenario": {
+      "scenario_id": "DanglingAssetRedirectors",
+      "title": "Broken References After Folder Restructure",
+      "problem_description": "A recent reorganization of project files moved critical textures and associated material instances from 'Content/OldAssets/Textures' to 'Content/Environment/Shared'. After the move, several static meshes in the level now display the default missing material (pink/black checkers). Furthermore, a vital sequence triggered by the Level Blueprint fails to execute, throwing a log warning about 'Failed to load object' when trying to spawn a specific Particle System Component that relies on one of the moved texture assets. The assets appear correctly in the new folder location, but the old references are somehow still active and corrupting runtime behavior.",
+      "estimated_hours": 0.75,
+      "focus_area": "Asset Management",
+      "correct_solution_steps": [
+        {
+          "step_description": "Examine the Output Log for the 'Failed to load object' warning to identify the specific asset path that is failing to load (it will likely still reference the old folder structure).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Locate one of the affected Material Instances (the ones currently displaying pink/black) in the Content Browser.",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "Right-click the Material Instance and select 'Reference Viewer' to visually inspect the dependency graph and confirm that upstream assets (like textures) are still linked to the old, now non-existent, folder structure.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Open the Content Browser settings menu (gear icon in the corner) and ensure the 'Show Redirectors' option is checked.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Navigate the Content Browser to the original folder location (e.g., 'Content/OldAssets/Textures').",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "Observe the grey arrow icons, which represent the asset redirectors left behind after the folder move.",
+          "time_cost": 0.01
+        },
+        {
+          "step_description": "Select all assets within the original folder path, including the redirectors (Ctrl+A if the folder only contains redirectors).",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Right-click the selected assets and choose 'Fix Up Redirectors in Folder' from the context menu.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Confirm the dialog box to allow the engine to attempt to repoint all incoming references to the new asset location.",
+          "time_cost": 0.01
+        },
+        {
+          "step_description": "Verify that the redirector assets (grey arrows) are now removed from the old folder location.",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "If the old folder is now truly empty, delete it to prevent future confusion.",
+          "time_cost": 0.02
+        },
+        {
+          "step_description": "Re-open the Reference Viewer for the affected Material Instance to confirm that its upstream Texture Sample nodes now correctly point to the 'Content/Environment/Shared' path.",
+          "time_cost": 0.04
+        },
+        {
+          "step_description": "Verify that all static meshes in the level that were previously pink/black now display their correct materials.",
+          "time_cost": 0.03
+        },
+        {
+          "step_description": "Open the Level Blueprint, recompile it, and save the map to force the engine to refresh the Blueprint's internal asset dependencies.",
+          "time_cost": 0.07
+        },
+        {
+          "step_description": "Run the level (PIE) and trigger the sequence that previously failed to verify the particle system now spawns correctly without logging errors.",
+          "time_cost": 0.05
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Manually opening the broken Materials in the Material Editor and attempting to drag-and-drop the textures into the graph again, which is tedious and does not fix external Blueprint references.",
+          "time_penalty": 0.2
+        },
+        {
+          "step_description": "Checking Project Settings -> Packaging settings, assuming the issue is related to excluded content or the Asset Registry cache.",
+          "time_penalty": 0.15
+        },
+        {
+          "step_description": "Trying to delete the old empty folders immediately without first enabling 'Show Redirectors' and running the 'Fix Up Redirectors in Folder' command.",
+          "time_penalty": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "key": "AssetManagement_Intermediate",
+    "scenario": {
+      "scenario_id": "RedirectorAndBulkLoadConflict",
+      "title": "Corrupted Texture Reference After Migration",
+      "problem_description": "A high-fidelity environmental prop (a large metallic statue) suddenly appears black and untextured in the level viewport, instead of its intended polished gold look. We recently moved the asset and its associated textures to a new folder structure. Opening the Material Instance reveals that all scalar and vector parameters are correct, and the material asset appears to be assigned, but the visual preview in the Material Instance Editor is also incorrect, showing a dull grey reflection suggesting the base texture inputs are failing to load.",
+      "estimated_hours": 1.35,
+      "focus_area": "Asset Management",
+      "correct_solution_steps": [
+        {
+          "step_description": "Locate the statue Static Mesh in the Level and identify the assigned Material Instance (MI_Statue_Polished).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Double-click MI_Statue_Polished to open the Material Instance Editor and verify that all texture parameters (Normal Map, Base Color Texture) are pointing to valid assets by name, but the preview sphere is visually incorrect.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Navigate to the Parent Material (M_Master_Metal) from the Material Instance Editor and examine the Texture Sample nodes that are failing to render, specifically the T_Statue_Normal texture input.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Confirm that while the Material Instance specifies the texture, the Parent Material editor shows the Texture Sample node defaulting to 'None' or producing an error, indicating the reference lookup is failing on asset load.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Search the Content Browser for the texture T_Statue_Normal, right-click the asset, and select 'Reference Viewer' to inspect its dependency graph and check for redirector chains pointing back to the old, invalid directory structure.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Identify the folder that still contains the broken redirectors (often the source folder prior to the move).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In the Content Browser, right-click the folder identified in the previous step and select 'Fix Up Redirectors in Folder' to resolve the obsolete reference paths.",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Verify the Reference Viewer again. The dependency chain should look cleaner, but the statue still renders incorrectly (this confirms the redirectors were a problem, but not the only one).",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Double-click the T_Statue_Normal texture asset itself to open the Texture Editor.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In the Texture Editor Details panel, search for the 'Loading' section.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Observe that the setting 'Force Bulk Load' is currently enabled (This setting, combined with a messy redirector, prevents reliable path resolution at editor load time).",
+          "time_cost": 0.15
+        },
+        {
+          "step_description": "Uncheck the 'Force Bulk Load' checkbox.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Save the modified T_Statue_Normal texture asset.",
+          "time_cost": 0.05
+        },
+        {
+          "step_description": "Close and reopen the Material Instance (MI_Statue_Polished) to force the engine to reload the dependency structure with the fixed loading setting.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Verify that the statue now renders correctly in the level viewport and that the texture preview in the Material Instance Editor is accurate.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Deleting and manually re-importing the texture, failing to realize the redirectors still exist and are pointing other assets to the old path.",
+          "time_penalty": 0.4
+        },
+        {
+          "step_description": "Attempting to rebuild level lighting or reflection captures, assuming the issue is lighting-related rather than asset-reference related.",
+          "time_penalty": 0.2
+        },
+        {
+          "step_description": "Creating a brand new Material Instance and attempting to assign the texture, which will fail because the reference issue is on the texture asset itself, not the material instance.",
+          "time_penalty": 0.3
+        }
+      ]
+    }
+  },
+  {
+    "key": "AssetManagement_Advanced",
+    "scenario": {
+      "scenario_id": "MismatchedSkeletonReference",
+      "title": "Silent Anim Notify Failure Due to Orphaned Skeleton Asset Reference",
+      "problem_description": "The player character's attack animations play correctly in the level viewport, but the associated particle effects and sound effects (triggered by Anim Notifies) never execute in PIE (Play In Editor). However, when opening the attack animation asset directly and viewing it in the Animation Editor viewport, the Anim Notifies fire perfectly, generating the expected effects. This indicates the notify logic is sound, but its execution is blocked in the game environment, possibly due to a reference mismatch following a recent asset migration.",
+      "estimated_hours": 3,
+      "focus_area": "Asset Management",
+      "correct_solution_steps": [
+        {
+          "step_description": "Open the specific animation sequence (e.g., 'Anim_Attack_01') and verify that the Anim Notifies are placed correctly on the timeline and that they are correctly linked to a corresponding function or event in the Animation Blueprint (ABP).",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "In the Animation Blueprint (ABP), confirm the implementation logic for the Anim Notify event (e.g., 'Event_PlayImpactFX') is present and uses standard nodes (e.g., 'Spawn Emitter at Location'). Set a Breakpoint on this event in the ABP.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Run PIE and perform the attack. Observe that the Breakpoint in the Animation Blueprint is never hit, confirming that the Anim Notify event is not being fired at runtime, even though the animation is playing.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Locate the Skeletal Mesh Component within the Player Character Blueprint. Verify that the Mesh is assigned and the 'Anim Class' is correctly set to the target Animation Blueprint.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Open the Skeletal Mesh asset itself (e.g., 'SKM_Hero') and observe which Skeleton asset it is currently associated with in the Asset Details panel (e.g., 'SK_Hero_A').",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Open the Animation Blueprint (ABP_Hero) and check the 'Skeleton' asset displayed in the Asset Details pane of the Animation Blueprint editor. Identify that it is referencing a different, older, or orphaned Skeleton asset (e.g., 'SK_Hero_B').",
+          "time_cost": 0.4
+        },
+        {
+          "step_description": "Realize that the Skeletal Mesh component is compiled against 'SK_Hero_A', but the Anim BP is compiled against 'SK_Hero_B', leading to a runtime mismatch where the Notify logic, though correctly present, cannot execute.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Navigate to the location of the currently referenced, but incorrect, Skeleton asset ('SK_Hero_B') in the Content Browser.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Right-click the 'SK_Hero_B' asset and select 'Reference Viewer' to confirm that only the Animation Blueprint and possibly a few related animations are referencing this incorrect skeleton.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "Right-click the incorrect Skeleton asset ('SK_Hero_B') and select 'Replace References'.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "In the 'Replace References' dialog, select the correct, currently used Skeleton asset ('SK_Hero_A') as the replacement target and confirm the operation.",
+          "time_cost": 0.2
+        },
+        {
+          "step_description": "Open the Animation Blueprint ('ABP_Hero') again. Check the Asset Details panel to confirm the Skeleton reference has been successfully updated to 'SK_Hero_A'.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Recompile and save the Animation Blueprint ('ABP_Hero').",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Attempt running PIE to verify the Anim Notifies are now firing (the visual/sound effects should now appear).",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "If the issue persists, navigate to the content folder containing the orphaned Skeleton ('SK_Hero_B') and any affected animations/Blueprints.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Right-click on the folder in the Content Browser and select 'Fix Up Redirectors in Folder' to clean up any remaining corrupted redirector files that might be pointing to the obsolete asset ID.",
+          "time_cost": 0.3
+        },
+        {
+          "step_description": "After fixing redirectors, manually delete the now-unreferenced or obsolete Skeleton asset ('SK_Hero_B') to prevent future confusion and reference issues.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Perform a 'Save All' operation across the project to commit the reference changes and redirector cleanup.",
+          "time_cost": 0.1
+        },
+        {
+          "step_description": "Run a final PIE session to confirm that all Anim Notifies for the character are now executing reliably.",
+          "time_cost": 0.1
+        }
+      ],
+      "common_wrong_steps": [
+        {
+          "step_description": "Trying to recreate the Anim Notifies from scratch in the Animation Sequence, assuming the notify asset itself is corrupted.",
+          "time_penalty": 0.5
+        },
+        {
+          "step_description": "Checking Project Settings for Sound or FX volumes, assuming the issue is global audio/rendering suppression.",
+          "time_penalty": 0.3
+        },
+        {
+          "step_description": "Attempting to migrate the character mesh or Anim BP back into the project, believing the assets are missing data, rather than having incorrect references.",
+          "time_penalty": 1
+        },
+        {
+          "step_description": "Checking the collision profiles on the character mesh, assuming a physics interaction is preventing the notify from firing.",
+          "time_penalty": 0.4
+        }
+      ]
+    }
+  }
+]

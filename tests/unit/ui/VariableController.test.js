@@ -43,7 +43,8 @@ vi.mock("../../../src/utils/UE5Renderer.js", () => ({
 
 vi.mock("../../../src/ui/BaseController.js", () => ({
   BaseController: class MockBaseController {
-    constructor() {
+    constructor(app) {
+      this.app = app;
       this.eventListeners = [];
     }
     addListener() {}
@@ -60,25 +61,42 @@ vi.mock("../../../src/ui/ContextMenuHelper.js", () => ({
 // Import after mocks
 import { VariableController } from "../../../src/ui/VariableController.js";
 
-// Create mock app
+// Create mock app that matches real app structure
 function createMockApp() {
   return {
     variables: [],
     variableController: null,
     graph: {
-      nodes: [],
+      nodes: new Map(),
       findPinById: vi.fn(),
       requestRedraw: vi.fn(),
+      redrawNodeWires: vi.fn(),
+    },
+    wiring: {
+      links: new Map(),
+      findLinksByNodeId: vi.fn(() => []),
+      breakLinkById: vi.fn(),
     },
     compiler: {
       markDirty: vi.fn(),
       registerRename: vi.fn(),
+      log: vi.fn(),
     },
     persistence: {
       autoSave: vi.fn(),
     },
     palette: {
       populateList: vi.fn(),
+    },
+    details: {
+      currentVariable: null,
+      clear: vi.fn(),
+      showVariableDetails: vi.fn(),
+    },
+    components: new Map(),
+    componentsController: {
+      selectedComponentIds: new Set(),
+      selectComponent: vi.fn(),
     },
     eventGraph: {
       nodes: [],

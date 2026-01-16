@@ -340,6 +340,7 @@ class ReviewBar extends HTMLElement {
     this.onVerify = null;
     this.onIssue = null;
     this.onExport = null;
+    this.onJumpTo = null; // New: callback for dropdown selection
   }
 
   connectedCallback() {
@@ -362,6 +363,11 @@ class ReviewBar extends HTMLElement {
         ? Math.round(((this.state.currentIndex + 1) / this.items.length) * 100)
         : 0;
 
+    // Get description and expected issues from metadata
+    const description = currentItem?.description || "No description available.";
+    const expectedIssues = currentItem?.metadata?.expectedIssues || [];
+    const difficulty = currentItem?.metadata?.difficulty || "Unknown";
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -375,12 +381,17 @@ class ReviewBar extends HTMLElement {
           color: #eee;
           font-family: 'Inter', system-ui, sans-serif;
           z-index: 10000;
-          padding: 8px 16px;
+          padding: 10px 16px;
           box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
         }
         .container {
-          max-width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .top-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -388,12 +399,22 @@ class ReviewBar extends HTMLElement {
         }
         .info {
           flex: 1;
+          display: flex;
+          align-items: center;
+          gap: 16px;
         }
-        .title {
-          font-size: 14px;
-          font-weight: 600;
+        .scenario-select {
+          background: #1a1a1a;
+          border: 1px solid #444;
           color: #fff;
-          margin-bottom: 4px;
+          padding: 6px 10px;
+          border-radius: 4px;
+          font-size: 13px;
+          cursor: pointer;
+          min-width: 220px;
+        }
+        .scenario-select:hover {
+          border-color: #666;
         }
         .meta {
           font-size: 11px;
@@ -404,7 +425,7 @@ class ReviewBar extends HTMLElement {
         .controls {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
         }
         .btn {
           background: #252525;
@@ -456,9 +477,18 @@ class ReviewBar extends HTMLElement {
         .status-pending { background: #444; color: #aaa; }
         .status-verified { background: #065f46; color: #34d399; }
         .status-issue { background: #7f1d1d; color: #f87171; }
+        .difficulty-badge {
+          font-size: 10px;
+          padding: 2px 8px;
+          border-radius: 99px;
+          font-weight: bold;
+        }
+        .difficulty-beginner { background: #065f46; color: #34d399; }
+        .difficulty-intermediate { background: #92400e; color: #fbbf24; }
+        .difficulty-advanced { background: #7f1d1d; color: #f87171; }
 
         .progress-container {
-          width: 150px;
+          width: 120px;
           height: 4px;
           background: #222;
           border-radius: 2px;
@@ -469,28 +499,87 @@ class ReviewBar extends HTMLElement {
           background: #3b82f6;
           transition: width 0.3s;
         }
+        
+        /* Description panel */
+        .description-row {
+          background: #151515;
+          border: 1px solid #2a2a2a;
+          border-radius: 6px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+        }
+        .desc-text {
+          flex: 1;
+          font-size: 13px;
+          color: #bbb;
+          line-height: 1.4;
+        }
+        .expected-issues {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+        .issue-tag {
+          background: #7f1d1d;
+          color: #fca5a5;
+          font-size: 10px;
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+        .look-for {
+          font-size: 11px;
+          color: #666;
+          text-transform: uppercase;
+          margin-right: 8px;
+        }
       </style>
       <div class="container">
-        <div class="info">
-          <div class="meta">Reviewing ${this.state.currentIndex + 1} of ${this.items.length} | <span class="status-badge status-${status.toLowerCase()}">${status}</span></div>
-          <div class="title">${currentItem?.title || "Unknown Item"}</div>
-          <div class="progress-container">
-            <div class="progress-bar" style="width: ${progress}%"></div>
+        <div class="top-row">
+          <div class="info">
+            <select class="scenario-select" id="scenario-select">
+              ${this.items
+                .map(
+                  (item, i) => `
+                <option value="${i}" ${i === this.state.currentIndex ? "selected" : ""}>
+                  ${i + 1}. ${item.title}
+                </option>
+              `,
+                )
+                .join("")}
+            </select>
+            <span class="meta">${this.state.currentIndex + 1} of ${this.items.length}</span>
+            <span class="status-badge status-${status.toLowerCase()}">${status}</span>
+            <span class="difficulty-badge difficulty-${difficulty.toLowerCase()}">${difficulty}</span>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: ${progress}%"></div>
+            </div>
+          </div>
+          
+          <div class="controls">
+            <button class="btn" id="prev-btn" ${this.state.currentIndex === 0 ? "disabled" : ""}>← Prev</button>
+            <button class="btn" id="next-btn" ${this.state.currentIndex === this.items.length - 1 ? "disabled" : ""}>Next →</button>
+            
+            <div style="width: 1px; height: 24px; background: #333; margin: 0 4px;"></div>
+            
+            <button class="btn ${status === "VERIFIED" ? "btn-success" : ""}" id="verify-btn">✓ Verify</button>
+            <button class="btn ${status === "ISSUE" ? "btn-danger" : ""}" id="issue-btn">⚠️ Issue</button>
+            
+            <div style="width: 1px; height: 24px; background: #333; margin: 0 4px;"></div>
+            
+            <button class="btn btn-primary" id="export-sdk-btn">📤 Export</button>
           </div>
         </div>
         
-        <div class="controls">
-          <button class="btn" id="prev-btn" ${this.state.currentIndex === 0 ? "disabled" : ""}>← Prev</button>
-          <button class="btn" id="next-btn" ${this.state.currentIndex === this.items.length - 1 ? "disabled" : ""}>Next →</button>
-          
-          <div style="width: 1px; height: 24px; background: #333; margin: 0 8px;"></div>
-          
-          <button class="btn ${status === "VERIFIED" ? "btn-success" : ""}" id="verify-btn">✓ Verify</button>
-          <button class="btn ${status === "ISSUE" ? "btn-danger" : ""}" id="issue-btn">⚠️ Issue</button>
-          
-          <div style="width: 1px; height: 24px; background: #333; margin: 0 8px;"></div>
-          
-          <button class="btn btn-primary" id="export-sdk-btn">📤 Export Report</button>
+        <div class="description-row">
+          <div class="desc-text">${description}</div>
+          <div class="expected-issues">
+            <span class="look-for">Look for:</span>
+            ${expectedIssues.map((issue) => `<span class="issue-tag">${issue}</span>`).join("")}
+          </div>
         </div>
       </div>
     `;
@@ -503,6 +592,12 @@ class ReviewBar extends HTMLElement {
       this.onIssue?.();
     this.shadowRoot.getElementById("export-sdk-btn").onclick = () =>
       this.onExport?.();
+
+    // Dropdown selection
+    this.shadowRoot.getElementById("scenario-select").onchange = (e) => {
+      const index = parseInt(e.target.value);
+      this.onJumpTo?.(index);
+    };
   }
 }
 window.customElements.define("review-bar", ReviewBar);
@@ -514,7 +609,7 @@ window.ReviewUI = {
       const style = document.createElement("style");
       style.id = "review-sdk-styles";
       style.textContent = `
-            body { margin-bottom: 60px !important; }
+            body { margin-bottom: 100px !important; }
         `;
       document.head.appendChild(style);
     }
@@ -530,6 +625,7 @@ window.ReviewUI = {
     // Wire up Bar
     bar.onPrev = () => core.showItem(core.state.currentIndex - 1);
     bar.onNext = () => core.showItem(core.state.currentIndex + 1);
+    bar.onJumpTo = (index) => core.showItem(index); // New: dropdown jump
     bar.onVerify = () => core.updateCurrentStatus("verified");
     bar.onIssue = () => {
       const currentStatus =
@@ -545,7 +641,7 @@ window.ReviewUI = {
       dialog.hide();
       overlay.setHighlights([]);
     };
-    dialog.onHighlight = (currentNote) => {
+    dialog.onHighlight = (_currentNote) => {
       dialog.hide();
       overlay.active = true;
       overlay.render();

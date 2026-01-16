@@ -14,6 +14,7 @@ export function createMockApp() {
       deselectNode: vi.fn(),
       getSelectedNodes: vi.fn(() => []),
       redrawNodeWires: vi.fn(),
+      renderer: null,
     },
     wiring: {
       links: new Map(),
@@ -36,7 +37,14 @@ export function createMockApp() {
       save: vi.fn(),
       load: vi.fn(),
     },
-    variables: new Map(), // Changed from object to Map
+    // VariableController has internal 'variables' Map
+    variables: {
+      variables: new Map(),
+      addVariable: vi.fn(),
+      removeVariable: vi.fn(),
+      getVariable: vi.fn(),
+      renderPanel: vi.fn(),
+    },
     components: new Map(),
     details: {
       currentVariable: null,
@@ -61,8 +69,11 @@ export function createMockApp() {
       stop: vi.fn(),
       step: vi.fn(),
     },
-    componentsController: null, // Will be set by test if needed
-    variableController: null, // Will be set by test if needed
+    componentsController: null,
+    variableController: null,
+    macroRegistry: null,
+    functionRegistry: null,
+    classSettings: { interfaces: [] },
   };
 }
 

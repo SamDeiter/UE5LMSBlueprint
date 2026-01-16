@@ -1,6 +1,40 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
+// Mock validators to prevent real validation logic
+vi.mock("../../../src/utils/validator.js", () => ({
+  BlueprintValidator: class MockBlueprintValidator {
+    constructor() {}
+    validateTask() {
+      return { success: true, results: [] };
+    }
+  },
+  ALL_TASKS: [
+    {
+      taskId: "test_task_1",
+      title: "Test Task 1",
+      description: "A test task",
+      requirements: [],
+    },
+    {
+      taskId: "test_task_2",
+      title: "Test Task 2",
+      description: "Another test task",
+      requirements: [],
+    },
+  ],
+}));
+
+vi.mock("../../../src/services/GraphValidator.js", () => ({
+  GraphValidator: class MockGraphValidator {
+    constructor() {}
+    validate() {
+      return [];
+    }
+  },
+}));
+
 import { TaskManager } from "../../../src/services/TaskManager.js";
-import { createMockApp, createMockNode } from "../../helpers/mocks.js";
+import { createMockApp } from "../../helpers/mocks.js";
 
 describe("TaskManager", () => {
   let taskManager;
