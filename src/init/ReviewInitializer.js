@@ -26,12 +26,24 @@ export class ReviewInitializer {
     console.log("ReviewCore SDK: Initializing in Review Mode...");
     console.log(`Scenario source: ${source}`);
 
-    // Hide the Task selector in Review Mode to simplify the UI
+    // Hide unnecessary UI elements in Review Mode to simplify the reviewer experience
     const taskSelectorGroup = document
       .querySelector("#task-selector")
       ?.closest(".group");
     if (taskSelectorGroup) {
       taskSelectorGroup.style.display = "none";
+    }
+
+    // Hide Assessment Mode menu item (not relevant for reviewers)
+    const assessmentMenuItem = document.querySelector("#assessment-menu-item");
+    if (assessmentMenuItem) {
+      assessmentMenuItem.style.display = "none";
+    }
+
+    // Hide Run Tests menu item
+    const runTestsMenuItem = document.querySelector("#run-tests-menu-item");
+    if (runTestsMenuItem) {
+      runTestsMenuItem.style.display = "none";
     }
 
     // Load scenarios based on source parameter

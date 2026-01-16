@@ -58,11 +58,6 @@ export class DOMEventHandler {
       }
     });
 
-    // Tools Menu - Assessment Mode
-    this._bindClick("assessment-menu-item", () => {
-      if (this.app.assessment) this.app.assessment.open();
-    });
-
     // Tools Menu - Run Tests
     this._bindClick("run-tests-menu-item", () => {
       if (window.runTests) window.runTests();
