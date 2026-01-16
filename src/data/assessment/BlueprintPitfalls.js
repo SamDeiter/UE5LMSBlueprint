@@ -16,7 +16,7 @@
 // DOMAIN 1: EXECUTION & PERFORMANCE
 // Tests understanding of VM overhead, tick abuse, and flow control pitfalls
 // ============================================================================
-export const PERFORMANCE_PITFALL_TASKS = [
+const PERFORMANCE_PITFALL_TASKS = [
   {
     taskId: "pitfall_01_tick_abuse",
     level: 4,
@@ -173,7 +173,7 @@ export const PERFORMANCE_PITFALL_TASKS = [
 // DOMAIN 2: ARCHITECTURE, MEMORY & ASSET MANAGEMENT
 // Tests understanding of references, dependencies, and data persistence
 // ============================================================================
-export const ARCHITECTURE_PITFALL_TASKS = [
+const ARCHITECTURE_PITFALL_TASKS = [
   {
     taskId: "pitfall_21_soft_references",
     level: 5,
@@ -273,7 +273,7 @@ export const ARCHITECTURE_PITFALL_TASKS = [
 // DOMAIN 3: DATA INTEGRITY AND TYPES
 // Tests understanding of type safety, precision, and data handling
 // ============================================================================
-export const DATA_INTEGRITY_PITFALL_TASKS = [
+const DATA_INTEGRITY_PITFALL_TASKS = [
   {
     taskId: "pitfall_43_array_get_copy",
     level: 4,
@@ -392,7 +392,7 @@ export const DATA_INTEGRITY_PITFALL_TASKS = [
 // DOMAIN 4: NETWORKING AND REPLICATION
 // Tests understanding of server authority and replication
 // ============================================================================
-export const NETWORKING_PITFALL_TASKS = [
+const NETWORKING_PITFALL_TASKS = [
   {
     taskId: "pitfall_56_client_authority",
     level: 6,
@@ -486,7 +486,7 @@ export const NETWORKING_PITFALL_TASKS = [
 // DOMAIN 5: SUBSYSTEMS (UI, Animation, Audio, AI)
 // Tests understanding of domain-specific Blueprint patterns
 // ============================================================================
-export const SUBSYSTEM_PITFALL_TASKS = [
+const SUBSYSTEM_PITFALL_TASKS = [
   {
     taskId: "pitfall_71_umg_binding",
     level: 5,
@@ -620,7 +620,7 @@ export const SUBSYSTEM_PITFALL_TASKS = [
 // DOMAIN 6: WORKFLOW, STABILITY & DEPLOYMENT
 // Tests understanding of production-safe practices
 // ============================================================================
-export const WORKFLOW_PITFALL_TASKS = [
+const WORKFLOW_PITFALL_TASKS = [
   {
     taskId: "pitfall_93_delta_time",
     level: 3,

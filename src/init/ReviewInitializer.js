@@ -47,10 +47,18 @@ export class ReviewInitializer {
     }
 
     // Load scenarios based on source parameter
+    // - 'blueprint' (default): Blueprint scenarios with node graphs
+    // - 'text': Text-based Scenario Tracker scenarios
+    // - 'all': Both combined
     let reviewItems;
-    if (source === "full") {
+    if (source === "text") {
       reviewItems = await this.loadFullScenarios();
+    } else if (source === "all") {
+      const blueprintItems = this.loadTestScenarios(App);
+      const textItems = await this.loadFullScenarios();
+      reviewItems = [...blueprintItems, ...textItems];
     } else {
+      // Default: blueprint scenarios with node graphs
       reviewItems = this.loadTestScenarios(App);
     }
 

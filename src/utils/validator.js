@@ -283,7 +283,7 @@ export class BlueprintValidator {
 }
 
 // Sample Task Definition
-export const SAMPLE_TASK = {
+const SAMPLE_TASK = {
   taskId: "task_01_health",
   title: "Initialize Health",
   description:
@@ -325,7 +325,7 @@ export const SAMPLE_TASK = {
  * Task 1.1: Health Initialization
  * Verify understanding of variables, events, and basic execution flow.
  */
-export const TASK_1_1_HEALTH_INIT = {
+const TASK_1_1_HEALTH_INIT = {
   taskId: "level1_task1",
   level: 1,
   title: "Health Initialization",
@@ -366,7 +366,7 @@ export const TASK_1_1_HEALTH_INIT = {
  * Task 1.2: Simple Logic
  * Print a message to the screen.
  */
-export const TASK_1_2_PRINT_MESSAGE = {
+const TASK_1_2_PRINT_MESSAGE = {
   taskId: "level1_task2",
   level: 1,
   title: "Simple Logic - Print Message",
