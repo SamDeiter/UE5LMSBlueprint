@@ -206,7 +206,8 @@ describe("VariableController", () => {
       expect(variable.name).toBe("Health");
       expect(variable.type).toBe("float");
       expect(variable.containerType).toBe("single");
-      expect(variable.isPublic).toBe(true);
+      // isPublic parameter is stored as isInstanceEditable
+      expect(variable.isInstanceEditable).toBe(true);
     });
 
     it("should set default value based on type", () => {
