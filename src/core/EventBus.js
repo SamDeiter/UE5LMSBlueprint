@@ -39,6 +39,11 @@ export const AppEvents = {
   SIM_PAUSED: "sim:paused",
   SIM_STOPPED: "sim:stopped",
   SIM_BREAKPOINT_HIT: "sim:breakpointHit",
+
+  // Panel events
+  PANEL_VISIBILITY_CHANGED: "panel:visibilityChanged",
+  PANEL_LAYOUT_CHANGED: "panel:layoutChanged",
+  PANEL_TAB_ACTIVATED: "panel:tabActivated",
 };
 
 /**

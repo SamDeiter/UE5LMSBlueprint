@@ -1,0 +1,147 @@
+/**
+ * Dockable Panel Styles
+ *
+ * Styling for UE5-style dockable panels including:
+ * - Tab bars
+ * - Panel headers
+ * - Dock zones
+ */
+
+/* Dock Tab Bar */
+.dock-tab-bar {
+  display: flex;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+  min-height: 28px;
+  align-items: stretch;
+}
+
+.dock-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  border-right: 1px solid var(--border-color, #333);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.dock-tab:hover {
+  background: var(--hover-bg, #2a2a2a);
+  color: var(--text-color, #ddd);
+}
+
+.dock-tab.active {
+  background: var(--panel-bg, #252525);
+  color: var(--text-color, #ddd);
+  border-bottom: 2px solid var(--accent-color, #4a9eff);
+}
+
+.dock-tab i {
+  font-size: 11px;
+}
+
+/* Dock Content Area */
+.dock-content-area {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color, #ddd);
+}
+
+.panel-header-icon {
+  font-size: 11px;
+  color: var(--text-muted, #888);
+}
+
+.panel-header-close {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-muted, #666);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 3px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.panel-header-close:hover {
+  background: var(--danger-bg, #c0392b);
+  color: white;
+}
+
+/* Dockable Panel Container */
+.dockable-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--panel-bg, #252525);
+}
+
+.dockable-panel.hidden {
+  display: none;
+}
+
+/* Right Panel Tabs (existing - enhanced) */
+.right-panel-tabs {
+  display: flex;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.right-panel-tab {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  border-bottom: 2px solid transparent;
+}
+
+.right-panel-tab:hover {
+  background: var(--hover-bg, #2a2a2a);
+  color: var(--text-color, #ddd);
+}
+
+.right-panel-tab.active {
+  color: var(--text-color, #ddd);
+  border-bottom-color: var(--accent-color, #4a9eff);
+}
+
+/* Bottom Tabs (existing - enhanced) */
+.bottom-tabs {
+  display: flex;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.bottom-tab {
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  border-bottom: 2px solid transparent;
+}
+
+.bottom-tab:hover {
+  background: var(--hover-bg, #2a2a2a);
+  color: var(--text-color, #ddd);
+}
+
+.bottom-tab.active {
+  color: var(--text-color, #ddd);
+  border-bottom-color: var(--accent-color, #4a9eff);
+}

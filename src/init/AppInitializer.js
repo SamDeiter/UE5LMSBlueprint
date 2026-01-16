@@ -56,6 +56,7 @@ import { BlueprintAssetManager, ContentBrowser } from "../core/index.js";
 
 import { DOMEventHandler } from "./DOMEventHandler.js";
 import { createAssessmentController } from "../ui/assessment/AssessmentController.js";
+import { panelManager } from "../ui/panels/PanelManager.js";
 
 export class AppInitializer {
   /**
@@ -186,6 +187,10 @@ export class AppInitializer {
   }
 
   static initializeUI(App) {
+    // Initialize panel management system
+    panelManager.init();
+    App.panelManager = panelManager;
+
     App.componentsController = new ComponentsController(App);
     App.functionsController = new FunctionsController(App);
     App.macrosController = new MacrosController(App);
