@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "UE5 Blueprint Editor Replica - Visual scripting interface",
   "type": "module",
+  "homepage": "https://samdeiter.github.io/UE5LMSBlueprint/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamDeiter/UE5LMSBlueprint.git"
+  },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
