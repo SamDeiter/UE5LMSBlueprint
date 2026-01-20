@@ -94,8 +94,10 @@ export class TaskController {
     this.compileBtn = document.getElementById("compile-btn");
     this.playBtn = document.getElementById("play-btn");
 
-    // Hook into Play button for task validation after simulation runs
-    // (Compile only validates blueprint syntax, not task completion)
+    // Hook into Compile and Play for Validation (only if buttons exist)
+    if (this.compileBtn) {
+      this.compileBtn.addEventListener("click", () => this.runValidation());
+    }
     if (this.playBtn) {
       this.playBtn.addEventListener("click", () => this.runValidation());
     }

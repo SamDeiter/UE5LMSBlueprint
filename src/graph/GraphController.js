@@ -10,14 +10,13 @@ import { Node } from "./Node.js";
 import { GraphInteraction } from "./GraphInteraction.js";
 import { GraphRenderer } from "./GraphRenderer.js";
 import { GRAPH_CONSTANTS, LATENT_NODE_TYPES } from "../config/Constants.js";
-import { BaseController } from "../ui/BaseController.js";
 
-class GraphController extends BaseController {
+class GraphController {
   constructor(editor, svg, nodesContainer, app) {
-    super(app); // Initialize BaseController for memory leak prevention
     this.editor = editor;
     this.svg = svg;
     this.nodesContainer = nodesContainer;
+    this.app = app;
     this.nodes = new Map();
     this.zoomReadout = document.getElementById(DOMElements.ZOOM_READOUT);
     this.pan = { x: 0, y: 0 };
@@ -55,49 +54,6 @@ class GraphController extends BaseController {
 
   clearActiveWires() {
     this.renderer.clearActiveWires();
-  }
-
-  /**
-   * Clear all nodes from the graph
-   */
-  clear() {
-    // Remove all nodes (which also breaks their wires)
-    const nodeIds = [...this.nodes.keys()];
-    nodeIds.forEach((id) => this.removeNode(id));
-    this.selectedNodes.clear();
-    this.app.wiring.clearAll();
-  }
-
-  /**
-   * Create a node from pre-defined data (for loading scenarios)
-   * @param {Object} nodeData - Node data with id, nodeKey, x, y, pins, etc.
-   * @returns {Node} The created node
-   */
-  createNodeFromData(nodeData) {
-    const node = this.addNode(
-      nodeData.nodeKey,
-      nodeData.x || 0,
-      nodeData.y || 0
-    );
-    if (!node) return null;
-
-    // Override the auto-generated ID if one is provided
-    if (nodeData.id && nodeData.id !== node.id) {
-      this.nodes.delete(node.id);
-      node.id = nodeData.id;
-      this.nodes.set(node.id, node);
-    }
-
-    // Update pin IDs to match scenario data
-    if (nodeData.pins && node.pins) {
-      nodeData.pins.forEach((pinData, index) => {
-        if (node.pins[index]) {
-          node.pins[index].id = pinData.id;
-        }
-      });
-    }
-
-    return node;
   }
 
   addNode(nodeKey, x, y) {
@@ -375,17 +331,7 @@ class GraphController extends BaseController {
             // Ensure a default is set if literalValue was missing or undefined
             node.pinLiterals.set(pin.id, pin.defaultValue);
           }
-
-          // Restore saved pin type (important for reroute nodes)
-          if (pin && savedPin.type && savedPin.type !== pin.type) {
-            pin.type = savedPin.type;
-          }
         });
-      }
-
-      // Special handling for reroute nodes: update visuals after pin types are restored
-      if (nodeData.nodeKey === "Reroute" && node.updateRerouteVisuals) {
-        node.refreshPinCache();
       }
     });
 

@@ -1,29 +1,49 @@
 /**
- * PaletteController - Manages the node palette in the right panel
+ * PaletteController - Manages the node palette
  */
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { buildCategoryTree, renderCategoryTree } from "./ui-helpers.js";
-import { BaseController } from "./BaseController.js";
 
-export class PaletteController extends BaseController {
+export class PaletteController {
   constructor(app) {
-    super(app); // Initialize BaseController for memory leak prevention
-    // Right panel palette (tabbed view)
-    this.container = document.getElementById("right-palette-content");
-    this.filterInput = document.getElementById("right-palette-filter");
+    this.app = app;
+    // Left sidebar palette (existing)
+    this.container = document.getElementById("palette-content");
+    this.filterInput = document.getElementById("palette-filter");
 
-    // Set up filter input event listener using BaseController's tracked method
+    // Right panel palette (new - for tabbed view)
+    this.rightContainer = document.getElementById("right-palette-content");
+    this.rightFilterInput = document.getElementById("right-palette-filter");
+
+    // Set up event listeners for both filter inputs
     if (this.filterInput) {
-      this.addListener(this.filterInput, "input", () => this.populateList());
+      this.filterInput.addEventListener("input", () => this.populateList());
+    }
+    if (this.rightFilterInput) {
+      this.rightFilterInput.addEventListener("input", () =>
+        this.populateList()
+      );
     }
   }
 
   populateList() {
-    if (!this.container) return;
+    // Get filter value from whichever input has focus, or use the active one
+    const leftFilter = this.filterInput
+      ? this.filterInput.value.toLowerCase()
+      : "";
+    const rightFilter = this.rightFilterInput
+      ? this.rightFilterInput.value.toLowerCase()
+      : "";
 
-    const filter = this.filterInput ? this.filterInput.value.toLowerCase() : "";
+    // Populate left palette if it exists
+    if (this.container) {
+      this._renderPalette(this.container, leftFilter);
+    }
 
-    this._renderPalette(this.container, filter);
+    // Populate right palette if it exists
+    if (this.rightContainer) {
+      this._renderPalette(this.rightContainer, rightFilter);
+    }
   }
 
   _renderPalette(container, filter) {

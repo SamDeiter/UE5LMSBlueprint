@@ -1,0 +1,242 @@
+import { MacroDefinition } from '../macros/MacroDefinition.js';
+import { createCollapsibleHeader } from './ui-helpers.js';
+
+export class MacrosController {
+    constructor(app) {
+        this.app = app;
+        this.listContainer = document.getElementById('macros-list');
+
+        // Initial render
+        this.render();
+    }
+
+    addNewMacro() {
+        const name = this.app.macroRegistry.getUniqueName('NewMacro');
+        const newMacro = new MacroDefinition(name);
+        this.app.macroRegistry.register(newMacro);
+        this.render();
+        // TODO: Select and focus rename
+    }
+
+    render() {
+        if (!this.listContainer) return;
+
+        this.listContainer.innerHTML = '';
+
+        const section = document.createElement('div');
+        section.className = 'sidebar-section';
+
+        const content = document.createElement('div');
+        content.classList.remove('hidden');
+
+        const header = createCollapsibleHeader(section, 'Macros', content, {
+            onAdd: (_e) => {
+                // e.stopPropagation(); // Handled by createCollapsibleHeader
+                this.addNewMacro();
+            },
+            isExpanded: true,
+            iconClass: 'fas fa-caret-down'
+        });
+
+        // Add Import Button to Header (Custom)
+        const actionGroup = header.querySelector('.action-group');
+        if (actionGroup) {
+            const importBtn = document.createElement('i');
+            importBtn.className = 'fas fa-file-import add-btn';
+            importBtn.title = 'Import Macro';
+            importBtn.classList.add('mr-1');
+            importBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.importMacro();
+            });
+            actionGroup.insertBefore(importBtn, actionGroup.firstChild);
+        }
+
+        const macros = this.app.macroRegistry.getAll();
+
+        macros.forEach(macro => {
+            const item = document.createElement('div');
+            item.className = 'tree-item';
+            item.dataset.macroId = macro.id;
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-scroll function-icon text-muted text-xs mr-1'; // Scroll icon for macros
+            
+             // Greyish for macros
+            
+
+            const label = document.createElement('span');
+            label.className = 'tree-item-label';
+            label.textContent = macro.name;
+
+            item.appendChild(icon);
+            item.appendChild(label);
+
+            // Drag Logic
+            item.draggable = true;
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', `MACRO:${macro.name}`);
+                e.dataTransfer.effectAllowed = 'copy';
+            });
+
+            // Selection
+            item.addEventListener('click', (e) => {
+                this.selectMacro(macro.id);
+                e.stopPropagation();
+            });
+
+            // Double click to open
+            item.addEventListener('dblclick', () => {
+                this.app.switchGraph(macro.name);
+            });
+
+            // Context Menu
+            item.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                this.showContextMenu(e, macro);
+            });
+
+            content.appendChild(item);
+        });
+
+        // Deselect when clicking on empty space
+        this.listContainer.addEventListener('click', (e) => {
+            if (e.target === this.listContainer || e.target.classList.contains('sidebar-section')) {
+                this.selectMacro(null);
+            }
+        });
+
+        section.appendChild(content);
+        this.listContainer.appendChild(section);
+    }
+
+    selectMacro(id) {
+        // Deselect others
+        const items = this.listContainer.querySelectorAll('.tree-item');
+        items.forEach(el => el.classList.remove('selected'));
+
+        if (id) {
+            const selected = this.listContainer.querySelector(`[data-macro-id="${id}"]`);
+            if (selected) selected.classList.add('selected');
+        }
+    }
+
+    deleteMacro(macro) {
+        if (!window.confirm(`Delete macro '${macro.name}'? This will remove all CallMacro nodes.`)) {
+            return;
+        }
+
+        // 1. Remove all CallMacro nodes from all graphs
+        const callNodeKey = `Macro_${macro.name}`;
+
+        // Remove from active graph
+        if (this.app.graph && this.app.graph.nodes) {
+            const nodesToRemove = [];
+            for (const node of this.app.graph.nodes.values()) {
+                if (node.nodeKey === callNodeKey) {
+                    nodesToRemove.push(node.id);
+                }
+            }
+            nodesToRemove.forEach(nodeId => this.app.graph.removeNode(nodeId));
+        }
+
+        // Remove from stored graphs
+        const allGraphs = [];
+        if (this.app.graphs) Object.values(this.app.graphs).forEach(g => allGraphs.push(g));
+        if (this.app.functionRegistry) this.app.functionRegistry.getAll().forEach(f => allGraphs.push(f.graph));
+        if (this.app.macroRegistry) this.app.macroRegistry.getAll().forEach(m => allGraphs.push(m.graph));
+
+        allGraphs.forEach(graphData => {
+            if (!graphData || !graphData.nodes) return;
+            graphData.nodes = graphData.nodes.filter(n => n.nodeKey !== callNodeKey);
+        });
+
+        // 2. Unregister the macro
+        this.app.macroRegistry.unregister(macro.id);
+
+        // 3. Switch to EventGraph if we're currently viewing this macro
+        if (this.app.activeGraph === macro.name) {
+            this.app.switchGraph('EventGraph');
+        }
+
+        // 4. Update UI
+        this.render();
+        this.app.persistence.autoSave();
+    }
+
+    showContextMenu(e, macro) {
+        const items = [
+            { label: 'Open', callback: () => this.app.switchGraph(macro.name) },
+            { label: 'Rename', callback: () => { /* TODO */ } },
+            { label: 'Duplicate', callback: () => { /* TODO */ } },
+            { label: 'Delete', callback: () => this.deleteMacro(macro) },
+            { label: '---', callback: () => { } },
+            { label: 'Export to JSON', callback: () => this.exportMacro(macro) }
+        ];
+        this.app.contextMenu.show(e.clientX, e.clientY, items);
+    }
+
+    exportMacro(macro) {
+        const data = JSON.stringify(macro, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${macro.name}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    importMacro() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.classList.add('hidden');
+
+        input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const macroDef = JSON.parse(event.target.result);
+                    // Basic validation
+                    if (!macroDef.name || !macroDef.graph) {
+                        window.alert('Invalid macro definition file.');
+                        return;
+                    }
+
+                    // Ensure unique name
+                    macroDef.name = this.app.macroRegistry.getUniqueName(macroDef.name);
+
+                    this.app.macroRegistry.register(macroDef);
+                    this.render();
+                    window.alert(`Macro '${macroDef.name}' imported successfully.`);
+                } catch (err) {
+                    console.error('Import failed:', err);
+                    window.alert('Failed to import macro: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    }
+
+    loadState(macrosData) {
+        this.app.macroRegistry.clear();
+        if (macrosData) {
+            macrosData.forEach(data => {
+                const macro = MacroDefinition.fromJSON(data);
+                this.app.macroRegistry.register(macro);
+            });
+        }
+        this.render();
+    }
+}

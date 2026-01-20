@@ -17,41 +17,30 @@ export const UtilityNodes = {
     executor: "Timeline",
     icon: "fa-clock",
     pins: [
-      // Input exec pins (UE5 exact names)
-      { id: "play_in", name: "Play", type: "exec", dir: "in" },
+      { id: "play", name: "Play", type: "exec", dir: "in" },
+      { id: "stop", name: "Stop", type: "exec", dir: "in" },
+      { id: "reverse", name: "Reverse", type: "exec", dir: "in" },
       {
-        id: "play_from_start_in",
-        name: "Play from Start",
+        id: "reverse_from_end",
+        name: "Reverse From End",
         type: "exec",
         dir: "in",
       },
-      { id: "stop_in", name: "Stop", type: "exec", dir: "in" },
-      { id: "reverse_in", name: "Reverse", type: "exec", dir: "in" },
+      { id: "update", name: "Update", type: "exec", dir: "out" },
+      { id: "finished", name: "Finished", type: "exec", dir: "out" },
       {
-        id: "reverse_from_end_in",
-        name: "Reverse from End",
-        type: "exec",
-        dir: "in",
-      },
-      { id: "set_new_time_in", name: "Set New Time", type: "exec", dir: "in" },
-      // Input data pin
-      {
-        id: "new_time_in",
-        name: "New Time",
+        id: "alpha",
+        name: "Alpha",
         type: "float",
-        dir: "in",
+        dir: "out",
         defaultValue: 0.0,
       },
-      // Output exec pins
-      { id: "update_out", name: "Update", type: "exec", dir: "out" },
-      { id: "finished_out", name: "Finished", type: "exec", dir: "out" },
-      // Output data pins
       {
-        id: "direction_out",
+        id: "direction",
         name: "Direction",
-        type: "byte",
+        type: "int",
         dir: "out",
-        defaultValue: 0,
+        defaultValue: 1,
       },
     ],
     customData: {

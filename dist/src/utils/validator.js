@@ -1,0 +1,405 @@
+/**
+ * BlueprintValidator - Validates blueprint graphs against task requirements.
+ * Provides structural pattern matching to check if student blueprints meet assignment criteria
+ * without executing the code. Supports checking for variable existence, node presence,
+ * connections, and node properties.
+ */
+
+import { ASSESSMENT_TASKS } from "../data/AssessmentTasks.js";
+
+export class BlueprintValidator {
+  constructor(app) {
+    this.app = app;
+  }
+
+  /**
+   * Validates the current graph against a task definition.
+   * @param {Object} task - The task definition object.
+   * @returns {Object} - Validation result { success: boolean, results: Array }
+   */
+  validateTask(task) {
+    const results = [];
+    let allPassed = true;
+
+    console.group(`🔍 Validating Task: ${task.title}`);
+
+    for (const req of task.requirements) {
+      let passed = false;
+      let message = "";
+
+      try {
+        switch (req.type) {
+          case "variable_exists":
+            passed = this.checkVariable(req);
+            message = passed
+              ? `Variable '${req.name}' exists`
+              : `Missing variable '${req.name}'`;
+            break;
+          case "node_exists":
+            passed = this.checkNode(req);
+            message = passed
+              ? `Node '${req.nodeType}' exists`
+              : `Missing node '${req.nodeType}'`;
+            break;
+          case "connection":
+            passed = this.checkConnection(req);
+            message = passed ? `Connection valid` : `Missing connection`;
+            break;
+          case "link_exists":
+            passed = this.checkLinkExists(req);
+            message = passed
+              ? `Link from ${req.sourceNode}.${req.sourcePin} to ${req.targetNode}.${req.targetPin} exists`
+              : `Missing specific link connection`;
+            break;
+          case "node_property":
+            passed = this.checkNodeProperty(req);
+            message = passed
+              ? `Property check passed for ${req.nodeKey}.${req.pinId}`
+              : `Property value incorrect`;
+            break;
+          case "singleton_check":
+            passed = this.checkSingleton(req);
+            message = passed
+              ? `Singleton check passed for '${req.nodeType}'`
+              : `Multiple instances of '${req.nodeType}' found`;
+            break;
+          case "node_title":
+            passed = this.checkNodeTitle(req);
+            message = passed
+              ? `Node titled '${req.title}' found`
+              : `Node must be renamed to '${req.title}'`;
+            break;
+          case "component_exists":
+            passed = this.checkComponent(req);
+            message = passed
+              ? `Component '${req.componentType}' exists`
+              : `Missing component '${req.componentType}'`;
+            break;
+          case "macro_exists":
+            passed = this.checkMacro(req);
+            message = passed
+              ? `Macro '${req.name}' exists`
+              : `Missing macro '${req.name}'`;
+            break;
+          case "interface_implemented":
+            passed = this.checkInterface(req);
+            message = passed
+              ? `Interface '${req.interfaceName}' implemented`
+              : `Interface '${req.interfaceName}' not implemented`;
+            break;
+          case "function_exists":
+            passed = this.checkFunction(req);
+            message = passed
+              ? `Function '${req.name}' exists`
+              : `Missing function '${req.name}'`;
+            break;
+          case "local_variable_exists":
+            passed = this.checkLocalVariable(req);
+            message = passed
+              ? `Local variable '${req.localVarName}' exists in '${req.functionName}'`
+              : `Missing local variable '${req.localVarName}'`;
+            break;
+          default:
+            console.warn(`Unknown requirement type: ${req.type}`);
+            break;
+        }
+      } catch (e) {
+        console.error(e);
+        passed = false;
+        message = `Error checking requirement: ${e.message}`;
+      }
+
+      results.push({
+        description: req.description || message,
+        passed: passed,
+      });
+
+      if (!passed) allPassed = false;
+      console.log(passed ? `✅ ${message}` : `❌ ${message}`);
+    }
+
+    console.groupEnd();
+    return { success: allPassed, results };
+  }
+
+  checkVariable(req) {
+    const variable = this.app.variables.variables.get(req.name);
+    if (!variable) return false;
+    if (req.varType && variable.type !== req.varType) return false;
+    if (req.containerType && variable.containerType !== req.containerType)
+      return false;
+    return true;
+  }
+
+  checkNode(req) {
+    const nodes = [...this.app.graph.nodes.values()];
+    const count = nodes.filter((n) => n.nodeKey === req.nodeType).length;
+    if (req.count && count !== req.count) return false;
+    return count > 0;
+  }
+
+  checkConnection(req) {
+    // Find source node
+    const nodes = [...this.app.graph.nodes.values()];
+    const sourceNodes = nodes.filter((n) => n.nodeKey === req.from.nodeType);
+    const targetNodes = nodes.filter((n) => n.nodeKey === req.to.nodeType);
+
+    if (sourceNodes.length === 0 || targetNodes.length === 0) return false;
+
+    // Check if ANY instance of source is connected to ANY instance of target via the specified pins
+    for (const src of sourceNodes) {
+      for (const tgt of targetNodes) {
+        // Find the specific pins
+        const srcPin = src.pins.find(
+          (p) => p.id.endsWith(req.from.pin) || p.name === req.from.pin
+        ); // heuristic match
+        const tgtPin = tgt.pins.find(
+          (p) => p.id.endsWith(req.to.pin) || p.name === req.to.pin
+        );
+
+        if (srcPin && tgtPin) {
+          // Check if they are connected
+          // Fix: Iterate over Map values
+          const isConnected = [...this.app.wiring.links.values()].some(
+            (link) =>
+              link.startPin.id === srcPin.id && link.endPin.id === tgtPin.id
+          );
+          if (isConnected) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  checkSingleton(req) {
+    const nodes = [...this.app.graph.nodes.values()];
+    const count = nodes.filter((n) => n.nodeKey === req.nodeType).length;
+    return count <= 1;
+  }
+
+  checkNodeProperty(req) {
+    const nodes = [...this.app.graph.nodes.values()];
+    const targetNodes = nodes.filter((n) => n.nodeKey === req.nodeKey);
+
+    for (const node of targetNodes) {
+      // Check if this is a pin literal value check
+      if (req.pinId) {
+        const pin = node.pins.find(
+          (p) => p.id.endsWith(req.pinId) || p.id === `${node.id}-${req.pinId}`
+        );
+        if (pin) {
+          const literalValue = node.pinLiterals.get(pin.id);
+          // Convert both to strings for comparison
+          if (String(literalValue) === String(req.value)) {
+            return true;
+          }
+        }
+      } else {
+        // Check customData or direct properties
+        const val =
+          node.customData[req.property] !== undefined
+            ? node.customData[req.property]
+            : node[req.property];
+        if (val == req.value) return true; // Loose equality for "100" vs 100
+      }
+    }
+    return false;
+  }
+
+  checkLinkExists(req) {
+    const nodes = [...this.app.graph.nodes.values()];
+    const sourceNodes = nodes.filter((n) => n.nodeKey === req.sourceNode);
+    const targetNodes = nodes.filter((n) => n.nodeKey === req.targetNode);
+
+    if (sourceNodes.length === 0 || targetNodes.length === 0) return false;
+
+    // Check if ANY instance of source is connected to ANY instance of target via the specified pins
+    for (const srcNode of sourceNodes) {
+      for (const tgtNode of targetNodes) {
+        const srcPin = srcNode.pins.find(
+          (p) => p.id.endsWith(req.sourcePin) || p.name === req.sourcePin
+        );
+        const tgtPin = tgtNode.pins.find(
+          (p) => p.id.endsWith(req.targetPin) || p.name === req.targetPin
+        );
+
+        if (!srcPin || !tgtPin) continue;
+
+        // Check if there's a link between these specific pins
+        const links = [...this.app.wiring.links.values()];
+        const linkExists = links.some(
+          (link) =>
+            link.startPin.id === srcPin.id && link.endPin.id === tgtPin.id
+        );
+
+        if (linkExists) return true;
+      }
+    }
+    return false;
+  }
+
+  checkComponent(req) {
+    if (!this.app.components) return false;
+    const components = [...this.app.components.values()];
+    return components.some((comp) => comp.type === req.componentType);
+  }
+
+  checkNodeTitle(req) {
+    const nodes = [...this.app.graph.nodes.values()];
+    const targetNodes = nodes.filter((n) => n.nodeKey === req.nodeType);
+
+    // Check if any matching node has the required title
+    return targetNodes.some((node) => node.title === req.title);
+  }
+
+  checkMacro(req) {
+    if (!this.app.macroRegistry) return false;
+    const macro = this.app.macroRegistry.get(req.name);
+    return !!macro;
+  }
+
+  checkInterface(req) {
+    if (!this.app.classSettings || !this.app.classSettings.interfaces)
+      return false;
+    return this.app.classSettings.interfaces.includes(req.interfaceName);
+  }
+
+  checkFunction(req) {
+    if (!this.app.functionRegistry) return false;
+    const func = this.app.functionRegistry
+      .getAll()
+      .find((f) => f.name === req.name);
+    return !!func;
+  }
+
+  checkLocalVariable(req) {
+    if (!this.app.functionRegistry) return false;
+    const func = this.app.functionRegistry
+      .getAll()
+      .find((f) => f.name === req.functionName);
+    if (!func || !func.localVariables) return false;
+    return func.localVariables.some((lv) => lv.name === req.localVarName);
+  }
+}
+
+// Sample Task Definition
+const SAMPLE_TASK = {
+  taskId: "task_01_health",
+  title: "Initialize Health",
+  description:
+    "Create a float variable named 'Health' and set it to 100 on BeginPlay.",
+  requirements: [
+    {
+      type: "variable_exists",
+      name: "Health",
+      varType: "float",
+      description: "Create a Float variable named 'Health'",
+    },
+    {
+      type: "node_exists",
+      nodeType: "EventBeginPlay",
+      description: "Add Event BeginPlay node",
+    },
+    {
+      type: "singleton_check",
+      nodeType: "EventBeginPlay",
+      description: "Ensure only one BeginPlay node exists",
+    },
+    {
+      type: "node_exists",
+      nodeType: "Set_Health",
+      description: "Add Set Health node",
+    },
+    {
+      type: "connection",
+      from: { nodeType: "EventBeginPlay", pin: "exec_out" },
+      to: { nodeType: "Set_Health", pin: "exec_in" },
+      description: "Connect BeginPlay to Set Health",
+    },
+  ],
+};
+
+// ===== LEVEL 1: FUNDAMENTALS =====
+
+/**
+ * Task 1.1: Health Initialization
+ * Verify understanding of variables, events, and basic execution flow.
+ */
+const TASK_1_1_HEALTH_INIT = {
+  taskId: "level1_task1",
+  level: 1,
+  title: "Health Initialization",
+  description:
+    "Create a system to initialize a player's health when the game starts.",
+  requirements: [
+    {
+      type: "variable_exists",
+      name: "Health",
+      varType: "float",
+      description: "1. Create a Float variable named 'Health'",
+    },
+    {
+      type: "node_exists",
+      nodeType: "EventBeginPlay",
+      description: "3. Add an Event BeginPlay node",
+    },
+    {
+      type: "singleton_check",
+      nodeType: "EventBeginPlay",
+      description: "Ensure only one BeginPlay node exists",
+    },
+    {
+      type: "node_exists",
+      nodeType: "Set_Health",
+      description: "4. Add a Set Health node",
+    },
+    {
+      type: "connection",
+      from: { nodeType: "EventBeginPlay", pin: "exec_out" },
+      to: { nodeType: "Set_Health", pin: "exec_in" },
+      description: "5. Connect BeginPlay to Set Health",
+    },
+  ],
+};
+
+/**
+ * Task 1.2: Simple Logic
+ * Print a message to the screen.
+ */
+const TASK_1_2_PRINT_MESSAGE = {
+  taskId: "level1_task2",
+  level: 1,
+  title: "Simple Logic - Print Message",
+  description: "Print a message to the screen when the game starts.",
+  requirements: [
+    {
+      type: "node_exists",
+      nodeType: "EventBeginPlay",
+      description: "1. Add an Event BeginPlay node",
+    },
+    {
+      type: "singleton_check",
+      nodeType: "EventBeginPlay",
+      description: "Ensure only one BeginPlay node exists",
+    },
+    {
+      type: "node_exists",
+      nodeType: "PrintString",
+      description: "2. Add a Print String node",
+    },
+    {
+      type: "connection",
+      from: { nodeType: "EventBeginPlay", pin: "exec_out" },
+      to: { nodeType: "PrintString", pin: "exec_in" },
+      description: "3. Connect BeginPlay to Print String",
+    },
+  ],
+};
+
+// Task Library - All available tasks
+export const ALL_TASKS = [
+  SAMPLE_TASK,
+  TASK_1_1_HEALTH_INIT,
+  TASK_1_2_PRINT_MESSAGE,
+  ...ASSESSMENT_TASKS,
+];

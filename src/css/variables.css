@@ -61,8 +61,6 @@
     --color-interface: #E0FF66;     /* FLinearColor(0.8784, 1.0, 0.4) - pale green */
     --color-struct: #001A99;        /* FLinearColor(0.0, 0.1, 0.6) - deep blue */
     --color-enum: #00BB55;          /* FLinearColor(0.0, 0.733, 0.333) - forest green */
-    --color-wildcard: #38322E;       /* FLinearColor(0.22, 0.1958, 0.18) - dark gray */
-    --color-delegate: #E8BBD1;       /* FLinearColor(0.91, 0.73, 0.82) - pink/lavender */
     
 
     --color-dev-yellow: #FFC72C;

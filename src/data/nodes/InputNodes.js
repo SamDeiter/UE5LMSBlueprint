@@ -1,11 +1,7 @@
 /**
- * InputNodes - Node definitions for Input category
- * Contains Enhanced Input Action, Mapping Context, and input query nodes.
- * @module InputNodes
+ * InputNodes - Auto-generated from NodeDefinitions.js
+ * Contains node definitions for this category.
  */
-/** @typedef {import('./types.js').NodeDefinition} NodeDefinition */
-
-/** @type {Object.<string, NodeDefinition>} */
 export const InputNodes = {
   EnhancedInputAction: {
     title: "Enhanced Input Action",

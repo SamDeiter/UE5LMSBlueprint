@@ -1,0 +1,237 @@
+/**
+ * Dockable Panel Styles
+ *
+ * Styling for UE5-style dockable panels including:
+ * - Tab bars
+ * - Panel headers
+ * - Dock zones
+ */
+
+/* Dock Tab Bar */
+.dock-tab-bar {
+  display: flex;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+  min-height: 28px;
+  align-items: stretch;
+}
+
+.dock-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  border-right: 1px solid var(--border-color, #333);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.dock-tab:hover {
+  background: var(--hover-bg, #2a2a2a);
+  color: var(--text-color, #ddd);
+}
+
+.dock-tab.active {
+  background: var(--panel-bg, #252525);
+  color: var(--text-color, #ddd);
+  border-bottom: 2px solid var(--accent-color, #4a9eff);
+}
+
+.dock-tab i {
+  font-size: 11px;
+}
+
+/* Dock Content Area */
+.dock-content-area {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color, #ddd);
+}
+
+.panel-header-icon {
+  font-size: 11px;
+  color: var(--text-muted, #888);
+}
+
+.panel-header-close {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-muted, #666);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 3px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.panel-header-close:hover {
+  background: var(--danger-bg, #c0392b);
+  color: white;
+}
+
+/* Dockable Panel Container */
+.dockable-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--panel-bg, #252525);
+}
+
+.dockable-panel.hidden {
+  display: none;
+}
+
+/* Right Panel Tabs (existing - enhanced) */
+.right-panel-tabs {
+  display: flex;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.right-panel-tab {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  border-bottom: 2px solid transparent;
+}
+
+.right-panel-tab:hover {
+  background: var(--hover-bg, #2a2a2a);
+  color: var(--text-color, #ddd);
+}
+
+.right-panel-tab.active {
+  color: var(--text-color, #ddd);
+  border-bottom-color: var(--accent-color, #4a9eff);
+}
+
+/* Bottom Tabs (existing - enhanced) */
+.bottom-tabs {
+  display: flex;
+  background: var(--header-bg, #1a1a1a);
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.bottom-tab {
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  border-bottom: 2px solid transparent;
+}
+
+.bottom-tab:hover {
+  background: var(--hover-bg, #2a2a2a);
+  color: var(--text-color, #ddd);
+}
+
+.bottom-tab.active {
+  color: var(--text-color, #ddd);
+  border-bottom-color: var(--accent-color, #4a9eff);
+}
+
+/* Panel Toggle Checkmarks in Window Menu */
+.panel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-check {
+  font-size: 10px;
+  color: var(--accent-color, #4a9eff);
+  width: 14px;
+}
+
+.panel-toggle:not(.panel-visible) .panel-check {
+  visibility: hidden;
+}
+
+.panel-toggle.panel-visible .panel-check {
+  visibility: visible;
+}
+
+/* Interfaces List */
+.interfaces-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.interface-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--input-bg, #1a1a1a);
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.interface-item span {
+  flex: 1;
+}
+
+.interface-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.interface-header span {
+  flex: 1;
+  font-weight: 500;
+}
+
+.interface-functions {
+  margin-left: 20px;
+  margin-top: 4px;
+  border-left: 1px solid #444;
+  padding-left: 8px;
+}
+
+.interface-function {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  font-size: 11px;
+  color: #aaa;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.interface-function:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Details Textarea */
+.details-textarea {
+  width: 100%;
+  background: var(--input-bg, #1a1a1a);
+  border: 1px solid var(--border-color, #333);
+  color: var(--text-color, #ddd);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 3px;
+  resize: vertical;
+}

@@ -1,0 +1,107 @@
+/* --- GLOBAL STYLES & LAYOUT --- */
+:root {
+    /* General Theme */
+    --color-bg-dark: #1a1a1a;
+    --color-bg-medium: #262626;
+    --color-bg-light: #333333;
+    --color-text-main: #e0e0e0;
+    --color-accent-blue: #0077D8;
+    --color-border: #111;
+    --color-selection: rgba(255, 165, 0, 0.5);
+    --color-comment: rgba(255, 255, 255, 0.05);
+    --color-reroute: #FFFFFF;
+    --color-breakpoint: #FF4444;
+
+
+    /* Selection Outline (UE5 Golden Orange) */
+    --node-selection-outline: #F0B000;
+
+    /* Node Header Gradients - Event & Flow Control */
+    --header-event-start: #7a1515;
+    --header-event-end: #500a0a;
+    --header-flow-start: #404040;
+    --header-flow-end: #202020;
+    --header-function-start: #1d4d65;
+    --header-function-end: #123040;
+    --header-macro-start: #505050;
+    --header-macro-end: #282828;
+
+    /* Additional Header Gradients - Function Types */
+    --header-function-blue: linear-gradient(to bottom, #005075 0%, #002535 100%); /* Impure Functions */
+    --header-pure-green: linear-gradient(to bottom, #407500 0%, #152500 100%);    /* Pure Functions */
+    --header-flow-gray: linear-gradient(to bottom, #505050 0%, #1A1A1A 100%);     /* Flow Control */
+
+    /* Header Gradients for SET Nodes (Variable Type-Based) */
+    --header-float-green: linear-gradient(to bottom, #38E056 0%, #155720 100%);
+    --header-object-blue: linear-gradient(to bottom, #005A8E 0%, #00253E 100%);
+    --header-int-green: linear-gradient(to bottom, #38E056 0%, #155720 100%);
+    --header-string-magenta: linear-gradient(to bottom, #E030E0 0%, #600060 100%);
+    --header-vector-gold: linear-gradient(to bottom, #FFC700 0%, #6B5400 100%);
+    --header-transform-orange: linear-gradient(to bottom, #FF6600 0%, #662900 100%);
+
+    /* Cast Node Header (Cyan/Teal - UE5 Spec) */
+        --header-cast-start: #00A89D;
+        --header-cast-end: #004040;
+    /* Pin Colors (Exact UE5.6 Specifications from GraphEditorSettings.cpp) */
+    --color-exec: #FFFFFF;          /* FLinearColor(1.0, 1.0, 1.0) */
+    --color-bool: #4C0000;          /* FLinearColor(0.3, 0.0, 0.0) - maroon */
+    --color-byte: #002921;          /* FLinearColor(0.0, 0.16, 0.13127) - dark green */
+    --color-int: #03C46E;           /* FLinearColor(0.013575, 0.77, 0.429609) - green-blue */
+    --color-int64: #69C46E;         /* FLinearColor(0.413575, 0.77, 0.429609) */
+    --color-float: #5BFF0F;         /* FLinearColor(0.357667, 1.0, 0.06) - bright green */
+    --color-double: #0AAA00;        /* FLinearColor(0.039216, 0.666667, 0.0) - darker green */
+    --color-name: #9B39FF;          /* FLinearColor(0.607717, 0.224984, 1.0) - lilac */
+    --color-string: #FF00A8;        /* FLinearColor(1.0, 0.0, 0.660537) - bright pink */
+    --color-text: #CC3366;          /* FLinearColor(0.8, 0.2, 0.4) - salmon */
+    --color-vector: #FF9704;        /* FLinearColor(1.0, 0.591255, 0.016512) - gold */
+    --color-rotator: #5A74FF;       /* FLinearColor(0.353393, 0.454175, 1.0) - periwinkle */
+    --color-transform: #FF2C00;     /* FLinearColor(1.0, 0.172585, 0.0) - orange */
+    --color-object: #0066E8;        /* FLinearColor(0.0, 0.4, 0.91) - sharp blue */
+    --color-class: #1900CC;         /* FLinearColor(0.1, 0.0, 0.8) - deep purple */
+    --color-interface: #E0FF66;     /* FLinearColor(0.8784, 1.0, 0.4) - pale green */
+    --color-struct: #001A99;        /* FLinearColor(0.0, 0.1, 0.6) - deep blue */
+    --color-enum: #00BB55;          /* FLinearColor(0.0, 0.733, 0.333) - forest green */
+    --color-wildcard: #38322E;       /* FLinearColor(0.22, 0.1958, 0.18) - dark gray */
+    --color-delegate: #E8BBD1;       /* FLinearColor(0.91, 0.73, 0.82) - pink/lavender */
+    
+
+    --color-dev-yellow: #FFC72C;
+    --color-dev-black: #202020;
+    --color-array-dim: 2px;
+
+    /* --- UE5 PIXEL PERFECT TOKENS --- */
+    --ue5-node-bg: rgba(10, 10, 10, 0.85);
+    --ue5-node-blur: blur(4px);
+    --ue5-node-radius: 8px;
+    --ue5-input-bg: #050505;
+    --ue5-input-border: #303030;
+    --ue5-selection-orange: #f0a000;
+    --ue5-checkbox-tick: #0070e0;
+    --ue5-hazard-yellow: #8a7800;
+    --ue5-text-shadow: 1px 1px 2px black;
+
+}
+
+
+/* =========================================
+   UE5 EDITOR THEME OVERRIDES
+   ========================================= */
+:root {
+    /* Main Backgrounds */
+    --bg-graph: #262626;
+    --bg-panel: #151515;
+    --bg-header: #0f0f0f;
+    
+    /* Grid Lines */
+    --grid-line-major: #353535;
+    --grid-line-minor: #2e2e2e;
+    
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+}
+
+body {
+    font-family: var(--ue5-font);
+}
+

@@ -1,0 +1,2313 @@
+/* --- PANEL TOOLBAR (For Components & My Blueprint) --- */
+.panel-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  background-color: #222;
+  border-bottom: 1px solid #111;
+  gap: 6px;
+}
+
+/* Green Add Button Style */
+.btn-green-add {
+  background: linear-gradient(to bottom, #3c3c3c, #2c2c2c);
+  color: #4caf50;
+  /* Green text */
+  font-weight: bold;
+  border: 1px solid #111;
+  padding: 2px 10px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.btn-green-add:hover {
+  background: linear-gradient(to bottom, #444, #333);
+  color: #66bb6a;
+}
+
+/* --- BOTTOM PANEL TAB Styles --- */
+.bottom-tabs {
+  display: flex;
+  background-color: #111;
+  border-bottom: 1px solid #333;
+  padding-left: 10px;
+  height: 28px;
+  align-items: center;
+}
+
+.bottom-tab {
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: #888;
+  font-size: 11px;
+  cursor: pointer;
+  border-right: 1px solid #222;
+  transition: all 0.2s;
+}
+
+.bottom-tab:hover {
+  background-color: #222;
+  color: #ccc;
+}
+
+.bottom-tab.active {
+  background-color: #333;
+  color: #fff;
+  border-top: 2px solid var(--color-accent-blue);
+  margin-top: -1px; /* Overlap border */
+}
+
+.find-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0; /* Prevent collapse */
+  position: relative;
+  z-index: 10;
+  width: 100%; /* Ensure full width */
+}
+
+/* Search Box inside Panel Toolbar */
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 0 6px;
+  flex-grow: 1;
+}
+
+.search-box i {
+  color: #666;
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  color: #ccc;
+  padding: 3px 0;
+  width: 100%;
+  min-width: 100px; /* Prevent collapse */
+  min-height: 20px; /* Ensure clickable area */
+  font-size: 10px;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: transparent;
+}
+
+.panel-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Prevent horizontal scrollbars */
+  padding: 5px;
+}
+
+#find-results-content {
+  min-height: 50px; /* Force height */
+  z-index: 9999;
+  position: relative;
+  pointer-events: auto; /* Ensure interactivity */
+  flex-grow: 1; /* Match #compiler-results so it can claim flex space */
+}
+
+#find-results-content .find-toolbar,
+#find-results-content .search-box,
+#find-results-content input {
+  pointer-events: auto; /* Explicitly enable pointer events for input */
+}
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background-color: #222;
+  border-bottom: 1px solid #111;
+  border-top: 1px solid #111;
+  color: #ccc;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.sidebar-section-header:hover {
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.sidebar-section-header .title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-section-header .action-group {
+  display: flex;
+  align-items: center;
+}
+
+/* NEW: Circular Add Icon Style (Wireframe Plus) */
+.section-add-icon {
+  color: #aaa;
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #aaa;
+  /* Thinner border matches Image 1 */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 8px;
+  /* Smaller size for FA icon to float inside */
+  box-sizing: border-box;
+  transition: all 0.1s;
+  margin-right: 2px;
+}
+
+/* Deleted the ::before override to let FontAwesome icon render naturally */
+
+.section-add-icon:hover {
+  color: white;
+  border-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#new-var-input-container {
+  padding: 8px;
+  background-color: #222;
+  border-bottom: 1px solid #444;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px;
+}
+
+#new-var-input-container input {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.tree-item {
+  padding: 4px 8px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  color: #ddd;
+  border: 1px solid transparent;
+}
+
+/* --- RESPONSIVE VARIABLE ROW LAYOUT --- */
+.my-blueprint-variable-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  height: 24px;
+}
+
+.var-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-width: 20px;
+}
+
+/* Name Truncation */
+.var-left span,
+.var-left input {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.var-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* Reduced gap */
+  font-size: 10px;
+  color: #aaa;
+  flex: 0 0 auto;
+  margin-left: 6px;
+  /* SHIFTED LEFT significantly away from the scrollbar/edge */
+  padding-right: 30px;
+}
+
+/* --- CRITICAL: COLLAPSE PRIORITIES --- */
+
+/* 1. Variable Type Name (e.g., "Boolean") */
+.var-type-tag {
+  color: #aaa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  flex: 0 1 auto;
+  flex-shrink: 1000;
+  /* Priority: Shrink/Disappear FIRST */
+  /* Limit max width so it truncates well before hitting icons */
+  max-width: 70px;
+  min-width: 0;
+  text-align: right;
+}
+
+/* 2. Icons (Pill & Eye) */
+.var-color-pill,
+.var-eye-icon {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  /* Priority: NEVER shrink */
+}
+
+.var-color-pill {
+  width: 10px;
+  height: 4px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.var-eye-icon {
+  font-size: 10px;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.var-eye-icon.active {
+  color: white !important;
+  /* Bright white when enabled */
+  opacity: 1;
+}
+
+.var-type-tag:hover {
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* --- Variable Rename Input Style --- */
+.var-name-edit {
+  background-color: #005080;
+  color: white;
+  border: 1px solid #0077d8;
+  border-radius: 2px;
+  padding: 0 4px;
+  width: 100%;
+  height: 18px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+.tree-item:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.tree-item.selected {
+  background-color: #005080;
+  color: white;
+  border-color: #0077d8;
+}
+
+#graph-editor {
+  grid-area: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #111;
+  cursor: grab;
+}
+
+#graph-editor.dragging {
+  cursor: grabbing;
+}
+
+#graph-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* UE5 Grid Specifications from StarshipStyle.cpp:3870-3875 */
+  background-color: rgb(6, 6, 6); /* GridLineColor: 0.024 * 255 ≈ 6 */
+  background-image:
+    /* Major grid lines (every 8 dots) - GridRuleColor */
+    radial-gradient(circle, rgba(3, 3, 3, 0.8) 1px, transparent 1px),
+    /* Minor grid dots - GridLineColor */
+    radial-gradient(circle, rgba(6, 6, 6, 0.6) 0.5px, transparent 0.5px);
+  background-size:
+    128px 128px,  /* Major grid: 8 * 16px = 128px (GridRulePeriod = 8) */
+    16px 16px;     /* Minor grid: 16px spacing */
+  background-position: 0 0, 0 0;
+  cursor: grab;
+}
+
+#graph-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+#nodes-container {
+  position: absolute;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* Dropdown Menu Styles */
+.dropdown-menu {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #252525;
+  min-width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333;
+  border-radius: 2px;
+  z-index: 1000;
+  padding: 4px 0;
+}
+
+.dropdown-menu:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.dropdown-item:hover {
+  background-color: #0078d7;
+  color: white;
+}
+
+.dropdown-item i {
+  width: 16px;
+  text-align: center;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #333;
+  margin: 4px 0;
+}
+
+/* =====================================================
+   UTILITY CLASSES FOR STYLE CONSOLIDATION
+   Added: 2025-12-08 for inline style elimination
+   ===================================================== */
+
+/* --- Visibility Utilities --- */
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
+
+.visible-flex {
+  display: flex !important;
+}
+
+.visible-grid {
+  display: grid !important;
+}
+
+.visible-inline {
+  display: inline !important;
+}
+
+.visible-inline-flex {
+  display: inline-flex !important;
+}
+
+/* --- Collapsible Content --- */
+.collapsible-content {
+  display: block;
+}
+
+.collapsible-content.collapsed {
+  display: none;
+}
+
+/* --- Arrow Icons for Collapsibles --- */
+.collapse-arrow {
+  margin-right: 6px;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.collapse-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+/* --- Component/Section Headers --- */
+.section-header-row {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: pointer;
+  background: linear-gradient(to bottom, #333, #222);
+  border-bottom: 1px solid #111;
+}
+
+.section-header-row:hover {
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+}
+
+/* --- Left/Right Groups --- */
+.group-left {
+  display: flex;
+  align-items: center;
+}
+
+.group-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* --- Progress Bar --- */
+.progress-container {
+  margin: 15px 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 20px;
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #444;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4caf50, #45a049);
+  transition: width 0.3s ease;
+}
+
+/* --- Status Items --- */
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.status-item.passed {
+  background: rgba(76, 175, 80, 0.1);
+  border-left: 3px solid #4caf50;
+}
+
+.status-item.failed {
+  background: rgba(244, 67, 54, 0.1);
+  border-left: 3px solid #f44336;
+}
+
+/* --- Status Icons --- */
+.status-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.status-icon.success {
+  background: #4caf50;
+  color: white;
+}
+
+.status-icon.error {
+  background: #f44336;
+  color: white;
+}
+
+.status-icon.pending {
+  background: #666;
+  color: #aaa;
+}
+
+/* --- Success Message --- */
+.success-message {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid #4caf50;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+  color: #4caf50;
+}
+
+/* --- Task Complete Animation --- */
+.task-complete {
+  background: linear-gradient(
+    135deg,
+    rgba(76, 175, 80, 0.2),
+    rgba(76, 175, 80, 0.1)
+  ) !important;
+  border: 2px solid #4caf50 !important;
+  padding: 20px !important;
+  font-weight: bold;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* --- Icon Sizes --- */
+.icon-xs {
+  font-size: 8px;
+}
+
+.icon-sm {
+  font-size: 10px;
+}
+
+.icon-md {
+  font-size: 14px;
+}
+
+.icon-lg {
+  font-size: 18px;
+}
+
+.icon-xl {
+  font-size: 24px;
+}
+
+/* --- Text Utilities --- */
+.text-muted {
+  color: #666;
+}
+
+.text-light {
+  color: #aaa;
+}
+
+.text-white {
+  color: #fff;
+}
+
+.text-success {
+  color: #4caf50;
+}
+
+.text-error {
+  color: #f44336;
+}
+
+.text-warning {
+  color: #ffaa00;
+}
+
+.text-info {
+  color: #4a90e2;
+}
+
+.text-xs {
+  font-size: 9px;
+}
+
+.text-sm {
+  font-size: 10px;
+}
+
+.text-md {
+  font-size: 12px;
+}
+
+.text-lg {
+  font-size: 14px;
+}
+
+.text-italic {
+  font-style: italic;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* --- Separators --- */
+.separator-h {
+  height: 1px;
+  background: #444;
+  margin: 4px 0;
+}
+
+.separator-v {
+  width: 1px;
+  background: #444;
+  margin: 0 4px;
+  align-self: stretch;
+}
+
+/* --- Placeholder Text --- */
+.placeholder-text {
+  padding: 8px 12px;
+  color: #666;
+  font-size: 10px;
+  font-style: italic;
+}
+
+/* --- Component Output Circle (for variable panel) - UE5 Object/Component blue --- */
+.component-output-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+  background-color: #0066ff; /* Blue - UE5 Object/Component type color */
+  border: 1px solid #000;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* --- Components Subsection Header --- */
+.components-subsection {
+  border-bottom: 1px solid #111;
+  margin-bottom: 4px;
+}
+
+.components-header {
+  padding: 4px 10px !important;
+  background-color: #1a1a1a !important;
+  font-size: 10px !important;
+  text-transform: capitalize !important;
+  font-weight: 600;
+}
+
+/* --- Criterion Row (for NeedNode modal) --- */
+.criterion-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+
+/* --- Modal Button Colors --- */
+.btn-success {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+.btn-success:hover {
+  background-color: #45a049 !important;
+}
+
+/* --- Spacing Utilities --- */
+.mt-0 {
+  margin-top: 0;
+}
+
+.mt-1 {
+  margin-top: 4px;
+}
+
+.mt-2 {
+  margin-top: 8px;
+}
+
+.mt-3 {
+  margin-top: 12px;
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-1 {
+  margin-bottom: 4px;
+}
+
+.mb-2 {
+  margin-bottom: 8px;
+}
+
+.mb-3 {
+  margin-bottom: 12px;
+}
+
+.mb-4 {
+  margin-bottom: 16px;
+}
+
+.mr-1 {
+  margin-right: 4px;
+}
+
+.mr-2 {
+  margin-right: 8px;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.p-0 {
+  padding: 0;
+}
+
+.p-1 {
+  padding: 4px;
+}
+
+.p-2 {
+  padding: 8px;
+}
+
+.p-3 {
+  padding: 12px;
+}
+
+/* --- Flex Utilities --- */
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+/* --- Border Utilities --- */
+.border-bottom {
+  border-bottom: 1px solid #111;
+}
+
+.border-top {
+  border-top: 1px solid #111;
+}
+
+.rounded {
+  border-radius: 4px;
+}
+
+.rounded-full {
+  border-radius: 50%;
+}
+
+/* --- Background Utilities --- */
+.bg-dark {
+  background-color: #111;
+}
+
+.bg-medium {
+  background-color: #222;
+}
+
+.bg-light {
+  background-color: #333;
+}
+
+.bg-transparent {
+  background-color: transparent;
+}
+
+/* --- App Version Label --- */
+.app-version {
+  color: #666;
+  font-size: 11px;
+  margin-right: 15px;
+  opacity: 0.7;
+}
+
+/* --- Toolbar Play/Stop Icon Colors --- */
+.icon-play {
+  color: #4caf50;
+}
+
+.icon-stop {
+  color: #f44336;
+}
+
+/* --- Task Selector --- */
+.task-selector-label {
+  color: #ccc;
+  margin-right: 8px;
+  font-size: 12px;
+}
+
+.task-selector {
+  background: #2a2a2a;
+  color: #ccc;
+  border: 1px solid #444;
+  padding: 4px 8px;
+  border-radius: 2px;
+  min-width: 200px;
+}
+
+/* --- Panel Header Icon --- */
+.panel-header-icon {
+  margin-right: 6px;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.panel-header-close {
+  margin-left: auto;
+  font-size: 10px;
+  color: #666;
+  cursor: pointer;
+}
+
+/* --- Component Tree Items --- */
+.tree-item-icon {
+  margin-right: 8px;
+  color: #ccc;
+}
+
+.tree-item-indent-1 {
+  padding-left: 24px;
+}
+
+.tree-item-indent-2 {
+  padding-left: 48px;
+}
+
+/* --- Add Button Span --- */
+.add-btn-text {
+  margin-left: 4px;
+}
+
+/* --- Zoom Readout --- */
+.zoom-readout {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #aaa;
+  font-size: 12px;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* --- Task Status Content --- */
+.task-status-wrapper {
+  padding: 10px;
+}
+
+.task-title {
+  margin-top: 0;
+  color: #fff;
+}
+
+.task-desc {
+  color: #aaa;
+  margin-bottom: 15px;
+}
+
+/* --- Modal Styling --- */
+.modal-narrow {
+  max-width: 350px;
+  text-align: center;
+  border: 2px solid #000;
+}
+
+.modal-title-sm {
+  margin-top: 0;
+  color: #eee;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.modal-msg {
+  color: #aaa;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+.modal-btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-danger {
+  background-color: #d32f2f;
+  color: white;
+  border: 1px solid #000;
+  padding: 6px 20px;
+}
+
+.btn-secondary {
+  background-color: #444;
+  color: white;
+  border: 1px solid #000;
+  padding: 6px 20px;
+}
+
+/* --- Help Modal --- */
+.help-modal-title {
+  margin-top: 0;
+}
+
+.help-modal-close {
+  margin-top: 10px;
+}
+
+.help-modal-hr {
+  border: 0;
+  border-top: 1px solid #444;
+  margin: 15px 0;
+}
+
+.help-troubleshoot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.help-troubleshoot-label {
+  font-size: 11px;
+  color: #888;
+}
+
+/* === PHASE 7: DEBUG PANEL STYLES === */
+/* Extracted from DebuggerController.js inline styles */
+.debug-floating-panel {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 10px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  z-index: 100;
+  min-width: 200px;
+}
+
+#call-stack-panel {
+  top: 10px;
+  right: 220px;
+}
+
+#watch-panel {
+  top: 10px;
+  right: 10px;
+}
+
+.debug-panel-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 3px;
+}
+
+.debug-stack-frame {
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.debug-stack-frame.active {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.debug-stack-frame.inactive {
+  color: #aaa;
+  padding-left: 10px;
+}
+
+.debug-watch-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.debug-watch-label {
+  color: #aaa;
+}
+
+.debug-watch-value {
+  color: #4caf50;
+}
+
+/* =====================================================
+   DETAILS CONTROLLER UTILITIES
+   Added: 2025-12-21 for Phase 7 inline style elimination
+   ===================================================== */
+
+/* --- Opacity Utilities --- */
+.opacity-100 {
+  opacity: 1;
+}
+
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.opacity-30 {
+  opacity: 0.3;
+}
+
+/* --- Cursor Utilities --- */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-default {
+  cursor: default;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+/* --- Width Utilities --- */
+.w-24 {
+  width: 24px;
+}
+
+.w-12 {
+  width: 12px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+/* --- Height Utilities --- */
+.h-12 {
+  height: 12px;
+}
+
+/* --- Border Radius Utilities --- */
+.rounded-sm {
+  border-radius: 3px;
+}
+
+.rounded-md {
+  border-radius: 6px;
+}
+
+.rounded-lg {
+  border-radius: 10px;
+}
+
+/* --- Variable Type Pill (Function Parameters) --- */
+.variable-type-pill {
+  width: 24px;
+  height: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 4px;
+  display: inline-block;
+}
+
+/* --- Color States for Disabled Elements --- */
+.disabled-state {
+  opacity: 0.5;
+}
+
+.enabled-state {
+  opacity: 1;
+}
+
+.text-disabled {
+  color: #666666;
+}
+
+.text-enabled {
+  color: #ffffff;
+}
+
+/* --- Min-Width Utilities --- */
+.min-w-10 {
+  min-width: 10px;
+}
+
+/* --- Padding Left Utilities --- */
+.pl-1 {
+  padding-left: 4px;
+}
+
+.pl-2 {
+  padding-left: 8px;
+}
+
+.pl-3 {
+  padding-left: 12px;
+}
+
+/* --- Justify Content Utilities --- */
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+/* --- Phase 7 Refactor: New Spacing & UI Utilities --- */
+.pl-4 {
+  padding-left: 35px;
+}
+
+.pt-1 {
+  padding-top: 4px;
+}
+
+.mb-xs {
+  margin-bottom: 2px;
+}
+
+.menu-item-suggested {
+  background-color: rgba(76, 175, 80, 0.1) !important;
+}
+
+.pin-color-circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 1px solid black;
+}
+
+/* NeedNodeModal Specific Classes */
+.modal-content-medium {
+  max-width: 600px;
+}
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.form-row-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.label-fixed {
+  width: 120px;
+  text-align: right;
+  flex-shrink: 0;
+  display: inline-block;
+  margin-bottom: 0;
+}
+.label-fixed-sm {
+  font-size: 11px;
+  width: 120px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.task-form-panel {
+  background: #2a2a2a;
+  padding: 10px;
+  border: 1px solid #444;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+.task-form-title {
+  margin-top: 0;
+  color: #ddd;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+.req-list-panel {
+  background: #222;
+  padding: 5px;
+  max-height: 100px;
+  overflow-y: auto;
+  font-size: 11px;
+  color: #aaa;
+  border: 1px solid #444;
+  margin-bottom: 5px;
+}
+.criterion-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+.criterion-params-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 10px;
+}
+.label-param {
+  min-width: 110px;
+  font-size: 11px;
+  color: #aaa;
+}
+.input-param {
+  flex: 1;
+  font-size: 11px;
+  background: #111;
+  color: white;
+  border: 1px solid #444;
+  padding: 3px 6px;
+  border-radius: 2px;
+}
+.btn-delete-red {
+  padding: 4px 8px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-delete-red:hover {
+  background: #b71c1c;
+}
+.req-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #333;
+}
+.btn-delete-text {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  transition: color 0.2s;
+}
+.btn-delete-text:hover {
+  color: #ff5252;
+}
+.full-overlay {
+  display: flex;
+  z-index: 999999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Flex and Gap Utilities */
+.gap-1 {
+  gap: 4px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.flex-1 {
+  flex: 1;
+}
+
+/* Node.js Refactor Utilities */
+.breakpoint-icon {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  z-index: 10;
+}
+.dev-badge {
+  font-size: 8px;
+  color: #aaa;
+  margin-left: auto;
+  padding-right: 4px;
+  font-style: italic;
+}
+.need-node-criteria-panel {
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+}
+.need-node-criterion-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+  align-items: center;
+  color: #ccc;
+}
+.input-wide {
+  width: 80px;
+}
+.input-narrow {
+  width: 40px;
+}
+.pin-split-group {
+  display: flex;
+  flex-direction: column;
+}
+.pin-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Apply to existing selectors if needed */
+.node-literal-input {
+  background-color: #111;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 2px;
+  margin-left: 5px;
+}
+.node-title {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/* Bottom Panel Active State */
+.active-bottom-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  height: 100% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.find-toolbar-active {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 30px !important;
+}
+
+.search-box-active {
+  display: flex !important;
+  flex: 1 !important;
+  min-width: 200px !important;
+}
+
+.find-input-active {
+  display: block !important;
+  min-width: 150px !important;
+  min-height: 24px !important;
+  width: 100% !important;
+}
+
+/* DetailsTypeSelector Refactor Utilities */
+.type-option-pill {
+  width: 12px;
+  border-radius: 4px;
+}
+.container-type-menu {
+  position: fixed;
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  width: 120px;
+  z-index: 6001;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+.type-option-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.w-20 {
+  width: 20px;
+}
+.px-3 {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.py-1 {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* ComponentSelector Refactor Utilities */
+.component-selector-header-icon {
+  margin-right: 6px;
+  font-size: 10px;
+}
+.component-selector-arrow {
+  margin-right: 6px;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+.component-selector-item-icon {
+  margin-right: 8px;
+  font-size: 11px;
+  color: #999;
+}
+.w-12 {
+  width: 12px;
+}
+.z-max {
+  z-index: 10000;
+}
+
+/* DebuggerController Refactor Utilities */
+.debug-panel-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 3px;
+}
+.stack-frame-current {
+  color: #4caf50;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 2px 0;
+}
+.stack-frame-item {
+  color: #aaa;
+  cursor: pointer;
+  padding: 2px 0 2px 10px;
+}
+.collapsible-arrow {
+  margin-right: 5px;
+  width: 10px;
+}
+.placeholder-italic {
+  padding: 8px;
+  color: #666;
+  font-style: italic;
+}
+.details-header-uppercase {
+  color: #ddd;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.w-60 {
+  width: 60%;
+}
+.sidebar-section-top-border {
+  border-top: 1px solid #333;
+  margin-top: 0px;
+}
+.ue5-local-var-icon {
+  width: 8px;
+  height: 4px;
+  border-radius: 2px;
+  margin-left: auto;
+}
+.find-result-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #333;
+  font-size: 12px;
+  color: #ccc;
+  transition: background-color 0.1s;
+}
+.find-result-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.find-result-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.find-result-type {
+  color: #aaa;
+  margin-right: 5px;
+}
+.opacity-70 {
+  opacity: 0.7;
+}
+.w-16 {
+  width: 16px;
+}
+.bg-success {
+  background-color: #4caf50 !important;
+}
+
+/* =====================================================
+   ACTIONMENU.JS INLINE STYLE MIGRATION
+   Added: 2025-12-21 for Phase 1 inline style elimination
+   ===================================================== */
+
+/* Variable/Component Pill Indicator */
+.var-pill {
+  display: inline-block;
+  width: 8px;
+  height: 4px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Search Highlight */
+.search-highlight {
+  background-color: #4caf50;
+  color: #000;
+  font-weight: bold;
+  padding: 0 2px;
+}
+
+/* Pin Color Circle (for action menu header) */
+.pin-color-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+/* Suggested Menu Item */
+.menu-item-suggested {
+  border-left: 2px solid #4caf50;
+  padding-left: 22px !important;
+}
+
+/* Smaller spacing utility */
+.mb-xs {
+  margin-bottom: 2px;
+}
+.pt-1 {
+  padding-top: 4px;
+}
+.pl-2 {
+  padding-left: 8px;
+}
+.pl-4 {
+  padding-left: 16px;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+
+/* Split Pin Alignment */
+.pin-split-group.align-start {
+  align-items: flex-start;
+}
+.pin-split-group.align-end {
+  align-items: flex-end;
+}
+
+/* Right Panel Tabs (Details/Palette) */
+.right-panel-tabs {
+  display: flex;
+  background: var(--ue5-bg-dark, #1a1a1a);
+  border-bottom: 1px solid var(--ue5-border, #333);
+}
+
+.right-panel-tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: var(--ue5-text-muted, #888);
+  font-size: 12px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.right-panel-tab:hover {
+  color: var(--ue5-text, #ccc);
+}
+
+.right-panel-tab.active {
+  color: var(--ue5-text, #fff);
+  border-bottom-color: var(--ue5-accent, #4a9eff);
+}
+
+#right-palette-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#right-palette-panel .panel-toolbar {
+  padding: 8px;
+  border-bottom: 1px solid var(--ue5-border, #333);
+}
+
+#right-palette-panel .panel-toolbar input {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--ue5-input-bg, #050505);
+  border: 1px solid var(--ue5-border, #333);
+  border-radius: 4px;
+  color: var(--ue5-text, #ccc);
+  font-size: 12px;
+}
+
+#right-palette-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+/* =====================================================
+   PHASE 7: INLINE STYLE ELIMINATION UTILITIES
+   Added: 2025-12-21
+   ===================================================== */
+
+/* --- Context Menu Positioning --- */
+.menu-fixed {
+  position: fixed;
+}
+
+.z-max {
+  z-index: 10000;
+}
+
+/* --- Simulation State Borders --- */
+.simulation-paused {
+  box-shadow: inset 0 0 0 4px #ffc107 !important;
+}
+
+.simulation-playing {
+  box-shadow: inset 0 0 0 2px #4caf50 !important;
+}
+
+.simulation-inactive {
+  box-shadow: none !important;
+}
+
+/* --- Component Item Selection --- */
+.component-item-selected {
+  background-color: rgba(100, 150, 255, 0.2);
+}
+
+/* --- Arrow Transforms --- */
+.arrow-collapsed {
+  transform: rotate(-90deg);
+}
+
+.arrow-expanded {
+  transform: rotate(0deg);
+}
+
+/* --- Dropdown Positioning Variants --- */
+.dropdown-attached {
+  position: absolute;
+  transform: none;
+}
+
+.dropdown-centered {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* --- Type Color Text --- */
+.text-exec {
+  color: var(--color-exec);
+}
+
+/* --- Display Utilities (additional) --- */
+.d-none {
+  display: none !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
+/* --- Margin Right Extras --- */
+.mr-1-5 {
+  margin-right: 6px;
+}
+
+/* =====================================================
+   CLASS DEFAULTS PANEL STYLES (UE5 CDO Parity)
+   Added: 2025-12-21
+   ===================================================== */
+
+/* Class Defaults Header (Blueprint icon + name) */
+.class-defaults-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(to bottom, #2a2a2a, #1e1e1e);
+  border-bottom: 1px solid #333;
+}
+
+.class-defaults-header .bp-icon {
+  background: #3a6ea5; /* Darker, more muted blue */
+  color: white;
+  font-weight: bold;
+  font-size: 9px;
+  padding: 3px 5px;
+  border-radius: 3px;
+}
+
+.class-defaults-header .bp-name {
+  font-weight: 600;
+  color: #fff;
+  font-size: 12px;
+}
+
+.class-defaults-header .bp-parent {
+  color: #666; /* Darker gray for (Self) */
+  font-size: 11px;
+}
+
+/* Section Header (Collapsible) */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  color: #fff !important; /* White text - forced */
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0 0 8px 0;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.section-header:hover {
+  color: #ccc;
+}
+
+.section-header i {
+  font-size: 10px;
+  transition: transform 0.2s;
+  color: #888; /* Gray caret */
+}
+
+.section-header.collapsed i {
+  transform: rotate(-90deg);
+}
+
+/* Parent Class Link */
+.parent-class-link {
+  color: #ccc; /* Gray like UE5 - not blue */
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.parent-class-link:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+/* Checkbox Wrapper */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+/* Actor Tags Container */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.actor-tag {
+  background: #3a3a3a;
+  color: #ccc;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actor-tag .tag-remove {
+  color: #888;
+  cursor: pointer;
+  font-size: 8px;
+}
+
+.actor-tag .tag-remove:hover {
+  color: #ff5555;
+}
+
+.tag-input {
+  flex: 1 1 60px;
+  min-width: 60px;
+  max-width: 120px;
+  padding: 2px 6px !important;
+  font-size: 10px !important;
+}
+
+/* Variable Defaults Section */
+.variable-defaults-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.variable-default-row {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.variable-default-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.no-variables-msg {
+  color: #666;
+  font-size: 11px;
+  font-style: italic;
+  padding: 8px 0;
+  margin: 0;
+}
+
+/* Replication/Spatial Dependent Rows (disabled state) */
+.replication-dependent,
+.spatial-dependent {
+  transition: opacity 0.2s;
+}
+
+.replication-dependent input:disabled,
+.replication-dependent select:disabled,
+.spatial-dependent input:disabled,
+.spatial-dependent select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Events Section */
+.events-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-row {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  gap: 8px;
+  border-bottom: 1px solid #1a1a1a;
+  transition: background-color 0.15s;
+}
+
+.event-row:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.event-row:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.event-icon {
+  color: #c8a964; /* Yellow like section headers */
+  font-size: 10px;
+  width: 14px;
+  text-align: center;
+  margin-right: 6px;
+}
+
+.event-name {
+  flex: 1;
+  color: #ccc;
+  font-size: 11px;
+}
+
+.event-add-btn {
+  background: #3a3a3a;
+  border: 1px solid #555;
+  color: #ccc;
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.event-add-btn:hover {
+  background: #4a4a4a;
+  border-color: #777;
+  color: #fff;
+}
+
+.event-add-btn i {
+  font-size: 10px;
+}
+
+/* --- VFX Simulation Effects --- */
+.vfx-simulation-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.vfx-simulation-particle i {
+  filter: drop-shadow(0 0 8px rgba(255, 152, 0, 0.8));
+  animation: vfx-flicker 0.2s infinite alternate;
+}
+
+@keyframes vfx-flicker {
+  from { opacity: 0.8; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+/* --- UE5 Checkbox (Consolidated) --- */
+.ue5-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #080808;
+  border: 1px solid #555;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.ue5-checkbox:checked {
+  background-color: #080808;
+  border-color: #555;
+}
+
+.ue5-checkbox:checked::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 12px;
+  color: #0070e0;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.ue5-checkbox:hover {
+  border-color: #888;
+}
+
+/* === CONTENT BROWSER PANEL === */
+.content-browser-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: #1a1a1a;
+  border-top: 2px solid #333;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.content-browser-panel.open {
+  transform: translateY(0);
+}
+
+.cb-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #222;
+  border-bottom: 1px solid #333;
+  gap: 8px;
+}
+
+.cb-header i {
+  color: #f0a020;
+}
+
+.cb-title {
+  flex: 1;
+  font-weight: 600;
+  color: #eee;
+}
+
+.cb-close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.cb-close-btn:hover {
+  color: #fff;
+}
+
+.cb-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  gap: 8px;
+}
+
+.cb-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #3a3a3a;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #4caf50;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.cb-btn:hover {
+  background: #444;
+}
+
+.cb-search {
+  flex: 1;
+  max-width: 300px;
+  padding: 4px 8px;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #eee;
+  font-size: 11px;
+}
+
+.cb-search::placeholder {
+  color: #666;
+}
+
+.cb-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.cb-tree {
+  width: 200px;
+  background: #1f1f1f;
+  border-right: 1px solid #333;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.cb-folder {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 11px;
+}
+
+.cb-folder:hover {
+  background: #2a2a2a;
+}
+
+.cb-folder.selected {
+  background: #0d4277;
+  color: #fff;
+}
+
+.cb-folder i {
+  color: #f0a020;
+}
+
+.cb-folder-count {
+  color: #666;
+  font-size: 10px;
+}
+
+.cb-assets {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.cb-asset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  background: #2a2a2a;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cb-asset:hover {
+  background: #333;
+  border-color: #555;
+}
+
+.cb-asset.selected {
+  background: #0d4277;
+  border-color: #1e88e5;
+}
+
+.cb-asset-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #0099ff;
+  margin-bottom: 6px;
+}
+
+.cb-asset-name {
+  font-size: 11px;
+  color: #eee;
+  text-align: center;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.cb-asset-type {
+  font-size: 9px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.cb-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #666;
+  font-size: 12px;
+  padding: 40px;
+}
+
+.cb-empty i {
+  font-size: 32px;
+}
+
+.cb-status {
+  padding: 4px 12px;
+  background: #222;
+  border-top: 1px solid #333;
+  font-size: 10px;
+  color: #888;
+}
+

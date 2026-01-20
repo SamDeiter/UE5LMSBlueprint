@@ -1,11 +1,7 @@
 /**
- * FlowControlNodes - Node definitions for Flow Control category
- * Contains Branch, Sequence, loops, gates, and other control flow nodes.
- * @module FlowControlNodes
+ * FlowControlNodes - Auto-generated from NodeDefinitions.js
+ * Contains node definitions for this category.
  */
-/** @typedef {import('./types.js').NodeDefinition} NodeDefinition */
-
-/** @type {Object.<string, NodeDefinition>} */
 export const FlowControlNodes = {
   Branch: {
     title: "Branch",
@@ -214,28 +210,5 @@ export const FlowControlNodes = {
     customData: {
       startIndex: 0,
     },
-  },
-  Reroute: {
-    title: "Reroute",
-    type: "reroute-node",
-    category: "Flow Control",
-    executor: "FlowControl", // Logic is pass-through, but needs an executor
-    icon: "fa-circle", // Simple dot
-    pins: [
-      { id: "in", name: "", type: "wildcard", dir: "in" },
-      { id: "out", name: "", type: "wildcard", dir: "out" },
-    ],
-  },
-  IsValid: {
-    title: "Is Valid",
-    type: "flow-node",
-    category: "Flow Control",
-    icon: "fa-question-circle",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "input_object", name: "Input Object", type: "object", dir: "in" },
-      { id: "is_valid", name: "Is Valid", type: "exec", dir: "out" },
-      { id: "is_not_valid", name: "Is Not Valid", type: "exec", dir: "out" },
-    ],
   },
 };

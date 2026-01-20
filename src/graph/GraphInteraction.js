@@ -3,7 +3,6 @@
  */
 
 import { DRAG_DATA_PREFIXES } from "../config/Constants.js";
-import { ContextMenuHelper } from "../ui/ContextMenuHelper.js";
 
 export class GraphInteraction {
   constructor(controller) {
@@ -54,23 +53,6 @@ export class GraphInteraction {
     this.editor.addEventListener("drop", this.handleDrop.bind(this));
     document.addEventListener("keydown", this.handleKeyDown.bind(this));
     document.addEventListener("keyup", this.handleKeyUp.bind(this));
-
-    // Double-click handler for Timeline nodes (opens Timeline Editor)
-    this.nodesContainer.addEventListener("dblclick", (e) => {
-      const nodeEl = e.target.closest(".node");
-      if (!nodeEl) return;
-
-      const node = this.controller.nodes.get(nodeEl.id);
-      if (node && node.nodeKey === "Timeline") {
-        e.preventDefault();
-        e.stopPropagation();
-        // Dynamically import and open Timeline Editor
-        import("../ui/TimelineEditorPanel.js").then(({ timelineEditor }) => {
-          timelineEditor.app = this.app;
-          timelineEditor.open(node);
-        });
-      }
-    });
   }
 
   handleKeyDown(e) {
@@ -269,74 +251,33 @@ export class GraphInteraction {
 
     // 1. Wiring Start
     if (pinElement && e.button === 0) {
-      // FIX: Reroute nodes are essentially just pins.
-      // However, we want to allow simple Drag-To-Wire from them without ALT.
-      // But we still need to be able to move them.
-      const isReroute =
-        nodeElement && nodeElement.classList.contains("reroute-node");
+      e.stopPropagation();
+      e.preventDefault();
+      this.isWiring = true;
+      const pinId = pinElement.dataset.pinId;
+      this.activePin = this.controller.findPinById(pinId);
 
-      // Check if clicking the visual knot (center drag point) for reroute movement
-      const isKnotClick = e.target.classList.contains("visual-knot");
-
-      // If it's a reroute node, and we are NOT holding Alt, checks:
-      if (isReroute && !e.altKey) {
-        // If clicking the visual knot, allow node movement instead of wiring
-        if (isKnotClick) {
-          // Fall through to Node Selection/Movement logic below
-        } else if (e.ctrlKey || e.shiftKey) {
-          // If holding Ctrl/Shift, it's definitely selection/movement
-          // Fall through to Node Selection logic
-        } else {
-          // Clicking on pin area (not knot) - start wiring
-          if (this.controller.selectedNodes.has(nodeElement.id)) {
-            // Already selected: Assume user might want to move it.
-            // Fall through to Move logic.
-          } else {
-            // Not selected: Start Wiring immediately.
-            e.stopPropagation();
-            e.preventDefault();
-            this.isWiring = true;
-            const pinId = pinElement.dataset.pinId;
-            this.activePin = this.controller.findPinById(pinId);
-            if (this.activePin) {
-              this.app.wiring.updateGhostWire(e, this.activePin);
-            }
-            document.addEventListener("mousemove", this.handleGlobalMouseMove);
-            document.addEventListener("mouseup", this.handleGlobalMouseUp);
-            return;
-          }
-        }
-      } else {
-        // Standard pin behavior (or Alt+Click Reroute)
-        e.stopPropagation();
-        e.preventDefault();
-
-        this.isWiring = true;
-        const pinId = pinElement.dataset.pinId;
-        this.activePin = this.controller.findPinById(pinId);
-
-        if (e.altKey && this.activePin) {
-          if (this.activePin.isConnected()) {
-            this.app.wiring.breakPinLinks(this.activePin.id);
-          }
-        }
-
-        if (
-          this.activePin &&
-          this.activePin.dir === "in" &&
-          this.activePin.isConnected()
-        ) {
+      if (e.altKey && this.activePin) {
+        if (this.activePin.isConnected()) {
           this.app.wiring.breakPinLinks(this.activePin.id);
         }
-
-        if (this.activePin) {
-          this.app.wiring.updateGhostWire(e, this.activePin);
-        }
-
-        document.addEventListener("mousemove", this.handleGlobalMouseMove);
-        document.addEventListener("mouseup", this.handleGlobalMouseUp);
-        return;
       }
+
+      if (
+        this.activePin &&
+        this.activePin.dir === "in" &&
+        this.activePin.isConnected()
+      ) {
+        this.app.wiring.breakPinLinks(this.activePin.id);
+      }
+
+      if (this.activePin) {
+        this.app.wiring.updateGhostWire(e, this.activePin);
+      }
+
+      document.addEventListener("mousemove", this.handleGlobalMouseMove);
+      document.addEventListener("mouseup", this.handleGlobalMouseUp);
+      return;
     }
 
     // 2. Node Dragging/Selection
@@ -536,53 +477,18 @@ export class GraphInteraction {
       this.isWiring = false;
       this.app.wiring.ghostWire.classList.add("hidden");
 
-      let targetPin = null;
       const pinElement = e.target.closest(".pin-container");
-      const nodeElement = e.target.closest(".node");
-
       if (pinElement) {
         const pinId = pinElement.dataset.pinId;
-        targetPin = this.controller.findPinById(pinId);
-
-        // Special handling for reroute nodes - select the COMPATIBLE pin
-        // If clicking on a reroute node, choose the pin that matches the activePin's direction
-        if (
-          targetPin &&
-          targetPin.node &&
-          targetPin.node.type === "reroute-node"
-        ) {
-          const node = targetPin.node;
-          if (node.pinsIn[0] && node.pinsOut[0] && this.activePin) {
-            // If activePin is output, we need reroute's input pin
-            // If activePin is input, we need reroute's output pin
-            if (this.activePin.dir === "out") {
-              targetPin = node.pinsIn[0]; // Connect output -> reroute input
-            } else {
-              targetPin = node.pinsOut[0]; // Connect input <- reroute output
-            }
-          }
+        const targetPin = this.controller.findPinById(pinId);
+        if (targetPin && this.activePin && targetPin.id !== this.activePin.id) {
+          this.app.wiring.createConnection(this.activePin, targetPin);
         }
-      } else if (
-        nodeElement &&
-        nodeElement.classList.contains("reroute-node")
-      ) {
-        // Fallback: clicking on reroute node but not on pin-container
-        const node = this.controller.nodes.get(nodeElement.id);
-        if (node && node.pinsIn[0] && node.pinsOut[0] && this.activePin) {
-          if (this.activePin.dir === "out") {
-            targetPin = node.pinsIn[0];
-          } else {
-            targetPin = node.pinsOut[0];
-          }
+      } else {
+        if (this.hasDragged && this.activePin) {
+          this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
         }
       }
-
-      if (targetPin && this.activePin && targetPin.id !== this.activePin.id) {
-        this.app.wiring.createConnection(this.activePin, targetPin);
-      } else if (!targetPin && this.hasDragged && this.activePin) {
-        this.app.actionMenu.show(e.clientX, e.clientY, this.activePin);
-      }
-
       this.activePin = null;
     }
 
@@ -783,43 +689,82 @@ export class GraphInteraction {
   }
 
   showNodeContextMenu(e, node, variable) {
-    const items = [];
-    const typeConfig = {
-      vector: { make: "MakeVector", break: "BreakVector", icon: "fa-plus" },
-      rotator: { make: "MakeRotator", break: "BreakRotator", icon: "fa-sync" },
-      transform: {
-        make: "MakeTransform",
-        break: "BreakTransform",
-        icon: "fa-cube",
-      },
+    const menu = document.createElement("div");
+    menu.className = "context-menu";
+    
+    menu.style.left = `${e.clientX}px`;
+    menu.style.top = `${e.clientY}px`;
+    menu.classList.add("z-max");
+    
+
+    const createMenuItem = (label, icon, onClick) => {
+      const item = document.createElement("div");
+      item.className = "menu-item";
+      item.innerHTML = `<i class="${icon}" class="mr-1 w-12"></i> ${label}`;
+      item.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        document.body.removeChild(menu);
+        onClick();
+      });
+      return item;
     };
 
-    if (variable && typeConfig[variable.type]) {
-      const cfg = typeConfig[variable.type];
-      const typeName =
-        variable.type.charAt(0).toUpperCase() + variable.type.slice(1);
-
-      items.push({
-        label: `Make ${typeName}`,
-        icon: `fas ${cfg.icon}`,
-        onClick: () => {
+    // Add Make/Break options based on type
+    if (variable.type === "vector") {
+      menu.appendChild(
+        createMenuItem("Make Vector", "fas fa-plus", () => {
           const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode(cfg.make, worldPos.x + 50, worldPos.y);
-        },
-      });
-      items.push({
-        label: `Break ${typeName}`,
-        icon: `fas ${cfg.icon}`,
-        onClick: () => {
+          this.controller.addNode("MakeVector", worldPos.x + 50, worldPos.y);
+        })
+      );
+      menu.appendChild(
+        createMenuItem("Break Vector", "fas fa-minus", () => {
           const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
-          this.controller.addNode(cfg.break, worldPos.x + 50, worldPos.y);
-        },
-      });
+          this.controller.addNode("BreakVector", worldPos.x + 50, worldPos.y);
+        })
+      );
+    } else if (variable.type === "rotator") {
+      menu.appendChild(
+        createMenuItem("Make Rotator", "fas fa-sync", () => {
+          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+          this.controller.addNode("MakeRotator", worldPos.x + 50, worldPos.y);
+        })
+      );
+      menu.appendChild(
+        createMenuItem("Break Rotator", "fas fa-sync", () => {
+          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+          this.controller.addNode("BreakRotator", worldPos.x + 50, worldPos.y);
+        })
+      );
+    } else if (variable.type === "transform") {
+      menu.appendChild(
+        createMenuItem("Make Transform", "fas fa-cube", () => {
+          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+          this.controller.addNode("MakeTransform", worldPos.x + 50, worldPos.y);
+        })
+      );
+      menu.appendChild(
+        createMenuItem("Break Transform", "fas fa-cube", () => {
+          const worldPos = this.controller.getGraphCoords(e.clientX, e.clientY);
+          this.controller.addNode(
+            "BreakTransform",
+            worldPos.x + 50,
+            worldPos.y
+          );
+        })
+      );
     }
 
-    if (items.length > 0) {
-      ContextMenuHelper.show(e.clientX, e.clientY, items);
-    }
+    // Close menu on click outside
+    const closeMenu = () => {
+      if (document.body.contains(menu)) {
+        document.body.removeChild(menu);
+      }
+      document.removeEventListener("click", closeMenu);
+    };
+    setTimeout(() => document.addEventListener("click", closeMenu), 0);
+
+    document.body.appendChild(menu);
   }
 
   handlePinContextMenu(e) {

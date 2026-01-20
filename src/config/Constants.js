@@ -34,7 +34,6 @@ export const PIN_COLORS = {
   [PIN_TYPES.TRANSFORM]: "var(--color-transform)",
   [PIN_TYPES.OBJECT]: "var(--color-object)",
   [PIN_TYPES.ENUM]: "var(--color-enum)",
-  [PIN_TYPES.WILDCARD]: "var(--color-wildcard)",
   [PIN_TYPES.HITRESULT]: "#001A99", // Deep Blue
   DEFAULT: "#888888",
 };
@@ -73,7 +72,6 @@ export const NODE_TYPES = {
   FUNCTION: "function-node",
   ASSESSMENT: "assessment-node",
   CAST: "cast-node",
-  REROUTE: "reroute-node",
   COMMENT: "comment-node",
 };
 
@@ -114,3 +112,9 @@ export const GRAPH_CONSTANTS = {
 export const LATENT_NODE_TYPES = ["Timeline", "Delay"];
 
 export const STRUCT_TYPES = ["vector", "rotator", "transform"];
+
+export const BREAK_NODE_KEYS = {
+  vector: "BreakVector",
+  rotator: "BreakRotator",
+  transform: "BreakTransform",
+};

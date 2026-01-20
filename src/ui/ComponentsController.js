@@ -1,11 +1,10 @@
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { ComponentSelector } from "./ComponentSelector.js";
-import { BaseController } from "./BaseController.js";
 
-export class ComponentsController extends BaseController {
+export class ComponentsController {
   constructor(app) {
-    super(app); // Call BaseController constructor
     console.log("ComponentsController initialized (v2)");
+    this.app = app;
     this.selectedComponentIds = new Set(); // Changed to Set for multi-selection
     this.panel = document.getElementById("components-panel");
     this.listContainer = this.panel
@@ -23,7 +22,7 @@ export class ComponentsController extends BaseController {
 
   initEvents() {
     if (this.addBtn) {
-      this.addListener(this.addBtn, "click", (e) => {
+      this.addBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         this.showComponentSelector();
       });
@@ -31,7 +30,7 @@ export class ComponentsController extends BaseController {
 
     // Deselect when clicking on empty space in the panel
     if (this.panel) {
-      this.addListener(this.panel, "click", (e) => {
+      this.panel.addEventListener("click", (e) => {
         // If clicking directly on the panel or content area (not on an item)
         // More robust check: if we didn't click inside a tree-item, deselect.
         if (!e.target.closest(".tree-item")) {
@@ -182,13 +181,13 @@ export class ComponentsController extends BaseController {
     const newNo = noBtn.cloneNode(true);
     noBtn.parentNode.replaceChild(newNo, noBtn);
 
-    this.addListener(newYes, "click", () => {
+    newYes.addEventListener("click", () => {
       this.executeDeletion();
       modal.classList.add("hidden");
       modal.classList.remove("visible-flex");
     });
 
-    this.addListener(newNo, "click", () => {
+    newNo.addEventListener("click", () => {
       modal.classList.add("hidden");
       modal.classList.remove("visible-flex");
     });
@@ -247,6 +246,7 @@ export class ComponentsController extends BaseController {
     // Force immediate save to history and persistence
     this.app.history.saveState("component delete");
     this.app.persistence.save();
+
   }
 
   // Legacy method for backward compatibility if called directly
@@ -282,26 +282,19 @@ export class ComponentsController extends BaseController {
           customData: { componentId: comp.id },
         });
 
-        // Register Set node - UE5 style: title is just "SET", component name on pins
+        // Register Set node
         const setKey = `SetComponent_${comp.id}`;
         registry.register(setKey, {
-          title: "SET",
+          title: `Set ${comp.name}`,
           category: "Components",
           type: "function-node",
-          variableType: "object", // Ensure correct header color (blue/cyan)
-          customData: { componentId: comp.id, componentName: comp.name },
+          variableType: "object", // Ensure correct header color (blue)
           pins: [
-            { id: "exec_in", name: "", type: "exec", dir: "in" },
-            {
-              id: "comp_in",
-              name: comp.name,
-              type: comp.type,
-              dir: "in",
-              noDefaultValue: true,
-            },
-            { id: "exec_out", name: "", type: "exec", dir: "out" },
-            { id: "comp_out", name: "", type: comp.type, dir: "out" },
+            { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+            { id: "comp_in", name: comp.name, type: comp.type, dir: "in" },
+            { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
           ],
+          customData: { componentId: comp.id },
         });
       });
     }
@@ -335,9 +328,6 @@ export class ComponentsController extends BaseController {
       this.expandedComponents = new Set(["root"]); // Root is expanded by default
     }
 
-    // Use DocumentFragment to batch DOM updates
-    const fragment = document.createDocumentFragment();
-
     // Render Root Component (Self) with expand/collapse
     const rootItem = this.createComponentTreeItem(
       {
@@ -349,16 +339,13 @@ export class ComponentsController extends BaseController {
       0,
       true
     );
-    fragment.appendChild(rootItem);
+    this.listContainer.appendChild(rootItem);
 
     // Render component hierarchy recursively
-    this.renderComponentChildren("root", 1, fragment);
-
-    // Single DOM update
-    this.listContainer.appendChild(fragment);
+    this.renderComponentChildren("root", 1);
   }
 
-  renderComponentChildren(parentId, depth, fragment) {
+  renderComponentChildren(parentId, depth) {
     if (!this.app.components) return;
 
     // Find all children of this parent
@@ -368,11 +355,11 @@ export class ComponentsController extends BaseController {
 
     children.forEach((comp) => {
       const item = this.createComponentTreeItem(comp, depth, false);
-      fragment.appendChild(item);
+      this.listContainer.appendChild(item);
 
       // Recursively render children if expanded
       if (this.expandedComponents.has(comp.id)) {
-        this.renderComponentChildren(comp.id, depth + 1, fragment);
+        this.renderComponentChildren(comp.id, depth + 1);
       }
     });
   }
@@ -415,7 +402,7 @@ export class ComponentsController extends BaseController {
     // Expand/collapse functionality
     if (hasChildren) {
       const arrow = item.querySelector(".expand-arrow");
-      this.addListener(arrow, "click", (e) => {
+      arrow.addEventListener("click", (e) => {
         e.stopPropagation();
         if (this.expandedComponents.has(comp.id)) {
           this.expandedComponents.delete(comp.id);
@@ -429,7 +416,7 @@ export class ComponentsController extends BaseController {
     // Make draggable - serves both for graph (Get node) and reparenting
     if (!isRoot) {
       item.draggable = true;
-      this.addListener(item, "dragstart", (e) => {
+      item.addEventListener("dragstart", (e) => {
         // We use COMPONENT_REPARENT as the universal type.
         // The GraphInteraction handles this by creating a Get node.
         // The ComponentsController handles this by reparenting.
@@ -440,18 +427,18 @@ export class ComponentsController extends BaseController {
     }
 
     // Allow dropping components onto this item to reparent
-    this.addListener(item, "dragover", (e) => {
+    item.addEventListener("dragover", (e) => {
       e.preventDefault();
       e.stopPropagation();
       item.classList.add("component-item-selected");
     });
 
-    this.addListener(item, "dragleave", (e) => {
+    item.addEventListener("dragleave", (e) => {
       e.stopPropagation();
       item.classList.remove("component-item-selected");
     });
 
-    this.addListener(item, "drop", (e) => {
+    item.addEventListener("drop", (e) => {
       e.preventDefault();
       e.stopPropagation();
       item.classList.remove("component-item-selected");
@@ -477,7 +464,7 @@ export class ComponentsController extends BaseController {
 
     // Selection functionality
     if (!isRoot) {
-      this.addListener(item, "click", (e) => {
+      item.addEventListener("click", (e) => {
         // Don't select if clicking arrow
         if (e.target.classList.contains("expand-arrow")) return;
 
@@ -512,11 +499,5 @@ export class ComponentsController extends BaseController {
       current = this.app.components.get(current.parentId);
     }
     return false;
-  }
-
-  // Cleanup method - called when controller is destroyed
-  cleanup() {
-    super.cleanup(); // Remove all event listeners and timers
-    console.log("ComponentsController cleaned up");
   }
 }

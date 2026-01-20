@@ -45,24 +45,20 @@ export const EventNodes = {
     category: "Events",
     executor: "Event",
     icon: "fa-bolt",
-    isRenameable: true, // User can rename the event
-    allowAddPin: true, // User can add data output pins
     pins: [
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      // User-defined output pins are added dynamically
+      // Removed delegate_out
     ],
   },
   CallCustomEvent: {
     title: "Call Custom Event",
     type: "function-node",
     category: "Events",
-    executor: "Function",
+    executor: "Event",
     icon: "f",
-    allowAddPin: true, // User can add data input pins (must match CustomEvent)
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      // User-defined input pins are added dynamically
     ],
   },
   EventActorBeginOverlap: {
@@ -259,251 +255,6 @@ export const EventNodes = {
         id: "end_play_reason_out",
         name: "End Play Reason",
         type: "int",
-        dir: "out",
-      },
-    ],
-  },
-  // --- Pawn/Controller Events ---
-  EventOnPossess: {
-    title: "Event On Possess",
-    type: "event-node",
-    category: "Events|Pawn",
-    executor: "Event",
-    icon: "fa-user-check",
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      {
-        id: "new_controller_out",
-        name: "New Controller",
-        type: "object",
-        dir: "out",
-      },
-    ],
-  },
-  EventOnUnpossess: {
-    title: "Event On Unpossess",
-    type: "event-node",
-    category: "Events|Pawn",
-    executor: "Event",
-    icon: "fa-user-minus",
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      {
-        id: "old_controller_out",
-        name: "Old Controller",
-        type: "object",
-        dir: "out",
-      },
-    ],
-  },
-  // --- Component Events ---
-  EventOnComponentHit: {
-    title: "Event Component Hit",
-    type: "event-node",
-    category: "Events|Components",
-    executor: "Event",
-    icon: "fa-hand-rock",
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      {
-        id: "hit_component_out",
-        name: "Hit Component",
-        type: "object",
-        dir: "out",
-      },
-      {
-        id: "other_actor_out",
-        name: "Other Actor",
-        type: "object",
-        dir: "out",
-      },
-      { id: "other_comp_out", name: "Other Comp", type: "object", dir: "out" },
-      {
-        id: "normal_impulse_out",
-        name: "Normal Impulse",
-        type: "vector",
-        dir: "out",
-      },
-      { id: "hit_out", name: "Hit", type: "object", dir: "out" },
-    ],
-  },
-  EventOnComponentBeginOverlap: {
-    title: "Event Component Begin Overlap",
-    type: "event-node",
-    category: "Events|Components",
-    executor: "Event",
-    icon: "fa-compress-arrows-alt",
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      {
-        id: "overlapped_component_out",
-        name: "Overlapped Component",
-        type: "object",
-        dir: "out",
-      },
-      {
-        id: "other_actor_out",
-        name: "Other Actor",
-        type: "object",
-        dir: "out",
-      },
-      { id: "other_comp_out", name: "Other Comp", type: "object", dir: "out" },
-      {
-        id: "other_body_index_out",
-        name: "Other Body Index",
-        type: "int",
-        dir: "out",
-      },
-      { id: "from_sweep_out", name: "From Sweep", type: "bool", dir: "out" },
-      {
-        id: "sweep_result_out",
-        name: "Sweep Result",
-        type: "object",
-        dir: "out",
-      },
-    ],
-  },
-  EventOnComponentEndOverlap: {
-    title: "Event Component End Overlap",
-    type: "event-node",
-    category: "Events|Components",
-    executor: "Event",
-    icon: "fa-expand-arrows-alt",
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      {
-        id: "overlapped_component_out",
-        name: "Overlapped Component",
-        type: "object",
-        dir: "out",
-      },
-      {
-        id: "other_actor_out",
-        name: "Other Actor",
-        type: "object",
-        dir: "out",
-      },
-      { id: "other_comp_out", name: "Other Comp", type: "object", dir: "out" },
-      {
-        id: "other_body_index_out",
-        name: "Other Body Index",
-        type: "int",
-        dir: "out",
-      },
-    ],
-  },
-  // --- Replication Events ---
-  EventOnRep: {
-    title: "OnRep Notify",
-    type: "event-node",
-    category: "Events|Replication",
-    executor: "Event",
-    icon: "fa-sync",
-    isRenameable: true,
-    pins: [{ id: "exec_out", name: "Exec", type: "exec", dir: "out" }],
-  },
-  // --- Input Events ---
-  EventInputAction: {
-    title: "Input Action",
-    type: "event-node",
-    category: "Events|Input",
-    executor: "Event",
-    icon: "fa-gamepad",
-    isRenameable: true,
-    pins: [
-      { id: "pressed_out", name: "Pressed", type: "exec", dir: "out" },
-      { id: "released_out", name: "Released", type: "exec", dir: "out" },
-      { id: "key_out", name: "Key", type: "name", dir: "out" },
-    ],
-  },
-  EventInputAxis: {
-    title: "Input Axis",
-    type: "event-node",
-    category: "Events|Input",
-    executor: "Event",
-    icon: "fa-arrows-alt",
-    isRenameable: true,
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "axis_value_out", name: "Axis Value", type: "float", dir: "out" },
-    ],
-  },
-  // --- Event Dispatchers (Delegates) ---
-  EventDispatcherEvent: {
-    title: "Event Dispatcher",
-    type: "event-node",
-    category: "Events|Dispatchers",
-    executor: "Event",
-    icon: "fa-broadcast-tower",
-    isRenameable: true,
-    allowAddPin: true, // User can add data output pins
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      // Signature pins added dynamically by user
-    ],
-  },
-  CallEventDispatcher: {
-    title: "Call",
-    type: "function-node",
-    category: "Events|Dispatchers",
-    executor: "DispatcherCall",
-    icon: "fa-bullhorn",
-    isRenameable: true,
-    allowAddPin: true, // User can add data input pins to match signature
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      // Signature pins added dynamically by user
-    ],
-  },
-  BindEventDispatcher: {
-    title: "Bind Event",
-    type: "function-node",
-    category: "Events|Dispatchers",
-    executor: "DispatcherBind",
-    icon: "fa-link",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "event_in", name: "Event", type: "object", dir: "in" },
-    ],
-  },
-  UnbindEventDispatcher: {
-    title: "Unbind Event",
-    type: "function-node",
-    category: "Events|Dispatchers",
-    executor: "DispatcherUnbind",
-    icon: "fa-unlink",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "event_in", name: "Event", type: "object", dir: "in" },
-    ],
-  },
-  UnbindAllEventDispatchers: {
-    title: "Unbind All",
-    type: "function-node",
-    category: "Events|Dispatchers",
-    executor: "DispatcherUnbindAll",
-    icon: "fa-times-circle",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-    ],
-  },
-  EventAnyDamage: {
-    title: "Event Any Damage",
-    type: "event-node",
-    category: "Events",
-    executor: "Event",
-    icon: "fa-heart-broken",
-    pins: [
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-      { id: "damage_out", name: "Damage", type: "float", dir: "out" },
-      {
-        id: "instigator_out",
-        name: "Instigated By",
-        type: "object",
         dir: "out",
       },
     ],

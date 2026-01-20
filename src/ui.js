@@ -36,4 +36,3 @@ export {
 export { GraphsController } from "./ui/GraphsController.js";
 export { EventDispatcherController } from "./ui/EventDispatcherController.js";
 export { SearchController } from "./ui/SearchController.js";
-export { ContentBrowserPanel } from "./ui/ContentBrowserPanel.js";

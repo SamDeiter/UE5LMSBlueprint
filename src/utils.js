@@ -8,7 +8,7 @@ import {
   PIN_TYPE_CLASSES,
 } from "./config/Constants.js";
 
-export class Utils {
+class Utils {
   /**
    * Generates a unique ID string.
    * @param {string} [prefix='id'] - A prefix for the ID.
@@ -33,19 +33,7 @@ export class Utils {
    * @returns {string} The CSS color variable string.
    */
   static getPinColor(type) {
-    const lowerType = type.toLowerCase();
-    // Component types (AudioComponent, SceneComponent, etc.) use blue color
-    if (lowerType.endsWith("component")) {
-      return "#0066ff"; // UE5 Object/Component blue
-    }
-    return PIN_COLORS[lowerType] || PIN_COLORS.DEFAULT;
-  }
-
-  /**
-   * Alias for getPinColor - used by TypeSystem compatibility
-   */
-  static getTypeColor(type) {
-    return this.getPinColor(type);
+    return PIN_COLORS[type.toLowerCase()] || PIN_COLORS.DEFAULT;
   }
 
   /**
@@ -285,28 +273,6 @@ export class Utils {
       scale: { x: 1, y: 1, z: 1 },
     };
   }
-  /**
-   * Formats a property name (CamelCase) into a user-friendly display name (Spaced).
-   * e.g., "SpawnTransform" -> "Spawn Transform"
-   */
-  static formatNodeProperty(text) {
-    if (!text) return "";
-    // Insert a space before all caps that are followed by lowercase
-    // or are at the end of a word (simple heuristic for CamelCase)
-    let formatted = text.replace(/([A-Z][a-z])/g, " $1").trim();
-    // Handle cases like "CPF_Edit" -> "CPF Edit" or "SCROM" -> "SCROM"
-    formatted = formatted.replace(/([a-z])([A-Z])/g, "$1 $2");
-    // Ensure "UE5" or "LMS" don't get split weirdly if they are all caps
-    return formatted;
-  }
-
-  /**
-   * Creates a horizontal separator element for menus and panels.
-   * @returns {HTMLElement} A separator div element.
-   */
-  static createSeparator() {
-    const sep = document.createElement("div");
-    sep.className = "menu-separator";
-    return sep;
-  }
 }
+
+export { Utils };

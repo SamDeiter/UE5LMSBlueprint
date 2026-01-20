@@ -1,0 +1,53 @@
+export const PinDefaults = {
+  BOOL: false,
+  INT: 0,
+  INT64: 0,
+  BYTE: 0,
+  FLOAT: 0.0,
+  VECTOR: "(0,0,0)",
+  ROTATOR: "(0,0,0)",
+  TRANSFORM: "(0,0,0|0,0,0|1,1,1)",
+  STRING: "",
+  TEXT: "",
+  NAME: "",
+  OBJECT: null,
+  CLASS: null,
+  DEFAULT: "",
+};
+
+export const StructComponents = {
+  VECTOR: [
+    { name: "X", type: "float", default: 0.0 },
+    { name: "Y", type: "float", default: 0.0 },
+    { name: "Z", type: "float", default: 0.0 },
+  ],
+  ROTATOR: [
+    { name: "Roll", type: "float", default: 0.0 },
+    { name: "Pitch", type: "float", default: 0.0 },
+    { name: "Yaw", type: "float", default: 0.0 },
+  ],
+  TRANSFORM: [
+    { name: "Location", type: "vector", default: "(0,0,0)" },
+    { name: "Rotation", type: "rotator", default: "(0,0,0)" },
+    { name: "Scale", type: "vector", default: "(1,1,1)" },
+  ],
+  HITRESULT: [
+    { name: "Blocking Hit", type: "bool", default: false },
+    { name: "Initial Overlap", type: "bool", default: false },
+    { name: "Time", type: "float", default: 0.0 },
+    { name: "Distance", type: "float", default: 0.0 },
+    { name: "Location", type: "vector", default: "(0,0,0)" },
+    { name: "Impact Point", type: "vector", default: "(0,0,0)" },
+    { name: "Normal", type: "vector", default: "(0,0,0)" },
+    { name: "Impact Normal", type: "vector", default: "(0,0,0)" },
+    { name: "Phys Mat", type: "object", default: null },
+    { name: "Hit Actor", type: "object", default: null },
+    { name: "Hit Component", type: "object", default: null },
+    { name: "Hit Bone Name", type: "name", default: "None" },
+    { name: "Hit Item", type: "int", default: 0 },
+    { name: "Element Index", type: "int", default: 0 },
+    { name: "Face Index", type: "int", default: 0 },
+    { name: "Trace Start", type: "vector", default: "(0,0,0)" },
+    { name: "Trace End", type: "vector", default: "(0,0,0)" },
+  ],
+};

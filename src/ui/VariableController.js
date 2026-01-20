@@ -6,13 +6,10 @@ import { generateGUID } from "../utils/guid.js";
 import { nodeRegistry } from "../registries/NodeRegistry.js";
 import { createCollapsibleHeader } from "./ui-helpers.js";
 import { UE5Renderer } from "../utils/UE5Renderer.js";
-import { BaseController } from "./BaseController.js";
-import { ContextMenuHelper } from "./ContextMenuHelper.js";
 
-export class VariableController extends BaseController {
+export class VariableController {
   constructor(app) {
-    super(app); // IMPORTANT: Call parent constructor first
-
+    this.app = app;
     this.listContainer = document.getElementById("variables-list");
     // Bind input elements for creation (can be triggered from new Add button)
     this.nameInput = document.getElementById("new-var-name");
@@ -23,19 +20,19 @@ export class VariableController extends BaseController {
     this.variables = new Map();
     this.renamingVarId = null; // Track which variable is currently being renamed
 
-    // Bind create events using BaseController's addListener
+    // Bind create events
     if (this.createBtn) {
-      this.addListener(this.createBtn, "click", this.addVariable.bind(this));
+      this.createBtn.addEventListener("click", this.addVariable.bind(this));
     }
     if (this.nameInput) {
-      this.addListener(this.nameInput, "keyup", (e) => {
+      this.nameInput.addEventListener("keyup", (e) => {
         if (e.key === "Enter") this.addVariable();
       });
     }
 
     // Deselect when clicking on empty space
     if (this.listContainer) {
-      this.addListener(this.listContainer, "click", (e) => {
+      this.listContainer.addEventListener("click", (e) => {
         // Check if click is NOT on a variable item or component item
         if (
           !e.target.closest(".ue5-variable-item") &&
@@ -523,15 +520,21 @@ export class VariableController extends BaseController {
           item.setAttribute("tabindex", "0");
           item.dataset.componentId = comp.id;
 
-          // Create output circle indicator (cyan/scenecomponent color like UE5)
+          // Create output circle indicator
           const outputCircle = document.createElement("span");
           outputCircle.className = "component-output-circle";
 
-          // UE5 Style: No icon, just circle + name
+          const iconClass = this.app.componentsController
+            ? this.app.componentsController.getIconForType(comp.type)
+            : "fa-cube";
+          const icon = document.createElement("i");
+          icon.className = `fas ${iconClass} icon-sm mr-2`;
+
           const nameSpan = document.createElement("span");
           nameSpan.textContent = comp.name;
 
           item.appendChild(outputCircle);
+          item.appendChild(icon);
           item.appendChild(nameSpan);
 
           // Drag Logic
@@ -744,7 +747,7 @@ export class VariableController extends BaseController {
         variableId: variable.id,
         icon: "fa-arrow-up",
         pins: [
-          { id: "exec_in", name: "", type: "exec", dir: "in" },
+          { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
           {
             id: "val_in",
             name: variable.name,
@@ -753,10 +756,10 @@ export class VariableController extends BaseController {
             containerType: variable.containerType,
             ...pinDefault,
           },
-          { id: "exec_out", name: "", type: "exec", dir: "out" },
+          { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
           {
             id: "val_out",
-            name: "", // UE5 style: output pin has no label, only input shows the name
+            name: variable.name,
             type: variable.type,
             dir: "out",
             containerType: variable.containerType,
@@ -821,98 +824,135 @@ export class VariableController extends BaseController {
   }
 
   showVariableContextMenu(e, variable) {
-    const getGraphCenter = () => {
-      const centerX = this.app.graph.editor.offsetWidth / 2;
-      const centerY = this.app.graph.editor.offsetHeight / 2;
-      return this.app.graph.getGraphCoords(centerX, centerY);
+    // Remove any existing context menu
+    const existingMenu = document.querySelector(".variable-context-menu");
+    if (existingMenu) existingMenu.remove();
+
+    const menu = document.createElement("div");
+    menu.className = "context-menu variable-context-menu menu-fixed z-max";
+    menu.style.left = `${e.clientX}px`;
+    menu.style.top = `${e.clientY}px`;
+
+    const createMenuItem = (label, icon, onClick) => {
+      const item = document.createElement("div");
+      item.className = "menu-item";
+      item.innerHTML = `<i class="${icon}" style="margin-right: 8px; width: 12px;"></i> ${label}`;
+      item.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        document.body.removeChild(menu);
+        onClick();
+      });
+      return item;
     };
 
-    const items = [
-      {
-        label: `Get ${variable.name}`,
-        icon: "fas fa-arrow-down",
-        onClick: () => {
-          const pos = getGraphCenter();
-          this.app.graph.addNode(`Get_${variable.name}`, pos.x, pos.y);
-        },
-      },
-      {
-        label: `Set ${variable.name}`,
-        icon: "fas fa-arrow-up",
-        onClick: () => {
-          const pos = getGraphCenter();
-          this.app.graph.addNode(`Set_${variable.name}`, pos.x, pos.y);
-        },
-      },
-      { separator: true },
-      {
-        label: "Rename",
-        icon: "fas fa-edit",
-        onClick: () => {
-          this.renamingVarId = variable.id;
-          this.renderPanel();
-        },
-      },
-      {
-        label: "Delete",
-        icon: "fas fa-trash",
-        onClick: () => this.deleteVariable(variable),
-      },
-    ];
+    // Get [Variable]
+    menu.appendChild(
+      createMenuItem(`Get ${variable.name}`, "fas fa-arrow-down", () => {
+        const centerX = this.app.graph.editor.offsetWidth / 2;
+        const centerY = this.app.graph.editor.offsetHeight / 2;
+        const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+        this.app.graph.addNode(`Get_${variable.name}`, worldPos.x, worldPos.y);
+      })
+    );
 
-    // Add type-specific Make/Break options
-    if (["vector", "rotator", "transform"].includes(variable.type)) {
-      items.push({ separator: true });
-      const typeConfig = {
-        vector: { make: "MakeVector", break: "BreakVector", icon: "fa-plus" },
-        rotator: {
-          make: "MakeRotator",
-          break: "BreakRotator",
-          icon: "fa-sync",
-        },
-        transform: {
-          make: "MakeTransform",
-          break: "BreakTransform",
-          icon: "fa-cube",
-        },
-      };
-      const cfg = typeConfig[variable.type];
-      items.push({
-        label: `Make ${
-          variable.type.charAt(0).toUpperCase() + variable.type.slice(1)
-        }`,
-        icon: `fas ${cfg.icon}`,
-        onClick: () => {
-          const pos = getGraphCenter();
-          this.app.graph.addNode(cfg.make, pos.x, pos.y);
-        },
-      });
-      items.push({
-        label: `Break ${
-          variable.type.charAt(0).toUpperCase() + variable.type.slice(1)
-        }`,
-        icon: `fas ${cfg.icon}`,
-        onClick: () => {
-          const pos = getGraphCenter();
-          this.app.graph.addNode(cfg.break, pos.x, pos.y);
-        },
-      });
+    // Set [Variable]
+    menu.appendChild(
+      createMenuItem(`Set ${variable.name}`, "fas fa-arrow-up", () => {
+        const centerX = this.app.graph.editor.offsetWidth / 2;
+        const centerY = this.app.graph.editor.offsetHeight / 2;
+        const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+        this.app.graph.addNode(`Set_${variable.name}`, worldPos.x, worldPos.y);
+      })
+    );
+
+    // Add separator
+    const separator = document.createElement("div");
+    separator.className = "separator-h";
+    menu.appendChild(separator);
+
+    // Rename
+    menu.appendChild(
+      createMenuItem(`Rename`, "fas fa-edit", () => {
+        this.renamingVarId = variable.id;
+        this.renderPanel();
+      })
+    );
+
+    // Delete
+    menu.appendChild(
+      createMenuItem(`Delete`, "fas fa-trash", () => {
+        this.deleteVariable(variable);
+      })
+    );
+
+    // Add separator for type-specific options
+    const separator2 = document.createElement("div");
+    separator2.className = "separator-h";
+    menu.appendChild(separator2);
+
+    // Make/Break options for complex types
+    if (variable.type === "vector") {
+      menu.appendChild(
+        createMenuItem("Make Vector", "fas fa-plus", () => {
+          const centerX = this.app.graph.editor.offsetWidth / 2;
+          const centerY = this.app.graph.editor.offsetHeight / 2;
+          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+          this.app.graph.addNode("MakeVector", worldPos.x, worldPos.y);
+        })
+      );
+      menu.appendChild(
+        createMenuItem("Break Vector", "fas fa-minus", () => {
+          const centerX = this.app.graph.editor.offsetWidth / 2;
+          const centerY = this.app.graph.editor.offsetHeight / 2;
+          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+          this.app.graph.addNode("BreakVector", worldPos.x, worldPos.y);
+        })
+      );
+    } else if (variable.type === "rotator") {
+      menu.appendChild(
+        createMenuItem("Make Rotator", "fas fa-sync", () => {
+          const centerX = this.app.graph.editor.offsetWidth / 2;
+          const centerY = this.app.graph.editor.offsetHeight / 2;
+          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+          this.app.graph.addNode("MakeRotator", worldPos.x, worldPos.y);
+        })
+      );
+      menu.appendChild(
+        createMenuItem("Break Rotator", "fas fa-sync", () => {
+          const centerX = this.app.graph.editor.offsetWidth / 2;
+          const centerY = this.app.graph.editor.offsetHeight / 2;
+          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+          this.app.graph.addNode("BreakRotator", worldPos.x, worldPos.y);
+        })
+      );
+    } else if (variable.type === "transform") {
+      menu.appendChild(
+        createMenuItem("Make Transform", "fas fa-cube", () => {
+          const centerX = this.app.graph.editor.offsetWidth / 2;
+          const centerY = this.app.graph.editor.offsetHeight / 2;
+          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+          this.app.graph.addNode("MakeTransform", worldPos.x, worldPos.y);
+        })
+      );
+      menu.appendChild(
+        createMenuItem("Break Transform", "fas fa-cube", () => {
+          const centerX = this.app.graph.editor.offsetWidth / 2;
+          const centerY = this.app.graph.editor.offsetHeight / 2;
+          const worldPos = this.app.graph.getGraphCoords(centerX, centerY);
+          this.app.graph.addNode("BreakTransform", worldPos.x, worldPos.y);
+        })
+      );
     }
 
-    ContextMenuHelper.show(
-      e.clientX,
-      e.clientY,
-      items,
-      "context-menu variable-context-menu"
-    );
-  }
+    // Close menu on click outside
+    const closeMenu = () => {
+      if (document.body.contains(menu)) {
+        document.body.removeChild(menu);
+      }
+      document.removeEventListener("click", closeMenu);
+    };
+    setTimeout(() => document.addEventListener("click", closeMenu), 0);
 
-  /**
-   * Cleanup method - called when controller is destroyed
-   * Removes all event listeners to prevent memory leaks
-   */
-  cleanup() {
-    super.cleanup(); // Remove all tracked listeners
-    console.log("VariableController: Cleaned up successfully");
+    document.body.appendChild(menu);
   }
 }

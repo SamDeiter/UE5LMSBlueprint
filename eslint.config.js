@@ -3,17 +3,11 @@ import js from "@eslint/js";
 export default [
   js.configs.recommended,
   {
-    ignores: [
-      "node_modules/**",
-      "*.min.js",
-      "scripts/**",
-      ".tools/**",
-      "assessment/**",
-    ],
+    ignores: ["node_modules/**", "*.min.js", "scripts/**", ".tools/**"],
   },
   {
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: 2021,
       sourceType: "module",
       globals: {
         window: "readonly",
@@ -50,7 +44,6 @@ export default [
         localStorage: "readonly",
         ResizeObserver: "readonly",
         getComputedStyle: "readonly",
-        Audio: "readonly",
       },
     },
     rules: {
@@ -61,15 +54,6 @@ export default [
       "no-undef": "error",
       "no-console": "off",
       "no-debugger": "warn",
-    },
-  },
-  {
-    files: ["src/tests/**"],
-    languageOptions: {
-      globals: {
-        global: "readonly",
-        process: "readonly",
-      },
     },
   },
 ];

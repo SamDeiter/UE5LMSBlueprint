@@ -1,0 +1,918 @@
+/**
+ * VariableController - Manages variable creation, deletion, and list rendering
+ */
+import { Utils } from "../utils.js";
+import { generateGUID } from "../utils/guid.js";
+import { nodeRegistry } from "../registries/NodeRegistry.js";
+import { createCollapsibleHeader } from "./ui-helpers.js";
+import { UE5Renderer } from "../utils/UE5Renderer.js";
+import { BaseController } from "./BaseController.js";
+import { ContextMenuHelper } from "./ContextMenuHelper.js";
+
+export class VariableController extends BaseController {
+  constructor(app) {
+    super(app); // IMPORTANT: Call parent constructor first
+
+    this.listContainer = document.getElementById("variables-list");
+    // Bind input elements for creation (can be triggered from new Add button)
+    this.nameInput = document.getElementById("new-var-name");
+    this.typeSelect = document.getElementById("new-var-type");
+    this.createBtn = document.getElementById("create-var-btn");
+    this.inputContainer = document.getElementById("new-var-input-container");
+
+    this.variables = new Map();
+    this.renamingVarId = null; // Track which variable is currently being renamed
+
+    // Bind create events using BaseController's addListener
+    if (this.createBtn) {
+      this.addListener(this.createBtn, "click", this.addVariable.bind(this));
+    }
+    if (this.nameInput) {
+      this.addListener(this.nameInput, "keyup", (e) => {
+        if (e.key === "Enter") this.addVariable();
+      });
+    }
+
+    // Deselect when clicking on empty space
+    if (this.listContainer) {
+      this.addListener(this.listContainer, "click", (e) => {
+        // Check if click is NOT on a variable item or component item
+        if (
+          !e.target.closest(".ue5-variable-item") &&
+          !e.target.closest(".tree-item") &&
+          !e.target.closest(".sidebar-section-header")
+        ) {
+          if (this.app.details) {
+            this.app.details.currentVariable = null;
+            this.app.details.clear();
+          }
+          if (this.app.componentsController) {
+            this.app.componentsController.selectComponent(null);
+          }
+          this.renderPanel();
+        }
+      });
+    }
+  }
+
+  getVariableTypes() {
+    return [
+      "bool",
+      "byte",
+      "int",
+      "int64",
+      "float",
+      "name",
+      "string",
+      "text",
+      "vector",
+      "rotator",
+      "transform",
+      "object",
+    ];
+  }
+
+  getDefaultValueForType(type) {
+    switch (type) {
+      case "bool":
+        return false;
+      case "int":
+      case "int64":
+      case "byte":
+        return 0;
+      case "float":
+        return 0.0;
+      case "vector":
+        return "(0,0,0)";
+      case "rotator":
+        return "(0,0,0)";
+      case "transform":
+        return "(0,0,0|0,0,0|1,1,1)";
+      default:
+        return "";
+    }
+  }
+
+  isNameTaken(name, currentId = null) {
+    for (const variable of this.variables.values()) {
+      if (variable.name === name && variable.id !== currentId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  generateUniqueVarName(baseName = "NewVar") {
+    let index = 0;
+    let name = baseName;
+    while (this.isNameTaken(name)) {
+      name = `${baseName}_${index}`;
+      index++;
+    }
+    return name;
+  }
+
+  // Helper to create the standard variable object structure with all UE5 properties
+  createVariableObject(id, name, type, containerType, isPublic) {
+    return {
+      id,
+      name,
+      type,
+      containerType,
+      defaultValue: this.getDefaultValueForType(type),
+      description: "",
+      // UE5 Standard Properties
+      isInstanceEditable: isPublic,
+      blueprintReadOnly: false,
+      exposeOnSpawn: false,
+      // Default to NOT private so variables are visible/editable in blueprint
+      private: false,
+      exposeToCinematics: false,
+      category: "Default",
+      replication: "None",
+      replicationCondition: "None",
+      // UE5 Advanced Properties
+      configVariable: false,
+      transient: false,
+      saveGame: false,
+      advancedDisplay: false,
+      deprecated: false,
+      deprecationMessage: "",
+      // Property Flags
+      cpfEdit: true,
+      cpfBlueprintVisible: true,
+      cpfZeroConstructor: true,
+      cpfDisableEditOnInstance: true,
+      cpfIsPlainOldData: true,
+      cpfNoDestructor: true,
+      cpfHasGetValueTypeHash: true,
+    };
+  }
+
+  createVariableFromPin(pin) {
+    const name = this.generateUniqueVarName(
+      pin.name.replace(/\s+/g, "").replace(/\(.+\)/, "")
+    );
+    const id = generateGUID();
+    // Default promoted variables to NOT instance-editable
+    const variable = this.createVariableObject(
+      id,
+      name,
+      pin.type,
+      pin.containerType,
+      false
+    );
+    variable.description = `Promoted from pin ${pin.name}`;
+
+    this.variables.set(name, variable);
+    this.renderPanel();
+    this.updateNodeLibrary();
+    this.app.palette.populateList();
+    return variable;
+  }
+
+  toggleNewVarInput() {
+    // For legacy support, though we mainly use inline renaming now
+    if (this.inputContainer) {
+      const isVisible = !this.inputContainer.classList.contains("hidden");
+      this.inputContainer.classList.toggle("hidden", isVisible);
+      this.inputContainer.classList.toggle("visible-grid", !isVisible);
+      if (!isVisible) {
+        this.nameInput.value = this.generateUniqueVarName("NewVar");
+        this.nameInput.focus();
+      }
+    } else {
+      this.addVariable();
+    }
+  }
+
+  // Called when the (+) button is clicked
+  addVariable() {
+    const name = this.generateUniqueVarName("NewVar");
+    const id = generateGUID();
+    // Default to boolean, single, public (private unchecked)
+    // Default to boolean, single, NOT instance-editable
+    const variable = this.createVariableObject(
+      id,
+      name,
+      "bool",
+      "single",
+      false
+    );
+
+    this.variables.set(name, variable);
+
+    // Immediately trigger rename mode
+    this.renamingVarId = id;
+
+    this.renderPanel();
+    this.updateNodeLibrary();
+    this.app.palette.populateList();
+    this.app.persistence.autoSave();
+  }
+
+  deleteVariable(variable) {
+    const modal = document.getElementById("confirmation-modal");
+    const msg = document.getElementById("confirmation-msg");
+    const yesBtn = document.getElementById("confirm-yes-btn");
+    const noBtn = document.getElementById("confirm-no-btn");
+    if (!modal) return;
+    msg.textContent = `Are you sure you want to delete variable '${variable.name}'?`;
+    modal.classList.remove("hidden");
+
+    // Clone buttons to remove old listeners
+    const newYes = yesBtn.cloneNode(true);
+    yesBtn.parentNode.replaceChild(newYes, yesBtn);
+    const newNo = noBtn.cloneNode(true);
+    noBtn.parentNode.replaceChild(newNo, noBtn);
+
+    newYes.addEventListener("click", () => {
+      this.executeVariableDeletion(variable);
+      modal.classList.add("hidden");
+      modal.classList.add("hidden");
+    });
+    newNo.addEventListener("click", () => {
+      modal.classList.add("hidden");
+      modal.classList.add("hidden");
+    });
+  }
+
+  executeVariableDeletion(variable) {
+    const name = variable.name;
+    const getKey = `Get_${name}`;
+    const setKey = `Set_${name}`;
+
+    // Remove nodes from graph
+    const nodesToDelete = [...this.app.graph.nodes.values()].filter(
+      (node) => node.nodeKey === getKey || node.nodeKey === setKey
+    );
+    nodesToDelete.forEach((node) => {
+      this.app.wiring
+        .findLinksByNodeId(node.id)
+        .forEach((link) => this.app.wiring.breakLinkById(link.id));
+      if (node.element) node.element.remove();
+      this.app.graph.nodes.delete(node.id);
+    });
+
+    this.variables.delete(name);
+    nodeRegistry.unregister(getKey);
+    nodeRegistry.unregister(setKey);
+
+    if (
+      this.app.details.currentVariable &&
+      this.app.details.currentVariable.id === variable.id
+    ) {
+      this.app.details.clear();
+    }
+
+    this.renderPanel();
+    this.app.palette.populateList();
+    this.app.persistence.autoSave();
+    this.app.compiler.log(`Variable '${name}' deleted.`);
+  }
+
+  updateVariableProperty(variable, property, newValue, skipRender = false) {
+    const oldValue = variable[property];
+    let needsFullRender = false;
+    let needsNodeLibraryUpdate = false;
+    const affectedNodes = []; // Track nodes that need wire redraw
+
+    if (property === "type" && oldValue !== newValue) {
+      variable.type = newValue;
+      variable.defaultValue = this.getDefaultValueForType(newValue);
+      needsFullRender = true;
+      needsNodeLibraryUpdate = true; // Type changes affect Get/Set nodes
+    } else if (property === "containerType" && oldValue !== newValue) {
+      variable.containerType = newValue;
+      needsFullRender = true;
+      needsNodeLibraryUpdate = true; // Container type changes affect Get/Set nodes
+    } else if (property === "name") {
+      const oldName = oldValue;
+      const newName = newValue;
+
+      // Basic validation
+      if (!newName || this.isNameTaken(newName, variable.id)) {
+        // If invalid, just revert visually in renderPanel or ignore
+        return;
+      }
+
+      this.variables.delete(oldName);
+      variable.name = newName;
+      this.variables.set(newName, variable);
+
+      needsNodeLibraryUpdate = true;
+      this.app.compiler.registerRename(oldName, newName);
+
+      needsFullRender = true;
+    } else if (
+      property === "isInstanceEditable" ||
+      property === "replication"
+    ) {
+      variable[property] = newValue;
+      // Reset Replication Condition if Replication is None
+      if (property === "replication" && newValue === "None") {
+        variable.replicationCondition = "None";
+      }
+      needsFullRender = true;
+    } else if (property === "defaultValue") {
+      variable[property] = newValue;
+      // Re-render the details panel to show updated array/map elements
+      // Only if NOT skipping render (e.g. during typing)
+      if (!skipRender) {
+        needsFullRender = true;
+      }
+    } else {
+      variable[property] = newValue;
+    }
+
+    // Update NodeLibrary if type, containerType, or name changed
+    if (needsNodeLibraryUpdate) {
+      this.updateNodeLibrary();
+
+      // UPDATE GRAPH NODES
+      for (const node of this.app.graph.nodes.values()) {
+        let isMatch = false;
+        if (
+          property === "name" &&
+          (node.nodeKey === `Get_${oldValue}` ||
+            node.nodeKey === `Set_${oldValue}`)
+        ) {
+          isMatch = true;
+        } else if (
+          node.nodeKey === `Get_${variable.name}` ||
+          node.nodeKey === `Set_${variable.name}`
+        ) {
+          isMatch = true;
+        }
+
+        if (isMatch) {
+          // Update Node Properties
+          node.variableType = variable.type;
+
+          // Update Pins
+          if (node.pins) {
+            node.pins.forEach((pin) => {
+              // For Get/Set nodes, the data pin usually matches the variable type
+              // Exec pins should remain 'exec'
+              if (pin.type !== "exec") {
+                pin.type = variable.type;
+                pin.containerType = variable.containerType;
+                // Reset default value if type changed to avoid type mismatch
+                if (property === "type") {
+                  pin.defaultValue = pin.getDefaultValue();
+                }
+              }
+            });
+          }
+
+          // Force Re-render
+          this.app.wiring.updateVisuals(node);
+
+          // Track this node for wire redraw
+          affectedNodes.push(node);
+        }
+      }
+    }
+
+    // Persist
+    this.app.persistence.autoSave();
+
+    // Refresh UI
+    if ((needsFullRender || property === "name") && !skipRender) {
+      this.renderPanel();
+
+      // Optimized: Only redraw wires for affected nodes instead of all wires
+      if (affectedNodes.length > 0) {
+        // Redraw wires for affected nodes
+        requestAnimationFrame(() => {
+          affectedNodes.forEach((node) => {
+            this.app.graph.redrawNodeWires(node.id);
+          });
+        });
+      }
+
+      this.app.palette.populateList();
+
+      // If details panel is showing this variable, refresh it
+      // Check by looking for the variable name input in the details panel
+      const varNameInput = document.querySelector("#variable-name-input");
+      if (varNameInput && varNameInput.value === variable.name) {
+        // Get the fresh variable reference from the map
+        const freshVariable = this.variables.get(variable.name);
+        if (freshVariable) {
+          this.app.details.showVariableDetails(freshVariable, true); // true = force refresh and keep selection
+        }
+      }
+    }
+  }
+
+  finishRenaming(variable, newName) {
+    this.renamingVarId = null;
+    if (newName && newName !== variable.name) {
+      this.updateVariableProperty(variable, "name", newName);
+    } else {
+      this.renderPanel(); // Just exit rename mode
+    }
+  }
+
+  renderPanel() {
+    if (!this.listContainer) return;
+    this.listContainer.innerHTML = "";
+
+    // Helper to create collapsible sections - REFACTORED to use ui-helpers
+    const createSection = (title, id, onAdd) => {
+      const section = document.createElement("div");
+      section.className = "sidebar-section";
+
+      const content = document.createElement("div");
+      content.id = id;
+      content.classList.remove("collapsed");
+
+      createCollapsibleHeader(section, title, content, {
+        onAdd: onAdd,
+        isExpanded: true,
+        iconClass: "fas fa-caret-down",
+      });
+
+      section.appendChild(content);
+      return { section, content };
+    };
+
+    // 3. VARIABLES
+    const varSection = createSection("Variables", "section-variables", (e) => {
+      e.stopPropagation();
+      this.addVariable();
+    });
+
+    // FORCE expanded state and DISABLE collapse toggle
+    const varContent = varSection.content;
+    if (varContent) varContent.classList.remove("collapsed");
+
+    // Find and disable the toggle click listener by replacing the header with a non-collapsible version
+    const varHeader = varSection.section.querySelector(
+      ".sidebar-section-header"
+    );
+    if (varHeader) {
+      // Remove all click event listeners by cloning the node
+      const newHeader = varHeader.cloneNode(true);
+      varHeader.parentNode.replaceChild(newHeader, varHeader);
+
+      // Update arrow icon to show expanded state
+      const arrow = newHeader.querySelector(".fa-caret-right, .fa-caret-down");
+      if (arrow) arrow.className = "fas fa-caret-down";
+
+      // Make + button still work
+      const addBtn = newHeader.querySelector(".add-btn");
+      if (addBtn) {
+        addBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.addVariable();
+        });
+      }
+    }
+
+    this.listContainer.appendChild(varSection.section);
+
+    // 4.1 Components Subsection (collapsible within Variables)
+    const componentsSubsection = document.createElement("div");
+    componentsSubsection.className = "components-subsection border-bottom mb-1";
+
+    const componentsHeader = document.createElement("div");
+    componentsHeader.className = "sidebar-section-header components-header";
+
+    const leftGroup = document.createElement("div");
+    leftGroup.className = "group-left";
+
+    const compArrow = document.createElement("i");
+    compArrow.className = "fas fa-caret-down collapse-arrow";
+
+    const compLabel = document.createElement("span");
+    compLabel.textContent = "Components";
+
+    leftGroup.appendChild(compArrow);
+    leftGroup.appendChild(compLabel);
+
+    componentsHeader.appendChild(leftGroup);
+
+    const componentsContent = document.createElement("div");
+    componentsContent.className = "collapsible-content";
+
+    // Toggle collapse - make entire header clickable
+    let compExpanded = true;
+    componentsHeader.addEventListener("click", () => {
+      compExpanded = !compExpanded;
+      componentsContent.classList.toggle("collapsed", !compExpanded);
+      compArrow.classList.toggle("expanded", compExpanded);
+    });
+
+    // Render component items
+    try {
+      if (this.app.components && this.app.components.size > 0) {
+        this.app.components.forEach((comp) => {
+          const item = document.createElement("div");
+          item.className = "tree-item";
+          // Highlight if selected
+          if (
+            this.app.componentsController &&
+            this.app.componentsController.selectedComponentId === comp.id
+          ) {
+            item.classList.add("selected");
+          }
+
+          // Enable focus for deletion logic
+          item.setAttribute("tabindex", "0");
+          item.dataset.componentId = comp.id;
+
+          // Create output circle indicator (cyan/scenecomponent color like UE5)
+          const outputCircle = document.createElement("span");
+          outputCircle.className = "component-output-circle";
+
+          // UE5 Style: No icon, just circle + name
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = comp.name;
+
+          item.appendChild(outputCircle);
+          item.appendChild(nameSpan);
+
+          // Drag Logic
+          item.draggable = true;
+          item.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", `COMPONENT:${comp.id}`);
+          });
+
+          // Click Logic
+          item.addEventListener("click", (e) => {
+            // Clear variable selection
+            this.app.details.currentVariable = null;
+
+            if (this.app.componentsController) {
+              // Toggle selection: deselect if already selected, otherwise select
+              if (
+                this.app.componentsController.selectedComponentIds.has(comp.id)
+              ) {
+                this.app.componentsController.selectComponent(null);
+                e.target.blur();
+              } else {
+                this.app.componentsController.selectComponent(comp.id);
+              }
+            }
+            // Re-render to update visual selection state
+            this.renderPanel();
+          });
+
+          componentsContent.appendChild(item);
+        });
+      } else {
+        // Show placeholder when no components
+        const placeholder = document.createElement("div");
+        placeholder.className = "placeholder-text";
+        placeholder.textContent = "No components";
+        componentsContent.appendChild(placeholder);
+      }
+    } catch (err) {
+      console.error("Error rendering components in VariableController:", err);
+    }
+
+    componentsSubsection.appendChild(componentsHeader);
+    componentsSubsection.appendChild(componentsContent);
+    varSection.content.appendChild(componentsSubsection);
+
+    // 4.2 Regular Variables
+    for (const variable of this.variables.values()) {
+      const el = document.createElement("div");
+      el.className = "ue5-variable-item";
+      el.dataset.varId = variable.id;
+      el.setAttribute("tabindex", "0");
+
+      if (
+        this.app.details.currentVariable &&
+        this.app.details.currentVariable.id === variable.id
+      ) {
+        el.classList.add("selected");
+      }
+
+      // Drag Logic
+      el.draggable = true;
+      el.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", `VARIABLE:${variable.name}`);
+        e.dataTransfer.effectAllowed = "copy";
+      });
+
+      // Click Logic
+      el.addEventListener("click", () => {
+        // Clear component selection
+        if (this.app.componentsController) {
+          this.app.componentsController.selectComponent(null);
+        }
+
+        this.app.details.currentVariable = variable;
+        this.app.details.showVariableDetails(variable, true);
+        this.renderPanel();
+      });
+
+      // Context Menu (Right-click)
+      el.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.showVariableContextMenu(e, variable);
+      });
+
+      // Variable name (left side)
+      if (this.renamingVarId === variable.id) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = variable.name;
+        input.className = "ue5-variable-rename-input";
+
+        const commit = () => this.finishRenaming(variable, input.value.trim());
+        input.addEventListener("blur", commit);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            input.blur();
+          }
+        });
+
+        el.appendChild(input);
+        requestAnimationFrame(() => {
+          input.focus();
+          input.select();
+        });
+      } else {
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "ue5-variable-name-text";
+        nameSpan.textContent = variable.name;
+
+        // Double click to rename
+        nameSpan.addEventListener("dblclick", (e) => {
+          e.stopPropagation();
+          this.renamingVarId = variable.id;
+          this.renderPanel();
+        });
+
+        el.appendChild(nameSpan);
+      }
+
+      // Right group: container icon + type name + menu
+      const rightGroup = document.createElement("div");
+      rightGroup.className = "ue5-variable-type-group";
+
+      // Container type icon (UE5 Pill/Grid)
+      const color = Utils.getPinColor(variable.type);
+      const iconSpan = document.createElement("span");
+      iconSpan.className =
+        "ue5-variable-type-icon d-flex align-center justify-center";
+      iconSpan.innerHTML = UE5Renderer.renderVariablePill(
+        variable.type,
+        variable.containerType
+      );
+
+      // Type name
+      const typeName = document.createElement("span");
+      typeName.className = "ue5-variable-type-name";
+      typeName.textContent =
+        variable.type.charAt(0).toUpperCase() + variable.type.slice(1);
+      typeName.style.color = color;
+      // Inline styles removed in favor of CSS class .ue5-variable-type-name
+
+      // Eye icon (Instance Editable indicator)
+      const eyeIcon = document.createElement("i");
+      // Use specific classes for styling
+      eyeIcon.className = `fas ${
+        variable.isInstanceEditable ? "fa-eye active" : "fa-eye-slash"
+      } var-eye-icon`;
+      eyeIcon.title = variable.isInstanceEditable
+        ? "Public (Instance Editable)"
+        : "Private";
+      eyeIcon.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.updateVariableProperty(
+          variable,
+          "isInstanceEditable",
+          !variable.isInstanceEditable
+        );
+      });
+
+      // Menu icon (3 dots) - Optional, but present in current UI
+      // const menuIcon = document.createElement('i');
+      // menuIcon.className = 'fas fa-ellipsis-v ue5-variable-menu-icon';
+      // ...
+
+      rightGroup.appendChild(iconSpan);
+      rightGroup.appendChild(typeName);
+      rightGroup.appendChild(eyeIcon);
+      // rightGroup.appendChild(menuIcon); // Removed to match cleaner look if desired, or keep if needed. Reference 1 is clean.
+
+      el.appendChild(rightGroup);
+
+      varSection.content.appendChild(el);
+    }
+  }
+
+  updateNodeLibrary() {
+    const allKeys = Object.keys(nodeRegistry.getAll());
+    for (const key of allKeys) {
+      if (key.startsWith("Get_") || key.startsWith("Set_")) {
+        nodeRegistry.unregister(key);
+      }
+    }
+    for (const variable of this.variables.values()) {
+      const pinDefault = { defaultValue: variable.defaultValue };
+      nodeRegistry.register(`Get_${variable.name}`, {
+        title: `Get ${variable.name}`,
+        category: "Variables",
+        type: "pure-node",
+        variableType: variable.type,
+        variableId: variable.id,
+        icon: "fa-arrow-down",
+        pins: [
+          {
+            id: "val_out",
+            name: variable.name,
+            type: variable.type,
+            dir: "out",
+            containerType: variable.containerType,
+            ...pinDefault,
+          },
+        ],
+      });
+      nodeRegistry.register(`Set_${variable.name}`, {
+        title: `Set ${variable.name}`,
+        category: "Variables",
+        type: "variable-node",
+        variableType: variable.type,
+        variableId: variable.id,
+        icon: "fa-arrow-up",
+        pins: [
+          { id: "exec_in", name: "", type: "exec", dir: "in" },
+          {
+            id: "val_in",
+            name: variable.name,
+            type: variable.type,
+            dir: "in",
+            containerType: variable.containerType,
+            ...pinDefault,
+          },
+          { id: "exec_out", name: "", type: "exec", dir: "out" },
+          {
+            id: "val_out",
+            name: "", // UE5 style: output pin has no label, only input shows the name
+            type: variable.type,
+            dir: "out",
+            containerType: variable.containerType,
+          },
+        ],
+      });
+    }
+    this.app.palette.populateList();
+  }
+
+  loadState(state) {
+    this.variables.clear();
+    if (state.variables) {
+      state.variables.forEach((v) => {
+        // Migration logic ensures all new fields are present
+        if (v.configVariable === undefined) v.configVariable = false;
+        if (v.transient === undefined) v.transient = false;
+        if (v.saveGame === undefined) v.saveGame = false;
+        if (v.advancedDisplay === undefined) v.advancedDisplay = false;
+        if (v.deprecated === undefined) v.deprecated = false;
+        if (v.deprecationMessage === undefined) v.deprecationMessage = "";
+        if (v.cpfEdit === undefined) v.cpfEdit = true;
+        if (v.cpfBlueprintVisible === undefined) v.cpfBlueprintVisible = true;
+        if (v.cpfZeroConstructor === undefined) v.cpfZeroConstructor = true;
+        if (v.cpfDisableEditOnInstance === undefined)
+          v.cpfDisableEditOnInstance = true;
+        if (v.cpfIsPlainOldData === undefined) v.cpfIsPlainOldData = true;
+        if (v.cpfNoDestructor === undefined) v.cpfNoDestructor = true;
+        if (v.cpfHasGetValueTypeHash === undefined)
+          v.cpfHasGetValueTypeHash = true;
+        if (v.blueprintReadOnly === undefined) v.blueprintReadOnly = false;
+        if (v.exposeOnSpawn === undefined) v.exposeOnSpawn = false;
+        if (v.private === undefined) v.private = false;
+        if (v.exposeToCinematics === undefined) v.exposeToCinematics = false;
+        if (v.category === undefined) v.category = "Default";
+        if (v.replication === undefined) v.replication = "None";
+        if (v.replicationCondition === undefined)
+          v.replicationCondition = "None";
+
+        this.variables.set(v.name, v);
+      });
+    }
+    this.renderPanel();
+    this.updateNodeLibrary();
+  }
+
+  clearAllVariables() {
+    // Remove all Get/Set nodes from the node registry
+    const allKeys = Object.keys(nodeRegistry.getAll());
+    for (const key of allKeys) {
+      if (key.startsWith("Get_") || key.startsWith("Set_")) {
+        nodeRegistry.unregister(key);
+      }
+    }
+
+    // Clear the variables map
+    this.variables.clear();
+
+    // Re-render the panel
+    this.renderPanel();
+    this.app.palette.populateList();
+  }
+
+  showVariableContextMenu(e, variable) {
+    const getGraphCenter = () => {
+      const centerX = this.app.graph.editor.offsetWidth / 2;
+      const centerY = this.app.graph.editor.offsetHeight / 2;
+      return this.app.graph.getGraphCoords(centerX, centerY);
+    };
+
+    const items = [
+      {
+        label: `Get ${variable.name}`,
+        icon: "fas fa-arrow-down",
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(`Get_${variable.name}`, pos.x, pos.y);
+        },
+      },
+      {
+        label: `Set ${variable.name}`,
+        icon: "fas fa-arrow-up",
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(`Set_${variable.name}`, pos.x, pos.y);
+        },
+      },
+      { separator: true },
+      {
+        label: "Rename",
+        icon: "fas fa-edit",
+        onClick: () => {
+          this.renamingVarId = variable.id;
+          this.renderPanel();
+        },
+      },
+      {
+        label: "Delete",
+        icon: "fas fa-trash",
+        onClick: () => this.deleteVariable(variable),
+      },
+    ];
+
+    // Add type-specific Make/Break options
+    if (["vector", "rotator", "transform"].includes(variable.type)) {
+      items.push({ separator: true });
+      const typeConfig = {
+        vector: { make: "MakeVector", break: "BreakVector", icon: "fa-plus" },
+        rotator: {
+          make: "MakeRotator",
+          break: "BreakRotator",
+          icon: "fa-sync",
+        },
+        transform: {
+          make: "MakeTransform",
+          break: "BreakTransform",
+          icon: "fa-cube",
+        },
+      };
+      const cfg = typeConfig[variable.type];
+      items.push({
+        label: `Make ${
+          variable.type.charAt(0).toUpperCase() + variable.type.slice(1)
+        }`,
+        icon: `fas ${cfg.icon}`,
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(cfg.make, pos.x, pos.y);
+        },
+      });
+      items.push({
+        label: `Break ${
+          variable.type.charAt(0).toUpperCase() + variable.type.slice(1)
+        }`,
+        icon: `fas ${cfg.icon}`,
+        onClick: () => {
+          const pos = getGraphCenter();
+          this.app.graph.addNode(cfg.break, pos.x, pos.y);
+        },
+      });
+    }
+
+    ContextMenuHelper.show(
+      e.clientX,
+      e.clientY,
+      items,
+      "context-menu variable-context-menu"
+    );
+  }
+
+  /**
+   * Cleanup method - called when controller is destroyed
+   * Removes all event listeners to prevent memory leaks
+   */
+  cleanup() {
+    super.cleanup(); // Remove all tracked listeners
+    console.log("VariableController: Cleaned up successfully");
+  }
+}

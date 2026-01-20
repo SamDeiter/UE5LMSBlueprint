@@ -1,79 +1,76 @@
-# Blueprint Editor - Task Progress
+# Task List
 
-## Completed ✅
+## Phase 2: Make/Break Struct Nodes ✅ COMPLETE
 
-### Code Modularization (Today)
+- [x] Implement Vector/Rotator/Transform Node Definitions
+- [x] Implement Execution Logic
+- [x] Implement Utility Functions
+- [x] Add Auto-Conversion Nodes
+- [x] Context Menu Enhancements
+    - [x] Right-click variable → Get/Set + Make/Break options
+    - [x] Right-click Get/Set node → Make/Break options
+    - [x] Drag from struct pin → Suggested Break node
+    - [x] Double-click wire → Insert Break node inline
 
-- [x] Created 14 core infrastructure modules (~3,000+ lines)
-- [x] Extracted 7 graph modules from large files
-- [x] Created 3 UI utility modules
-- [x] All 48 tests passing
-- [x] Lint: 0 errors
+## Phase 2.1: Split Struct Pin Feature ✅ COMPLETE
 
-### Blueprint Pitfall Testing System
+- [x] Understand Split Struct Pin Requirements
+- [x] Implement Split Struct Pin
+    - [x] Add "Split Struct Pin" context menu option
+    - [x] Modify Pin class to support split state
+    - [x] Update Node rendering for expanded sub-pins
+    - [x] Handle wiring to/from split pins
+    - [x] Add "Recombine" option
+    - [x] **Support nested splitting** (Transform → Location → X/Y/Z)
+    - [x] Fix Get variable nodes (compact rendering)
+    - [x] Recursive serialization for nested splits
+- [x] Testing & Verification (Added Test 7 to Checklist)
 
-- [x] Created BLUEPRINT_PITFALLS_TESTING_PLAN.md
-- [x] Implemented GraphAnalyzer with 8 validators:
-  1. Unconnected Execution Pins
-  2. Orphaned Nodes (spaghetti detection)
-  3. Cast Failed Pin validation
-  4. Event Tick abuse detection
-  5. Null Reference risk detection
-  6. Sequence timing validation
-  7. DoOnce reset validation
-  8. Comment coverage check
+## Phase 3: Refactoring for Modularity 🔄 IN PROGRESS
 
-## Core Modules Created
+### Priority 0: Extract Hard-Coded Values ✅ COMPLETE
+- [x] Create config/ directory structure
+- [x] Extract DOM IDs to DOMElements.js
+- [x] Extract UI constants to UIConstants.js
+- [x] Extract node defaults to NodeDefaults.js
+- [x] Update imports across all files
 
-### Infrastructure (src/core/)
+### Priority 1: Node Handler Registry
+- [ ] Create NodeHandler system
+- [ ] Extract Vector/Rotator/Transform handlers
+- [ ] Update SimulationEngine
 
-| Module | Purpose |
-|--------|---------|
-| BlueprintAssetManager.js | Multi-Blueprint asset registry |
-| BlueprintValidator.js | Graph integrity validation |
-| TypeSystem.js | Type colors/compatibility |
-| GraphStateManager.js | Graph switching/caching |
-| EventBus.js | Pub/sub communication |
-| TabManager.js | Blueprint tabs |
-| ContentBrowser.js | Asset browsing |
-| SelectionManager.js | Selection state |
-| ClipboardManager.js | Cross-Blueprint copy/paste |
-| NotificationService.js | Toast notifications |
-| SettingsManager.js | User preferences |
-| **GraphAnalyzer.js** | **Pitfall detection** |
-| index.js | Centralized exports |
+### Priority 2: Renderer Extraction
+- [ ] Create renderer system
+- [ ] Extract Node renderers
 
-### Graph Modules (src/graph/)
+### Priority 3: Menu Refactoring
+- [ ] Extract menu classes
 
-| Module | Purpose |
-|--------|---------|
-| GraphSerializer.js | Load/export |
-| GraphClipboard.js | Copy/paste |
-| GraphContextMenus.js | Context menus |
-| GraphDropHandler.js | Drag/drop |
-| KeyboardShortcuts.js | Hotkeys |
-| NodePinRenderer.js | Pin rendering |
+### Priority 4: Folder Reorganization
+- [ ] Reorganize graph/ structure
 
-### UI Modules
+## Phase 4: Functions and Macros 📋 IN PROGRESS
 
-| Module | Purpose |
-|--------|---------|
-| DOMHelper.js | DOM utilities |
-| VariableItemRenderer.js | Variable items |
-| ComponentTreeRenderer.js | Component tree |
+### Phase 4.1: Blueprint Functions
+- [x] Data Layer (FunctionDefinition, FunctionRegistry)
+- [x] Functions Panel UI
+- [x] Function Graph Editor
+- [x] Function Call Nodes
+- [x] Execution Support
+- [ ] Advanced Features (overloading, access specifiers)
 
-## In Progress 🔄
+### Phase 4.2: Macros
+- [x] Data Layer (MacroDefinition, MacroRegistry)
+- [x] Macros Panel UI
+- [x] Macro Graph Editor
+- [x] Macro Expansion/Collapse
+- [x] Execution Support
 
-### Integration Tasks
+### Phase 4.3: Advanced Features
+- [x] Function/Macro Libraries (Basic Implementation)
+- [ ] Interface Implementation
+- [ ] Function Overriding
+- [x] Debugging Support (Breakpoints, Step Over, Pause/Resume)
 
-- [ ] Wire GraphAnalyzer to Compiler output
-- [ ] Add visual indicators on problem nodes
-- [ ] Create "Fix It" suggestions
-- [ ] Build assessment quiz system
-
-## Next Steps 📋
-
-1. Integrate GraphAnalyzer with existing Compiler
-2. Add red border highlighting for issues
-3. Create test scenarios with intentional errors
-4. Build SCORM-compatible assessment module
+**See `FUNCTIONS_MACROS_PLAN.md` for detailed implementation plan**

@@ -2,277 +2,420 @@
  * CollectionNodes - Auto-generated from NodeDefinitions.js
  * Contains node definitions for this category.
  */
-import { NodeFactory as F } from "./NodeDefinitionFactory.js";
-
 export const CollectionNodes = {
-  // ============================================================================
-  // ARRAY NODES
-  // ============================================================================
-
-  Array_Add: F.flowNode({
+  Array_Add: {
     title: "ADD (Array)",
     type: "function-node",
     category: "Utilities|Array",
     icon: "fa-plus-square",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("array", "Target", true),
-      F.pin("item_in", "New Item", "wildcard"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+        isRef: true,
+      },
+      { id: "item_in", name: "New Item", type: "wildcard", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "index_out", name: "Output Index", type: "int", dir: "out" },
     ],
-    outputs: [F.pin("index_out", "Output Index", "int", "out")],
-  }),
-
-  Array_RemoveIndex: F.flowNode({
+  },
+  Array_RemoveIndex: {
     title: "Remove Index",
     type: "function-node",
     category: "Utilities|Array",
     icon: "fa-minus-square",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("array", "Target", true),
-      F.pin("index_in", "Index", "int"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+        isRef: true,
+      },
+      { id: "index_in", name: "Index", type: "int", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
     ],
-  }),
-
-  Array_RemoveItem: F.flowNode({
+  },
+  Array_RemoveItem: {
     title: "Remove Item",
     type: "function-node",
     category: "Utilities|Array",
     icon: "fa-minus-square",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("array", "Target", true),
-      F.pin("item_in", "Item", "wildcard"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+        isRef: true,
+      },
+      { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "removed_out", name: "Removed", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("removed_out", "Removed", "bool", "out")],
-  }),
-
-  Array_Get: F.pureNode({
+  },
+  Array_Get: {
     title: "GET (Array)",
+    type: "pure-node",
     category: "Utilities|Array",
     icon: "fa-th",
-    inputs: [
-      F.containerIn("array", "Target", false),
-      F.pin("index_in", "Index", "int"),
+    pins: [
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+      },
+      { id: "index_in", name: "Index", type: "int", dir: "in" },
+      { id: "item_out", name: "Item", type: "wildcard", dir: "out" },
     ],
-    outputs: [F.pin("item_out", "Item", "wildcard", "out")],
-  }),
-
-  Array_SetElem: F.flowNode({
+  },
+  Array_SetElem: {
     title: "Set Array Elem",
     type: "function-node",
     category: "Utilities|Array",
     icon: "fa-edit",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("array", "Target", true),
-      F.pin("index_in", "Index", "int"),
-      F.pin("item_in", "Item", "wildcard"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+        isRef: true,
+      },
+      { id: "index_in", name: "Index", type: "int", dir: "in" },
+      { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "size_change_out", name: "Size to Fit", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("size_change_out", "Size to Fit", "bool", "out")],
-  }),
-
-  Array_Length: F.pureNode({
+  },
+  Array_Length: {
     title: "Length",
+    type: "pure-node",
     category: "Utilities|Array",
     icon: "fa-ruler-horizontal",
-    inputs: [F.containerIn("array", "Target", false)],
-    outputs: [F.pin("length_out", "Length", "int", "out")],
-  }),
-
-  Array_Clear: F.flowNode({
+    pins: [
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+      },
+      { id: "length_out", name: "Length", type: "int", dir: "out" },
+    ],
+  },
+  Array_Clear: {
     title: "Clear",
     type: "function-node",
     category: "Utilities|Array",
     icon: "fa-trash-alt",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [F.containerIn("array", "Target", true)],
-  }),
-
-  Array_Contains: F.pureNode({
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+        isRef: true,
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+    ],
+  },
+  Array_Contains: {
     title: "Contains",
+    type: "pure-node",
     category: "Utilities|Array",
     icon: "fa-search",
-    inputs: [
-      F.containerIn("array", "Target", false),
-      F.pin("item_in", "Item", "wildcard"),
+    pins: [
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+      },
+      { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+      { id: "found_out", name: "Found", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("found_out", "Found", "bool", "out")],
-  }),
-
-  Array_Find: F.pureNode({
+  },
+  Array_Find: {
     title: "Find Item",
+    type: "pure-node",
     category: "Utilities|Array",
     icon: "fa-search-location",
-    inputs: [
-      F.containerIn("array", "Target", false),
-      F.pin("item_in", "Item", "wildcard"),
+    pins: [
+      {
+        id: "array_in",
+        name: "Target Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+      },
+      { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+      { id: "index_out", name: "Index", type: "int", dir: "out" },
     ],
-    outputs: [F.pin("index_out", "Index", "int", "out")],
-  }),
-
-  // ============================================================================
-  // SET NODES
-  // ============================================================================
-
-  Set_Add: F.flowNode({
+  },
+  Set_Add: {
     title: "ADD (Set)",
     type: "function-node",
     category: "Utilities|Set",
     icon: "fa-plus-circle",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("set", "Target", true),
-      F.pin("item_in", "New Item", "wildcard"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "set_in",
+        name: "Target Set",
+        type: "wildcard",
+        dir: "in",
+        containerType: "set",
+        isRef: true,
+      },
+      { id: "item_in", name: "New Item", type: "wildcard", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "added_out", name: "Added", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("added_out", "Added", "bool", "out")],
-  }),
-
-  Set_Remove: F.flowNode({
+  },
+  Set_Remove: {
     title: "Remove (Set)",
     type: "function-node",
     category: "Utilities|Set",
     icon: "fa-minus-circle",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("set", "Target", true),
-      F.pin("item_in", "Item", "wildcard"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "set_in",
+        name: "Target Set",
+        type: "wildcard",
+        dir: "in",
+        containerType: "set",
+        isRef: true,
+      },
+      { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "removed_out", name: "Removed", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("removed_out", "Removed", "bool", "out")],
-  }),
-
-  Set_Contains: F.pureNode({
+  },
+  Set_Contains: {
     title: "Contains (Set)",
+    type: "pure-node",
     category: "Utilities|Set",
     icon: "fa-search",
-    inputs: [
-      F.containerIn("set", "Target", false),
-      F.pin("item_in", "Item", "wildcard"),
+    pins: [
+      {
+        id: "set_in",
+        name: "Target Set",
+        type: "wildcard",
+        dir: "in",
+        containerType: "set",
+      },
+      { id: "item_in", name: "Item", type: "wildcard", dir: "in" },
+      { id: "found_out", name: "Found", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("found_out", "Found", "bool", "out")],
-  }),
-
-  Set_Clear: F.flowNode({
+  },
+  Set_Clear: {
     title: "Clear (Set)",
     type: "function-node",
     category: "Utilities|Set",
     icon: "fa-trash-alt",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [F.containerIn("set", "Target", true)],
-  }),
-
-  Set_Length: F.pureNode({
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "set_in",
+        name: "Target Set",
+        type: "wildcard",
+        dir: "in",
+        containerType: "set",
+        isRef: true,
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+    ],
+  },
+  Set_Length: {
     title: "Length (Set)",
+    type: "pure-node",
     category: "Utilities|Set",
     icon: "fa-ruler-horizontal",
-    inputs: [F.containerIn("set", "Target", false)],
-    outputs: [F.pin("length_out", "Length", "int", "out")],
-  }),
-
-  Set_ToArray: F.pureNode({
+    pins: [
+      {
+        id: "set_in",
+        name: "Target Set",
+        type: "wildcard",
+        dir: "in",
+        containerType: "set",
+      },
+      { id: "length_out", name: "Length", type: "int", dir: "out" },
+    ],
+  },
+  Set_ToArray: {
     title: "To Array (Set)",
+    type: "pure-node",
     category: "Utilities|Set",
     icon: "fa-list",
-    inputs: [F.containerIn("set", "Target", false)],
-    outputs: [
-      F.pin("array_out", "Array", "wildcard", "out", {
+    pins: [
+      {
+        id: "set_in",
+        name: "Target Set",
+        type: "wildcard",
+        dir: "in",
+        containerType: "set",
+      },
+      {
+        id: "array_out",
+        name: "Array",
+        type: "wildcard",
+        dir: "out",
         containerType: "array",
-      }),
+      },
     ],
-  }),
-
-  // ============================================================================
-  // MAP NODES
-  // ============================================================================
-
-  Map_Add: F.flowNode({
+  },
+  Map_Add: {
     title: "ADD (Map)",
     type: "function-node",
     category: "Utilities|Map",
     icon: "fa-plus-square",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("map", "Target", true),
-      F.pin("key_in", "Key", "wildcard"),
-      F.pin("value_in", "Value", "wildcard"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "map_in",
+        name: "Target Map",
+        type: "wildcard",
+        dir: "in",
+        containerType: "map",
+        isRef: true,
+      },
+      { id: "key_in", name: "Key", type: "wildcard", dir: "in" },
+      { id: "value_in", name: "Value", type: "wildcard", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "added_out", name: "Added", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("added_out", "Added", "bool", "out")],
-  }),
-
-  Map_Remove: F.flowNode({
+  },
+  Map_Remove: {
     title: "Remove (Map)",
     type: "function-node",
     category: "Utilities|Map",
     icon: "fa-minus-square",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [
-      F.containerIn("map", "Target", true),
-      F.pin("key_in", "Key", "wildcard"),
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "map_in",
+        name: "Target Map",
+        type: "wildcard",
+        dir: "in",
+        containerType: "map",
+        isRef: true,
+      },
+      { id: "key_in", name: "Key", type: "wildcard", dir: "in" },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+      { id: "removed_out", name: "Removed", type: "bool", dir: "out" },
     ],
-    outputs: [F.pin("removed_out", "Removed", "bool", "out")],
-  }),
-
-  Map_Find: F.pureNode({
+  },
+  Map_Find: {
     title: "Find (Map)",
+    type: "pure-node",
     category: "Utilities|Map",
     icon: "fa-search",
-    inputs: [
-      F.containerIn("map", "Target", false),
-      F.pin("key_in", "Key", "wildcard"),
+    pins: [
+      {
+        id: "map_in",
+        name: "Target Map",
+        type: "wildcard",
+        dir: "in",
+        containerType: "map",
+      },
+      { id: "key_in", name: "Key", type: "wildcard", dir: "in" },
+      { id: "value_out", name: "Value", type: "wildcard", dir: "out" },
+      { id: "found_out", name: "Found", type: "bool", dir: "out" },
     ],
-    outputs: [
-      F.pin("value_out", "Value", "wildcard", "out"),
-      F.pin("found_out", "Found", "bool", "out"),
-    ],
-  }),
-
-  Map_Clear: F.flowNode({
+  },
+  Map_Clear: {
     title: "Clear (Map)",
     type: "function-node",
     category: "Utilities|Map",
     icon: "fa-trash-alt",
-    execInName: "Exec",
-    execOutName: "Exec",
-    inputs: [F.containerIn("map", "Target", true)],
-  }),
-
-  Map_Length: F.pureNode({
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "map_in",
+        name: "Target Map",
+        type: "wildcard",
+        dir: "in",
+        containerType: "map",
+        isRef: true,
+      },
+      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
+    ],
+  },
+  Map_Length: {
     title: "Length (Map)",
+    type: "pure-node",
     category: "Utilities|Map",
     icon: "fa-ruler-horizontal",
-    inputs: [F.containerIn("map", "Target", false)],
-    outputs: [F.pin("length_out", "Length", "int", "out")],
-  }),
-
-  Map_Keys: F.pureNode({
+    pins: [
+      {
+        id: "map_in",
+        name: "Target Map",
+        type: "wildcard",
+        dir: "in",
+        containerType: "map",
+      },
+      { id: "length_out", name: "Length", type: "int", dir: "out" },
+    ],
+  },
+  Map_Keys: {
     title: "Keys (Map)",
+    type: "pure-node",
     category: "Utilities|Map",
     icon: "fa-key",
-    inputs: [F.containerIn("map", "Target", false)],
-    outputs: [
-      F.pin("keys_out", "Keys", "wildcard", "out", { containerType: "array" }),
+    pins: [
+      {
+        id: "map_in",
+        name: "Target Map",
+        type: "wildcard",
+        dir: "in",
+        containerType: "map",
+      },
+      {
+        id: "keys_out",
+        name: "Keys",
+        type: "wildcard",
+        dir: "out",
+        containerType: "array",
+      },
     ],
-  }),
-
-  Map_Values: F.pureNode({
+  },
+  Map_Values: {
     title: "Values (Map)",
+    type: "pure-node",
     category: "Utilities|Map",
     icon: "fa-list-ul",
-    inputs: [F.containerIn("map", "Target", false)],
-    outputs: [
-      F.pin("values_out", "Values", "wildcard", "out", {
+    pins: [
+      {
+        id: "map_in",
+        name: "Target Map",
+        type: "wildcard",
+        dir: "in",
+        containerType: "map",
+      },
+      {
+        id: "values_out",
+        name: "Values",
+        type: "wildcard",
+        dir: "out",
         containerType: "array",
-      }),
+      },
     ],
-  }),
+  },
 };

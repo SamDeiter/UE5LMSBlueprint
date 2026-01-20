@@ -1,0 +1,241 @@
+/**
+ * FlowControlNodes - Node definitions for Flow Control category
+ * Contains Branch, Sequence, loops, gates, and other control flow nodes.
+ * @module FlowControlNodes
+ */
+/** @typedef {import('./types.js').NodeDefinition} NodeDefinition */
+
+/** @type {Object.<string, NodeDefinition>} */
+export const FlowControlNodes = {
+  Branch: {
+    title: "Branch",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/Branch.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "cond_in",
+        name: "Condition",
+        type: "bool",
+        dir: "in",
+        defaultValue: true,
+      },
+      { id: "exec_true", name: "True", type: "exec", dir: "out" },
+      { id: "exec_false", name: "False", type: "exec", dir: "out" },
+    ],
+  },
+  Sequence: {
+    title: "Sequence",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/Sequence.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "exec_0", name: "Then 0", type: "exec", dir: "out" },
+      { id: "exec_1", name: "Then 1", type: "exec", dir: "out" },
+    ],
+  },
+  DoOnce: {
+    title: "DoOnce",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/DoOnce.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "reset_in", name: "Reset", type: "exec", dir: "in" },
+      { id: "exec_completed", name: "Completed", type: "exec", dir: "out" },
+    ],
+  },
+  DoN: {
+    title: "Do N",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/DoN.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "reset_in", name: "Reset", type: "exec", dir: "in" },
+      { id: "n_in", name: "N", type: "int", dir: "in" },
+      { id: "exec_counter", name: "Counter", type: "exec", dir: "out" },
+      { id: "exit_int", name: "Count", type: "int", dir: "out" },
+    ],
+  },
+  FlipFlop: {
+    title: "FlipFlop",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/FlipFlop.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "exec_a", name: "A", type: "exec", dir: "out" },
+      { id: "exec_b", name: "B", type: "exec", dir: "out" },
+      { id: "is_a_bool", name: "Is A", type: "bool", dir: "out" },
+    ],
+  },
+  ForLoop: {
+    title: "ForLoop",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/ForEach.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "first_index_in",
+        name: "First Index",
+        type: "int",
+        dir: "in",
+        defaultValue: 0,
+      },
+      {
+        id: "last_index_in",
+        name: "Last Index",
+        type: "int",
+        dir: "in",
+        defaultValue: 0,
+      },
+      { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },
+      { id: "index_out", name: "Index", type: "int", dir: "out" },
+      { id: "exec_completed", name: "Completed", type: "exec", dir: "out" },
+    ],
+  },
+  ForEachLoop: {
+    title: "ForEachLoop",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/ForEach.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "array_in",
+        name: "Array",
+        type: "wildcard",
+        dir: "in",
+        containerType: "array",
+      },
+      { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },
+      {
+        id: "array_element_out",
+        name: "Array Element",
+        type: "wildcard",
+        dir: "out",
+      },
+      { id: "array_index_out", name: "Array Index", type: "int", dir: "out" },
+      { id: "exec_completed", name: "Completed", type: "exec", dir: "out" },
+    ],
+  },
+  WhileLoop: {
+    title: "WhileLoop",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "fa-redo",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      {
+        id: "condition_in",
+        name: "Condition",
+        type: "bool",
+        dir: "in",
+        defaultValue: true,
+      },
+      { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },
+      { id: "exec_completed", name: "Completed", type: "exec", dir: "out" },
+    ],
+  },
+  ForLoopWithBreak: {
+    title: "ForLoopWithBreak",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "ue5/ForEach.svg",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "break_in", name: "Break", type: "exec", dir: "in" },
+      {
+        id: "first_index_in",
+        name: "First Index",
+        type: "int",
+        dir: "in",
+        defaultValue: 0,
+      },
+      {
+        id: "last_index_in",
+        name: "Last Index",
+        type: "int",
+        dir: "in",
+        defaultValue: 10,
+      },
+      { id: "exec_loop_body", name: "Loop Body", type: "exec", dir: "out" },
+      { id: "index_out", name: "Index", type: "int", dir: "out" },
+      { id: "exec_completed", name: "Completed", type: "exec", dir: "out" },
+    ],
+  },
+  Gate: {
+    title: "Gate",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "fa-dungeon",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "enter_in", name: "Enter", type: "exec", dir: "in" },
+      { id: "open_in", name: "Open", type: "exec", dir: "in" },
+      { id: "close_in", name: "Close", type: "exec", dir: "in" },
+      { id: "toggle_in", name: "Toggle", type: "exec", dir: "in" },
+      { id: "exec_exit", name: "Exit", type: "exec", dir: "out" },
+    ],
+  },
+  MultiGate: {
+    title: "MultiGate",
+    type: "flow-node",
+    category: "Flow Control",
+    executor: "FlowControl",
+    icon: "fa-random",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "reset_in", name: "Reset", type: "exec", dir: "in" },
+      {
+        id: "loop_in",
+        name: "IsRandom",
+        type: "bool",
+        dir: "in",
+        defaultValue: false,
+      },
+      { id: "exec_out_0", name: "Out 0", type: "exec", dir: "out" },
+      { id: "exec_out_1", name: "Out 1", type: "exec", dir: "out" },
+    ],
+    customData: {
+      startIndex: 0,
+    },
+  },
+  Reroute: {
+    title: "Reroute",
+    type: "reroute-node",
+    category: "Flow Control",
+    executor: "FlowControl", // Logic is pass-through, but needs an executor
+    icon: "fa-circle", // Simple dot
+    pins: [
+      { id: "in", name: "", type: "wildcard", dir: "in" },
+      { id: "out", name: "", type: "wildcard", dir: "out" },
+    ],
+  },
+  IsValid: {
+    title: "Is Valid",
+    type: "flow-node",
+    category: "Flow Control",
+    icon: "fa-question-circle",
+    pins: [
+      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
+      { id: "input_object", name: "Input Object", type: "object", dir: "in" },
+      { id: "is_valid", name: "Is Valid", type: "exec", dir: "out" },
+      { id: "is_not_valid", name: "Is Not Valid", type: "exec", dir: "out" },
+    ],
+  },
+};

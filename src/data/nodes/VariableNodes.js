@@ -4,12 +4,11 @@
  */
 export const VariableNodes = {
   customData: {
-    startIndex: 0,
-  },
+      startIndex: 0,
+    },
   Set_bool: {
     title: "Set (Boolean)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -27,7 +26,6 @@ export const VariableNodes = {
   Set_byte: {
     title: "Set (Byte)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -39,7 +37,6 @@ export const VariableNodes = {
   Set_int: {
     title: "Set (Integer)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -51,7 +48,6 @@ export const VariableNodes = {
   Set_int64: {
     title: "Set (Integer64)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -69,7 +65,6 @@ export const VariableNodes = {
   Set_float: {
     title: "Set (Float)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -87,7 +82,6 @@ export const VariableNodes = {
   Set_name: {
     title: "Set (Name)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -105,7 +99,6 @@ export const VariableNodes = {
   Set_string: {
     title: "Set (String)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -123,7 +116,6 @@ export const VariableNodes = {
   Set_text: {
     title: "Set (Text)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -141,7 +133,6 @@ export const VariableNodes = {
   Set_vector: {
     title: "Set (Vector)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -153,7 +144,6 @@ export const VariableNodes = {
   Set_rotator: {
     title: "Set (Rotator)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -165,7 +155,6 @@ export const VariableNodes = {
   Set_transform: {
     title: "Set (Transform)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
@@ -177,66 +166,12 @@ export const VariableNodes = {
   Set_object: {
     title: "Set (Object)",
     type: "variable-node",
-    category: "Variables",
     icon: "fa-arrow-circle-up",
     pins: [
       { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
       { id: "val_in", name: "Value", type: "object", dir: "in" },
       { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
       { id: "val_out", name: "Output", type: "object", dir: "out" },
-    ],
-  },
-  GetHealth: {
-    title: "Get Health",
-    type: "variable-node",
-    category: "Variables|Health",
-    icon: "fa-heart",
-    pins: [{ id: "val_out", name: "Health", type: "float", dir: "out" }],
-  },
-  SetHealth: {
-    title: "Set Health",
-    type: "variable-node",
-    category: "Variables|Health",
-    icon: "fa-heart",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      {
-        id: "val_in",
-        name: "Health",
-        type: "float",
-        dir: "in",
-        defaultValue: 100.0,
-      },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-    ],
-  },
-  GetScore: {
-    title: "Get Score",
-    type: "variable-node",
-    category: "Variables|Score",
-    icon: "fa-star",
-    pins: [{ id: "val_out", name: "Score", type: "int", dir: "out" }],
-  },
-  SetScore: {
-    title: "Set Score",
-    type: "variable-node",
-    category: "Variables|Score",
-    icon: "fa-star",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "val_in", name: "Score", type: "int", dir: "in", defaultValue: 0 },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
-    ],
-  },
-  AddScore: {
-    title: "Add Score",
-    type: "variable-node",
-    category: "Variables|Score",
-    icon: "fa-plus",
-    pins: [
-      { id: "exec_in", name: "Exec", type: "exec", dir: "in" },
-      { id: "val_in", name: "Amount", type: "int", dir: "in", defaultValue: 1 },
-      { id: "exec_out", name: "Exec", type: "exec", dir: "out" },
     ],
   },
 };
