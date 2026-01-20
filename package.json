@@ -2,6 +2,7 @@
   "name": "ue5-blueprint-editor",
   "version": "1.0.0",
   "description": "UE5 Blueprint Editor Replica - Visual scripting interface",
+  "homepage": "https://samdeiter.github.io/UE5LMSBlueprint/",
   "type": "module",
   "scripts": {
     "lint": "eslint .",
@@ -12,7 +13,8 @@
     "check-sizes": "node scripts/file-size-monitor.js",
     "validate": "npm run lint && npm run check-sizes",
     "precommit": "npm run validate",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy": "gh-pages -d ."
   },
   "keywords": [
     "blueprint",
@@ -23,6 +25,7 @@
   "license": "MIT",
   "devDependencies": {
     "eslint": "^9.39.1",
+    "gh-pages": "^6.3.0",
     "husky": "^9.1.7"
   }
 }
