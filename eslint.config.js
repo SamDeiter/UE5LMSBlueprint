@@ -41,6 +41,7 @@ export default [
         Blob: "readonly",
         URL: "readonly",
         FileReader: "readonly",
+        Audio: "readonly",
         localStorage: "readonly",
         ResizeObserver: "readonly",
         getComputedStyle: "readonly",
