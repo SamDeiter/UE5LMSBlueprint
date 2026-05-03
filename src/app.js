@@ -44,6 +44,9 @@ import { NodeDefinitions } from "./data/nodes/index.js";
 import { DOMElements } from "./config/DOMElements.js";
 import { APP_VERSION } from "./config/Constants.js";
 import { DirtyStateTracker } from "./services/DirtyStateTracker.js";
+import { ContentBrowserPanel } from "./ui/ContentBrowserPanel.js";
+import { BlueprintAssetManager } from "./core/BlueprintAssetManager.js";
+import { ContentBrowser } from "./core/ContentBrowser.js";
 class BlueprintApp {
   /**
    * Initializes all controllers and loads the graph.
@@ -134,6 +137,12 @@ class BlueprintApp {
     BlueprintApp.needNodeModal = new NeedNodeModal(BlueprintApp);
     BlueprintApp.parentClassModal = new ParentClassModal(BlueprintApp);
     BlueprintApp.debugger = new DebuggerController(BlueprintApp);
+
+    // Content Browser (data layer + UI panel)
+    BlueprintApp.assetManager = new BlueprintAssetManager();
+    BlueprintApp.contentBrowser = new ContentBrowser(BlueprintApp.assetManager);
+    BlueprintApp.contentBrowser.initialize();
+    BlueprintApp.contentBrowserPanel = new ContentBrowserPanel(BlueprintApp);
 
     // 7. Task System
     BlueprintApp.taskManager = new TaskManager(BlueprintApp);
@@ -287,6 +296,13 @@ class BlueprintApp {
         if (e.key === "w" || e.key === "W") {
           e.preventDefault();
           BlueprintApp.graph.duplicateSelectedNodes();
+          return;
+        }
+        if (e.key === " " || e.code === "Space") {
+          e.preventDefault();
+          if (BlueprintApp.contentBrowserPanel) {
+            BlueprintApp.contentBrowserPanel.toggle();
+          }
           return;
         }
       }
