@@ -101,8 +101,33 @@ export function isTypeCompatible(sourceType, targetType) {
   // Object hierarchy
   if (t === "object" && s.includes("component")) return true;
 
+  // Any object reference can flow into an interface-typed pin — implementation
+  // check happens at dispatch time, not at wire-connect time. This matches UE5
+  // editor behavior: you wire an Actor to an interface input and the engine
+  // silently no-ops if the actor doesn't implement the interface.
+  if (t === "interface" && (s === "object" || s.includes("component"))) {
+    return true;
+  }
+  if (s === "interface" && t === "object") return true;
+
   // Component type hierarchy
   return checkComponentHierarchy(s, t);
+}
+
+/**
+ * Check whether a runtime object implements a given interface.
+ * Objects carry an `_interfaces: string[]` tag set when their owning Blueprint
+ * is instantiated for simulation. Falsy/missing tag means "implements nothing".
+ *
+ * @param {object} obj - Runtime object instance
+ * @param {string} ifaceName - Interface name (e.g. "IInteractable")
+ * @returns {boolean}
+ */
+export function isInterfaceCompatible(obj, ifaceName) {
+  if (!obj || !ifaceName) return false;
+  const tags = obj._interfaces;
+  if (!Array.isArray(tags)) return false;
+  return tags.includes(ifaceName);
 }
 
 /**

@@ -19,6 +19,7 @@ import {
   NeedNodeModal,
   ParentClassModal,
   FunctionsController,
+  InterfacesController,
   MacrosController,
   LocalVariablesController,
   DebuggerController,
@@ -136,6 +137,9 @@ class BlueprintApp {
     );
     BlueprintApp.palette = new PaletteController(BlueprintApp);
     BlueprintApp.details = new DetailsController(BlueprintApp);
+    // Alias under the conventional name used by InterfacesController.
+    BlueprintApp.detailsController = BlueprintApp.details;
+    BlueprintApp.interfacesController = new InterfacesController(BlueprintApp);
     BlueprintApp.actionMenu = new ActionMenu(BlueprintApp);
     BlueprintApp.contextMenu = new ContextMenu(BlueprintApp);
     BlueprintApp.needNodeModal = new NeedNodeModal(BlueprintApp);

@@ -1,6 +1,23 @@
 /**
  * Manages the history stack for undo/redo and handles application state persistence.
  */
+import { interfaceRegistry } from '../interfaces/InterfaceRegistry.js';
+import { InterfaceDefinition } from '../interfaces/InterfaceDefinition.js';
+import {
+    registerNodesForInterface,
+    unregisterNodesForInterface,
+} from '../data/nodes/InterfaceNodes.js';
+import { nodeRegistry } from '../registries/NodeRegistry.js';
+
+const STANDARD_INTERFACE_NAMES = new Set([
+    'IInteractable',
+    'IDamageable',
+    'ISaveable',
+    'IPoolable',
+    'IAnimNotify',
+    'IGameplayTagAsset',
+]);
+
 export class HistoryManager {
     constructor(app, maxHistory = 50) {
         this.app = app;
@@ -42,6 +59,13 @@ export class HistoryManager {
             ? [...this.app.eventDispatchers.dispatchers.values()]
             : [];
 
+        // Persist only custom (non-standard) interfaces — built-ins are
+        // re-seeded on every boot from InterfaceRegistry's constructor.
+        const customInterfaces = interfaceRegistry
+            .getAll()
+            .filter((i) => !STANDARD_INTERFACE_NAMES.has(i.name))
+            .map((i) => i.toJSON());
+
         const state = {
             activeGraph: this.app.activeGraph,
             graphs: this.app.graphs,
@@ -51,6 +75,8 @@ export class HistoryManager {
             macros: macrosArray,
             eventDispatchers: eventDispatchersArray,
             classDefaults: this.app.classDefaults,
+            classSettings: this.app.classSettings,
+            customInterfaces,
             // Persist pending renames so they aren't lost on reload
             pendingRenames: this.app.compiler ? this.app.compiler.pendingRenames : []
         };
@@ -157,6 +183,35 @@ export class HistoryManager {
                 replicates: false,
                 autoReceiveInput: 'Disabled'
             };
+
+            // Restore Class Settings (interfaces list, blueprint options)
+            if (state.classSettings) {
+                this.app.classSettings = state.classSettings;
+            }
+
+            // Restore Custom Interfaces — drop any custom defs from the previous
+            // session, hydrate from the saved snapshot, re-register their
+            // Message_/Event_ node defs into nodeRegistry.
+            if (state.customInterfaces) {
+                // Clear previous custom defs (including their dynamic nodes).
+                interfaceRegistry.getAll()
+                    .filter((i) => !STANDARD_INTERFACE_NAMES.has(i.name))
+                    .forEach((i) => {
+                        unregisterNodesForInterface(nodeRegistry, i);
+                        interfaceRegistry.unregister(i.name);
+                    });
+
+                // Hydrate from saved JSON.
+                state.customInterfaces.forEach((data) => {
+                    const iface = InterfaceDefinition.fromJSON(data);
+                    interfaceRegistry.register(iface);
+                    registerNodesForInterface(nodeRegistry, iface);
+                });
+
+                if (this.app.interfacesController) {
+                    this.app.interfacesController.render();
+                }
+            }
 
             // Restore graphs map and active graph
             this.app.graphs = state.graphs || { 'EventGraph': { nodes: [], links: [] } };

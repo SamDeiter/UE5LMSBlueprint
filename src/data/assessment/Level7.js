@@ -91,26 +91,27 @@ export const LEVEL_7_TASKS = [
   // =====================
   // INTERFACE TASKS
   // =====================
+  // Tier A: Comprehension & basic implementation
   {
-    taskId: "task_711_implement_interface",
+    taskId: "task_711_mark_interactable",
     level: 7,
-    title: "Implement an Interface",
+    title: "Mark a Blueprint as Interactable",
     description:
-      "Add the 'IInteractable' interface to your Blueprint. Interfaces define contracts for interaction.",
+      "Open Class Settings (the cog icon in the My Blueprint panel) and add the 'IInteractable' interface from the dropdown. This declares your Blueprint as something the player can interact with.",
     requirements: [
       {
         type: "interface_implemented",
         interfaceName: "IInteractable",
-        description: "Implement the IInteractable interface",
+        description: "Add IInteractable from Class Settings → Interfaces",
       },
     ],
   },
   {
-    taskId: "task_712_interface_function",
+    taskId: "task_712_implement_get_interaction_text",
     level: 7,
-    title: "Implement Interface Function",
+    title: "Implement GetInteractionText",
     description:
-      "After implementing IInteractable, add the 'Interact' function event and connect it to PrintString.",
+      "Open the 'GetInteractionText' implementation graph (click the function under IInteractable in Class Settings) and wire the Return Node's Text input to the literal value 'Press E to open'.",
     requirements: [
       {
         type: "interface_implemented",
@@ -118,47 +119,276 @@ export const LEVEL_7_TASKS = [
         description: "IInteractable must be implemented",
       },
       {
-        type: "node_exists",
-        nodeType: "EventInteract",
-        description: "Add the Interact event from IInteractable",
-      },
-      {
-        type: "node_exists",
-        nodeType: "PrintString",
-        description: "Add PrintString",
-      },
-      {
-        type: "link_exists",
-        sourceNode: "EventInteract",
-        sourcePin: "exec_out",
-        targetNode: "PrintString",
-        targetPin: "exec_in",
-        description: "Connect Interact event to PrintString",
+        type: "interface_function_implemented",
+        interfaceName: "IInteractable",
+        functionName: "GetInteractionText",
+        expectedReturnPin: "Text",
+        expectedReturn: "Press E to open",
+        description:
+          "Wire the Return Node's Text pin to 'Press E to open'",
       },
     ],
   },
   {
-    taskId: "task_713_damageable_interface",
+    taskId: "task_713_implement_can_interact",
     level: 7,
-    title: "Implement IDamageable",
+    title: "Implement CanInteract with branching logic",
     description:
-      "Implement the IDamageable interface and handle the TakeDamage function.",
+      "In the 'CanInteract' implementation graph, return TRUE only when bIsActive is true AND Charges is greater than 0. Use Get bIsActive, Get Charges, a Greater Than (>) comparison, and an AND node, then wire the result to the Return Node.",
     requirements: [
       {
-        type: "interface_implemented",
-        interfaceName: "IDamageable",
-        description: "Implement IDamageable interface",
-      },
-      {
-        type: "node_exists",
-        nodeType: "EventTakeDamage",
-        description: "Add the TakeDamage event",
+        type: "variable_exists",
+        name: "bIsActive",
+        varType: "bool",
+        description: "Create Boolean variable 'bIsActive'",
       },
       {
         type: "variable_exists",
-        name: "Health",
-        varType: "float",
-        description: "Create Health variable",
+        name: "Charges",
+        varType: "int",
+        description: "Create Integer variable 'Charges'",
+      },
+      {
+        type: "interface_implemented",
+        interfaceName: "IInteractable",
+        description: "IInteractable must be implemented",
+      },
+      {
+        type: "interface_function_implemented",
+        interfaceName: "IInteractable",
+        functionName: "CanInteract",
+        description:
+          "CanInteract implementation graph must contain custom logic, not just the auto-stub",
+      },
+    ],
+  },
+
+  // Tier B: Calling interfaces — the core "why interfaces exist" payoff
+  {
+    taskId: "task_714_send_interface_message",
+    level: 7,
+    title: "Send an interface message",
+    description:
+      "In the Event Graph, on Event BeginPlay, send the 'Interact' message of IInteractable to the variable 'TargetActor' (Object). This calls Interact on whatever target your variable points at — it does NOT require a Cast.",
+    requirements: [
+      {
+        type: "variable_exists",
+        name: "TargetActor",
+        varType: "object",
+        description: "Create Object variable 'TargetActor'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "EventBeginPlay",
+        description: "Add Event BeginPlay",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Message_IInteractable_Interact",
+        description: "Add a Message IInteractable.Interact node",
+      },
+      {
+        type: "interface_message_sent",
+        interfaceName: "IInteractable",
+        functionName: "Interact",
+        description:
+          "The Message Interact node's Target pin must be connected (typically to Get TargetActor)",
+      },
+      {
+        type: "link_exists",
+        sourceNode: "EventBeginPlay",
+        sourcePin: "exec_out",
+        targetNode: "Message_IInteractable_Interact",
+        targetPin: "exec_in",
+        description: "Wire BeginPlay → Message Interact",
+      },
+    ],
+  },
+  {
+    taskId: "task_715_refactor_cast_ladder",
+    level: 7,
+    title: "Refactor a Cast Ladder",
+    description:
+      "Your Event Graph has three Cast nodes — CastTo_Door, CastTo_Chest, and CastTo_Lever — each calling its own Open function. Replace ALL three Casts with a single 'Message IInteractable.Interact' call. This is the canonical reason interfaces exist.",
+    requirements: [
+      {
+        type: "node_not_exists",
+        nodeType: "CastTo_Door",
+        description: "Remove CastTo_Door — it's no longer needed",
+      },
+      {
+        type: "node_not_exists",
+        nodeType: "CastTo_Chest",
+        description: "Remove CastTo_Chest — it's no longer needed",
+      },
+      {
+        type: "node_not_exists",
+        nodeType: "CastTo_Lever",
+        description: "Remove CastTo_Lever — it's no longer needed",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Message_IInteractable_Interact",
+        description: "Add the Message IInteractable.Interact node",
+      },
+      {
+        type: "interface_message_sent",
+        interfaceName: "IInteractable",
+        functionName: "Interact",
+        description: "Connect a Target object to the Message node's Target pin",
+      },
+    ],
+  },
+  {
+    taskId: "task_716_defensive_check",
+    level: 7,
+    title: "Check before sending damage",
+    description:
+      "Before calling TakeDamage on TargetActor, use 'Does Implement Interface' to check it actually implements IDamageable, then route through a Branch. This avoids silent no-ops when the target type isn't guaranteed.",
+    requirements: [
+      {
+        type: "variable_exists",
+        name: "TargetActor",
+        varType: "object",
+        description: "Create Object variable 'TargetActor'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "DoesImplementInterface",
+        description: "Add a Does Implement Interface node",
+      },
+      {
+        type: "node_property",
+        nodeKey: "DoesImplementInterface",
+        pinId: "interface_name_in",
+        value: "IDamageable",
+        description: "Set the Interface input to 'IDamageable'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Branch",
+        description: "Add a Branch node",
+      },
+      {
+        type: "link_exists",
+        sourceNode: "DoesImplementInterface",
+        sourcePin: "ret_out",
+        targetNode: "Branch",
+        targetPin: "cond_in",
+        description: "Wire DoesImplementInterface's bool output to Branch condition",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Message_IDamageable_TakeDamage",
+        description: "Add Message IDamageable.TakeDamage",
+      },
+      {
+        type: "interface_message_sent",
+        interfaceName: "IDamageable",
+        functionName: "TakeDamage",
+        description: "Wire TargetActor into the message's Target pin",
+      },
+    ],
+  },
+
+  // Tier C: Designing interfaces — students author their own
+  {
+    taskId: "task_717_create_custom_interface",
+    level: 7,
+    title: "Create a Custom Interface (IPickup)",
+    description:
+      "In the My Blueprint panel, click + on Interfaces to create 'IPickup'. Give it two functions: OnPickedUp(Pickupper: Object) returning bool Success, and GetPickupValue (Pure) returning int Value.",
+    requirements: [
+      {
+        type: "custom_interface_defined",
+        interfaceName: "IPickup",
+        requiredFunctions: [
+          {
+            name: "OnPickedUp",
+            isPure: false,
+            inputs: [{ name: "Pickupper", type: "object" }],
+            outputs: [{ name: "Success", type: "bool" }],
+          },
+          {
+            name: "GetPickupValue",
+            isPure: true,
+            outputs: [{ name: "Value", type: "int" }],
+          },
+        ],
+        description:
+          "IPickup must define OnPickedUp(Pickupper:Object → bool Success) and GetPickupValue (Pure → int Value)",
+      },
+    ],
+  },
+  {
+    taskId: "task_718_implement_custom_interface",
+    level: 7,
+    title: "Implement IPickup on this Blueprint",
+    description:
+      "Add IPickup to this Blueprint via Class Settings, then implement both functions. Wire OnPickedUp to return Success = true (use a literal). Wire GetPickupValue to return Value = 10.",
+    requirements: [
+      {
+        type: "custom_interface_defined",
+        interfaceName: "IPickup",
+        requiredFunctions: [{ name: "OnPickedUp" }, { name: "GetPickupValue" }],
+        description: "IPickup must still exist (from task 717)",
+      },
+      {
+        type: "interface_implemented",
+        interfaceName: "IPickup",
+        description: "Add IPickup from Class Settings → Interfaces",
+      },
+      {
+        type: "interface_function_implemented",
+        interfaceName: "IPickup",
+        functionName: "OnPickedUp",
+        expectedReturnPin: "Success",
+        expectedReturn: "true",
+        description: "OnPickedUp must return Success = true",
+      },
+      {
+        type: "interface_function_implemented",
+        interfaceName: "IPickup",
+        functionName: "GetPickupValue",
+        expectedReturnPin: "Value",
+        expectedReturn: "10",
+        description: "GetPickupValue must return Value = 10",
+      },
+    ],
+  },
+  {
+    taskId: "task_719_consume_custom_interface",
+    level: 7,
+    title: "Consume the Custom Interface",
+    description:
+      "On Event Actor Begin Overlap, send the IPickup.OnPickedUp message to the overlapping actor and store the returned value in a Score variable. (You don't need to know the overlapping actor's class — that's the whole point of the interface.)",
+    requirements: [
+      {
+        type: "variable_exists",
+        name: "Score",
+        varType: "int",
+        description: "Create Integer variable 'Score'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "EventActorBeginOverlap",
+        description: "Add Event ActorBeginOverlap",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Message_IPickup_OnPickedUp",
+        description: "Add Message IPickup.OnPickedUp",
+      },
+      {
+        type: "interface_message_sent",
+        interfaceName: "IPickup",
+        functionName: "OnPickedUp",
+        description: "Wire the overlapping actor into the message's Target pin",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Set_Score",
+        description: "Add Set Score",
       },
     ],
   },

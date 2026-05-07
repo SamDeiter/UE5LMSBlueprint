@@ -3,6 +3,10 @@
  * Enhanced with UE5-style Interfaces, Class Options, and Display Options
  */
 import { interfaceRegistry } from "../../interfaces/InterfaceRegistry.js";
+import {
+  buildStubImplGraph,
+  getInterfaceImplGraphName,
+} from "../../core/BlueprintAssetManager.js";
 
 export class ClassDetails {
   constructor(controller) {
@@ -332,14 +336,9 @@ export class ClassDetails {
     );
     if (addInterfaceSelect) {
       addInterfaceSelect.addEventListener("change", (e) => {
-        const iface = e.target.value;
-        if (iface) {
-          if (!this.app.classSettings.interfaces) {
-            this.app.classSettings.interfaces = [];
-          }
-          this.app.classSettings.interfaces.push(iface);
-          this.app.persistence.autoSave();
-          this.showSettings(); // Re-render
+        const ifaceName = e.target.value;
+        if (ifaceName) {
+          this._addInterface(ifaceName);
         }
       });
     }
@@ -348,13 +347,152 @@ export class ClassDetails {
     const removeButtons = this.panel.querySelectorAll(".interface-remove");
     removeButtons.forEach((btn) => {
       btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const idx = parseInt(e.target.dataset.index, 10);
-        if (this.app.classSettings.interfaces) {
-          this.app.classSettings.interfaces.splice(idx, 1);
-          this.app.persistence.autoSave();
-          this.showSettings(); // Re-render
+        const ifaceName = (this.app.classSettings.interfaces || [])[idx];
+        if (ifaceName) {
+          this._removeInterface(ifaceName);
         }
       });
     });
+
+    // Open impl graph when a function row is clicked.
+    const fnRows = this.panel.querySelectorAll(".interface-function");
+    fnRows.forEach((row) => {
+      row.style.cursor = "pointer";
+      row.addEventListener("click", () => {
+        const ifaceName = row.dataset.interface;
+        const fnName = row.dataset.function;
+        if (ifaceName && fnName) {
+          this._openImplGraph(ifaceName, fnName);
+        }
+      });
+    });
+  }
+
+  /**
+   * Add an interface to the active Blueprint.
+   * Updates both legacy classSettings (for serialization compat) and the
+   * asset manager's modern implementedInterfaces list. Seeds stub impl
+   * graphs into app.graphs so GraphSwitcher can navigate to them.
+   */
+  _addInterface(ifaceName) {
+    const iface = interfaceRegistry.get(ifaceName);
+    if (!iface) return;
+
+    // Legacy mirror — keeps existing classSettings serialization working.
+    if (!this.app.classSettings.interfaces) {
+      this.app.classSettings.interfaces = [];
+    }
+    if (!this.app.classSettings.interfaces.includes(ifaceName)) {
+      this.app.classSettings.interfaces.push(ifaceName);
+    }
+
+    // Modern path — record on the active asset and let it seed impl graphs.
+    const asset = this._activeAsset();
+    if (asset) {
+      asset.addInterface(ifaceName);
+    }
+
+    // Mirror impl graph data into the legacy app.graphs store so
+    // GraphSwitcher (which only knows about app.graphs / function /
+    // macro registries) can find and load them.
+    if (this.app.graphs) {
+      for (const fn of iface.functions) {
+        const graphName = getInterfaceImplGraphName(ifaceName, fn.name);
+        if (this.app.graphs[graphName]) continue;
+        const stub =
+          asset && asset.graphs.has(graphName)
+            ? asset.graphs.get(graphName)
+            : buildStubImplGraph(iface, fn);
+        this.app.graphs[graphName] = stub;
+      }
+    }
+
+    if (this.app.persistence) this.app.persistence.autoSave();
+    this.showSettings();
+  }
+
+  /**
+   * Remove an interface from the active Blueprint and delete its impl graphs.
+   * If the user is currently viewing one of those graphs, switch them to the
+   * EventGraph so they're not left looking at a stale view.
+   */
+  _removeInterface(ifaceName) {
+    const iface = interfaceRegistry.get(ifaceName);
+    const funcs = iface ? iface.functions : [];
+
+    // Confirm with the student — removing wipes any custom impl work.
+    if (
+      typeof window !== "undefined" &&
+      window.confirm &&
+      !window.confirm(
+        `Remove interface '${ifaceName}'?\n` +
+          `This will delete the implementation graph${
+            funcs.length === 1 ? "" : "s"
+          } for ${funcs.map((f) => f.name).join(", ") || "(no functions)"}.`
+      )
+    ) {
+      return;
+    }
+
+    // Legacy classSettings update
+    if (this.app.classSettings.interfaces) {
+      const idx = this.app.classSettings.interfaces.indexOf(ifaceName);
+      if (idx !== -1) this.app.classSettings.interfaces.splice(idx, 1);
+    }
+
+    // Asset update
+    const asset = this._activeAsset();
+    if (asset) asset.removeInterface(ifaceName);
+
+    // Drop impl graphs from the legacy store
+    const orphanedGraphNames = [];
+    if (this.app.graphs && iface) {
+      for (const fn of iface.functions) {
+        const graphName = getInterfaceImplGraphName(ifaceName, fn.name);
+        if (graphName in this.app.graphs) {
+          delete this.app.graphs[graphName];
+          orphanedGraphNames.push(graphName);
+        }
+      }
+    }
+
+    // If the user is sitting on one of those graphs, kick them back to
+    // the event graph rather than leaving them on a deleted view.
+    if (orphanedGraphNames.includes(this.app.activeGraph)) {
+      this.app.switchGraph("EventGraph");
+    }
+    // Close any open tabs for orphaned graphs.
+    orphanedGraphNames.forEach((name) => {
+      const tab = document.querySelector(
+        `.graph-tab[data-graph="${name}"]`
+      );
+      if (tab) tab.remove();
+    });
+
+    if (this.app.persistence) this.app.persistence.autoSave();
+    this.showSettings();
+  }
+
+  _openImplGraph(ifaceName, fnName) {
+    const graphName = getInterfaceImplGraphName(ifaceName, fnName);
+    // Defensive: ensure the graph exists in app.graphs before switching.
+    if (this.app.graphs && !this.app.graphs[graphName]) {
+      const iface = interfaceRegistry.get(ifaceName);
+      const fn = iface ? iface.getFunction(fnName) : null;
+      if (iface && fn) {
+        this.app.graphs[graphName] = buildStubImplGraph(iface, fn);
+      }
+    }
+    if (this.app.switchGraph) {
+      this.app.switchGraph(graphName);
+    }
+  }
+
+  _activeAsset() {
+    const am = this.app.assetManager;
+    if (!am) return null;
+    return am.getAsset(am.activeAssetId);
   }
 }

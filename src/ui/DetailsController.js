@@ -7,6 +7,7 @@ import { Pin } from "../graph/index.js";
 import { setupToggle } from "./ui-helpers.js";
 import { DetailsRenderer } from "./DetailsRenderer.js";
 import { DetailsTypeSelector } from "./DetailsTypeSelector.js";
+import { InterfaceDetails } from "./details/InterfaceDetails.js";
 
 export class DetailsController {
   constructor(app) {
@@ -14,7 +15,12 @@ export class DetailsController {
     this.panel = document.getElementById("details-panel");
     this.currentVariable = null;
     this.typeSelector = new DetailsTypeSelector(this);
+    this.interfaceDetails = new InterfaceDetails(this);
     this.clear();
+  }
+
+  showInterfaceDetails(iface) {
+    this.interfaceDetails.show(iface);
   }
 
   clear() {
