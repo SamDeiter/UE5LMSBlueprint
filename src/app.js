@@ -41,6 +41,7 @@ import { nodeRegistry } from "./registries/NodeRegistry.js";
 import { functionRegistry } from "./functions/FunctionRegistry.js";
 import { MacroRegistry } from "./macros/MacroRegistry.js";
 import { NodeDefinitions } from "./data/nodes/index.js";
+import { registerAllInterfaceNodes } from "./data/nodes/InterfaceNodes.js";
 import { DOMElements } from "./config/DOMElements.js";
 import { APP_VERSION } from "./config/Constants.js";
 import { DirtyStateTracker } from "./services/DirtyStateTracker.js";
@@ -70,6 +71,9 @@ class BlueprintApp {
     // Register static node definitions into the runtime registry
     try {
       nodeRegistry.registerBatch(NodeDefinitions);
+      // After static defs are in, dynamically register Message_/Event_ nodes
+      // for every interface in InterfaceRegistry (built-ins + any custom).
+      registerAllInterfaceNodes(nodeRegistry);
     } catch (err) {
       console.error("Failed to register NodeDefinitions:", err);
     }
@@ -398,6 +402,10 @@ class BlueprintApp {
     BlueprintApp.palette.populateList();
     BlueprintApp.variables.renderPanel();
     BlueprintApp.componentsController.render(); // Ensure components panel is rendered
+    if (BlueprintApp.eventDispatchers) {
+      BlueprintApp.eventDispatchers.updateNodeLibrary();
+      BlueprintApp.eventDispatchers.renderPanel();
+    }
     BlueprintApp.compiler.validate();
     BlueprintApp.grid.draw();
 

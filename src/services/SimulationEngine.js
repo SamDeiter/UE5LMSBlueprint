@@ -22,6 +22,8 @@ import { VectorExecutor } from "./executors/VectorExecutor.js";
 import { TimerExecutor } from "./executors/TimerExecutor.js";
 import { TraceExecutor } from "./executors/TraceExecutor.js";
 import { InputExecutor } from "./executors/InputExecutor.js";
+import { EventDispatcherExecutor } from "./executors/EventDispatcherExecutor.js";
+import { InterfaceExecutor } from "./executors/InterfaceExecutor.js";
 import { timerManager } from "./TimerManager.js";
 import { NodeDefinitions } from "../data/nodes/index.js";
 
@@ -87,6 +89,8 @@ export class SimulationEngine {
       Timer: new TimerExecutor(this),
       Trace: new TraceExecutor(this),
       Input: new InputExecutor(this),
+      EventDispatcher: new EventDispatcherExecutor(this),
+      Interface: new InterfaceExecutor(this),
     };
 
     // 2. Auto-Register Static Nodes from Metadata
@@ -103,6 +107,37 @@ export class SimulationEngine {
     this.executorRegistry.registerPattern(/^Conv_/, executors["Conversion"]);
     this.executorRegistry.registerPattern(/^Func_/, executors["Function"]);
     this.executorRegistry.registerPattern(/^Macro_/, executors["Macro"]);
+    this.executorRegistry.registerPattern(
+      /^CallDispatcher_/,
+      executors["EventDispatcher"]
+    );
+    this.executorRegistry.registerPattern(
+      /^BindToDispatcher_/,
+      executors["EventDispatcher"]
+    );
+    this.executorRegistry.registerPattern(
+      /^UnbindFromDispatcher_/,
+      executors["EventDispatcher"]
+    );
+    this.executorRegistry.registerPattern(
+      /^UnbindAllFromDispatcher_/,
+      executors["EventDispatcher"]
+    );
+    this.eventDispatcherExecutor = executors["EventDispatcher"];
+
+    // Interface dispatch: Message_<Iface>_<Func> and Event_<Iface>_<Func>.
+    // Note: existing event node keys (EventBeginPlay, EventTick, ...) have NO
+    // underscore after "Event", so /^Event_/ is safely interface-only.
+    this.executorRegistry.registerPattern(/^Message_/, executors["Interface"]);
+    this.executorRegistry.registerPattern(/^Event_/, executors["Interface"]);
+    this.executorRegistry.register(
+      "InterfaceFunctionEntry",
+      executors["Interface"]
+    );
+    this.executorRegistry.register(
+      "InterfaceFunctionResult",
+      executors["Interface"]
+    );
   }
 
   addWatch(pin) {
@@ -178,6 +213,10 @@ export class SimulationEngine {
     if (debugGroup) debugGroup.classList.add("hidden");
 
     if (this.app.debugger) this.app.debugger.update();
+
+    // Clear dispatcher listener state so bindings don't survive across runs.
+    if (this.eventDispatcherExecutor)
+      this.eventDispatcherExecutor.clearBindings();
   }
 
   pause(node) {

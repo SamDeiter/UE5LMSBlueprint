@@ -4,6 +4,21 @@
  */
 import { generateGUID } from "../utils/guid.js";
 import { createCollapsibleHeader } from "./ui-helpers.js";
+import { nodeRegistry } from "../registries/NodeRegistry.js";
+
+const DISPATCHER_PARAM_TYPES = [
+  "exec",
+  "bool",
+  "int",
+  "float",
+  "string",
+  "name",
+  "vector",
+  "rotator",
+  "transform",
+  "object",
+  "actor",
+];
 
 export class EventDispatcherController {
   constructor(app) {
@@ -61,6 +76,7 @@ export class EventDispatcherController {
     this.dispatchers.set(id, dispatcher);
     this.renamingId = id; // Start in rename mode
 
+    this.updateNodeLibrary();
     this.renderPanel();
     this.app.persistence.autoSave();
   }
@@ -90,6 +106,7 @@ export class EventDispatcherController {
 
     newYes.addEventListener("click", () => {
       this.dispatchers.delete(id);
+      this.updateNodeLibrary();
       this.renderPanel();
       this.app.persistence.autoSave();
       modal.classList.add("hidden");
@@ -113,6 +130,7 @@ export class EventDispatcherController {
       !this.isNameTaken(newName, dispatcher.id)
     ) {
       dispatcher.name = newName;
+      this.updateNodeLibrary();
       this.app.persistence.autoSave();
     }
     this.renderPanel();
@@ -237,6 +255,28 @@ export class EventDispatcherController {
     const panel = this.app.details.panel;
     if (!panel) return;
 
+    if (!dispatcher.parameters) dispatcher.parameters = [];
+
+    const paramRows = dispatcher.parameters
+      .map((param, idx) => {
+        const safeName = (param.name || "").replace(/"/g, "&quot;");
+        const typeOptions = DISPATCHER_PARAM_TYPES.filter((t) => t !== "exec")
+          .map(
+            (t) =>
+              `<option value="${t}" ${
+                param.type === t ? "selected" : ""
+              }>${t}</option>`
+          )
+          .join("");
+        return `
+          <div class="detail-row dispatcher-param-row" data-param-index="${idx}">
+            <input type="text" class="details-input dispatcher-param-name" value="${safeName}" placeholder="Param name">
+            <select class="details-select dispatcher-param-type">${typeOptions}</select>
+            <button class="btn-danger dispatcher-param-remove" title="Remove parameter">&times;</button>
+          </div>`;
+      })
+      .join("");
+
     panel.innerHTML = `
             <div class="details-group">
                 <h4 class="details-header-uppercase">
@@ -253,6 +293,18 @@ export class EventDispatcherController {
                     <input type="text" id="dispatcher-desc-input" class="details-input" value="${
                       dispatcher.description || ""
                     }" class="w-60">
+                </div>
+            </div>
+            <div class="details-group">
+                <h4 class="details-header-uppercase">
+                    <i class="fas fa-caret-down"></i> Inputs
+                </h4>
+                <div id="dispatcher-params-list">${
+                  paramRows ||
+                  '<div class="placeholder-text placeholder-italic">No parameters</div>'
+                }</div>
+                <div class="detail-row">
+                    <button id="dispatcher-add-param-btn" class="btn-secondary">+ Add Parameter</button>
                 </div>
             </div>
             <div class="details-group">
@@ -295,11 +347,40 @@ export class EventDispatcherController {
         const newName = e.target.value.trim();
         if (newName && !this.isNameTaken(newName, dispatcher.id)) {
           dispatcher.name = newName;
+          this.updateNodeLibrary();
           this.renderPanel();
           this.app.persistence.autoSave();
         }
       });
     }
+
+    const addParamBtn = panel.querySelector("#dispatcher-add-param-btn");
+    if (addParamBtn) {
+      addParamBtn.addEventListener("click", () => this.addParameter(dispatcher));
+    }
+
+    panel.querySelectorAll(".dispatcher-param-row").forEach((row) => {
+      const idx = parseInt(row.dataset.paramIndex, 10);
+      const nameEl = row.querySelector(".dispatcher-param-name");
+      const typeEl = row.querySelector(".dispatcher-param-type");
+      const removeBtn = row.querySelector(".dispatcher-param-remove");
+      if (nameEl) {
+        nameEl.addEventListener("change", (e) => {
+          const newName = e.target.value.trim();
+          if (newName) this.updateParameter(dispatcher, idx, "name", newName);
+        });
+      }
+      if (typeEl) {
+        typeEl.addEventListener("change", (e) =>
+          this.updateParameter(dispatcher, idx, "type", e.target.value)
+        );
+      }
+      if (removeBtn) {
+        removeBtn.addEventListener("click", () =>
+          this.removeParameter(dispatcher, idx)
+        );
+      }
+    });
 
     const descInput = panel.querySelector("#dispatcher-desc-input");
     if (descInput) {
@@ -383,15 +464,160 @@ export class EventDispatcherController {
   }
 
   /**
+   * Build pin layout for a Call node. Includes Target + dispatcher parameters.
+   */
+  buildCallPins(dispatcher) {
+    const pins = [
+      { id: "exec_in", name: "", type: "exec", dir: "in" },
+      { id: "target_in", name: "Target", type: "object", dir: "in" },
+    ];
+    (dispatcher.parameters || []).forEach((p, idx) => {
+      const safeName = (p.name || `Param${idx}`).trim();
+      pins.push({
+        id: `param_${idx}`,
+        name: safeName,
+        type: p.type || "string",
+        dir: "in",
+      });
+    });
+    pins.push({ id: "exec_out", name: "", type: "exec", dir: "out" });
+    return pins;
+  }
+
+  /**
+   * Bind/Unbind/UnbindAll all share Target + an Event reference (Bind/Unbind only).
+   */
+  buildBindPins(dispatcher, withEvent) {
+    const pins = [
+      { id: "exec_in", name: "", type: "exec", dir: "in" },
+      { id: "target_in", name: "Target", type: "object", dir: "in" },
+    ];
+    if (withEvent) {
+      pins.push({ id: "event_in", name: "Event", type: "object", dir: "in" });
+    }
+    pins.push({ id: "exec_out", name: "", type: "exec", dir: "out" });
+    return pins;
+  }
+
+  /**
+   * Register Call / Bind / Unbind / UnbindAll palette nodes for every dispatcher.
+   * Mirrors ComponentsController.updateNodeLibrary.
+   */
+  updateNodeLibrary() {
+    const registry = nodeRegistry || this.app.nodeRegistry;
+    if (!registry) return;
+
+    // Strip previous per-dispatcher entries.
+    for (const key of Object.keys(registry.getAll())) {
+      if (
+        key.startsWith("CallDispatcher_") ||
+        key.startsWith("BindToDispatcher_") ||
+        key.startsWith("UnbindFromDispatcher_") ||
+        key.startsWith("UnbindAllFromDispatcher_")
+      ) {
+        if (
+          key === "CallDispatcher_Example" ||
+          key === "BindToDispatcher_Example" ||
+          key === "UnbindFromDispatcher_Example"
+        )
+          continue;
+        registry.unregister(key);
+      }
+    }
+
+    for (const dispatcher of this.dispatchers.values()) {
+      const id = dispatcher.id;
+      const name = dispatcher.name;
+
+      registry.register(`CallDispatcher_${id}`, {
+        title: `Call ${name}`,
+        category: "Event Dispatchers",
+        type: "function-node",
+        executor: "EventDispatcher",
+        icon: "fa-bolt",
+        pins: this.buildCallPins(dispatcher),
+        customData: { dispatcherId: id },
+      });
+
+      registry.register(`BindToDispatcher_${id}`, {
+        title: `Bind Event to ${name}`,
+        category: "Event Dispatchers",
+        type: "function-node",
+        executor: "EventDispatcher",
+        icon: "fa-link",
+        pins: this.buildBindPins(dispatcher, true),
+        customData: { dispatcherId: id },
+      });
+
+      registry.register(`UnbindFromDispatcher_${id}`, {
+        title: `Unbind Event from ${name}`,
+        category: "Event Dispatchers",
+        type: "function-node",
+        executor: "EventDispatcher",
+        icon: "fa-unlink",
+        pins: this.buildBindPins(dispatcher, true),
+        customData: { dispatcherId: id },
+      });
+
+      registry.register(`UnbindAllFromDispatcher_${id}`, {
+        title: `Unbind All Events from ${name}`,
+        category: "Event Dispatchers",
+        type: "function-node",
+        executor: "EventDispatcher",
+        icon: "fa-broom",
+        pins: this.buildBindPins(dispatcher, false),
+        customData: { dispatcherId: id },
+      });
+    }
+
+    if (this.app.palette) this.app.palette.populateList();
+  }
+
+  /**
+   * Add a parameter to a dispatcher (UE5: dispatchers can carry typed inputs).
+   */
+  addParameter(dispatcher) {
+    if (!dispatcher.parameters) dispatcher.parameters = [];
+    const baseName = "NewParam";
+    let idx = 0;
+    let candidate = baseName;
+    while (dispatcher.parameters.some((p) => p.name === candidate)) {
+      idx++;
+      candidate = `${baseName}_${idx}`;
+    }
+    dispatcher.parameters.push({ name: candidate, type: "float" });
+    this.updateNodeLibrary();
+    this.app.persistence.autoSave();
+    this.showDispatcherDetails(dispatcher);
+  }
+
+  removeParameter(dispatcher, index) {
+    if (!dispatcher.parameters) return;
+    dispatcher.parameters.splice(index, 1);
+    this.updateNodeLibrary();
+    this.app.persistence.autoSave();
+    this.showDispatcherDetails(dispatcher);
+  }
+
+  updateParameter(dispatcher, index, key, value) {
+    if (!dispatcher.parameters || !dispatcher.parameters[index]) return;
+    dispatcher.parameters[index][key] = value;
+    this.updateNodeLibrary();
+    this.app.persistence.autoSave();
+  }
+
+  /**
    * Load state from persistence
    */
   loadState(state) {
     this.dispatchers.clear();
     if (state.eventDispatchers) {
       state.eventDispatchers.forEach((d) => {
+        if (!d.parameters) d.parameters = [];
         this.dispatchers.set(d.id, d);
       });
     }
+    this.updateNodeLibrary();
     this.renderPanel();
   }
 

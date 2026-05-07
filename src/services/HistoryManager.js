@@ -38,6 +38,9 @@ export class HistoryManager {
         const functionsArray = (this.app.functionRegistry) ? this.app.functionRegistry.getAll().map(f => f.toJSON()) : [];
         const macrosArray = (this.app.macroRegistry) ? this.app.macroRegistry.getAll().map(m => m.toJSON()) : [];
         const componentsArray = (this.app.components) ? [...this.app.components.values()] : [];
+        const eventDispatchersArray = (this.app.eventDispatchers && this.app.eventDispatchers.dispatchers)
+            ? [...this.app.eventDispatchers.dispatchers.values()]
+            : [];
 
         const state = {
             activeGraph: this.app.activeGraph,
@@ -46,6 +49,7 @@ export class HistoryManager {
             components: componentsArray,
             functions: functionsArray,
             macros: macrosArray,
+            eventDispatchers: eventDispatchersArray,
             classDefaults: this.app.classDefaults,
             // Persist pending renames so they aren't lost on reload
             pendingRenames: this.app.compiler ? this.app.compiler.pendingRenames : []
@@ -137,6 +141,13 @@ export class HistoryManager {
                     this.app.componentsController.render();
                     this.app.componentsController.updateNodeLibrary();
                 }
+            }
+
+            // Restore Event Dispatchers (must run before graph.loadState so palette nodeKeys resolve)
+            if (this.app.eventDispatchers) {
+                this.app.eventDispatchers.loadState({
+                    eventDispatchers: state.eventDispatchers || []
+                });
             }
 
             // Restore Class Defaults

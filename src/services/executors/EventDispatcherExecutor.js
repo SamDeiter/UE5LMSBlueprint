@@ -1,180 +1,213 @@
 /**
- * EventDispatcherExecutor - Handles Event Dispatcher nodes
- * (CallDispatcher, BindToDispatcher, UnbindFromDispatcher)
+ * EventDispatcherExecutor - Handles Event Dispatcher nodes.
+ *
+ * UE5-faithful behavior:
+ *  - Multicast: Call iterates the listener list; if no listeners, the call is a no-op.
+ *  - Hard reference: Bind requires a target reference. A null/None target fails silently.
+ *  - Late binding: actors that bind after a Call do not receive past events.
+ *  - UnbindAll: clears every listener for the target dispatcher instance.
+ *  - Listeners are keyed by (dispatcherId, target) so different broadcaster instances
+ *    each maintain their own listener list, mirroring UE5 per-instance dispatcher state.
  */
 import { BaseExecutor } from "./BaseExecutor.js";
 
+const SELF_TARGET = "__SELF__";
+
 export class EventDispatcherExecutor extends BaseExecutor {
-  constructor(app) {
-    super(app);
-    // Map of dispatcherId -> Set of bound callback functions
+  constructor(engine) {
+    super(engine);
+    // Map<dispatcherId, Map<targetKey, Set<callback>>>
     this.bindings = new Map();
   }
 
-  /**
-   * Execute a dispatcher-related node
-   */
   async execute(node, _inputPin) {
-    const nodeKey = node.nodeKey;
+    const nodeKey = node.nodeKey || "";
 
-    // CallDispatcher_<id>
-    if (nodeKey.startsWith("CallDispatcher_")) {
-      return this.executeCall(node);
-    }
-
-    // BindToDispatcher_<id>
-    if (nodeKey.startsWith("BindToDispatcher_")) {
-      return this.executeBind(node);
-    }
-
-    // UnbindFromDispatcher_<id>
-    if (nodeKey.startsWith("UnbindFromDispatcher_")) {
+    if (nodeKey.startsWith("CallDispatcher_")) return this.executeCall(node);
+    if (nodeKey.startsWith("BindToDispatcher_")) return this.executeBind(node);
+    if (nodeKey.startsWith("UnbindFromDispatcher_"))
       return this.executeUnbind(node);
-    }
+    if (nodeKey.startsWith("UnbindAllFromDispatcher_"))
+      return this.executeUnbindAll(node);
 
-    // Handle example nodes (no-op)
-    if (
-      nodeKey === "CallDispatcher_Example" ||
-      nodeKey === "BindToDispatcher_Example" ||
-      nodeKey === "UnbindFromDispatcher_Example"
-    ) {
-      console.log("[EventDispatcher] Example node executed (no-op)");
-      return "exec_out";
-    }
-
-    return null;
+    return "exec_out";
   }
 
-  /**
-   * Execute CallDispatcher - triggers all bound events
-   */
+  // ---- Call ---------------------------------------------------------------
+
   executeCall(node) {
-    const dispatcherId =
-      node.customData?.dispatcherId || this.extractDispatcherId(node.nodeKey);
+    const dispatcherId = this.extractDispatcherId(node.nodeKey);
+    if (!dispatcherId) return "exec_out";
 
-    if (!dispatcherId) {
-      console.warn("[EventDispatcher] No dispatcherId found for Call node");
-      return "exec_out";
-    }
+    const targetKey = this.resolveTargetKey(node);
+    const listeners = this.getListeners(dispatcherId, targetKey);
 
-    const bindings = this.bindings.get(dispatcherId);
-    if (bindings && bindings.size > 0) {
-      console.log(
-        `[EventDispatcher] Calling dispatcher ${dispatcherId} with ${bindings.size} bindings`
-      );
+    const params = this.collectParameters(node);
 
-      // Collect parameter values from input pins
-      const params = this.collectParameters(node);
+    this.log(
+      `[Dispatcher] Call '${dispatcherId}' target=${targetKey} listeners=${listeners.size}`
+    );
 
-      // Execute all bound callbacks
-      for (const callback of bindings) {
-        try {
-          callback(params);
-        } catch (err) {
-          console.error("[EventDispatcher] Callback error:", err);
-        }
+    if (listeners.size === 0) return "exec_out";
+
+    // Snapshot to allow listeners to unbind during dispatch (UE5-safe).
+    const snapshot = Array.from(listeners);
+    for (const cb of snapshot) {
+      try {
+        cb(params);
+      } catch (err) {
+        // Mirrors UE5's silent dangling-pointer handling.
+        console.error("[Dispatcher] Listener error:", err);
       }
-    } else {
-      console.log(
-        `[EventDispatcher] Dispatcher ${dispatcherId} called (no bindings)`
-      );
     }
 
     return "exec_out";
   }
 
-  /**
-   * Execute BindToDispatcher - registers a callback
-   */
+  // ---- Bind ---------------------------------------------------------------
+
   executeBind(node) {
-    const dispatcherId =
-      node.customData?.dispatcherId || this.extractDispatcherId(node.nodeKey);
+    const dispatcherId = this.extractDispatcherId(node.nodeKey);
+    if (!dispatcherId) return "exec_out";
 
-    if (!dispatcherId) {
-      console.warn("[EventDispatcher] No dispatcherId found for Bind node");
+    const targetKey = this.resolveTargetKey(node);
+    if (targetKey === null) {
+      // UE5: binding to a null/None target fails silently.
+      this.log(
+        `[Dispatcher] Bind '${dispatcherId}' silently failed — target is None`
+      );
       return "exec_out";
     }
 
-    // Get the connected event node (if any)
-    const eventPin = node.pins.find((p) => p.id === "event_in");
-    if (eventPin && eventPin.links.length > 0) {
-      // Create a callback that triggers execution from the bound event
-      const callback = (params) => {
-        console.log(`[EventDispatcher] Bound event fired for ${dispatcherId}`);
+    const eventPin = node.pins?.find((p) => p.id === "event_in");
+    if (!eventPin || !eventPin.links || eventPin.links.length === 0) {
+      this.log(
+        `[Dispatcher] Bind '${dispatcherId}' has no event connected — no-op`
+      );
+      return "exec_out";
+    }
 
-        // Store params in node temp values for parameter access
-        node.tempValues = node.tempValues || {};
-        node.tempValues.dispatcherParams = params;
+    const linkedPin = eventPin.links[0]?.sourcePin;
+    const eventNode = linkedPin?.node;
+    if (!eventNode) return "exec_out";
 
-        // If there's a simulation engine, trigger the bound event's exec output
-        if (node.app?.sim) {
-          // Find connected event node and trigger its output
-          const linkedPin = eventPin.links[0]?.sourcePin;
-          if (linkedPin?.node) {
-            const eventNode = linkedPin.node;
-            const execOut = eventNode.pins.find(
-              (p) => p.type === "exec" && p.dir === "out"
-            );
-            if (execOut) {
-              node.app.sim.flow.executeFromPin(execOut);
-            }
-          }
-        }
-      };
+    const callback = (params) => {
+      eventNode.tempValues = eventNode.tempValues || {};
+      eventNode.tempValues.dispatcherParams = params;
 
-      // Register the binding
-      if (!this.bindings.has(dispatcherId)) {
-        this.bindings.set(dispatcherId, new Set());
+      const execOut = eventNode.pins?.find(
+        (p) => p.type === "exec" && p.dir === "out"
+      );
+      if (execOut && this.engine?.flow?.executeFromPin) {
+        this.engine.flow.executeFromPin(execOut);
       }
-      this.bindings.get(dispatcherId).add(callback);
+    };
 
-      // Store reference for potential unbind
-      node.tempValues = node.tempValues || {};
-      node.tempValues.boundCallback = callback;
+    this.addListener(dispatcherId, targetKey, callback);
 
-      console.log(`[EventDispatcher] Bound event to ${dispatcherId}`);
-    }
+    node.tempValues = node.tempValues || {};
+    node.tempValues.boundCallback = callback;
+    node.tempValues.boundTargetKey = targetKey;
 
+    this.log(`[Dispatcher] Bound to '${dispatcherId}' on target=${targetKey}`);
     return "exec_out";
   }
 
-  /**
-   * Execute UnbindFromDispatcher - removes a callback
-   */
+  // ---- Unbind -------------------------------------------------------------
+
   executeUnbind(node) {
-    const dispatcherId =
-      node.customData?.dispatcherId || this.extractDispatcherId(node.nodeKey);
+    const dispatcherId = this.extractDispatcherId(node.nodeKey);
+    if (!dispatcherId) return "exec_out";
 
-    if (!dispatcherId) {
-      console.warn("[EventDispatcher] No dispatcherId found for Unbind node");
-      return "exec_out";
-    }
+    const targetKey =
+      node.tempValues?.boundTargetKey ?? this.resolveTargetKey(node);
+    if (targetKey === null) return "exec_out";
 
-    // Get the stored callback reference
     const callback = node.tempValues?.boundCallback;
-    if (callback && this.bindings.has(dispatcherId)) {
-      this.bindings.get(dispatcherId).delete(callback);
-      console.log(`[EventDispatcher] Unbound event from ${dispatcherId}`);
-    }
+    if (!callback) return "exec_out";
 
+    const listeners = this.bindings.get(dispatcherId)?.get(targetKey);
+    if (listeners) {
+      listeners.delete(callback);
+      this.log(
+        `[Dispatcher] Unbound from '${dispatcherId}' on target=${targetKey}`
+      );
+    }
     return "exec_out";
   }
 
+  // ---- UnbindAll ----------------------------------------------------------
+
+  executeUnbindAll(node) {
+    const dispatcherId = this.extractDispatcherId(node.nodeKey);
+    if (!dispatcherId) return "exec_out";
+
+    const targetKey = this.resolveTargetKey(node);
+    if (targetKey === null) return "exec_out";
+
+    const perTarget = this.bindings.get(dispatcherId);
+    if (perTarget && perTarget.has(targetKey)) {
+      const count = perTarget.get(targetKey).size;
+      perTarget.delete(targetKey);
+      this.log(
+        `[Dispatcher] UnbindAll '${dispatcherId}' on target=${targetKey} (${count} cleared)`
+      );
+    }
+    return "exec_out";
+  }
+
+  // ---- Helpers ------------------------------------------------------------
+
   /**
-   * Extract dispatcher ID from node key (e.g., "CallDispatcher_abc123" -> "abc123")
+   * Returns the per-target listener set, creating it as needed.
    */
+  getListeners(dispatcherId, targetKey) {
+    if (!this.bindings.has(dispatcherId))
+      this.bindings.set(dispatcherId, new Map());
+    const perTarget = this.bindings.get(dispatcherId);
+    if (!perTarget.has(targetKey)) perTarget.set(targetKey, new Set());
+    return perTarget.get(targetKey);
+  }
+
+  addListener(dispatcherId, targetKey, callback) {
+    this.getListeners(dispatcherId, targetKey).add(callback);
+  }
+
+  /**
+   * Resolve the target reference for this node.
+   * Returns:
+   *   - SELF_TARGET if no target_in pin is connected (defaults to "self", as UE5 does).
+   *   - A stable string key if a target is connected and evaluated.
+   *   - null when an explicit target evaluates to null/undefined (silent failure case).
+   */
+  resolveTargetKey(node) {
+    const targetPin = node.pins?.find((p) => p.id === "target_in");
+    if (!targetPin) return SELF_TARGET;
+    if (!targetPin.links || targetPin.links.length === 0) return SELF_TARGET;
+
+    const value = this.evaluateInput(node, "target_in");
+    if (value === null || value === undefined) return null;
+
+    if (typeof value === "object") {
+      if (!value.__targetKey) {
+        value.__targetKey = `obj_${Math.random().toString(36).slice(2)}`;
+      }
+      return value.__targetKey;
+    }
+    return String(value);
+  }
+
   extractDispatcherId(nodeKey) {
-    const match = nodeKey.match(/^(?:Call|BindTo|UnbindFrom)Dispatcher_(.+)$/);
+    const match = nodeKey.match(
+      /^(?:Call|BindTo|UnbindFrom|UnbindAllFrom)Dispatcher_(.+)$/
+    );
     return match ? match[1] : null;
   }
 
-  /**
-   * Collect parameter values from node inputs
-   */
   collectParameters(node) {
     const params = {};
-    for (const pin of node.pins) {
-      if (pin.dir === "in" && pin.type !== "exec") {
+    for (const pin of node.pins || []) {
+      if (pin.dir === "in" && pin.type !== "exec" && pin.id !== "target_in") {
         params[pin.id] = this.evaluateInput(node, pin.id);
       }
     }
@@ -182,17 +215,13 @@ export class EventDispatcherExecutor extends BaseExecutor {
   }
 
   /**
-   * Clear all bindings (called when simulation stops)
+   * Clear all listener state (called when simulation stops).
    */
   clearBindings() {
     this.bindings.clear();
   }
 
-  /**
-   * Evaluate a pure node (for getting dispatcher state)
-   */
-  evaluateValue(node, pinId) {
-    // For now, dispatchers don't return values
+  evaluateValue(_node, _pin) {
     return null;
   }
 }
