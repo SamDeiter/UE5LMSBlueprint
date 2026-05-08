@@ -12,6 +12,7 @@ import { EventNodes } from './EventNodes.js';
 import { FlowControlNodes } from './FlowControlNodes.js';
 import { FunctionNodes } from './FunctionNodes.js';
 import { InputNodes } from './InputNodes.js';
+import { InterfaceNodes } from './InterfaceNodes.js';
 import { MacroNodes } from './MacroNodes.js';
 import { MathNodes } from './MathNodes.js';
 import { StringNodes } from './StringNodes.js';
@@ -29,6 +30,7 @@ export const NodeDefinitions = {
   ...FlowControlNodes,
   ...FunctionNodes,
   ...InputNodes,
+  ...InterfaceNodes,
   ...MacroNodes,
   ...MathNodes,
   ...StringNodes,

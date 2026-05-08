@@ -299,6 +299,18 @@ class GraphController {
         // Function call pins may change. We should handle merging the template and saved pins if needed,
         // but for simplicity here, we assume if we have saved pins, we use them to restore literal values/structure if dynamic.
         pinsToLoad = nodeData.pins;
+      } else if (
+        (nodeData.nodeKey === "InterfaceFunctionEntry" ||
+          nodeData.nodeKey === "InterfaceFunctionResult" ||
+          nodeData.nodeKey.startsWith("Message_") ||
+          nodeData.nodeKey.startsWith("Event_")) &&
+        nodeData.pins &&
+        nodeData.pins.length > 0
+      ) {
+        // Interface entry/result/message/event nodes have per-signature pins
+        // seeded into the saved graph data. Honor them rather than the
+        // template's empty/generic pins.
+        pinsToLoad = nodeData.pins;
       }
 
       const fullNodeData = {

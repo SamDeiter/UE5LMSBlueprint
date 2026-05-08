@@ -443,8 +443,16 @@ export const LEVEL_5_TASKS = [
     level: 5,
     title: "Custom Event Broadcasting",
     description:
-      "Use Event Dispatchers to broadcast a 'OnHealthChanged' event. Bind to the dispatcher and print 'Health Updated!' when it fires.",
+      "Create an Event Dispatcher named 'OnHealthChanged' with a float 'NewHealth' parameter. On BeginPlay, Bind a custom event to it, then Call the dispatcher and Print 'Health Updated!' when it fires.",
     requirements: [
+      {
+        type: "dispatcher_exists",
+        name: "OnHealthChanged",
+        minParams: 1,
+        paramType: "float",
+        description:
+          "Create dispatcher 'OnHealthChanged' with a float parameter",
+      },
       {
         type: "node_exists",
         nodeType: "EventBeginPlay",
@@ -452,24 +460,165 @@ export const LEVEL_5_TASKS = [
       },
       {
         type: "node_exists",
-        nodeType: "BindToDispatcher_Example",
-        description: "Add BindToDispatcher node",
+        nodeKeyPrefix: "BindToDispatcher_",
+        description: "Add a Bind Event to OnHealthChanged node",
       },
       {
         type: "node_exists",
-        nodeType: "CallDispatcher_Example",
-        description: "Add CallDispatcher node",
-      },
-      {
-        type: "connection",
-        from: { nodeType: "EventBeginPlay", pin: "exec_out" },
-        to: { nodeType: "BindToDispatcher_Example", pin: "exec_in" },
-        description: "Connect BeginPlay to Bind dispatcher",
+        nodeKeyPrefix: "CallDispatcher_",
+        description: "Add a Call OnHealthChanged node",
       },
       {
         type: "node_exists",
         nodeType: "PrintString",
         description: "Print when dispatcher fires",
+      },
+    ],
+  },
+  {
+    taskId: "task_23b_dispatcher_one_to_many",
+    level: 5,
+    title: "One-to-Many Broadcast",
+    description:
+      "Demonstrate that a single dispatcher Call reaches multiple subscribers. Create a dispatcher 'OnAlarmTriggered'. On BeginPlay, Bind TWO separate custom events to the same dispatcher. Wire each Bind output to a different Print String so a single Call broadcasts to both listeners.",
+    requirements: [
+      {
+        type: "dispatcher_exists",
+        name: "OnAlarmTriggered",
+        description: "Create dispatcher 'OnAlarmTriggered'",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "BindToDispatcher_",
+        count: 2,
+        description: "Add TWO Bind Event nodes for the same dispatcher",
+      },
+      {
+        type: "node_exists",
+        nodeType: "CustomEvent",
+        count: 2,
+        description: "Add two Custom Events as the bound responders",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "CallDispatcher_",
+        description: "Add a Call dispatcher node",
+      },
+      {
+        type: "node_exists",
+        nodeType: "PrintString",
+        count: 2,
+        description: "Print from each bound listener",
+      },
+    ],
+  },
+  {
+    taskId: "task_23c_dispatcher_with_payload",
+    level: 5,
+    title: "Dispatcher Payload Propagation",
+    description:
+      "Create a dispatcher 'OnScoreChanged' with an integer 'NewScore' parameter. Wire an integer variable into the Call node's NewScore pin so subscribers receive the data.",
+    requirements: [
+      {
+        type: "dispatcher_exists",
+        name: "OnScoreChanged",
+        minParams: 1,
+        paramType: "int",
+        description: "Create dispatcher 'OnScoreChanged' with an int parameter",
+      },
+      {
+        type: "variable_exists",
+        name: "Score",
+        varType: "int",
+        description: "Create integer variable 'Score'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "Get_Score",
+        description: "Get the Score variable",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "CallDispatcher_",
+        description: "Add a Call OnScoreChanged node",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "BindToDispatcher_",
+        description: "Bind a custom event to the dispatcher",
+      },
+    ],
+  },
+  {
+    taskId: "task_23d_dispatcher_decoupling",
+    level: 5,
+    title: "Decoupled Communication",
+    description:
+      "Inversion of control: build a graph where the Call site has NO direct execution wire to the responder. The only link must go through a dispatcher. Create dispatcher 'OnDoorOpened'. On BeginPlay, Bind a custom event then Call the dispatcher. Confirm the Print runs only because of the binding, not a direct exec wire.",
+    requirements: [
+      {
+        type: "dispatcher_exists",
+        name: "OnDoorOpened",
+        description: "Create dispatcher 'OnDoorOpened'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "EventBeginPlay",
+        description: "Add Event BeginPlay node",
+      },
+      {
+        type: "node_exists",
+        nodeType: "CustomEvent",
+        description: "Add a Custom Event as the bound responder",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "BindToDispatcher_",
+        description: "Bind the custom event to the dispatcher",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "CallDispatcher_",
+        description: "Call the dispatcher",
+      },
+      {
+        type: "node_exists",
+        nodeType: "PrintString",
+        description: "Print from the bound responder",
+      },
+    ],
+  },
+  {
+    taskId: "task_24_dispatcher_unbind_all",
+    level: 5,
+    title: "Dispatcher Lifecycle: Unbind All",
+    description:
+      "Create a dispatcher 'OnLevelComplete'. Bind a custom event to it on BeginPlay. Then use 'Unbind All Events' to clear all listeners before the dispatcher is called, demonstrating that an empty listener list is a silent no-op.",
+    requirements: [
+      {
+        type: "dispatcher_exists",
+        name: "OnLevelComplete",
+        description: "Create dispatcher 'OnLevelComplete'",
+      },
+      {
+        type: "node_exists",
+        nodeType: "EventBeginPlay",
+        description: "Add Event BeginPlay node",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "BindToDispatcher_",
+        description: "Add a Bind Event node for the dispatcher",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "UnbindAllFromDispatcher_",
+        description: "Add an Unbind All Events node",
+      },
+      {
+        type: "node_exists",
+        nodeKeyPrefix: "CallDispatcher_",
+        description: "Add a Call dispatcher node (will fire to zero listeners)",
       },
     ],
   },
