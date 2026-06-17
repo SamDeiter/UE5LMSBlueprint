@@ -519,3 +519,16 @@
     pointer-events: none;
     z-index: 0;
 }
+
+/* Wider resizer hit areas on touch screens */
+@media (pointer: coarse) {
+  .resizer-horizontal {
+    height: 12px;
+  }
+  .resizer-vertical {
+    width: 16px;
+  }
+  #resizer-right {
+    width: 12px;
+  }
+}

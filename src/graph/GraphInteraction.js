@@ -30,9 +30,18 @@ export class GraphInteraction {
     // Chord Shortcuts State (Phase 2: Keyboard Shortcuts)
     this.activeKeys = new Set();
 
+    // Touch state
+    this.touchStartTime = 0;
+    this.longPressTimer = null;
+    this.lastTouchDistance = 0;
+    this.touchPanActive = false;
+
     // Bind methods
     this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
     this.handleGlobalMouseUp = this.handleGlobalMouseUp.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
+    this.handleTouchEnd = this.handleTouchEnd.bind(this);
   }
 
   initEvents() {
@@ -53,6 +62,11 @@ export class GraphInteraction {
     this.editor.addEventListener("drop", this.handleDrop.bind(this));
     document.addEventListener("keydown", this.handleKeyDown.bind(this));
     document.addEventListener("keyup", this.handleKeyUp.bind(this));
+
+    // Touch events for mobile
+    this.editor.addEventListener("touchstart", this.handleTouchStart, { passive: false });
+    this.editor.addEventListener("touchmove", this.handleTouchMove, { passive: false });
+    this.editor.addEventListener("touchend", this.handleTouchEnd, { passive: false });
   }
 
   handleKeyDown(e) {
@@ -766,6 +780,172 @@ export class GraphInteraction {
 
     document.body.appendChild(menu);
   }
+
+  // ---- TOUCH EVENT HANDLERS ----
+
+  handleTouchStart(e) {
+    if (e.touches.length === 2) {
+      // Two-finger pinch zoom setup
+      e.preventDefault();
+      this.lastTouchDistance = this._getTouchDistance(e.touches);
+      this.touchPanActive = false;
+      if (this.longPressTimer) clearTimeout(this.longPressTimer);
+      return;
+    }
+
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const syntheticEvent = this._makeSyntheticEvent(touch, e);
+
+    this.touchStartTime = Date.now();
+    this.touchPanActive = false;
+
+    const pinElement = e.target.closest(".pin-container");
+    const nodeElement = e.target.closest(".node");
+
+    if (pinElement) {
+      // Start wiring
+      this.handleEditorMouseDown(syntheticEvent);
+      return;
+    }
+
+    if (nodeElement) {
+      // Start node drag
+      this.handleEditorMouseDown(syntheticEvent);
+      return;
+    }
+
+    // Empty space: pan on move, or long-press for context menu
+    this.isRmbDown = true;
+    this.isPanning = false;
+    this.dragStart.x = touch.clientX;
+    this.dragStart.y = touch.clientY;
+    this.editor.classList.add("dragging");
+
+    // Long-press fires context menu after 500ms
+    this.longPressTimer = setTimeout(() => {
+      if (!this.isPanning) {
+        this.isRmbDown = false;
+        this.editor.classList.remove("dragging");
+        this.handleContextMenu({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => {} });
+      }
+    }, 500);
+  }
+
+  handleTouchMove(e) {
+    if (e.touches.length === 2) {
+      // Pinch zoom
+      e.preventDefault();
+      const dist = this._getTouchDistance(e.touches);
+      const delta = (dist - this.lastTouchDistance) * 0.005;
+      this.lastTouchDistance = dist;
+
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      const rect = this.editor.getBoundingClientRect();
+      const oldZoom = this.controller.zoom;
+
+      this.controller.zoom = Math.min(Math.max(0.1, this.controller.zoom + delta), 5);
+      const zoomDelta = this.controller.zoom / oldZoom;
+
+      const mouseX = midX - rect.left;
+      const mouseY = midY - rect.top;
+      this.controller.pan.x = mouseX - (mouseX - this.controller.pan.x) * zoomDelta;
+      this.controller.pan.y = mouseY - (mouseY - this.controller.pan.y) * zoomDelta;
+
+      this.controller.updateTransform();
+      if (this.controller.zoomReadout) {
+        this.controller.zoomReadout.textContent = `${Math.round(this.controller.zoom * 100)}%`;
+      }
+      return;
+    }
+
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+
+    if (this.isRmbDown) {
+      const dx = touch.clientX - this.dragStart.x;
+      const dy = touch.clientY - this.dragStart.y;
+      if (!this.isPanning && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+        this.isPanning = true;
+        if (this.longPressTimer) {
+          clearTimeout(this.longPressTimer);
+          this.longPressTimer = null;
+        }
+      }
+      if (this.isPanning) {
+        this.controller.pan.x += dx;
+        this.controller.pan.y += dy;
+        this.controller.updateTransform();
+        this.dragStart.x = touch.clientX;
+        this.dragStart.y = touch.clientY;
+      }
+      return;
+    }
+
+    // Delegate to global mouse move for wiring/node-drag
+    if (this.isDraggingNode || this.isWiring) {
+      const synthetic = this._makeSyntheticEvent(touch, e);
+      this.handleGlobalMouseMove(synthetic);
+    }
+  }
+
+  handleTouchEnd(e) {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+
+    if (this.isRmbDown) {
+      this.isRmbDown = false;
+      this.editor.classList.remove("dragging");
+
+      // Tap (no pan) on empty space → open action menu
+      if (!this.isPanning) {
+        const touch = e.changedTouches[0];
+        const tapDuration = Date.now() - this.touchStartTime;
+        if (tapDuration < 300) {
+          this.app.actionMenu.show(touch.clientX, touch.clientY, null);
+        }
+      }
+      this.isPanning = false;
+      return;
+    }
+
+    if (this.isDraggingNode || this.isWiring) {
+      const touch = e.changedTouches[0];
+      const synthetic = this._makeSyntheticEvent(touch, e);
+      // Use the element actually under the finger at release, not the touch-start element
+      synthetic.target = document.elementFromPoint(touch.clientX, touch.clientY) || e.target;
+      this.handleGlobalMouseUp(synthetic);
+    }
+  }
+
+  _makeSyntheticEvent(touch, originalEvent) {
+    return {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      button: 0,
+      ctrlKey: originalEvent.ctrlKey || false,
+      shiftKey: originalEvent.shiftKey || false,
+      altKey: originalEvent.altKey || false,
+      target: originalEvent.target,
+      preventDefault: () => originalEvent.preventDefault(),
+      stopPropagation: () => originalEvent.stopPropagation(),
+    };
+  }
+
+  _getTouchDistance(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // ---- END TOUCH EVENT HANDLERS ----
 
   handlePinContextMenu(e) {
     const pinContainerEl = e.target.closest(".pin-container");

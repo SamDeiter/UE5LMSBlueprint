@@ -669,3 +669,15 @@
   border: none !important;
   box-shadow: none !important;
 }
+
+/* Enlarge pin touch targets on touch screens */
+@media (pointer: coarse) {
+  .pin-dot {
+    position: relative;
+  }
+  .pin-dot::after {
+    content: '';
+    position: absolute;
+    inset: -13px;
+  }
+}

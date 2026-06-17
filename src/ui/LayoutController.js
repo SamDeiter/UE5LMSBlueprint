@@ -27,21 +27,30 @@ export class LayoutController {
   }
 
   initResizers() {
+    const startResize = (type, clientX, clientY) => {
+      this.isResizing = true;
+      this.currentResizer = type;
+      this.startX = clientX;
+      this.startY = clientY;
+
+      if (type === "left") this.startSize = this.leftWidth;
+      if (type === "right") this.startSize = this.rightWidth;
+      if (type === "bottom") this.startSize = this.bottomHeight;
+
+      document.body.style.cursor = type === "bottom" ? "row-resize" : "col-resize";
+    };
+
     const attach = (resizer, type) => {
       resizer.addEventListener("mousedown", (e) => {
-        this.isResizing = true;
-        this.currentResizer = type;
-        this.startX = e.clientX;
-        this.startY = e.clientY;
-
-        if (type === "left") this.startSize = this.leftWidth;
-        if (type === "right") this.startSize = this.rightWidth;
-        if (type === "bottom") this.startSize = this.bottomHeight;
-
-        document.body.style.cursor =
-          type === "bottom" ? "row-resize" : "col-resize";
+        startResize(type, e.clientX, e.clientY);
         e.preventDefault();
       });
+
+      resizer.addEventListener("touchstart", (e) => {
+        const touch = e.touches[0];
+        startResize(type, touch.clientX, touch.clientY);
+        e.preventDefault();
+      }, { passive: false });
     };
 
     attach(this.resizerLeft, "left");
@@ -50,23 +59,36 @@ export class LayoutController {
 
     document.addEventListener("mousemove", this.handleMouseMove.bind(this));
     document.addEventListener("mouseup", this.handleMouseUp.bind(this));
+
+    document.addEventListener("touchmove", (e) => {
+      if (!this.isResizing) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      this._doResize(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    document.addEventListener("touchend", () => {
+      if (this.isResizing) this.handleMouseUp();
+    });
+  }
+
+  _doResize(clientX, clientY) {
+    if (this.currentResizer === "left") {
+      const delta = clientX - this.startX;
+      this.leftWidth = Math.max(150, this.startSize + delta);
+    } else if (this.currentResizer === "right") {
+      const delta = this.startX - clientX;
+      this.rightWidth = Math.max(150, this.startSize + delta);
+    } else if (this.currentResizer === "bottom") {
+      const delta = this.startY - clientY;
+      this.bottomHeight = Math.max(100, this.startSize + delta);
+    }
+    this.updateLayout();
   }
 
   handleMouseMove(e) {
     if (!this.isResizing) return;
-
-    if (this.currentResizer === "left") {
-      const delta = e.clientX - this.startX;
-      this.leftWidth = Math.max(150, this.startSize + delta); // Min width 150
-    } else if (this.currentResizer === "right") {
-      const delta = this.startX - e.clientX; // Drag left increases width
-      this.rightWidth = Math.max(150, this.startSize + delta);
-    } else if (this.currentResizer === "bottom") {
-      const delta = this.startY - e.clientY; // Drag up increases height
-      this.bottomHeight = Math.max(100, this.startSize + delta);
-    }
-
-    this.updateLayout();
+    this._doResize(e.clientX, e.clientY);
   }
 
   handleMouseUp() {
