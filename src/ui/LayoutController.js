@@ -114,44 +114,41 @@ export class LayoutController {
     let startX = 0;
     let startWidth = 140;
 
-    // We'll attach the event listener to the panel itself to catch events on the labels
+    const tryStartResize = (clientX, label, hitZone) => {
+      const rect = label.getBoundingClientRect();
+      if (Math.abs(clientX - rect.right) < hitZone) {
+        isResizing = true;
+        startX = clientX;
+        const rootStyle = getComputedStyle(document.documentElement);
+        const currentVal = rootStyle.getPropertyValue("--details-label-width").trim();
+        startWidth = parseInt(currentVal, 10) || 140;
+        return true;
+      }
+      return false;
+    };
+
+    const doMove = (clientX) => {
+      const delta = clientX - startX;
+      const newWidth = Math.max(140, Math.min(300, startWidth + delta));
+      document.documentElement.style.setProperty("--details-label-width", `${newWidth}px`);
+    };
+
+    // Mouse
     panel.addEventListener("mousedown", (e) => {
-      // Check if we are clicking near the border of a label
-      // The label is the first child of .detail-row or .detail-checkbox-row
       const row = e.target.closest(".detail-row, .detail-checkbox-row");
       if (!row) return;
-
       const label = row.querySelector("label");
       if (!label) return;
-
-      const rect = label.getBoundingClientRect();
-      // Check if click is within 15px of the right edge for easier grabbing
-      if (Math.abs(e.clientX - rect.right) < 15) {
-        isResizing = true;
-        startX = e.clientX;
-        // Get current width from CSS variable or computed style
-        const rootStyle = getComputedStyle(document.documentElement);
-        const currentVal = rootStyle
-          .getPropertyValue("--details-label-width")
-          .trim();
-        startWidth = parseInt(currentVal, 10) || 140;
-
+      if (tryStartResize(e.clientX, label, 15)) {
         document.body.style.cursor = "col-resize";
         e.preventDefault();
-        e.stopPropagation(); // Prevent text selection
+        e.stopPropagation();
       }
     });
 
     document.addEventListener("mousemove", (e) => {
       if (!isResizing) return;
-
-      const delta = e.clientX - startX;
-      const newWidth = Math.max(140, Math.min(300, startWidth + delta)); // Clamp width between 140px and 300px
-
-      document.documentElement.style.setProperty(
-        "--details-label-width",
-        `${newWidth}px`
-      );
+      doMove(e.clientX);
     });
 
     document.addEventListener("mouseup", () => {
@@ -159,6 +156,29 @@ export class LayoutController {
         isResizing = false;
         document.body.style.cursor = "";
       }
+    });
+
+    // Touch — wider hit zone (25px) for finger accuracy
+    panel.addEventListener("touchstart", (e) => {
+      const row = e.target.closest(".detail-row, .detail-checkbox-row");
+      if (!row) return;
+      const label = row.querySelector("label");
+      if (!label) return;
+      const touch = e.touches[0];
+      if (tryStartResize(touch.clientX, label, 25)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, { passive: false });
+
+    document.addEventListener("touchmove", (e) => {
+      if (!isResizing) return;
+      e.preventDefault();
+      doMove(e.touches[0].clientX);
+    }, { passive: false });
+
+    document.addEventListener("touchend", () => {
+      if (isResizing) isResizing = false;
     });
   }
 
